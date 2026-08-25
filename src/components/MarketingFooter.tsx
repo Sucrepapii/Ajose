@@ -36,8 +36,6 @@ export function MarketingFooter() {
             <h4 className="text-white font-bold mb-5 uppercase tracking-wider text-xs">Company</h4>
             <ul className="space-y-4">
               <li><Link href="/about" className="text-gray-400 hover:text-[#C5A059] transition-colors">About Us</Link></li>
-              <li><Link href="/careers" className="text-gray-400 hover:text-[#C5A059] transition-colors">Careers</Link></li>
-              <li><Link href="/blog" className="text-gray-400 hover:text-[#C5A059] transition-colors">Blog</Link></li>
               <li><Link href="/contact" className="text-gray-400 hover:text-[#C5A059] transition-colors">Contact</Link></li>
             </ul>
           </div>
