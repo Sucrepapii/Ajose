@@ -50,7 +50,7 @@ export default async function DashboardLayout({
             <div className="bg-emerald-500 p-1.5 rounded-lg">
               <PiggyBank className="h-5 w-5 text-zinc-950" />
             </div>
-            <span className="font-bold text-lg text-white">AjoCore</span>
+            <span className="font-bold text-lg text-white">Ajo Circle</span>
           </Link>
         </div>
         
@@ -67,7 +67,7 @@ export default async function DashboardLayout({
           <div className="bg-emerald-500 p-1.5 rounded-lg">
             <PiggyBank className="h-5 w-5 text-zinc-950" />
           </div>
-          <span className="font-bold text-lg text-white">AjoCore</span>
+          <span className="font-bold text-lg text-white">Ajo Circle</span>
         </Link>
         <button className="text-zinc-400">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>

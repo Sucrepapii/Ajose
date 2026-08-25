@@ -14,6 +14,7 @@ import { ProcessPayoutClient } from "@/components/ProcessPayoutClient";
 import { StartCycleClient } from "@/components/StartCycleClient";
 import { MakeContributionClient } from "@/components/MakeContributionClient";
 import { FlagMemberClient } from "@/components/FlagMemberClient";
+import { SendRemindersClient } from "@/components/SendRemindersClient";
 
 export default async function GroupDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -103,6 +104,11 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     }
   }
 
+  // Find users who haven't paid this turn
+  const unpaidUserIds = contributingMembers
+    .filter(m => !paidUserIds.has(m.user_id) && m.status === 'active')
+    .map(m => m.user_id);
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-20 max-w-5xl mx-auto">
       
@@ -125,12 +131,22 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           </div>
         </div>
         
-        <Link 
-          href={`/dashboard/groups/${groupId}/settings`}
-          className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors hidden md:block"
-        >
-          <Settings className="h-5 w-5" />
-        </Link>
+        <div className="flex items-center gap-3">
+          {isAdmin && group.status === 'active' && (
+            <SendRemindersClient 
+              unpaidUserIds={unpaidUserIds} 
+              groupName={group.name} 
+              currentTurn={currentTurn}
+              amount={group.contribution_amount} 
+            />
+          )}
+          <Link 
+            href={`/dashboard/groups/${groupId}/settings`}
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors hidden md:block"
+          >
+            <Settings className="h-5 w-5" />
+          </Link>
+        </div>
       </div>
 
       {/* Top Stats */}
@@ -287,6 +303,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                               membershipId={m.id} 
                               currentStatus={m.status} 
                               memberName={displayName} 
+                              userId={m.user_id}
                             />
                           )
                         )}

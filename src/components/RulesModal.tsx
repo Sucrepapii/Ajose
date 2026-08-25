@@ -50,7 +50,7 @@ export function RulesModal() {
                 <p>The total pooled amount is calculated based on successful debits. Before disbursement, the system automatically deducts:</p>
                 <ul className="list-disc pl-5 text-zinc-400 space-y-1 mt-2">
                   <li><strong className="text-zinc-300">Admin Fee:</strong> Paid to the group creator for managing the group (usually 3%).</li>
-                  <li><strong className="text-zinc-300">Platform Fee:</strong> 2% paid to AjoCore for escrow security and auto-sweep automation.</li>
+                  <li><strong className="text-zinc-300">Platform Fee:</strong> 2% paid to Ajo Circle for escrow security and auto-sweep automation.</li>
                 </ul>
               </div>
 

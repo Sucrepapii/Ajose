@@ -94,7 +94,7 @@ export default async function DashboardOverview() {
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden">
           <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
           <div className="flex items-center justify-between mb-4 relative z-10">
-            <h3 className="text-zinc-400 font-medium">AjoCore Credit Score</h3>
+            <h3 className="text-zinc-400 font-medium">Ajo Circle Credit Score</h3>
             <div className="p-2 bg-zinc-800 rounded-lg">
               <TrendingUp className="h-5 w-5 text-emerald-400" />
             </div>

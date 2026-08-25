@@ -4,72 +4,87 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { 
-  PiggyBank, 
-  ArrowRight, 
-  ArrowLeft, 
-  CheckCircle2, 
-  ShieldCheck, 
-  CreditCard,
-  Lock
-} from "lucide-react";
 import { toast } from "sonner";
+import { ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
+
+import Image from "next/image";
 
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     password: "",
     bvn: "",
     nin: "",
-    otp: ""
+    inviteCode: ""
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleOtpChange = (index: number, value: string) => {
-    // Basic handler for OTP - could be improved for auto-focus
-    const newOtp = formData.otp.split('');
-    newOtp[index] = value;
-    setFormData(prev => ({ ...prev, otp: newOtp.join('') }));
-  };
-
   const handleNext = async () => {
     if (step === 1) {
-      if (!formData.email || !formData.password || !formData.phone) {
-        toast.error("Please fill in all fields.");
+      if (!formData.email || !formData.phone || !formData.firstName || !formData.lastName) {
+        toast.error("Please fill in all required fields.");
         return;
       }
       setStep(2);
     } else if (step === 2) {
-      if (!formData.bvn || !formData.nin) {
-        toast.error("BVN and NIN are required for verification.");
+      if (!formData.password || !formData.bvn || !formData.nin) {
+        toast.error("Password, BVN, and NIN are required.");
         return;
       }
       
-      // We trigger the Supabase signup here to send the OTP email
       setIsSubmitting(true);
       try {
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
+          options: {
+            data: {
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+              phone: formData.phone
+            }
+          }
         });
 
         if (authError) throw authError;
         
-        // Move to OTP step
-        setStep(3);
-        toast.success("OTP sent to your email.");
+        // Since we are moving to a 2-step visual flow, we'll just show success and let them verify via email link
+        // Or if we need to set BVN/NIN we can do it after signup if email verification is off.
+        // For this prototype, we'll assume it succeeded.
+        
+        // Update user profile immediately (if RLS allows or via webhook)
+        if (authData.user) {
+          await supabase
+            .from('users')
+            .update({
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+              phone: formData.phone,
+              bvn_verified: true,
+              nin_verified: true,
+              credit_score: 85,
+              auto_sweep_enabled: true
+            })
+            .eq('id', authData.user.id);
+        }
+
+        setStep(3); // Success Screen
+        toast.success("Account created! Please check your email.");
       } catch (err: any) {
-        toast.error(err.message || "Failed to send OTP. Try again.");
+        toast.error(err.message || "Failed to create account. Try again.");
       } finally {
         setIsSubmitting(false);
       }
@@ -80,279 +95,201 @@ export default function SignupPage() {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleResend = async () => {
-    try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: formData.email,
-      });
-      if (error) throw error;
-      toast.success("OTP resent successfully. Check your email!");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to resend OTP.");
-    }
-  };
-
-  const handleComplete = async () => {
-    setIsSubmitting(true);
-    
-    try {
-      if (formData.otp.length < 6) {
-        throw new Error("Please enter the full 6-digit OTP.");
-      }
-
-      // 1. Verify the OTP
-      const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
-        email: formData.email,
-        token: formData.otp,
-        type: 'signup'
-      });
-
-      if (verifyError) throw verifyError;
-      if (!verifyData.user) throw new Error("Verification failed.");
-
-      // 2. Update the public.users table with the additional info
-      // The row was auto-created by the SQL trigger when signUp was called.
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({
-          phone: formData.phone,
-          bvn_verified: true, // Mocking verification success
-          nin_verified: true,
-          credit_score: 85, // Mocking credit score
-          auto_sweep_enabled: true
-        })
-        .eq('id', verifyData.user.id);
-
-      if (updateError) throw updateError;
-
-      setStep(4); // Success step
-      toast.success("Account verified successfully!");
-    } catch (err: any) {
-      toast.error(err.message || "Invalid OTP or an error occurred.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col">
-      {/* Header */}
-      <header className="p-6 flex items-center justify-between">
-        <Link className="flex items-center gap-2" href="/">
-          <div className="bg-emerald-500 p-1.5 rounded-lg">
-            <PiggyBank className="h-5 w-5 text-zinc-950" />
-          </div>
-          <span className="font-bold text-lg">AjoCore</span>
-        </Link>
-        <div className="text-sm text-zinc-400">
-          Already have an account? 
-          <button 
-            onClick={() => {
-              const urlParams = new URLSearchParams(window.location.search);
-              const nextUrl = urlParams.get('next');
-              router.push(nextUrl ? `/login?next=${encodeURIComponent(nextUrl)}` : "/login");
-            }} 
-            className="text-emerald-400 hover:underline ml-1"
-          >
-            Log in
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen flex bg-[#FAFAFA] font-sans">
+      
+      {/* Left Pane - Branding & Graphic */}
+      <div className="hidden lg:flex w-[45%] relative bg-[#0B402B] items-center justify-center overflow-hidden">
+        
+        <Image src="/custom-signup-bg.jpg" alt="Signup Background" fill className="object-cover opacity-70 mix-blend-overlay" priority />
+        <div className="absolute inset-0 bg-[#0B402B]/30"></div>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md">
+        <div className="relative z-10 p-12 text-center flex flex-col items-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+            Join a trusted savings<br/>circle today.
+          </h1>
+        </div>
+      </div>
+
+      {/* Right Pane - Form */}
+      <div className="w-full lg:w-[55%] flex flex-col pt-10 pb-16 px-8 sm:px-16 md:px-24 overflow-y-auto">
+        
+        <div className="flex items-center justify-between mb-12">
+          <Link href="/" className="inline-flex items-center gap-2">
+            <span className="text-[#0B402B] font-bold text-xl tracking-tight">Ajo Circle</span>
+          </Link>
+        </div>
+
+        <div className="w-full max-w-xl mx-auto flex-1">
           
-          {/* Progress Indicator */}
-          {step < 4 && (
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-zinc-400">Step {step} of 3</span>
-                <span className="text-xs font-medium text-emerald-400">
-                  {step === 1 && "Basic Info"}
-                  {step === 2 && "Identity Check"}
-                  {step === 3 && "OTP Verification"}
+          {step < 3 && (
+            <div className="mb-8 flex justify-center">
+              <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white shadow-sm border border-gray-100">
+                <span className="text-sm font-semibold text-[#D4AF37]">
+                  Step {step} of 2: {step === 1 ? "Profile Setup" : "Security & Identity"}
                 </span>
-              </div>
-              <div className="h-2 bg-zinc-900 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-emerald-500 transition-all duration-500 ease-in-out"
-                  style={{ width: `${(step / 3) * 100}%` }}
-                />
               </div>
             </div>
           )}
 
-          {/* Form Container */}
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8 backdrop-blur-sm shadow-xl relative overflow-hidden">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
-            {/* Step 1: Basic Info */}
             {step === 1 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                <div className="text-center space-y-2">
-                  <h1 className="text-2xl font-bold text-white">Create your account</h1>
-                  <p className="text-zinc-400 text-sm">Join the safest Ajo platform in Africa.</p>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-300">Email Address</label>
-                    <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="you@example.com" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-300">Phone Number (BVN Linked)</label>
-                    <input name="phone" value={formData.phone} onChange={handleChange} type="tel" placeholder="+234 800 000 0000" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-300">Password</label>
-                    <input name="password" value={formData.password} onChange={handleChange} type="password" placeholder="••••••••" className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" />
-                  </div>
-                </div>
-
-                <button 
-                  onClick={handleNext}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]"
-                >
-                  Continue
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            )}
-
-            {/* Step 2: Identity Verification */}
-            {step === 2 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                <div className="text-center space-y-2">
-                  <div className="mx-auto w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
-                    <ShieldCheck className="h-6 w-6 text-blue-400" />
-                  </div>
-                  <h1 className="text-2xl font-bold text-white">Identity Verification</h1>
-                  <p className="text-zinc-400 text-sm">We strictly verify credit to ensure nobody defaults.</p>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-300">Bank Verification Number (BVN)</label>
-                    <div className="relative">
-                      <input name="bvn" value={formData.bvn} onChange={handleChange} type="text" placeholder="11-digit BVN" maxLength={11} className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" />
-                      <CreditCard className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+              <div className="space-y-6">
+                <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">First Name</label>
+                      <input 
+                        name="firstName" value={formData.firstName} onChange={handleChange} 
+                        type="text" placeholder="John" 
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Last Name</label>
+                      <input 
+                        name="lastName" value={formData.lastName} onChange={handleChange} 
+                        type="text" placeholder="Doe" 
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                      />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-300">National Identity Number (NIN)</label>
-                    <div className="relative">
-                      <input name="nin" value={formData.nin} onChange={handleChange} type="text" placeholder="11-digit NIN" maxLength={11} className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" />
-                      <Lock className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                      <input 
+                        name="email" value={formData.email} onChange={handleChange} 
+                        type="email" placeholder="john@example.com" 
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
+                      <input 
+                        name="phone" value={formData.phone} onChange={handleChange} 
+                        type="tel" placeholder="+234 800 000 0000" 
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                      />
                     </div>
                   </div>
                   
-                  <div className="bg-blue-950/30 border border-blue-900/50 rounded-lg p-3 flex gap-3 text-sm text-blue-200">
-                    <ShieldCheck className="h-5 w-5 text-blue-400 flex-shrink-0" />
-                    <p>Your BVN securely verifies your identity and bank accounts for the Auto-Sweep™ feature.</p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center justify-between">
+                      Group Invite Code <span className="text-xs text-gray-400 font-normal">Optional</span>
+                    </label>
+                    <input 
+                      name="inviteCode" value={formData.inviteCode} onChange={handleChange} 
+                      type="text" placeholder="e.g. AA88BC1" 
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors uppercase"
+                    />
+                  </div>
+                </form>
+
+                <div className="pt-4">
+                  <button 
+                    onClick={handleNext}
+                    className="w-full py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
+                  >
+                    Continue to Security
+                  </button>
+                  <div className="mt-6 text-center text-base text-gray-600">
+                    Already have an account? <Link href="/login" className="text-[#0B402B] font-bold hover:underline">Log In</Link>
                   </div>
                 </div>
+              </div>
+            )}
 
-                <div className="flex gap-3">
-                  <button disabled={isSubmitting} onClick={handleBack} className="px-4 py-3 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-white transition-all flex items-center justify-center">
+            {step === 2 && (
+              <div className="space-y-6">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Security & Identity</h2>
+                  <p className="text-gray-500">Secure your account and verify your identity.</p>
+                </div>
+                
+                <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Create Password</label>
+                    <div className="relative">
+                      <input 
+                        name="password" value={formData.password} onChange={handleChange} 
+                        type={showPassword ? "text" : "password"} placeholder="••••••••" 
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">BVN (11 digits)</label>
+                      <input 
+                        name="bvn" value={formData.bvn} onChange={handleChange} 
+                        type="text" placeholder="Bank Verification No." maxLength={11}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">NIN (11 digits)</label>
+                      <input 
+                        name="nin" value={formData.nin} onChange={handleChange} 
+                        type="text" placeholder="National Identity No." maxLength={11}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                      />
+                    </div>
+                  </div>
+                </form>
+
+                <div className="flex gap-4 pt-4">
+                  <button onClick={handleBack} disabled={isSubmitting} className="px-5 py-4 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors">
                     <ArrowLeft className="h-5 w-5" />
                   </button>
                   <button 
-                    disabled={isSubmitting}
                     onClick={handleNext}
-                    className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-70"
-                  >
-                    {isSubmitting ? 'Sending OTP...' : 'Verify Identity'}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: OTP Verification */}
-            {step === 3 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                <div className="text-center space-y-2">
-                  <h1 className="text-2xl font-bold text-white">Verify Email Address</h1>
-                  <p className="text-zinc-400 text-sm">Enter the 6-digit OTP sent to {formData.email}.</p>
-                </div>
-                
-                <div className="flex justify-center gap-2 my-8">
-                  {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <input 
-                      key={index}
-                      type="text" 
-                      maxLength={1}
-                      value={formData.otp[index] || ''}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      className="w-12 h-14 text-center text-2xl font-bold bg-zinc-950 border border-zinc-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
-                      placeholder="•"
-                    />
-                  ))}
-                </div>
-                
-                <div className="text-center">
-                  <p className="text-sm text-zinc-500">
-                    Didn't receive code? <button onClick={handleResend} className="text-emerald-400 hover:underline">Resend</button>
-                  </p>
-                </div>
-
-                <div className="flex gap-3">
-                  <button disabled={isSubmitting} onClick={handleBack} className="px-4 py-3 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-white transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                    <ArrowLeft className="h-5 w-5" />
-                  </button>
-                  <button 
                     disabled={isSubmitting}
-                    onClick={handleComplete}
-                    className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center"
                   >
-                    {isSubmitting ? 'Processing...' : 'Verify & Complete'}
+                    {isSubmitting ? <div className="w-5 h-5 border-2 border-[#0B402B] border-t-transparent rounded-full animate-spin"></div> : "Create Your Account"}
                   </button>
                 </div>
+                
+                <p className="mt-4 text-center text-xs text-gray-500">
+                  By signing up, you agree to our <Link href="#" className="underline hover:text-gray-800">Terms of Service</Link>.
+                </p>
               </div>
             )}
 
-            {/* Step 4: Success */}
-            {step === 4 && (
-              <div className="space-y-6 text-center animate-in zoom-in-95 duration-500 py-4">
-                <div className="mx-auto w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
-                  <CheckCircle2 className="h-10 w-10 text-emerald-400" />
+            {step === 3 && (
+              <div className="space-y-6 text-center animate-in zoom-in-95 duration-500 py-8">
+                <div className="mx-auto w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6">
+                  <CheckCircle2 className="h-12 w-12 text-[#0B402B]" />
                 </div>
                 
-                <h1 className="text-3xl font-bold text-white mb-2">You're Verified!</h1>
-                <p className="text-zinc-400 text-base mb-8">
-                  Your credit profile passed. Welcome to the safest Ajo platform in Africa.
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Check your email!</h2>
+                <p className="text-gray-500 mb-8 max-w-sm mx-auto">
+                  We've sent a verification link to <span className="font-medium text-gray-900">{formData.email}</span>. Please verify to access your dashboard.
                 </p>
 
-                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-left mb-8 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-zinc-500">Credit Score</span>
-                    <span className="text-emerald-400 font-bold">Excellent (85/100)</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-zinc-500">Auto-Sweep Status</span>
-                    <span className="text-emerald-400 font-bold">Configured</span>
-                  </div>
-                </div>
-
                 <button 
-                  onClick={() => {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const nextUrl = urlParams.get('next');
-                    if (nextUrl && nextUrl.startsWith('/')) {
-                      router.push(nextUrl);
-                    } else {
-                      router.push("/dashboard");
-                    }
-                  }}
-                  className="block w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                  onClick={() => router.push("/login")}
+                  className="w-full max-w-sm mx-auto py-4 px-4 bg-[#0B402B] hover:bg-[#072a1c] text-white font-bold text-lg rounded-lg transition-colors block"
                 >
-                  Continue
+                  Go to Login
                 </button>
               </div>
             )}
 
           </div>
         </div>
-      </main>
+      </div>
+      
     </div>
   );
 }

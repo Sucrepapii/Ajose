@@ -85,7 +85,7 @@ export default async function TransactionsPage() {
                       {getIcon(tx.type)}
                       <div>
                         <p className="font-bold text-white capitalize">{tx.type}</p>
-                        <p className="text-xs text-zinc-500">{tx.description || `AjoCore ${tx.type}`}</p>
+                        <p className="text-xs text-zinc-500">{tx.description || `Ajo Circle ${tx.type}`}</p>
                       </div>
                     </div>
                   </td>

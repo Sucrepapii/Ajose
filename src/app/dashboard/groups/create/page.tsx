@@ -216,7 +216,7 @@ export default function CreateGroupPage() {
               
               <div className="bg-emerald-950/20 border border-emerald-900/30 rounded-xl p-4 flex gap-3 text-sm text-emerald-200">
                 <ShieldCheck className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                <p><strong>Trust & Scale:</strong> You are protected. AjoCore ensures all invited members pass the credit check before joining. Escrow handles disbursements automatically.</p>
+                <p><strong>Trust & Scale:</strong> You are protected. Ajo Circle ensures all invited members pass the credit check before joining. Escrow handles disbursements automatically.</p>
               </div>
 
               <div className="space-y-4">
@@ -364,7 +364,7 @@ export default function CreateGroupPage() {
                 </div>
               </div>
               <p className="text-xs text-zinc-500 leading-relaxed">
-                By creating this group, you agree to act as the administrator and adhere to the AjoCore Trust guidelines.
+                By creating this group, you agree to act as the administrator and adhere to the Ajo Circle Trust guidelines.
               </p>
             </div>
 

@@ -9,11 +9,13 @@ import { AlertTriangle, Flag, ShieldAlert } from "lucide-react";
 export function FlagMemberClient({ 
   membershipId, 
   currentStatus,
-  memberName 
+  memberName,
+  userId
 }: { 
   membershipId: string; 
   currentStatus: string;
   memberName: string;
+  userId: string;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -33,6 +35,16 @@ export function FlagMemberClient({
         .eq('id', membershipId);
 
       if (error) throw error;
+
+      // Add a notification for the user
+      await supabase.from('notifications').insert({
+        user_id: userId,
+        title: isDefaulted ? "Status Restored" : "Account Defaulted",
+        message: isDefaulted 
+          ? "Your status has been restored to Active. You can now receive payouts again." 
+          : "You have been marked as Defaulted due to missed payments. You cannot receive payouts.",
+        type: isDefaulted ? "success" : "warning"
+      });
 
       toast.success(isDefaulted ? `${memberName} has been restored.` : `${memberName} marked as Defaulted.`);
       setIsOpen(false);

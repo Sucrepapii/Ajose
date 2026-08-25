@@ -1,93 +1,84 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, PiggyBank, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Globe2, Activity } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check } from "lucide-react";
 
 export default function Home() {
+  const [activeFeatureTab, setActiveFeatureTab] = useState(0);
   return (
-    <main className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
+    <main className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-[#FDFBF7]">
+      
+      {/* Hero Section */}
+      <section className="w-full bg-[#0B3022] pt-24 pb-32 md:pt-32 md:pb-40 relative z-10 overflow-hidden">
+        {/* Subtle gold accent background element */}
+        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#C5A059]/10 blur-[120px] rounded-full pointer-events-none" />
         
-        {/* Dynamic Background */}
-        <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none">
-          <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-emerald-500/10 blur-[150px] rounded-full mix-blend-screen opacity-50 animate-pulse" style={{ animationDuration: '10s' }} />
-          <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-500/10 blur-[150px] rounded-full mix-blend-screen opacity-50 animate-pulse" style={{ animationDuration: '12s' }} />
-          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-        </div>
-
-        {/* Hero Section */}
-        <section className="w-full pt-32 pb-24 md:pt-40 md:pb-32 flex flex-col items-center text-center px-4 md:px-6 relative z-10">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium text-zinc-300 mb-8 backdrop-blur-md">
-              <Globe2 className="h-4 w-4 text-emerald-400" />
-              <span>The modern standard for Rotating Savings</span>
-            </div>
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter max-w-5xl bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/40 mb-8 leading-[1.1]">
-              Managing your Ajo group just got world-class.
-            </h1>
-            
-            <p className="max-w-[700px] mx-auto text-lg md:text-xl text-zinc-400 mb-12 leading-relaxed">
-              Ditch the spreadsheets and WhatsApp groups. AjoCore brings institutional-grade tracking and accountability to your ROSCA (Rotating Savings and Credit Association).
-            </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-              <Link
-                href="/signup"
-                className="inline-flex h-14 items-center justify-center rounded-full bg-white px-8 text-base font-bold text-black shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all hover:bg-zinc-200 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 gap-2 group w-full sm:w-auto"
-              >
-                Create a Group Free
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                href="#how-it-works"
-                className="inline-flex h-14 items-center justify-center rounded-full border border-white/10 bg-white/5 px-8 text-base font-medium text-white transition-all hover:bg-white/10 backdrop-blur-md w-full sm:w-auto"
-              >
-                See how it works
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Floating Hero UI Elements */}
-          <motion.div 
-            className="mt-24 w-full max-w-5xl relative"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent z-20 h-[150%] pointer-events-none"></div>
-            
-            <div className="relative z-10 bg-[#0F0F0F] border border-white/10 rounded-3xl p-4 shadow-2xl mx-auto w-full md:w-[800px] overflow-hidden">
-              <div className="flex items-center gap-2 mb-4 px-2 opacity-50">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+            {/* Hero Text */}
+            <div className="animate-in fade-in slide-in-from-left-8 duration-1000 fill-mode-both">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.15]">
+                The modern standard for Rotating Savings
+              </h1>
+              
+              <p className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl">
+                Managing your Ajo group just got world-class. Ditch the spreadsheets and WhatsApp groups. Ajo Circle brings institutional-grade tracking and accountability to your ROSCA.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <Link
+                  href="/signup"
+                  className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-md bg-[#C5A059] px-8 text-base font-bold text-[#0B3022] shadow-lg hover:bg-[#A48243] transition-all"
+                >
+                  Create a Group Free
+                </Link>
+                <Link
+                  href="#how-it-works"
+                  className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-md border-2 border-[#C5A059] px-8 text-base font-medium text-[#C5A059] hover:bg-[#C5A059]/10 transition-all"
+                >
+                  See how it works
+                </Link>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="col-span-1 md:col-span-2 bg-white/5 rounded-2xl p-6 border border-white/5">
-                  <div className="flex justify-between items-center mb-6">
+            </div>
+
+            {/* Hero Dashboard Interactive Mockup */}
+            <motion.div 
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="relative w-full fill-mode-both z-20"
+            >
+              <div className="bg-[#FDFBF7] rounded-2xl p-6 shadow-2xl border border-gray-100 flex flex-col gap-6">
+                <div className="flex items-center gap-2 mb-2 px-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-amber-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
+                </div>
+
+                <div className="bg-[#F4F1EA] rounded-xl p-5 border border-gray-100">
+                  <div className="flex justify-between items-center mb-5">
                     <div>
-                      <h3 className="text-white font-bold text-lg">Group Roster</h3>
-                      <p className="text-zinc-500 text-sm">October Cycle</p>
+                      <h3 className="text-[#0B3022] font-bold text-lg">Group Roster</h3>
+                      <p className="text-[#1F2937]/70 text-sm">October Cycle</p>
                     </div>
-                    <div className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">ACTIVE</div>
+                    <div className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">ACTIVE</div>
                   </div>
-                  <div className="space-y-4">
+                  
+                  <div className="space-y-3">
                     {[
-                      { name: "Sarah J.", status: "Paid", icon: CheckSquare, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-                      { name: "Michael O.", status: "Paid", icon: CheckSquare, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-                      { name: "David K.", status: "Pending", icon: Activity, color: "text-amber-400", bg: "bg-amber-500/10" }
+                      { name: "Sarah J.", status: "Paid", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
+                      { name: "Michael O.", status: "Paid", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
+                      { name: "David K.", status: "Pending", icon: Activity, color: "text-amber-600", bg: "bg-amber-100" }
                     ].map((user, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/5">
+                      <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-[#FDFBF7] border border-gray-200 shadow-sm">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-white">{user.name[0]}</div>
-                          <span className="text-sm font-medium text-zinc-300">{user.name}</span>
+                          <div className="w-8 h-8 rounded-full bg-[#0B3022] flex items-center justify-center text-xs font-bold text-white">{user.name[0]}</div>
+                          <span className="text-sm font-semibold text-[#1F2937]">{user.name}</span>
                         </div>
-                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${user.bg} ${user.color}`}>
+                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${user.bg} ${user.color}`}>
                           <user.icon className="w-3 h-3" />
                           {user.status}
                         </div>
@@ -95,41 +86,38 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
-                <div className="col-span-1 bg-gradient-to-br from-amber-500/10 to-transparent rounded-2xl p-6 border border-amber-500/20 flex flex-col justify-between">
+
+                <div className="bg-[#0B3022] rounded-xl p-6 border border-[#0B3022] shadow-inner text-white flex flex-col justify-between">
                   <div>
-                    <h3 className="text-amber-500/80 font-medium text-sm mb-2">Admin Projected Earnings</h3>
-                    <p className="text-3xl font-bold text-white">₦450,000</p>
+                    <h3 className="text-gray-300 font-medium text-sm mb-1">Admin Projected Earnings</h3>
+                    <p className="text-3xl font-bold text-[#C5A059]">₦450,000</p>
                   </div>
-                  <div className="mt-8 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                    <p className="text-xs text-amber-200">Across 3 active groups managed</p>
+                  <div className="mt-6 pt-4 border-t border-white/20">
+                    <p className="text-sm text-gray-200">Across 3 active groups managed</p>
                   </div>
                 </div>
               </div>
-            </div>
             </motion.div>
-        </section>
 
+          </div>
+        </div>
+      </section>
 
-
-        {/* Features Section */}
-        <section id="features" className="w-full py-24 md:py-32 relative z-10">
-          <motion.div 
-            className="container mx-auto px-4 md:px-6"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="flex flex-col items-center justify-center text-center mb-20">
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
-                Engineered for Trust & Transparency
-              </h2>
-              <p className="max-w-2xl text-zinc-400 text-lg md:text-xl">
-                We've taken the traditional Ajo and wrapped it in a premium software experience. Everything you need to manage your group effortlessly.
-              </p>
-            </div>
-            
-            <div className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
+      {/* Value Proposition Section */}
+      <section id="features" className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-b border-gray-200">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="flex flex-col items-center justify-center text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
+              Engineered for Trust & Transparency
+            </h2>
+            <p className="max-w-2xl text-[#1F2937]/80 text-lg">
+              We've taken the traditional Ajo and wrapped it in a premium software experience. Everything you need to manage your group effortlessly.
+            </p>
+          </div>
+          
+          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20">
+            {/* Left side: Tabs list */}
+            <div className="lg:w-1/3 flex flex-col gap-4">
               {[
                 {
                   icon: ShieldCheck,
@@ -147,114 +135,172 @@ export default function Home() {
                   desc: "Powerful dashboard allowing admins to flag defaulters, manage earnings, and control the group lifecycle."
                 }
               ].map((feature, i) => (
-                <div key={i} className="flex flex-col items-start p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all hover:-translate-y-1 group">
-                  <div className="p-4 bg-emerald-500/10 rounded-2xl mb-6 text-emerald-400 group-hover:scale-110 transition-transform">
-                    <feature.icon className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-3">{feature.title}</h3>
-                  <p className="text-zinc-400 leading-relaxed">
+                <button
+                  key={i}
+                  onClick={() => setActiveFeatureTab(i)}
+                  className={`text-left p-6 rounded-2xl border-2 transition-all duration-300 ${activeFeatureTab === i ? "border-[#C5A059] bg-[#FDFBF7] shadow-md" : "border-transparent hover:bg-[#FDFBF7]/50"}`}
+                >
+                  <h3 className={`text-xl font-bold mb-2 ${activeFeatureTab === i ? "text-[#0B3022]" : "text-[#1F2937]/70"}`}>{feature.title}</h3>
+                  <p className={`text-sm leading-relaxed ${activeFeatureTab === i ? "text-[#1F2937]" : "text-[#1F2937]/50"}`}>
                     {feature.desc}
                   </p>
-                </div>
+                </button>
               ))}
             </div>
-            </motion.div>
-          </section>
 
-        {/* How It Works Section */}
-        <section id="how-it-works" className="w-full py-24 md:py-32 bg-black relative z-10 border-t border-white/5">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
-          
-          <motion.div 
-            className="container mx-auto px-4 md:px-6"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="text-center mb-20">
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
-                How AjoCore Works
-              </h2>
-              <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
-                Four simple steps to secure, transparent rotating savings.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto relative">
-              {/* Connecting Line */}
-              <div className="hidden md:block absolute top-10 left-[12%] right-[12%] h-px bg-white/10 z-0"></div>
-              
-              {[
-                {
-                  icon: Users,
-                  title: "1. Create Group",
-                  desc: "Set the contribution rules and invite trusted peers."
-                },
-                {
-                  icon: CheckSquare,
-                  title: "2. Members Join",
-                  desc: "System assigns turns and locks the roster when active."
-                },
-                {
-                  icon: CreditCard,
-                  title: "3. Contribute",
-                  desc: "Members pay their share directly to the Admin."
-                },
-                {
-                  icon: Landmark,
-                  title: "4. Payout",
-                  desc: "Admin routes the pooled funds to the receiving member."
-                }
-              ].map((step, i) => (
-                <div key={i} className="relative z-10 flex flex-col items-center text-center group">
-                  <div className="w-20 h-20 rounded-2xl bg-[#0A0A0A] border border-white/10 flex items-center justify-center mb-6 shadow-xl group-hover:border-emerald-500/50 transition-colors">
-                    <step.icon className="h-8 w-8 text-white group-hover:text-emerald-400 transition-colors" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed max-w-[200px]">{step.desc}</p>
-                </div>
-              ))}
-            </div>
-            </motion.div>
-          </section>
-
-        {/* FAQ Section */}
-        <section className="w-full py-24 md:py-32 bg-[#0A0A0A] relative z-10">
-          <div className="container mx-auto px-4 md:px-6 max-w-3xl">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">Frequently Asked Questions</h2>
-            </div>
-            
-            <div className="space-y-4">
-              {[
-                {
-                  q: "Where does the money go?",
-                  a: "The money is collected by the Group Admin. Members pay their contributions directly to the Admin's bank account, and the Admin is responsible for transferring the final pool to the receiver. AjoCore simply provides the software to track these payments and turns."
-                },
-                {
-                  q: "What happens if someone refuses to pay?",
-                  a: "Ajo is built on trust. As an Admin, you should only invite people you trust. If someone misses a payment, the Admin can manually mark them as defaulted on the platform, freezing their payouts and warning the group."
-                },
-                {
-                  q: "Can I leave a group before the cycle ends?",
-                  a: "Once a group cycle is marked as 'Active' by the Admin, the roster is locked. This ensures that people who have already collected their payout cannot abandon the group before paying back into the pool."
-                }
-              ].map((faq, i) => (
-                <details key={i} className="group bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden [&_summary::-webkit-details-marker]:hidden hover:bg-white/[0.04] transition-colors">
-                  <summary className="flex items-center justify-between p-6 cursor-pointer list-none font-bold text-lg text-zinc-200 hover:text-white transition-colors">
-                    {faq.q}
-                    <ChevronDown className="h-5 w-5 text-zinc-500 group-open:rotate-180 transition-transform duration-300" />
-                  </summary>
-                  <div className="px-6 pb-6 text-zinc-400 leading-relaxed">
-                    {faq.a}
-                  </div>
-                </details>
-              ))}
+            {/* Right side: Active Tab Display */}
+            <div className="lg:w-2/3">
+              <div className="bg-[#FDFBF7] rounded-3xl p-8 md:p-12 border border-gray-200 shadow-xl h-full flex flex-col justify-center relative overflow-hidden min-h-[400px]">
+                {/* Decorative background flair */}
+                <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#C5A059]/5 rounded-full blur-[50px] pointer-events-none" />
+                
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeFeatureTab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col md:flex-row items-center gap-8 relative z-10"
+                  >
+                    {[
+                      {
+                        icon: ShieldCheck,
+                        title: "Immutable Records",
+                        tagline: "Total transparency for every member.",
+                        points: ["Tamper-proof contribution logging", "Real-time payment verification", "Historical ledger access"]
+                      },
+                      {
+                        icon: Rocket,
+                        title: "Automated Turns",
+                        tagline: "Set it up once, let the system run.",
+                        points: ["Fair, randomized member sequencing", "Automatic turn assignment", "Next-in-line alerts"]
+                      },
+                      {
+                        icon: Lock,
+                        title: "Admin Control",
+                        tagline: "Total authority to protect the group.",
+                        points: ["Freeze defaulting members", "One-click fund disbursement", "Modify active rosters securely"]
+                      }
+                    ].filter((_, i) => i === activeFeatureTab).map((content, i) => (
+                      <div key={i} className="flex-1 w-full flex flex-col gap-6">
+                        <div className="w-16 h-16 rounded-2xl bg-[#0B3022] flex items-center justify-center shadow-lg">
+                          <content.icon className="w-8 h-8 text-[#C5A059]" />
+                        </div>
+                        <div>
+                          <h3 className="text-3xl font-bold text-[#0B3022] mb-3">{content.title}</h3>
+                          <p className="text-xl text-[#1F2937]/70 font-medium mb-8">{content.tagline}</p>
+                          <ul className="space-y-4">
+                            {content.points.map((point, j) => (
+                              <li key={j} className="flex items-center gap-3">
+                                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#C5A059]/20 flex items-center justify-center">
+                                  <Check className="w-4 h-4 text-[#C5A059]" />
+                                </div>
+                                <span className="text-[#1F2937] font-medium">{point}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
+      {/* Process Section */}
+      <section id="how-it-works" className="w-full py-24 md:py-32 bg-[#FDFBF7] relative z-10">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
+              How Ajo Circle Works
+            </h2>
+            <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
+              Four simple steps to secure, transparent rotating savings.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto relative">
+            {/* Connecting Line */}
+            <div className="hidden md:block absolute top-10 left-[12%] right-[12%] h-1 bg-gray-100 z-0">
+              <div className="absolute top-0 left-0 h-full bg-[#C5A059] w-full origin-left transform scale-x-100 transition-transform"></div>
+            </div>
+            
+            {[
+              {
+                icon: Users,
+                title: "Create Group",
+                desc: "Set the contribution rules and invite trusted peers."
+              },
+              {
+                icon: CheckSquare,
+                title: "Members Join",
+                desc: "System assigns turns and locks the roster when active."
+              },
+              {
+                icon: CreditCard,
+                title: "Contribute",
+                desc: "Members pay their share directly to the Admin."
+              },
+              {
+                icon: Landmark,
+                title: "Payout",
+                desc: "Admin routes the pooled funds to the receiving member."
+              }
+            ].map((step, i) => (
+              <div key={i} className="relative z-10 flex flex-col items-center text-center group">
+                <div className="w-20 h-20 rounded-full bg-[#FDFBF7] border-4 border-[#C5A059] flex items-center justify-center mb-6 shadow-md z-10">
+                  <step.icon className="h-8 w-8 text-[#0B3022]" />
+                </div>
+                <div className="bg-[#F4F1EA] rounded-lg p-5 border border-gray-100 w-full h-full shadow-sm">
+                  <h3 className="text-sm font-bold text-[#C5A059] mb-1">STEP {i + 1}</h3>
+                  <h4 className="text-xl font-bold text-[#0B3022] mb-3">{step.title}</h4>
+                  <p className="text-[#1F2937]/80 text-sm leading-relaxed">{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Accordion Block */}
+      <section className="w-full py-24 md:py-32 bg-[#0B3022] relative z-10">
+        <div className="container mx-auto px-6 lg:px-12 max-w-3xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">Frequently Asked Questions</h2>
+          </div>
+          
+          <div className="space-y-4">
+            {[
+              {
+                q: "Where does the money go?",
+                a: "The money is collected by the Group Admin. Members pay their contributions directly to the Admin's bank account, and the Admin is responsible for transferring the final pool to the receiver. Ajo Circle simply provides the software to track these payments and turns."
+              },
+              {
+                q: "What happens if someone refuses to pay?",
+                a: "Ajo is built on trust. As an Admin, you should only invite people you trust. If someone misses a payment, the Admin can manually mark them as defaulted on the platform, freezing their payouts and warning the group."
+              },
+              {
+                q: "Can I leave a group before the cycle ends?",
+                a: "Once a group cycle is marked as 'Active' by the Admin, the roster is locked. This ensures that people who have already collected their payout cannot abandon the group before paying back into the pool."
+              }
+            ].map((faq, i) => (
+              <details key={i} className="group bg-[#FDFBF7]/5 border border-white/10 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden hover:bg-[#FDFBF7]/10 transition-colors">
+                <summary className="flex items-center justify-between p-6 cursor-pointer list-none font-bold text-lg text-white">
+                  {faq.q}
+                  <ChevronDown className="h-5 w-5 text-[#C5A059] group-open:rotate-180 transition-transform duration-300" />
+                </summary>
+                <div className="px-6 pb-6 text-gray-300 leading-relaxed">
+                  {faq.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

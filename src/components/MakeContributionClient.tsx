@@ -44,6 +44,24 @@ export function MakeContributionClient({
 
       if (error) throw error;
 
+      // Find the admin of this group
+      const { data: adminMembership } = await supabase
+        .from('memberships')
+        .select('user_id')
+        .eq('group_id', groupId)
+        .eq('role', 'admin')
+        .single();
+
+      if (adminMembership) {
+        // Send notification to admin
+        await supabase.from('notifications').insert({
+          user_id: adminMembership.user_id,
+          title: "New Contribution",
+          message: `A member has paid ₦${amount.toLocaleString()} for Turn ${currentTurn}.`,
+          type: "success"
+        });
+      }
+
       setIsSuccess(true);
       toast.success("Payment successful!");
       

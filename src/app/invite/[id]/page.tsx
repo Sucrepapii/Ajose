@@ -149,7 +149,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
           <div className="bg-emerald-500 p-1.5 rounded-lg">
             <PiggyBank className="h-5 w-5 text-zinc-950" />
           </div>
-          <span className="font-bold text-lg">AjoCore</span>
+          <span className="font-bold text-lg">Ajo Circle</span>
         </Link>
       </header>
 
@@ -164,7 +164,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
 
             <h1 className="text-2xl font-bold text-white mb-2">You've been invited!</h1>
             <p className="text-zinc-400 text-sm mb-8">
-              You have been invited to join the <strong className="text-white">{group?.name || urlGroupName}</strong> savings group on AjoCore.
+              You have been invited to join the <strong className="text-white">{group?.name || urlGroupName}</strong> savings group on Ajo Circle.
             </p>
 
             {/* Group Details Card */}

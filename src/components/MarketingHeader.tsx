@@ -1,28 +1,42 @@
 import Link from "next/link";
 import { PiggyBank } from "lucide-react";
+import { createClient } from "@/utils/supabase/server";
 
-export function MarketingHeader() {
+export async function MarketingHeader() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
-    <header className="px-6 lg:px-8 h-20 flex items-center justify-between border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
-      <Link className="flex items-center justify-center gap-2" href="/">
-        <div className="bg-gradient-to-br from-emerald-400 to-emerald-600 p-1.5 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-          <PiggyBank className="h-6 w-6 text-black" />
+    <header className="px-6 lg:px-12 h-24 flex items-center justify-between border-b border-[#C5A059]/20 bg-[#0B3022] sticky top-0 z-50">
+      <Link className="flex items-center justify-center gap-3" href="/">
+        <div className="bg-[#C5A059] p-2 rounded-xl shadow-lg">
+          <PiggyBank className="h-6 w-6 text-[#0B3022]" />
         </div>
-        <span className="font-bold text-xl tracking-tight text-white">AjoCore</span>
+        <span className="font-bold text-2xl tracking-tight text-white font-serif">Ajo <span className="text-[#C5A059]">Circle</span></span>
       </Link>
       <nav className="flex items-center gap-8">
-        <Link className="text-sm font-medium hover:text-white transition-colors text-zinc-400 hidden sm:block" href="/#features">
+        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#features">
           Features
         </Link>
-        <Link className="text-sm font-medium hover:text-white transition-colors text-zinc-400 hidden sm:block" href="/#how-it-works">
+        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#how-it-works">
           How it Works
         </Link>
-        <Link
-          className="text-sm font-medium bg-white text-black px-6 py-2.5 rounded-full hover:bg-zinc-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
-          href="/signup"
-        >
-          Dashboard
-        </Link>
+        
+        {user ? (
+          <Link
+            className="text-sm font-bold bg-[#C5A059] text-[#0B3022] px-6 py-3 rounded-md hover:bg-[#A48243] transition-all shadow-md"
+            href="/dashboard"
+          >
+            Dashboard
+          </Link>
+        ) : (
+          <Link
+            className="text-sm font-bold bg-[#C5A059] text-[#0B3022] px-6 py-3 rounded-md hover:bg-[#A48243] transition-all shadow-md"
+            href="/signup"
+          >
+            Create a Group Free
+          </Link>
+        )}
       </nav>
     </header>
   );

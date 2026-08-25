@@ -4,18 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { 
-  PiggyBank, 
-  ArrowRight,
-  Mail,
-  Lock
-} from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
+
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -53,7 +51,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
       
-      router.refresh(); // Refresh to ensure layout gets updated session
+      router.refresh();
 
     } catch (err: any) {
       toast.error(err.message || "Failed to log in.");
@@ -63,98 +61,111 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col">
-      {/* Header */}
-      <header className="p-6 flex items-center justify-between">
-        <Link className="flex items-center gap-2" href="/">
-          <div className="bg-emerald-500 p-1.5 rounded-lg">
-            <PiggyBank className="h-5 w-5 text-zinc-950" />
-          </div>
-          <span className="font-bold text-lg">AjoCore</span>
-        </Link>
-        <div className="text-sm text-zinc-400">
-          Don't have an account? 
-          <button 
-            onClick={() => {
-              const urlParams = new URLSearchParams(window.location.search);
-              const nextUrl = urlParams.get('next');
-              router.push(nextUrl ? `/signup?next=${encodeURIComponent(nextUrl)}` : "/signup");
-            }} 
-            className="text-emerald-400 hover:underline ml-1"
-          >
-            Sign up
-          </button>
+    <div className="min-h-screen flex bg-white font-sans">
+      
+      {/* Left Pane - Image & Branding */}
+      <div className="hidden lg:flex w-1/2 relative bg-[#1A362D] items-center justify-center overflow-hidden">
+        {/* Abstract Gold Lines Pattern (Simulated with CSS/SVG) */}
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 100 L500 600 L1000 100 M-100 300 L400 800 L1100 300" stroke="#D4AF37" strokeWidth="2" fill="none" />
+            <path d="M200 -100 L700 400 L1200 -100" stroke="#D4AF37" strokeWidth="1" fill="none" />
+          </svg>
         </div>
-      </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md">
+        {/* Use the exact image the user provided */}
+        <Image src="/custom-login-bg.jpg" alt="Login Background" fill className="object-cover opacity-60 mix-blend-overlay" priority />
+        <div className="absolute inset-0 bg-[#122b22]/40"></div>
+
+        <div className="relative z-10 max-w-lg px-12">
+          <Link href="/" className="inline-flex items-center gap-2 mb-16">
+            <div className="w-8 h-8 bg-white text-[#1A362D] rounded-full flex items-center justify-center font-bold text-xl leading-none">
+              A
+            </div>
+            <span className="text-white font-bold text-xl tracking-tight">Ajo Circle</span>
+          </Link>
           
-          {/* Form Container */}
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8 backdrop-blur-sm shadow-xl relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-            
-            <div className="text-center space-y-2 mb-8">
-              <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-              <p className="text-zinc-400 text-sm">Log in to manage your Ajo savings.</p>
+          <h1 className="text-5xl font-bold text-white leading-[1.1] tracking-tight">
+            Secure your financial future, together.
+          </h1>
+        </div>
+      </div>
+
+      {/* Right Pane - Form */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 md:px-24 xl:px-32 relative">
+        
+        {/* Mobile Header */}
+        <div className="absolute top-8 left-8 lg:hidden flex items-center gap-2">
+          <Link href="/" className="inline-flex items-center gap-2">
+            <div className="w-8 h-8 bg-[#1A362D] text-white rounded-full flex items-center justify-center font-bold text-xl leading-none">
+              A
+            </div>
+            <span className="text-[#1A362D] font-bold text-xl tracking-tight">Ajo Circle</span>
+          </Link>
+        </div>
+
+        <div className="w-full max-w-[420px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <h2 className="text-3xl font-bold text-[#111827] mb-2">Welcome Back</h2>
+          <p className="text-gray-500 mb-8">Please enter your details to sign in.</p>
+
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone or Email</label>
+              <input 
+                name="email" 
+                value={formData.email} 
+                onChange={handleChange} 
+                type="email" 
+                placeholder="Enter your phone or email" 
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-colors"
+                required
+              />
             </div>
             
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-300">Email Address</label>
-                  <div className="relative">
-                    <input 
-                      name="email" 
-                      value={formData.email} 
-                      onChange={handleChange} 
-                      type="email" 
-                      placeholder="you@example.com" 
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" 
-                    />
-                    <Mail className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-zinc-300">Password</label>
-                    <Link href="#" className="text-xs text-emerald-400 hover:underline">Forgot password?</Link>
-                  </div>
-                  <div className="relative">
-                    <input 
-                      name="password" 
-                      value={formData.password} 
-                      onChange={handleChange} 
-                      type="password" 
-                      placeholder="••••••••" 
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" 
-                    />
-                    <Lock className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
-                  </div>
-                </div>
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-sm font-medium text-gray-700">Password</label>
+                <Link href="#" className="text-sm font-medium text-[#D4AF37] hover:text-[#b8952b]">Forgot Password?</Link>
               </div>
+              <div className="relative">
+                <input 
+                  name="password" 
+                  value={formData.password} 
+                  onChange={handleChange} 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="••••••••" 
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-colors pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </div>
 
-              <button 
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] disabled:opacity-70"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-                    Logging in...
-                  </>
-                ) : (
-                  <>
-                    Log In
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </button>
-            </form>
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full mt-2 py-3.5 px-4 bg-[#1A362D] hover:bg-[#12261f] text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1A362D] disabled:opacity-70 flex justify-center items-center"
+            >
+              {isSubmitting ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                "Log In"
+              )}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center text-sm text-gray-500">
+            New to the circle? <Link href="/signup" className="text-[#1A362D] font-medium hover:underline">Create an account.</Link>
           </div>
         </div>
-      </main>
+      </div>
+      
     </div>
   );
 }
