@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PiggyBank } from "lucide-react";
+import Image from "next/image";
 
 export function MarketingFooter() {
   return (
@@ -9,11 +9,15 @@ export function MarketingFooter() {
           
           {/* Column 1 */}
           <div className="col-span-1 lg:col-span-2">
-            <Link className="flex items-center gap-3 mb-6" href="/">
-              <div className="bg-[#C5A059] p-2 rounded-xl shadow-lg">
-                <PiggyBank className="h-6 w-6 text-[#0B3022]" />
-              </div>
-              <span className="font-bold text-2xl tracking-tight text-white font-serif">Ajo <span className="text-[#C5A059]">Circle</span></span>
+            <Link className="flex items-center gap-3 mb-6 hover:opacity-90 transition-opacity" href="/">
+              <Image 
+                src="/logo.png" 
+                alt="Ajo Circle Logo" 
+                width={64} 
+                height={64} 
+                className="object-contain w-auto h-16 drop-shadow-md"
+              />
+              <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Ajo <span className="text-[#C5A059]">Circle</span></span>
             </Link>
             <p className="text-gray-300 leading-relaxed max-w-sm">
               The modern operating system for Rotating Savings and Credit Associations (ROSCAs). Built for trust, transparency, and accountability.

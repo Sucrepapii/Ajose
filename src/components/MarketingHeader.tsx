@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PiggyBank } from "lucide-react";
+import Image from "next/image";
 import { createClient } from "@/utils/supabase/server";
 
 export async function MarketingHeader() {
@@ -8,11 +8,16 @@ export async function MarketingHeader() {
 
   return (
     <header className="px-6 lg:px-12 h-24 flex items-center justify-between border-b border-[#C5A059]/20 bg-[#0B3022] sticky top-0 z-50">
-      <Link className="flex items-center justify-center gap-3" href="/">
-        <div className="bg-[#C5A059] p-2 rounded-xl shadow-lg">
-          <PiggyBank className="h-6 w-6 text-[#0B3022]" />
-        </div>
-        <span className="font-bold text-2xl tracking-tight text-white font-serif">Ajo <span className="text-[#C5A059]">Circle</span></span>
+      <Link className="flex items-center justify-center gap-3 hover:opacity-90 transition-opacity" href="/">
+        <Image 
+          src="/logo.png" 
+          alt="Ajo Circle Logo" 
+          width={64} 
+          height={64} 
+          className="object-contain w-auto h-16 drop-shadow-md"
+          priority
+        />
+        <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Ajo <span className="text-[#C5A059]">Circle</span></span>
       </Link>
       <nav className="flex items-center gap-8">
         <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#features">
