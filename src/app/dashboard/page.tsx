@@ -24,7 +24,7 @@ export default async function DashboardOverview() {
   // Fetch the user's profile details
   const { data: profile } = await supabase
     .from('users')
-    .select('credit_score, auto_sweep_enabled')
+    .select('credit_score, auto_sweep_enabled, bvn_verified')
     .eq('id', user.id)
     .single();
 
@@ -88,6 +88,29 @@ export default async function DashboardOverview() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
+      {/* Verification Banner */}
+      {!profile?.bvn_verified && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
+              <AlertCircle className="h-6 w-6 text-amber-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-amber-900 mb-1">Action Required: Connect Your Bank</h3>
+              <p className="text-amber-800/80 text-sm font-medium max-w-2xl">
+                You must verify your BVN and establish a direct debit mandate via Mono before you can create or join Ajo cycles.
+              </p>
+            </div>
+          </div>
+          <Link 
+            href="/dashboard/verify"
+            className="shrink-0 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-all shadow-md text-center w-full md:w-auto"
+          >
+            Verify Now
+          </Link>
+        </div>
+      )}
+
       {/* Top Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
