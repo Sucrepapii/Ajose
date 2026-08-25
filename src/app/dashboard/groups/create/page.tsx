@@ -108,28 +108,28 @@ export default function CreateGroupPage() {
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/dashboard" className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+        <Link href="/dashboard" className="p-2 rounded-xl bg-white border border-gray-200 text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Create Admin-Managed Ajo</h1>
-          <p className="text-zinc-400 text-sm">Set up a new savings group and invite members.</p>
+          <h1 className="text-2xl font-bold text-[#0B3022]">Create Admin-Managed Ajo</h1>
+          <p className="text-[#1F2937]/70 text-sm">Set up a new savings group and invite members.</p>
         </div>
       </div>
 
       {step < 3 ? (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 md:p-8">
           
           {/* Progress */}
-          <div className="flex items-center mb-8 pb-8 border-b border-zinc-800">
-            <div className={`flex flex-col items-center flex-1 ${step >= 1 ? 'text-emerald-400' : 'text-zinc-500'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold mb-2 ${step >= 1 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-800 text-zinc-500'}`}>1</div>
-              <span className="text-sm font-medium">Group Details</span>
+          <div className="flex items-center mb-8 pb-8 border-b border-gray-100">
+            <div className={`flex flex-col items-center flex-1 ${step >= 1 ? 'text-[#0B3022]' : 'text-gray-400'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold mb-2 ${step >= 1 ? 'bg-[#C5A059]/20 text-[#0B3022] border border-[#C5A059]' : 'bg-gray-100 text-gray-500'}`}>1</div>
+              <span className="text-sm font-bold">Group Details</span>
             </div>
-            <div className={`h-0.5 w-16 ${step >= 2 ? 'bg-emerald-500/50' : 'bg-zinc-800'}`}></div>
-            <div className={`flex flex-col items-center flex-1 ${step >= 2 ? 'text-emerald-400' : 'text-zinc-500'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold mb-2 ${step >= 2 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-800 text-zinc-500'}`}>2</div>
-              <span className="text-sm font-medium">Rules & Fees</span>
+            <div className={`h-0.5 w-16 ${step >= 2 ? 'bg-[#C5A059]' : 'bg-gray-200'}`}></div>
+            <div className={`flex flex-col items-center flex-1 ${step >= 2 ? 'text-[#0B3022]' : 'text-gray-400'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold mb-2 ${step >= 2 ? 'bg-[#C5A059]/20 text-[#0B3022] border border-[#C5A059]' : 'bg-gray-100 text-gray-500'}`}>2</div>
+              <span className="text-sm font-bold">Rules & Fees</span>
             </div>
           </div>
 
@@ -138,41 +138,41 @@ export default function CreateGroupPage() {
             <div className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-300">Group Name</label>
+                  <label className="text-sm font-bold text-[#0B3022]">Group Name</label>
                   <input 
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     type="text" 
                     placeholder="e.g., December Rent Fund" 
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" 
+                    className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg px-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium" 
                   />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-300">Contribution Amount (₦)</label>
+                    <label className="text-sm font-bold text-[#0B3022]">Contribution Amount (₦)</label>
                     <div className="relative">
-                      <Wallet className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+                      <Wallet className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
                       <input 
                         name="contributionAmount"
                         value={formData.contributionAmount}
                         onChange={handleChange}
                         type="number" 
                         placeholder="50000" 
-                        className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all" 
+                        className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium" 
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-300">Total Members (Including You)</label>
+                    <label className="text-sm font-bold text-[#0B3022]">Total Members (Including You)</label>
                     <div className="relative">
-                      <Users className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+                      <Users className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
                       <select 
                         name="maxMembers"
                         value={formData.maxMembers}
                         onChange={handleChange}
-                        className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all appearance-none"
+                        className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium"
                       >
                         {[2,3,4,5,6,7,8,9,10,11,12].map(num => (
                           <option key={num} value={num}>{num} Members</option>
@@ -183,14 +183,14 @@ export default function CreateGroupPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-300">Contribution Frequency</label>
+                  <label className="text-sm font-bold text-[#0B3022]">Contribution Frequency</label>
                   <div className="relative">
-                    <CalendarDays className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+                    <CalendarDays className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
                     <select 
                       name="frequency"
                       value={formData.frequency}
                       onChange={handleChange}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all appearance-none"
+                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium"
                     >
                       <option value="weekly">Weekly</option>
                       <option value="biweekly">Bi-weekly (Every 2 weeks)</option>
@@ -203,7 +203,7 @@ export default function CreateGroupPage() {
               <div className="pt-4 flex justify-end">
                 <button 
                   onClick={handleNext}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-8 rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                  className="bg-[#C5A059] hover:bg-[#A48243] text-[#0B3022] font-bold py-3 px-8 rounded-lg transition-all shadow-md"
                 >
                   Next Step
                 </button>
@@ -214,22 +214,22 @@ export default function CreateGroupPage() {
           {step === 2 && (
             <div className="space-y-6 animate-in fade-in duration-300">
               
-              <div className="bg-emerald-950/20 border border-emerald-900/30 rounded-xl p-4 flex gap-3 text-sm text-emerald-200">
-                <ShieldCheck className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+              <div className="bg-[#0B3022]/5 border border-[#0B3022]/10 rounded-xl p-4 flex gap-3 text-sm text-[#0B3022]">
+                <ShieldCheck className="h-5 w-5 text-[#C5A059] flex-shrink-0" />
                 <p><strong>Trust & Scale:</strong> You are protected. Ajo Circle ensures all invited members pass the credit check before joining. Escrow handles disbursements automatically.</p>
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-300">Admin Commission (Your Cut)</label>
-                  <p className="text-xs text-zinc-500 mb-2">As the admin, you can set a fee (1-5%) taken from the total pool to compensate for managing the group.</p>
+                  <label className="text-sm font-bold text-[#0B3022]">Admin Commission (Your Cut)</label>
+                  <p className="text-xs text-[#1F2937]/60 mb-2 font-medium">As the admin, you can set a fee (1-5%) taken from the total pool to compensate for managing the group.</p>
                   <div className="relative">
-                    <Percent className="absolute left-3 top-3.5 h-5 w-5 text-zinc-500" />
+                    <Percent className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
                     <select 
                       name="adminCommission"
                       value={formData.adminCommission}
                       onChange={handleChange}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all appearance-none"
+                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium"
                     >
                       <option value="0">0% (Free)</option>
                       <option value="1">1%</option>
@@ -241,32 +241,33 @@ export default function CreateGroupPage() {
                   </div>
                 </div>
 
-                <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-                  <h4 className="text-sm font-medium text-white mb-4">Summary</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-zinc-500">Contribution</span>
-                      <span className="text-white font-medium">₦{cont.toLocaleString()} / {formData.frequency}</span>
+                <div className="bg-[#FDFBF7] p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/5 rounded-full blur-2xl"></div>
+                  <h4 className="text-sm font-bold text-[#0B3022] mb-4 uppercase tracking-wider relative z-10">Institutional Summary</h4>
+                  <div className="space-y-3 text-sm relative z-10">
+                    <div className="flex justify-between font-medium">
+                      <span className="text-[#1F2937]/70">Contribution</span>
+                      <span className="text-[#0B3022]">₦{cont.toLocaleString()} / <span className="capitalize">{formData.frequency}</span></span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-zinc-500">Total Members</span>
-                      <span className="text-white font-medium">{mems}</span>
+                    <div className="flex justify-between font-medium">
+                      <span className="text-[#1F2937]/70">Total Members</span>
+                      <span className="text-[#0B3022]">{mems}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-zinc-500">Total Pool per cycle</span>
-                      <span className="text-white font-medium">₦{totalPool.toLocaleString()}</span>
+                    <div className="flex justify-between font-medium">
+                      <span className="text-[#1F2937]/70">Total Pool per cycle</span>
+                      <span className="text-[#0B3022]">₦{totalPool.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between border-t border-zinc-800 pt-2 mt-2">
-                      <span className="text-zinc-500">Platform Fee (2%)</span>
-                      <span className="text-red-400 font-medium">-₦{platformFee.toLocaleString()}</span>
+                    <div className="flex justify-between border-t border-gray-200 pt-3 mt-3 font-medium">
+                      <span className="text-[#1F2937]/70">Platform Fee (2%)</span>
+                      <span className="text-red-600">-₦{platformFee.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-zinc-500">Your Commission ({formData.adminCommission}%)</span>
-                      <span className="text-emerald-400 font-medium">+₦{adminFee.toLocaleString()}</span>
+                    <div className="flex justify-between font-medium">
+                      <span className="text-[#1F2937]/70">Your Commission ({formData.adminCommission}%)</span>
+                      <span className="text-green-600">+₦{adminFee.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between border-t border-zinc-800 pt-2 mt-2">
-                      <span className="text-zinc-300 font-bold">Collector Receives</span>
-                      <span className="text-white font-bold">₦{collectorReceives.toLocaleString()}</span>
+                    <div className="flex justify-between border-t border-gray-200 pt-3 mt-3">
+                      <span className="text-[#0B3022] font-bold text-base">Collector Receives</span>
+                      <span className="text-[#0B3022] font-bold text-base">₦{collectorReceives.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -277,14 +278,14 @@ export default function CreateGroupPage() {
                 <button 
                   disabled={isSubmitting}
                   onClick={handleBack}
-                  className="px-6 py-3 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-white transition-all disabled:opacity-50"
+                  className="px-6 py-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[#0B3022] font-bold transition-all shadow-sm disabled:opacity-50"
                 >
                   Back
                 </button>
                 <button 
                   disabled={isSubmitting}
                   onClick={() => setShowConfirm(true)}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-8 rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                  className="bg-[#C5A059] hover:bg-[#A48243] text-[#0B3022] font-bold py-3 px-8 rounded-lg transition-all shadow-md"
                 >
                   Create Group
                 </button>
@@ -295,17 +296,20 @@ export default function CreateGroupPage() {
         </div>
       ) : (
         /* Success State */
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-10 text-center animate-in zoom-in-95 duration-500">
-          <div className="mx-auto w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
-            <CheckCircle2 className="h-10 w-10 text-emerald-400" />
+        <div className="bg-white border border-gray-200 shadow-xl rounded-2xl p-10 text-center animate-in zoom-in-95 duration-500 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A059]/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0B3022]/5 rounded-full blur-3xl"></div>
+          
+          <div className="mx-auto w-20 h-20 bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-full flex items-center justify-center mb-6 relative z-10">
+            <CheckCircle2 className="h-10 w-10 text-[#C5A059]" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Group Created Successfully!</h2>
-          <p className="text-zinc-400 mb-8 max-w-md mx-auto">
+          <h2 className="text-2xl font-bold text-[#0B3022] mb-2 relative z-10">Group Created Successfully!</h2>
+          <p className="text-[#1F2937]/70 mb-8 max-w-md mx-auto font-medium relative z-10">
             Your admin-managed Ajo is ready. Invite members by sharing the unique group code. They must pass the credit check to join.
           </p>
           
-          <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex items-center justify-between mb-8 max-w-sm mx-auto">
-            <span className="text-zinc-400 font-mono text-sm truncate max-w-[250px]">{newGroupId}</span>
+          <div className="bg-[#FDFBF7] p-4 rounded-xl border border-gray-200 shadow-inner flex items-center justify-between mb-8 max-w-sm mx-auto relative z-10">
+            <span className="text-[#0B3022] font-mono text-sm font-bold truncate max-w-[250px]">{newGroupId}</span>
             <button 
               onClick={() => {
                 const baseUrl = window.location.origin;
@@ -313,15 +317,15 @@ export default function CreateGroupPage() {
                 navigator.clipboard.writeText(inviteUrl);
                 toast.success("Invite link copied to clipboard!");
               }}
-              className="text-emerald-400 text-sm font-bold hover:text-emerald-300 ml-2"
+              className="text-[#C5A059] text-sm font-bold hover:text-[#A48243] ml-2 px-3 py-1.5 rounded-md hover:bg-[#C5A059]/10 transition-colors"
             >
-              COPY
+              COPY LINK
             </button>
           </div>
 
           <Link 
             href={`/dashboard/groups/${newGroupId}`}
-            className="inline-flex bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-8 rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+            className="inline-flex bg-[#0B3022] hover:bg-[#0B3022]/90 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-md relative z-10"
           >
             Manage Group
           </Link>
@@ -330,60 +334,60 @@ export default function CreateGroupPage() {
 
       {/* Confirmation Modal (Double Opt-in) */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
             
-            <div className="p-6 border-b border-zinc-800 flex justify-between items-start">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-[#FDFBF7]">
               <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="h-5 w-5 text-amber-400" />
+                <div className="w-10 h-10 rounded-full bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-[#C5A059]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Confirm Group Creation</h3>
-                  <p className="text-zinc-400 text-sm mt-1">Are you sure you want to create this group?</p>
+                  <h3 className="text-lg font-bold text-[#0B3022]">Confirm Group Creation</h3>
+                  <p className="text-[#1F2937]/70 font-medium text-sm mt-1">Are you sure you want to create this group?</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowConfirm(false)}
                 disabled={isSubmitting}
-                className="text-zinc-500 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             
             <div className="p-6 space-y-4">
-              <div className="bg-zinc-950 rounded-xl p-4 border border-zinc-800 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Group Name</span>
-                  <span className="text-white font-medium">{formData.name}</span>
+              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm space-y-2 text-sm">
+                <div className="flex justify-between font-medium">
+                  <span className="text-[#1F2937]/70">Group Name</span>
+                  <span className="text-[#0B3022] font-bold">{formData.name}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Total Pool</span>
-                  <span className="text-white font-medium">₦{totalPool.toLocaleString()}</span>
+                <div className="flex justify-between font-medium">
+                  <span className="text-[#1F2937]/70">Total Pool</span>
+                  <span className="text-[#0B3022] font-bold">₦{totalPool.toLocaleString()}</span>
                 </div>
               </div>
-              <p className="text-xs text-zinc-500 leading-relaxed">
+              <p className="text-xs text-[#1F2937]/60 leading-relaxed font-medium">
                 By creating this group, you agree to act as the administrator and adhere to the Ajo Circle Trust guidelines.
               </p>
             </div>
 
-            <div className="p-4 border-t border-zinc-800 flex justify-end gap-3 bg-zinc-950/50">
+            <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
               <button 
                 onClick={() => setShowConfirm(false)}
                 disabled={isSubmitting}
-                className="px-4 py-2 rounded-lg font-medium text-zinc-400 hover:text-white transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-lg font-bold text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-100 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold px-6 py-2 rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-70 flex items-center gap-2"
+                className="bg-[#C5A059] hover:bg-[#A48243] text-[#0B3022] font-bold px-6 py-2 rounded-lg transition-all shadow-md disabled:opacity-70 flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[#0B3022] border-t-transparent rounded-full animate-spin"></div>
                     Creating...
                   </>
                 ) : "Yes, Create Group"}

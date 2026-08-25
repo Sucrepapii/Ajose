@@ -88,23 +88,23 @@ export function NotificationBell({ userId }: { userId: string }) {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-full bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 relative transition-colors"
+        className="p-2 rounded-full bg-white text-[#1F2937]/70 hover:text-[#0B3022] border border-gray-200 shadow-sm relative transition-colors"
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-zinc-950 animate-pulse"></span>
+          <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-3 w-80 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full right-0 mt-3 w-80 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           
-          <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-950/50">
-            <h3 className="font-bold text-white">Notifications</h3>
+          <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
+            <h3 className="font-bold text-[#0B3022]">Notifications</h3>
             {unreadCount > 0 && (
               <button 
                 onClick={handleMarkAllAsRead}
-                className="text-xs text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1"
+                className="text-xs text-[#C5A059] hover:text-[#A48243] font-bold flex items-center gap-1"
               >
                 <Check className="h-3 w-3" />
                 Mark all read
@@ -115,15 +115,15 @@ export function NotificationBell({ userId }: { userId: string }) {
           <div className="max-h-[350px] overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-8 text-center">
-                <Bell className="h-8 w-8 text-zinc-700 mx-auto mb-3" />
-                <p className="text-zinc-500 text-sm">You have no notifications yet.</p>
+                <Bell className="h-8 w-8 text-gray-300 mx-auto mb-3" />
+                <p className="text-[#1F2937]/50 text-sm">You have no notifications yet.</p>
               </div>
             ) : (
-              <div className="divide-y divide-zinc-800">
+              <div className="divide-y divide-gray-100">
                 {notifications.map((n) => (
                   <div 
                     key={n.id} 
-                    className={`p-4 flex gap-3 transition-colors ${!n.is_read ? 'bg-zinc-800/30' : 'hover:bg-zinc-800/30'}`}
+                    className={`p-4 flex gap-3 transition-colors ${!n.is_read ? 'bg-[#FDFBF7]' : 'hover:bg-gray-50'}`}
                     onClick={() => !n.is_read && handleMarkAsRead(n.id)}
                   >
                     <div className="shrink-0 mt-0.5">
@@ -131,14 +131,14 @@ export function NotificationBell({ userId }: { userId: string }) {
                     </div>
                     <div className="flex-1 cursor-pointer">
                       <div className="flex justify-between items-start mb-1">
-                        <p className={`text-sm font-bold ${!n.is_read ? 'text-white' : 'text-zinc-300'}`}>
+                        <p className={`text-sm font-bold ${!n.is_read ? 'text-[#0B3022]' : 'text-[#1F2937]/70'}`}>
                           {n.title}
                         </p>
                         {!n.is_read && (
-                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 shrink-0"></span>
+                          <span className="w-1.5 h-1.5 bg-[#C5A059] rounded-full mt-1.5 shrink-0"></span>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-[#1F2937]/60 line-clamp-2 leading-relaxed">
                         {n.message}
                       </p>
                       <p className="text-[10px] text-zinc-500 mt-2 font-medium">

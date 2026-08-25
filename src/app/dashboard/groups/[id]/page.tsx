@@ -115,18 +115,18 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
       {/* Header with Breadcrumbs */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/groups" className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+          <Link href="/dashboard/groups" className="p-2 rounded-xl bg-white border border-gray-200 text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">{group.name}</h1>
+            <h1 className="text-2xl font-bold text-[#0B3022]">{group.name}</h1>
             <div className="flex items-center gap-2 mt-1">
-              <span className={`px-2 py-0.5 text-xs font-bold rounded ${group.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+              <span className={`px-2 py-0.5 text-xs font-bold rounded ${group.status === 'active' ? 'bg-green-500/10 text-green-700 border border-green-500/20' : 'bg-[#C5A059]/10 text-[#0B3022] border border-[#C5A059]/20'}`}>
                 {group.status.toUpperCase()}
               </span>
-              <span className="text-zinc-400 text-sm">Admin-Managed</span>
-              <span className="text-zinc-600 text-sm">•</span>
-              <span className="text-zinc-400 text-sm font-mono truncate max-w-[150px]">ID: {groupId}</span>
+              <span className="text-[#1F2937]/70 text-sm font-medium">Admin-Managed</span>
+              <span className="text-gray-300 text-sm">•</span>
+              <span className="text-[#1F2937]/50 text-sm font-mono truncate max-w-[150px]">ID: {groupId}</span>
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           )}
           <Link 
             href={`/dashboard/groups/${groupId}/settings`}
-            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors hidden md:block"
+            className="p-2 rounded-xl bg-white border border-gray-200 text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-50 transition-colors hidden md:block shadow-sm"
           >
             <Settings className="h-5 w-5" />
           </Link>
@@ -151,23 +151,24 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
 
       {/* Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-          <h3 className="text-zinc-500 text-sm font-medium mb-1">Contribution</h3>
-          <p className="text-2xl font-bold text-white flex items-baseline gap-1">
-            ₦{group.contribution_amount.toLocaleString()}<span className="text-sm font-normal text-zinc-500">/{group.frequency}</span>
+        <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/30 transition-colors group">
+          <h3 className="text-[#1F2937]/60 text-sm font-bold mb-1 uppercase tracking-wider group-hover:text-[#C5A059] transition-colors">Contribution</h3>
+          <p className="text-2xl font-bold text-[#0B3022] flex items-baseline gap-1">
+            ₦{group.contribution_amount.toLocaleString()}<span className="text-sm font-bold text-[#1F2937]/40 capitalize">/{group.frequency}</span>
           </p>
         </div>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-          <h3 className="text-zinc-500 text-sm font-medium mb-1">Total Pool</h3>
-          <p className="text-2xl font-bold text-white">₦{totalPool.toLocaleString()}</p>
+        <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/30 transition-colors group">
+          <h3 className="text-[#1F2937]/60 text-sm font-bold mb-1 uppercase tracking-wider group-hover:text-[#C5A059] transition-colors">Total Pool</h3>
+          <p className="text-2xl font-bold text-[#0B3022]">₦{totalPool.toLocaleString()}</p>
         </div>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-          <h3 className="text-zinc-500 text-sm font-medium mb-1">Collecting Next</h3>
-          <p className="text-xl font-bold text-white truncate">{receivingMemberProfileName}</p>
+        <div className="bg-[#0B3022] border border-[#0B3022]/10 shadow-md rounded-2xl p-5 relative overflow-hidden">
+          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#C5A059]/10 rounded-full blur-2xl"></div>
+          <h3 className="text-white/60 text-sm font-bold mb-1 uppercase tracking-wider relative z-10">Collecting Next</h3>
+          <p className="text-xl font-bold text-white truncate relative z-10">{receivingMemberProfileName}</p>
         </div>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-          <h3 className="text-zinc-500 text-sm font-medium mb-1">Members</h3>
-          <p className="text-2xl font-bold text-white">{contributingMembers.length}/{group.max_members}</p>
+        <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/30 transition-colors group">
+          <h3 className="text-[#1F2937]/60 text-sm font-bold mb-1 uppercase tracking-wider group-hover:text-[#C5A059] transition-colors">Members</h3>
+          <p className="text-2xl font-bold text-[#0B3022]">{contributingMembers.length}/{group.max_members}</p>
         </div>
       </div>
 
@@ -177,14 +178,15 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
       )}
 
       {/* Escrow & Security Banner */}
-      <div className="bg-gradient-to-r from-blue-950/40 to-emerald-950/20 border border-blue-900/50 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex gap-4">
-          <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-            <ShieldCheck className="h-6 w-6 text-blue-400" />
+      <div className="bg-[#FDFBF7] border border-gray-200 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-inner relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#0B3022]/5 rounded-full blur-2xl"></div>
+        <div className="flex gap-4 relative z-10">
+          <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+            <ShieldCheck className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-white font-bold mb-1">Admin-Managed Escrow Active</h3>
-            <p className="text-zinc-400 text-sm leading-relaxed">
+            <h3 className="text-[#0B3022] font-bold mb-1">Admin-Managed Escrow Active</h3>
+            <p className="text-[#1F2937]/70 text-sm leading-relaxed font-medium">
               Funds are managed and disbursed by the Group Admin. The total pool (minus {group.admin_commission_pct}% admin fee and 2% platform fee) is sent directly to the collector's primary account upon payout processing.
             </p>
           </div>
@@ -195,9 +197,9 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
       </div>
 
       {/* Member List */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-white">Group Roster ({contributingMembers.length}/{group.max_members})</h2>
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
+          <h2 className="text-lg font-bold text-[#0B3022]">Group Roster ({contributingMembers.length}/{group.max_members})</h2>
           
           {contributingMembers.length < group.max_members && (
             <CopyInviteButton groupId={groupId} groupName={group.name} />
@@ -207,14 +209,14 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-zinc-950 text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-800">
-                <th className="px-6 py-4 font-medium">Member</th>
-                <th className="px-6 py-4 font-medium">Payment Status</th>
-                <th className="px-6 py-4 font-medium">Verification Status</th>
-                <th className="px-6 py-4 font-medium">Standing</th>
+              <tr className="bg-gray-50 text-[#1F2937]/50 text-xs font-bold uppercase tracking-wider border-b border-gray-200">
+                <th className="px-6 py-4">Member</th>
+                <th className="px-6 py-4">Payment Status</th>
+                <th className="px-6 py-4">Verification Status</th>
+                <th className="px-6 py-4">Standing</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800">
+            <tbody className="divide-y divide-gray-100">
               {membersList.map((m, i) => {
                 const userProfile = m.users;
                 
@@ -230,21 +232,21 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                 const isTurn = receivingMember?.id === m.id;
 
                 return (
-                  <tr key={m.id} className={`transition-colors ${m.status === 'defaulted' ? 'bg-red-950/20' : isTurn ? 'bg-emerald-950/10' : 'hover:bg-zinc-800/50'}`}>
+                  <tr key={m.id} className={`transition-colors ${m.status === 'defaulted' ? 'bg-red-50' : isTurn ? 'bg-[#FDFBF7]' : 'hover:bg-gray-50'}`}>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold uppercase ${m.status === 'defaulted' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-800 text-zinc-400'}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold uppercase ${m.status === 'defaulted' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'}`}>
                           {displayName.charAt(0)}
                         </div>
                         <div>
-                          <p className={`text-sm font-medium ${m.status === 'defaulted' ? 'text-red-400' : 'text-white'}`}>{displayName}</p>
+                          <p className={`text-sm font-bold ${m.status === 'defaulted' ? 'text-red-700' : 'text-[#0B3022]'}`}>{displayName}</p>
                           {isTurn && (
                             <div className="flex items-center gap-3 mt-1.5">
-                              <p className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">
+                              <p className="text-xs text-[#C5A059] font-bold bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded">
                                 Receives Payout Next
                               </p>
                               {m.status === 'defaulted' ? (
-                                <span className="text-xs text-red-500 font-bold">Cannot process payout while defaulted</span>
+                                <span className="text-xs text-red-600 font-bold">Cannot process payout while defaulted</span>
                               ) : (
                                 <ProcessPayoutClient 
                                   group={group} 
@@ -259,10 +261,10 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                     </td>
                     <td className="px-6 py-4">
                       {m.role === 'admin' ? (
-                        <span className="text-sm text-blue-400 font-medium">Admin (No Payout)</span>
+                        <span className="text-sm text-[#C5A059] font-bold">Admin (No Payout)</span>
                       ) : paidUserIds.has(m.user_id) ? (
-                        <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
-                          <CheckCircle2 className="h-4 w-4" /> Paid
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
+                          <CheckCircle2 className="h-4 w-4 text-green-600" /> Paid
                         </span>
                       ) : m.user_id === user.id && group.status === 'active' ? (
                         <MakeContributionClient 
@@ -272,16 +274,16 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                           currentTurn={currentTurn} 
                         />
                       ) : (
-                        <span className="text-sm text-zinc-500 font-medium">Pending</span>
+                        <span className="text-sm text-[#1F2937]/50 font-bold uppercase tracking-wider">Pending</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       {userProfile?.bvn_verified ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                          <CheckCircle2 className="h-3.5 w-3.5" /> Verified
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> Verified
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 bg-zinc-500/10 px-2.5 py-1 rounded-full">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-full">
                           Unverified
                         </span>
                       )}
@@ -289,11 +291,11 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         {m.status === 'defaulted' ? (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-400 bg-red-500/10 px-2.5 py-1 rounded-full border border-red-500/20">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-full border border-red-200">
                             DEFAULTED
                           </span>
                         ) : (
-                          <span className="text-xs text-emerald-400 font-medium">Active</span>
+                          <span className="text-xs text-[#0B3022] font-bold uppercase tracking-wider">Active</span>
                         )}
 
                         {/* Admin Flagging Action */}
@@ -316,7 +318,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           </table>
           
           {membersList.length === 0 && (
-            <div className="p-8 text-center text-zinc-500">
+            <div className="p-8 text-center text-[#1F2937]/50 font-medium">
               No members found in this group.
             </div>
           )}

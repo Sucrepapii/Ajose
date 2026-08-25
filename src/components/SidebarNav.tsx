@@ -38,8 +38,8 @@ export function SidebarNav() {
             href={link.href} 
             className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
               isActive 
-                ? "bg-zinc-800/50 text-emerald-400" 
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
+                ? "bg-white/10 text-[#C5A059] font-bold" 
+                : "text-white/60 hover:bg-white/5 hover:text-white"
             }`}
           >
             <Icon className="h-5 w-5" />

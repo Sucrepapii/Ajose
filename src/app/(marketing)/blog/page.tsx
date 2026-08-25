@@ -1,4 +1,4 @@
-export default function Page() {
+export default function BlogPage() {
   return (
     <main className="flex-1 container mx-auto px-4 py-32 max-w-4xl min-h-screen">
       <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-8">Blog</h1>
