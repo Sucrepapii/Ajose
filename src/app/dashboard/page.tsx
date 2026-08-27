@@ -211,10 +211,10 @@ export default async function DashboardOverview() {
                 const totalPool = group.contribution_amount * group.max_members;
                 
                 return (
-                  <div key={membership.id} className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/30 hover:shadow-md transition-all">
+                  <Link key={membership.id} href={`/dashboard/groups/${group.id}`} className="block bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/50 hover:shadow-md transition-all group">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-[#0B3022] rounded-xl flex items-center justify-center text-[#C5A059] font-bold text-xl uppercase shadow-inner">
+                        <div className="w-12 h-12 bg-[#0B3022] rounded-xl flex items-center justify-center text-[#C5A059] font-bold text-xl uppercase shadow-inner group-hover:bg-[#C5A059] group-hover:text-[#0B3022] transition-colors">
                           {group.name.substring(0, 1)}
                         </div>
                         <div>
@@ -228,7 +228,7 @@ export default async function DashboardOverview() {
                       </div>
                     </div>
                     
-                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group-hover:bg-[#FDFBF7] transition-colors">
                       <div className="flex items-center gap-2">
                         {group.status === 'pending' ? (
                           <>
@@ -242,11 +242,12 @@ export default async function DashboardOverview() {
                           </>
                         )}
                       </div>
-                      <div className="text-sm font-bold text-[#1F2937]/50 uppercase tracking-wide">
+                      <div className="text-sm font-bold text-[#1F2937]/50 uppercase tracking-wide flex items-center gap-2 group-hover:text-[#C5A059] transition-colors">
                         {group.status === 'pending' ? 'Starts when full' : `Status: ${membership.status}`}
+                        <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity -ml-1 group-hover:ml-0" />
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })
             )}
