@@ -114,9 +114,35 @@ export default function SignupPage() {
       {/* Right Pane - Form */}
       <div className="w-full lg:w-[55%] flex flex-col pt-10 pb-16 px-8 sm:px-16 md:px-24 overflow-y-auto">
         
-        <div className="flex items-center justify-between mb-12">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <span className="text-[#0B402B] font-bold text-xl tracking-tight">Ajo Circle</span>
+        {/* Back button and Mobile Header */}
+        <div className="absolute top-8 left-8 flex items-center gap-4 z-10">
+          <Link href="/" className="hidden lg:flex items-center gap-2 text-[#1F2937]/50 hover:text-[#0B402B] transition-colors font-medium text-sm">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Link>
+
+          <Link href="/" className="lg:hidden flex items-center gap-2 hover:opacity-90 transition-opacity">
+            <Image 
+              src="/logo.png" 
+              alt="Ajo Circle Logo" 
+              width={28} 
+              height={28} 
+              className="object-contain w-auto h-7"
+            />
+            <span className="text-[#0B402B] font-bold text-xl font-serif tracking-tight">Ajo <span className="text-[#D4AF37]">Circle</span></span>
+          </Link>
+        </div>
+
+        <div className="hidden lg:flex items-center justify-between mb-12 relative z-10 mt-8">
+          <Link href="/" className="inline-flex items-center gap-4 hover:opacity-90 transition-opacity">
+            <Image 
+              src="/logo.png" 
+              alt="Ajo Circle Logo" 
+              width={64} 
+              height={64} 
+              className="object-contain w-auto h-16"
+            />
+            <span className="text-[#0B402B] font-bold text-3xl font-serif tracking-tight">Ajo <span className="text-[#D4AF37]">Circle</span></span>
           </Link>
         </div>
 

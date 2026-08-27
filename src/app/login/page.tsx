@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import Image from "next/image";
 
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -78,11 +78,15 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-[#122b22]/40"></div>
 
         <div className="relative z-10 max-w-lg px-12">
-          <Link href="/" className="inline-flex items-center gap-2 mb-16">
-            <div className="w-8 h-8 bg-white text-[#1A362D] rounded-full flex items-center justify-center font-bold text-xl leading-none">
-              A
-            </div>
-            <span className="text-white font-bold text-xl tracking-tight">Ajo Circle</span>
+          <Link href="/" className="inline-flex items-center gap-4 mb-16 hover:opacity-90 transition-opacity">
+            <Image 
+              src="/logo.png" 
+              alt="Ajo Circle Logo" 
+              width={64} 
+              height={64} 
+              className="object-contain w-auto h-16 brightness-0 invert" // Make it white for dark background
+            />
+            <span className="text-white font-bold text-3xl font-serif tracking-tight">Ajo <span className="text-[#C5A059]">Circle</span></span>
           </Link>
           
           <h1 className="text-5xl font-bold text-white leading-[1.1] tracking-tight">
@@ -94,13 +98,22 @@ export default function LoginPage() {
       {/* Right Pane - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 md:px-24 xl:px-32 relative">
         
-        {/* Mobile Header */}
-        <div className="absolute top-8 left-8 lg:hidden flex items-center gap-2">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#1A362D] text-white rounded-full flex items-center justify-center font-bold text-xl leading-none">
-              A
-            </div>
-            <span className="text-[#1A362D] font-bold text-xl tracking-tight">Ajo Circle</span>
+        {/* Back button and Mobile Header */}
+        <div className="absolute top-8 left-8 flex items-center gap-4 z-10">
+          <Link href="/" className="hidden lg:flex items-center gap-2 text-[#1F2937]/50 hover:text-[#0B3022] transition-colors font-medium text-sm">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Link>
+
+          <Link href="/" className="lg:hidden flex items-center gap-2 hover:opacity-90 transition-opacity">
+            <Image 
+              src="/logo.png" 
+              alt="Ajo Circle Logo" 
+              width={28} 
+              height={28} 
+              className="object-contain w-auto h-7"
+            />
+            <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">Ajo <span className="text-[#C5A059]">Circle</span></span>
           </Link>
         </div>
 

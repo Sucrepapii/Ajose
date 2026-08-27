@@ -15,7 +15,7 @@ export function MarketingFooter() {
                 alt="Ajo Circle Logo" 
                 width={64} 
                 height={64} 
-                className="object-contain w-auto h-16 drop-shadow-md"
+                className="object-contain w-auto h-12 brightness-0 invert drop-shadow-md"
               />
               <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Ajo <span className="text-[#C5A059]">Circle</span></span>
             </Link>
@@ -58,7 +58,7 @@ export function MarketingFooter() {
         
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-400">© 2026 Ajo Circle Technologies. All rights reserved.</p>
+          <p className="text-[#1F2937]/50 font-medium">© {new Date().getFullYear()} Ajo Circle Technologies. All rights reserved.</p>
         </div>
       </div>
     </footer>

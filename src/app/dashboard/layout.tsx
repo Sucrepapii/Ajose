@@ -55,7 +55,7 @@ export default async function DashboardLayout({
               alt="Ajo Circle Logo" 
               width={32} 
               height={32} 
-              className="object-contain w-auto h-8"
+              className="object-contain w-auto h-8 brightness-0 invert"
             />
             <span className="font-bold text-xl text-white font-serif tracking-tight">Ajo <span className="text-[#C5A059]">Circle</span></span>
           </Link>
@@ -76,7 +76,7 @@ export default async function DashboardLayout({
             alt="Ajo Circle Logo" 
             width={28} 
             height={28} 
-            className="object-contain w-auto h-7"
+            className="object-contain w-auto h-7 brightness-0 invert"
           />
           <span className="font-bold text-lg text-white font-serif tracking-tight">Ajo <span className="text-[#C5A059]">Circle</span></span>
         </Link>

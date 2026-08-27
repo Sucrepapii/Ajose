@@ -14,7 +14,7 @@ export async function MarketingHeader() {
           alt="Ajo Circle Logo" 
           width={64} 
           height={64} 
-          className="object-contain w-auto h-16 drop-shadow-md"
+          className="object-contain w-auto h-12 brightness-0 invert drop-shadow-md"
           priority
         />
         <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Ajo <span className="text-[#C5A059]">Circle</span></span>

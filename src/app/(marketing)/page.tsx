@@ -281,11 +281,23 @@ export default function Home() {
               },
               {
                 q: "What happens if someone refuses to pay?",
-                a: "Ajo is built on trust. As an Admin, you should only invite people you trust. If someone misses a payment, the Admin can manually mark them as defaulted on the platform, freezing their payouts and warning the group."
+                a: "Ajo is built on trust. As an Admin, you should only invite people you trust. If someone misses a payment, the Admin can manually mark them as defaulted on the platform, freezing their payouts and warning the group. Defaulting also incurs a -50 point penalty to their global Ajo Credit Score."
               },
               {
                 q: "Can I leave a group before the cycle ends?",
                 a: "Once a group cycle is marked as 'Active' by the Admin, the roster is locked. This ensures that people who have already collected their payout cannot abandon the group before paying back into the pool."
+              },
+              {
+                q: "What is the Ajo Credit Score?",
+                a: "Your Ajo Credit Score is a global metric that tracks your reliability across all groups. You gain points for successful contributions and lose 50 points immediately if you default. A low score will automatically restrict you from joining high-value groups."
+              },
+              {
+                q: "Are there any fees?",
+                a: "Ajo Circle charges a flat 2% platform fee per payout to maintain our secure infrastructure. Group Admins may also choose to charge their own management commission (between 0% and 5%), which is clearly displayed before you join."
+              },
+              {
+                q: "Is my personal data secure?",
+                a: "Yes. All data, including verification details and ledger history, is secured with AES-256 bank-grade encryption and protected by strict security policies."
               }
             ].map((faq, i) => (
               <details key={i} className="group bg-[#FDFBF7]/5 border border-white/10 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden hover:bg-[#FDFBF7]/10 transition-colors">

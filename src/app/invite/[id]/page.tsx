@@ -11,7 +11,8 @@ import {
   CalendarDays,
   CheckCircle2,
   AlertTriangle,
-  ArrowRight
+  ArrowRight,
+  ShieldAlert
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -50,8 +51,16 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         if (groupError || !groupData) throw new Error("Group not found or invalid link.");
         setGroup(groupData);
 
-        // 3. If logged in, check if already a member
+        // 3. If logged in, fetch profile and check if already a member
         if (user) {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+            
+          setUser({ ...user, profile });
+
           const { data: membership } = await supabase
             .from('memberships')
             .select('id')
@@ -190,6 +199,13 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                 </div>
                 <span className="font-bold text-white">{group?.max_members}</span>
               </div>
+              <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
+                <div className="flex items-center gap-2 text-zinc-400 text-sm">
+                  <ShieldAlert className="h-4 w-4" />
+                  <span>Min. Credit Score</span>
+                </div>
+                <span className="font-bold text-emerald-400">{group?.min_credit_score || 0} Points</span>
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -207,23 +223,37 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                 </Link>
               </div>
             ) : user ? (
-              <button 
-                onClick={handleJoin}
-                disabled={isJoining}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-70"
-              >
-                {isJoining ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-                    Joining...
-                  </>
-                ) : (
-                  <>
-                    Accept Invitation
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </button>
+              user.profile?.credit_score < (group?.min_credit_score || 0) ? (
+                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-left">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-red-400 font-bold mb-1">Credit Score Too Low</h4>
+                      <p className="text-red-400/80 text-sm leading-relaxed">
+                        Your Ajo Credit Score is <strong>{user.profile?.credit_score || 50}</strong>. This premium group requires a minimum score of <strong>{group?.min_credit_score}</strong> to join.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button 
+                  onClick={handleJoin}
+                  disabled={isJoining}
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-70"
+                >
+                  {isJoining ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
+                      Joining...
+                    </>
+                  ) : (
+                    <>
+                      Accept Invitation
+                      <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
+                </button>
+              )
             ) : (
               <div className="space-y-3">
                 <button 

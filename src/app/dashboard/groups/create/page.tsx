@@ -29,7 +29,8 @@ export default function CreateGroupPage() {
     contributionAmount: "50000",
     maxMembers: "5",
     frequency: "monthly",
-    adminCommission: "3"
+    adminCommission: "3",
+    minCreditScore: "0"
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -62,6 +63,7 @@ export default function CreateGroupPage() {
           max_members: parseInt(formData.maxMembers),
           frequency: formData.frequency,
           admin_commission_pct: parseInt(formData.adminCommission),
+          min_credit_score: parseInt(formData.minCreditScore) || 0,
           status: 'pending',
           admin_id: user.id // Satisfy the NOT NULL constraint on your database
         })
@@ -238,6 +240,22 @@ export default function CreateGroupPage() {
                       <option value="4">4%</option>
                       <option value="5">5%</option>
                     </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-[#0B3022]">Minimum Credit Score Required</label>
+                  <p className="text-xs text-[#1F2937]/60 mb-2 font-medium">Only members with this score or higher can join. Default is 0.</p>
+                  <div className="relative">
+                    <ShieldCheck className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
+                    <input 
+                      name="minCreditScore"
+                      value={formData.minCreditScore}
+                      onChange={handleChange}
+                      type="number"
+                      min="0"
+                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium"
+                    />
                   </div>
                 </div>
 
