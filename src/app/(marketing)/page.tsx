@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check, Star, X, ShieldAlert, Smartphone, LineChart, Percent, LayoutDashboard, History } from "lucide-react";
 
-const fadeIn = {
+const fadeIn: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -620,7 +620,7 @@ export default function Home() {
                 variants={fadeIn}
                 key={i} 
                 className="bg-[#FDFBF7] p-8 rounded-2xl shadow-md border border-gray-200 flex flex-col justify-between"
-                whileHover={{ y: -5, shadow: "0px 10px 30px rgba(0,0,0,0.05)" }}
+                whileHover={{ y: -5, boxShadow: "0px 10px 30px rgba(0,0,0,0.05)" }}
               >
                 <div>
                   <div className="flex items-center gap-1 mb-6">
