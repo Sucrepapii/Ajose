@@ -6,7 +6,12 @@ import {
   Settings, 
   CheckCircle2,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  AlertTriangle,
+  Landmark,
+  Zap,
+  RefreshCw,
+  Users
 } from "lucide-react";
 import { CopyInviteButton } from "@/components/CopyInviteButton";
 import { RulesModal } from "@/components/RulesModal";
@@ -46,7 +51,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     );
   }
 
-  // Fetch the members of the group, joined with their user profile data
+  // Fetch the members of the group with user details including bank credentials for pass-through transparency
   const { data: members, error: membersError } = await supabase
     .from('memberships')
     .select(`
@@ -59,35 +64,63 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         nickname,
         credit_score,
         bvn_verified,
-        auto_sweep_enabled
+        auto_sweep_enabled,
+        bank_name,
+        account_number,
+        account_name
       )
     `)
     .eq('group_id', groupId)
     .order('joined_at', { ascending: true });
 
   const membersList = members || [];
-  
-  // Fetch contributions for the current cycle
   const currentTurn = group.current_turn || 1; 
 
-  const { data: currentTransactions } = await supabase
+  // Fetch group transactions to track payments and any auto-debit failures (Req 7: members should see if failed too)
+  const { data: groupTransactions } = await supabase
     .from('transactions')
-    .select('user_id')
+    .select('*')
     .eq('group_id', groupId)
-    .eq('cycle_turn', currentTurn)
-    .eq('type', 'contribution');
+    .order('created_at', { ascending: false });
 
-  const paidUserIds = new Set((currentTransactions || []).map(tx => tx.user_id));
+  const txList = groupTransactions || [];
 
-  // The admin just manages the group, they do not contribute or receive payout.
+  // Completed contributions for this turn
+  const paidUserIds = new Set(
+    txList
+      .filter(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'completed')
+      .map(tx => tx.user_id)
+  );
+
+  // Failed member auto-debits for this turn
+  const failedMemberDebits = txList.filter(
+    tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'failed'
+  );
+  const failedMemberUserIds = new Set(failedMemberDebits.map(tx => tx.user_id));
+
+  // Check if Admin payout auto-debit failed (Req 7)
+  const failedAdminDebit = txList.find(
+    tx => tx.status === 'failed' && (tx.type === 'admin_payout_debit' || tx.type === 'payout')
+  );
+
+  // The admin manages the group; contributing members receive rotational turns
   const contributingMembers = membersList.filter(m => m.role !== 'admin');
-  
-  // Basic calculated fields
   const totalPool = group.contribution_amount * contributingMembers.length;
-
   const isAdmin = membersList.some(m => m.user_id === user.id && m.role === 'admin');
+
+  // Admin Profile & Settlement Bank Account Details
+  const adminMembership = membersList.find(m => m.role === 'admin');
+  const adminUser = adminMembership?.users;
+  const adminBankName = adminUser?.bank_name || 'Zenith Bank (Settlement)';
+  const adminRawAcct = adminUser?.account_number || '0248194821';
+  const adminMaskedAccount = adminRawAcct.length >= 6 
+    ? `${adminRawAcct.substring(0, 3)}****${adminRawAcct.substring(adminRawAcct.length - 3)}`
+    : adminRawAcct;
+  const adminAccountHolder = adminUser?.account_name || (
+    adminUser?.first_name ? `${adminUser.first_name} ${adminUser.last_name || ''}`.trim() : 'Group Admin'
+  );
   
-  // Find whose turn it is to get the payout
+  // Turn beneficiary
   const receivingMember = membersList.find(m => m.payout_turn === currentTurn);
   
   let receivingMemberProfileName = 'Pending';
@@ -104,7 +137,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     }
   }
 
-  // Find users who haven't paid this turn
+  // Users who haven't paid yet
   const unpaidUserIds = contributingMembers
     .filter(m => !paidUserIds.has(m.user_id) && m.status === 'active')
     .map(m => m.user_id);
@@ -124,7 +157,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
               <span className={`px-2 py-0.5 text-xs font-bold rounded ${group.status === 'active' ? 'bg-green-500/10 text-green-700 border border-green-500/20' : 'bg-[#C5A059]/10 text-[#0B3022] border border-[#C5A059]/20'}`}>
                 {group.status.toUpperCase()}
               </span>
-              <span className="text-[#1F2937]/70 text-sm font-medium">Admin-Managed</span>
+              <span className="text-[#1F2937]/70 text-sm font-medium">Rotational Savings</span>
               <span className="text-gray-300 text-sm">•</span>
               <span className="text-[#1F2937]/50 text-sm font-mono truncate max-w-[150px]">ID: {groupId}</span>
             </div>
@@ -149,6 +182,31 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         </div>
       </div>
 
+      {/* REQ 7: High-Priority Admin Auto-Debit Disruption Alert (Visible to ALL Members) */}
+      {failedAdminDebit && (
+        <div className="bg-red-50 border-2 border-red-400 rounded-2xl p-6 shadow-sm animate-in zoom-in-95 duration-300 relative overflow-hidden">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+            </div>
+            <div className="space-y-1.5 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-wider bg-red-600 text-white px-2.5 py-0.5 rounded-full">
+                  ⚠️ ADMIN PAYOUT AUTO-DEBIT FAILED
+                </span>
+                <span className="text-xs font-bold text-red-700">Turn {failedAdminDebit.cycle_turn || currentTurn} Payout Disrupted</span>
+              </div>
+              <p className="text-sm font-bold text-red-950">
+                The automated payout debit from Admin's tendered account ({adminBankName} - {adminMaskedAccount}) has failed.
+              </p>
+              <p className="text-xs text-red-800 leading-relaxed font-medium">
+                {failedAdminDebit.description || "The bank returned an insufficient funds or mandate error. Ajo Circle is not a bank and does not hold user funds. Contributions are held in the Admin settlement account and auto-debited to the collector."} All members are notified transparently. The Admin must fund the account and re-trigger auto-payout.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/30 transition-colors group">
@@ -163,7 +221,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         </div>
         <div className="bg-[#0B3022] border border-[#0B3022]/10 shadow-md rounded-2xl p-5 relative overflow-hidden">
           <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#C5A059]/10 rounded-full blur-2xl"></div>
-          <h3 className="text-white/60 text-sm font-bold mb-1 uppercase tracking-wider relative z-10">Collecting Next</h3>
+          <h3 className="text-white/60 text-sm font-bold mb-1 uppercase tracking-wider relative z-10">Collecting Next (Turn {currentTurn})</h3>
           <p className="text-xl font-bold text-white truncate relative z-10">{receivingMemberProfileName}</p>
         </div>
         <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/30 transition-colors group">
@@ -177,26 +235,52 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         <StartCycleClient groupId={groupId} />
       )}
 
-      {/* Escrow & Security Banner */}
-      <div className="bg-[#FDFBF7] border border-gray-200 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-inner relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[#0B3022]/5 rounded-full blur-2xl"></div>
-        <div className="flex gap-4 relative z-10">
-          <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-            <ShieldCheck className="h-6 w-6 text-blue-600" />
+      {/* REQ 7: Admin Tendered Settlement Account & Pass-Through Card (Visible to ALL members) */}
+      <div className="bg-white border border-emerald-500/20 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+          <div className="flex gap-4 items-start">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+              <Landmark className="h-6 w-6 text-emerald-700" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-[#0B3022] font-bold text-base">Admin Tendered Settlement Account</h3>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  failedAdminDebit 
+                    ? 'bg-red-100 text-red-700 border border-red-200' 
+                    : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                }`}>
+                  {failedAdminDebit ? 'MANDATE DISRUPTED' : 'AUTO-DEBIT MANDATE ACTIVE'}
+                </span>
+              </div>
+              <p className="text-[#1F2937]/70 text-xs leading-relaxed font-medium max-w-2xl">
+                Ajo Circle is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn's recipient (minus {group.admin_commission_pct}% admin cut and 2% platform fee).
+              </p>
+              
+              <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">
+                <div>
+                  <span className="text-gray-400 font-medium">Bank: </span>
+                  <span className="font-bold text-[#0B3022]">{adminBankName}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 font-medium">Account: </span>
+                  <span className="font-mono font-bold text-[#0B3022]">{adminMaskedAccount}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 font-medium">Holder: </span>
+                  <span className="font-bold text-[#0B3022]">{adminAccountHolder}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <h3 className="text-[#0B3022] font-bold mb-1">Admin-Managed Escrow Active</h3>
-            <p className="text-[#1F2937]/70 text-sm leading-relaxed font-medium">
-              Funds are managed and disbursed by the Group Admin. The total pool (minus {group.admin_commission_pct}% admin fee and 2% platform fee) is sent directly to the collector's primary account upon payout processing.
-            </p>
+          
+          <div className="shrink-0 flex items-center gap-3">
+            <RulesModal />
           </div>
-        </div>
-        <div className="shrink-0 flex gap-3">
-          <RulesModal />
         </div>
       </div>
 
-      {/* Member List */}
+      {/* Member List Table */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
           <h2 className="text-lg font-bold text-[#0B3022]">Group Roster ({contributingMembers.length}/{group.max_members})</h2>
@@ -211,16 +295,15 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
             <thead>
               <tr className="bg-gray-50 text-[#1F2937]/50 text-xs font-bold uppercase tracking-wider border-b border-gray-200">
                 <th className="px-6 py-4">Member</th>
-                <th className="px-6 py-4">Payment Status</th>
+                <th className="px-6 py-4">Contribution Status</th>
                 <th className="px-6 py-4">Verification Status</th>
                 <th className="px-6 py-4">Standing</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {membersList.map((m, i) => {
+              {membersList.map((m) => {
                 const userProfile = m.users;
                 
-                // Determine the display name: Nickname > First Last > Phone > ID
                 let displayName = `User-${m.user_id.substring(0, 4)}`;
                 if (userProfile?.nickname) {
                   displayName = userProfile.nickname;
@@ -230,6 +313,8 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                   displayName = userProfile.phone;
                 }
                 const isTurn = receivingMember?.id === m.id;
+                const isPaid = paidUserIds.has(m.user_id);
+                const hasFailedDebit = failedMemberUserIds.has(m.user_id);
 
                 return (
                   <tr key={m.id} className={`transition-colors ${m.status === 'defaulted' ? 'bg-red-50' : isTurn ? 'bg-[#FDFBF7]' : 'hover:bg-gray-50'}`}>
@@ -261,11 +346,29 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                     </td>
                     <td className="px-6 py-4">
                       {m.role === 'admin' ? (
-                        <span className="text-sm text-[#C5A059] font-bold">Admin (No Payout)</span>
-                      ) : paidUserIds.has(m.user_id) ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
-                          <CheckCircle2 className="h-4 w-4 text-green-600" /> Paid
+                        <span className="text-xs text-[#C5A059] font-bold bg-[#0B3022] text-white px-2.5 py-1 rounded-full">
+                          Admin Settlement Mandate
                         </span>
+                      ) : isPaid ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
+                          <CheckCircle2 className="h-4 w-4 text-green-600" /> Paid (Auto-Debit)
+                        </span>
+                      ) : hasFailedDebit ? (
+                        <div className="space-y-1">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-100 border border-red-200 px-3 py-1 rounded-full">
+                            <AlertCircle className="h-3.5 w-3.5 text-red-600" /> Auto-Debit Failed
+                          </span>
+                          {m.user_id === user.id && group.status === 'active' && (
+                            <div>
+                              <MakeContributionClient 
+                                groupId={groupId} 
+                                userId={user.id} 
+                                amount={group.contribution_amount} 
+                                currentTurn={currentTurn} 
+                              />
+                            </div>
+                          )}
+                        </div>
                       ) : m.user_id === user.id && group.status === 'active' ? (
                         <MakeContributionClient 
                           groupId={groupId} 
@@ -274,13 +377,15 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                           currentTurn={currentTurn} 
                         />
                       ) : (
-                        <span className="text-sm text-[#1F2937]/50 font-bold uppercase tracking-wider">Pending</span>
+                        <span className="text-xs text-[#1F2937]/50 font-bold uppercase tracking-wider">
+                          Pending Sweep
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       {userProfile?.bvn_verified ? (
                         <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> Verified
+                          <CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> Verified BVN
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-full">
@@ -300,7 +405,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
 
                         {/* Admin Flagging Action */}
                         {isAdmin && m.role !== 'admin' && (
-                          (!paidUserIds.has(m.user_id) && group.status === 'active' || m.status === 'defaulted') && (
+                          (!isPaid && group.status === 'active' || m.status === 'defaulted') && (
                             <FlagMemberClient 
                               membershipId={m.id} 
                               currentStatus={m.status} 

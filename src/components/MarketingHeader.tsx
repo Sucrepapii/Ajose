@@ -20,11 +20,11 @@ export async function MarketingHeader() {
         <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Ajo <span className="text-[#C5A059]">Circle</span></span>
       </Link>
       <nav className="flex items-center gap-8">
-        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#features">
-          Features
-        </Link>
         <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#how-it-works">
           How it Works
+        </Link>
+        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#features">
+          Features
         </Link>
         
         {user ? (

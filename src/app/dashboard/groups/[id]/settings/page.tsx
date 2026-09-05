@@ -39,7 +39,10 @@ export default async function GroupSettingsPage(props: { params: Promise<{ id: s
         nickname,
         credit_score,
         bvn_verified,
-        auto_sweep_enabled
+        auto_sweep_enabled,
+        bank_name,
+        account_number,
+        account_name
       )
     `)
     .eq('group_id', groupId)

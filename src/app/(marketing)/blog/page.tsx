@@ -11,7 +11,7 @@ const POSTS = [
   {
     id: 1,
     title: "The Future of Cooperative Savings in Nigeria",
-    excerpt: "How open banking and digital identities are transforming the traditional ROSCA model from informal cash groups into secure, scalable financial instruments.",
+    excerpt: "How open banking and digital identities are transforming the traditional rotational savings group model from informal cash groups into secure, scalable financial instruments.",
     date: "Oct 12, 2026",
     category: "Industry",
     readTime: "5 min read",

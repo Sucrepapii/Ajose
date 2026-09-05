@@ -20,7 +20,7 @@ export function MarketingFooter() {
               <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Ajo <span className="text-[#C5A059]">Circle</span></span>
             </Link>
             <p className="text-gray-300 leading-relaxed max-w-sm">
-              The modern operating system for Rotating Savings and Credit Associations (ROSCAs). Built for trust, transparency, and accountability.
+              The modern operating system for Rotational savings groups. Built for trust, transparency, and accountability.
             </p>
           </div>
 

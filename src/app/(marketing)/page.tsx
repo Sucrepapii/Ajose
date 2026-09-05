@@ -68,7 +68,7 @@ export default function Home() {
                 variants={fadeIn}
                 className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl"
               >
-                Managing your Ajo group just got world-class. Ditch the spreadsheets and WhatsApp groups. Ajo Circle brings institutional-grade tracking and accountability to your ROSCA.
+                Managing your Ajo group just got world-class. Ditch the spreadsheets and WhatsApp groups. Ajo Circle brings institutional-grade tracking and accountability to your rotational savings group.
               </motion.p>
               
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4">
@@ -159,7 +159,63 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Value Proposition Section */}
+      {/* Process Section (How Ajo Circle Works) */}
+      <section id="how-it-works" className="w-full py-24 md:py-32 bg-[#FDFBF7] relative z-10 border-b border-gray-200 overflow-hidden">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="container mx-auto px-6 lg:px-12"
+        >
+          <motion.div variants={fadeIn} className="text-center mb-20">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
+              How Ajo Circle Works
+            </h2>
+            <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
+              Four simple steps to secure, transparent rotating savings.
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto relative">
+            {/* Animated Connecting Line */}
+            <div className="hidden md:block absolute top-10 left-[12%] right-[12%] h-1 bg-gray-100 z-0 overflow-hidden">
+              <motion.div 
+                initial={{ x: "-100%" }}
+                whileInView={{ x: "0%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+                className="absolute top-0 left-0 h-full bg-[#C5A059] w-full"
+              />
+            </div>
+            
+            {[
+              { icon: Users, title: "Create Group", desc: "Set the contribution rules and invite trusted peers." },
+              { icon: CheckSquare, title: "Members Join", desc: "System assigns turns and locks the roster when active." },
+              { icon: CreditCard, title: "Contribute", desc: "Members pay their share directly to the Admin." },
+              { icon: Landmark, title: "Payout", desc: "Admin routes the pooled funds to the receiving member." }
+            ].map((step, i) => (
+              <motion.div 
+                variants={fadeIn} 
+                key={i} 
+                className="relative z-10 flex flex-col items-center text-center group"
+                whileHover={{ y: -10 }}
+              >
+                <div className="w-20 h-20 rounded-full bg-[#FDFBF7] border-4 border-[#C5A059] flex items-center justify-center mb-6 shadow-md z-10 group-hover:bg-[#C5A059] group-hover:border-[#0B3022] transition-colors duration-300">
+                  <step.icon className="h-8 w-8 text-[#0B3022] group-hover:text-white transition-colors duration-300" />
+                </div>
+                <div className="bg-[#F4F1EA] rounded-lg p-5 border border-gray-100 w-full h-full shadow-sm group-hover:shadow-lg transition-shadow duration-300">
+                  <h3 className="text-sm font-bold text-[#C5A059] mb-1">STEP {i + 1}</h3>
+                  <h4 className="text-xl font-bold text-[#0B3022] mb-3">{step.title}</h4>
+                  <p className="text-[#1F2937]/80 text-sm leading-relaxed">{step.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Value Proposition Section (Engineered for Trust & Transparency) */}
       <section id="features" className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-b border-gray-200 overflow-hidden">
         <motion.div 
           initial="hidden"
@@ -278,62 +334,6 @@ export default function Home() {
                 </AnimatePresence>
               </div>
             </motion.div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Process Section */}
-      <section id="how-it-works" className="w-full py-24 md:py-32 bg-[#FDFBF7] relative z-10 overflow-hidden">
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-          className="container mx-auto px-6 lg:px-12"
-        >
-          <motion.div variants={fadeIn} className="text-center mb-20">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
-              How Ajo Circle Works
-            </h2>
-            <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
-              Four simple steps to secure, transparent rotating savings.
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto relative">
-            {/* Animated Connecting Line */}
-            <div className="hidden md:block absolute top-10 left-[12%] right-[12%] h-1 bg-gray-100 z-0 overflow-hidden">
-              <motion.div 
-                initial={{ x: "-100%" }}
-                whileInView={{ x: "0%" }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
-                className="absolute top-0 left-0 h-full bg-[#C5A059] w-full"
-              />
-            </div>
-            
-            {[
-              { icon: Users, title: "Create Group", desc: "Set the contribution rules and invite trusted peers." },
-              { icon: CheckSquare, title: "Members Join", desc: "System assigns turns and locks the roster when active." },
-              { icon: CreditCard, title: "Contribute", desc: "Members pay their share directly to the Admin." },
-              { icon: Landmark, title: "Payout", desc: "Admin routes the pooled funds to the receiving member." }
-            ].map((step, i) => (
-              <motion.div 
-                variants={fadeIn} 
-                key={i} 
-                className="relative z-10 flex flex-col items-center text-center group"
-                whileHover={{ y: -10 }}
-              >
-                <div className="w-20 h-20 rounded-full bg-[#FDFBF7] border-4 border-[#C5A059] flex items-center justify-center mb-6 shadow-md z-10 group-hover:bg-[#C5A059] group-hover:border-[#0B3022] transition-colors duration-300">
-                  <step.icon className="h-8 w-8 text-[#0B3022] group-hover:text-white transition-colors duration-300" />
-                </div>
-                <div className="bg-[#F4F1EA] rounded-lg p-5 border border-gray-100 w-full h-full shadow-sm group-hover:shadow-lg transition-shadow duration-300">
-                  <h3 className="text-sm font-bold text-[#C5A059] mb-1">STEP {i + 1}</h3>
-                  <h4 className="text-xl font-bold text-[#0B3022] mb-3">{step.title}</h4>
-                  <p className="text-[#1F2937]/80 text-sm leading-relaxed">{step.desc}</p>
-                </div>
-              </motion.div>
-            ))}
           </div>
         </motion.div>
       </section>

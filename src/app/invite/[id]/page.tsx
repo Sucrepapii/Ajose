@@ -12,7 +12,11 @@ import {
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
-  ShieldAlert
+  ShieldAlert,
+  FileText,
+  X,
+  ExternalLink,
+  ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,6 +37,8 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
   const [group, setGroup] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [alreadyMember, setAlreadyMember] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -83,6 +89,10 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
 
   const handleJoin = async () => {
     if (!user) return;
+    if (!acceptedTerms) {
+      toast.error("Please agree to the Terms of Service and Direct Debit Mandate to proceed.");
+      return;
+    }
     setIsJoining(true);
     
     try {
@@ -236,23 +246,69 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                   </div>
                 </div>
               ) : (
-                <button 
-                  onClick={handleJoin}
-                  disabled={isJoining}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-70"
-                >
-                  {isJoining ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-                      Joining...
-                    </>
-                  ) : (
-                    <>
-                      Accept Invitation
-                      <ArrowRight className="h-4 w-4" />
-                    </>
+                <div className="space-y-5 text-left">
+                  {/* Terms & Conditions Acceptance Box */}
+                  <div className="bg-zinc-950/80 border border-zinc-800 rounded-xl p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <input 
+                        type="checkbox"
+                        id="termsAgreement"
+                        checked={acceptedTerms}
+                        onChange={(e) => setAcceptedTerms(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
+                      />
+                      <label htmlFor="termsAgreement" className="text-xs text-zinc-300 leading-relaxed cursor-pointer select-none">
+                        I confirm my participation in <strong>{group?.name || 'this group'}</strong>. I accept the{" "}
+                        <button 
+                          type="button"
+                          onClick={() => setShowTermsModal(true)}
+                          className="text-emerald-400 font-bold underline hover:text-emerald-300 transition-colors"
+                        >
+                          Terms & Conditions
+                        </button>{" "}
+                        and authorize the automated direct debit mandate for my scheduled turns.
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800/80">
+                      <span className="flex items-center gap-1">
+                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                        CBN-Regulated PSSP Model
+                      </span>
+                      <button 
+                        type="button"
+                        onClick={() => setShowTermsModal(true)}
+                        className="text-zinc-400 hover:text-white transition-colors"
+                      >
+                        Read terms &rarr;
+                      </button>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={handleJoin}
+                    disabled={!acceptedTerms || isJoining}
+                    className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-zinc-950 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:shadow-none"
+                  >
+                    {isJoining ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
+                        Joining...
+                      </>
+                    ) : (
+                      <>
+                        Accept Invitation & Join
+                        <ArrowRight className="h-4 w-4" />
+                      </>
+                    )}
+                  </button>
+                  
+                  {!acceptedTerms && (
+                    <p className="text-[11px] text-center text-zinc-500">
+                      You must agree to the Terms & Conditions and Mandate to join.
+                    </p>
                   )}
-                </button>
+                </div>
               )
             ) : (
               <div className="space-y-3">
@@ -277,6 +333,106 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
           </div>
         </div>
       </main>
+
+      {/* Terms & Conditions Review Modal */}
+      {showTermsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-zinc-800 bg-zinc-900/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Terms of Service & Mandate</h2>
+                  <p className="text-xs text-zinc-400">Rotational Savings Agreement</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowTermsModal(false)}
+                className="text-zinc-500 hover:text-white transition-colors p-2 rounded-lg hover:bg-zinc-900"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-5 text-xs text-zinc-300 leading-relaxed divide-y divide-zinc-900">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <ShieldCheck className="h-4 w-4" />
+                  1. Non-Custodial Direct Pass-Through Architecture
+                </div>
+                <p>
+                  Ajo Circle operates under Nigerian payment processing frameworks and is <strong>not a commercial deposit bank</strong>. We do not hold, leverage, or escrow pooled funds. All member contributions pass directly through the Group Admin's designated settlement bank account and are automatically debited directly to the receiving member on their scheduled payout turn.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center gap-2 text-white font-bold text-sm">
+                  <Wallet className="h-4 w-4 text-emerald-400" />
+                  2. Continuous Direct Debit Mandate
+                </div>
+                <p>
+                  By joining this Ajo, you authorize an automated direct debit mandate on your linked primary bank account. On each contribution due date, the agreed amount of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> will be automatically swept into the Admin's settlement account.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
+                  <AlertTriangle className="h-4 w-4" />
+                  3. Default Remedies & BVN Reporting
+                </div>
+                <p>
+                  Failure to fund your account for an automated debit or attempting to evade contribution after receiving a rotational payout will result in immediate blacklisting, automated deduction retries, reporting of your BVN/NIN to licensed Credit Bureaus, and formal debt recovery procedures.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center gap-2 text-white font-bold text-sm">
+                  <Users className="h-4 w-4 text-emerald-400" />
+                  4. Peer Transparency & Admin Accountability
+                </div>
+                <p>
+                  The Group Admin also tenders an account governed by an automated debit mandate for recipient payouts. If an Admin payout debit fails, all members will be immediately notified in the group ledger.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-zinc-800 bg-zinc-900/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <Link 
+                href="/terms" 
+                target="_blank"
+                className="text-xs text-zinc-400 hover:text-emerald-400 inline-flex items-center gap-1 transition-colors"
+              >
+                Open Full Terms Agreement <ExternalLink className="h-3 w-3" />
+              </Link>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button 
+                  onClick={() => setShowTermsModal(false)}
+                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-lg text-xs transition-colors flex-1 sm:flex-none"
+                >
+                  Close
+                </button>
+                <button 
+                  onClick={() => {
+                    setAcceptedTerms(true);
+                    setShowTermsModal(false);
+                    toast.success("Terms accepted!");
+                  }}
+                  className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-lg text-xs transition-colors flex-1 sm:flex-none shadow-sm"
+                >
+                  Accept & Continue
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
