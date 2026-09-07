@@ -9,7 +9,7 @@ export function MarketingFooter() {
           
           {/* Column 1 */}
           <div className="col-span-1 lg:col-span-2">
-            <Link className="flex items-center gap-3 mb-6 group hover:opacity-90 transition-opacity" href="/">
+            <Link className="flex items-center gap-3 mb-3 group hover:opacity-90 transition-opacity" href="/">
               <Image 
                 src="/ajose-rings-logo.png" 
                 alt="Àjọṣe Logo" 
@@ -19,6 +19,9 @@ export function MarketingFooter() {
               />
               <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
             </Link>
+            <p className="text-[#C5A059] font-medium text-sm mb-4 italic">
+              &ldquo;Saving together, growing together.&rdquo;
+            </p>
             <p className="text-gray-300 leading-relaxed max-w-sm">
               The modern operating system for Rotational savings groups. Built for trust, transparency, and accountability.
             </p>

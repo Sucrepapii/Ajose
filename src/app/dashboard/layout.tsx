@@ -49,16 +49,26 @@ export default async function DashboardLayout({
       {/* Sidebar for Desktop */}
       <aside className="w-64 bg-[#0B3022] border-r border-[#0B3022]/10 hidden md:flex flex-col shadow-xl z-20">
         <div className="h-20 flex items-center px-6 border-b border-white/10">
-          <Link className="flex items-center gap-3 group hover:opacity-90 transition-opacity" href="/">
-            <Image 
-              src="/ajose-rings-logo.png" 
-              alt="Àjọṣe Logo" 
-              width={32} 
-              height={32} 
-              className="object-contain w-auto h-8 drop-shadow-sm animate-spin-slow"
-            />
-            <span className="font-bold text-xl text-white font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
-          </Link>
+          <div className="relative">
+            <Link className="flex items-center gap-3 group relative hover:opacity-90 transition-opacity py-1" href="/">
+              <Image 
+                src="/ajose-rings-logo.png" 
+                alt="Àjọṣe Logo" 
+                width={32} 
+                height={32} 
+                className="object-contain w-auto h-8 drop-shadow-sm animate-spin-slow"
+              />
+              <span className="font-bold text-xl text-white font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
+
+              {/* Pop-out motto on hover */}
+              <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out z-50 whitespace-nowrap">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#061B13]/95 backdrop-blur-md border border-[#C5A059]/60 shadow-2xl text-[11px] font-medium tracking-wide text-[#F3E5C8]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse"></span>
+                  Saving together, growing together.
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
         
         <SidebarNav />
