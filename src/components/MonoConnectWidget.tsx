@@ -92,7 +92,7 @@ export function MonoConnectWidget({ userId, isVerified }: { userId: string, isVe
           <div>
             <h3 className="text-lg font-bold text-[#0B3022] mb-1">Link Your Bank Account</h3>
             <p className="text-sm text-[#1F2937]/70 max-w-xl leading-relaxed font-medium">
-              Ajo Circle uses Mono Open-Banking to securely verify your BVN and establish a direct debit mandate for your scheduled contributions. We never see or store your login credentials.
+              Àjọṣe uses Mono Open-Banking to securely verify your BVN and establish a direct debit mandate for your scheduled contributions. We never see or store your login credentials.
             </p>
           </div>
         </div>

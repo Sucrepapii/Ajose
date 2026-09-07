@@ -11,7 +11,11 @@ import {
   Landmark,
   Zap,
   RefreshCw,
-  Users
+  Users,
+  Clock,
+  Sparkles,
+  Building2,
+  EyeOff
 } from "lucide-react";
 import { CopyInviteButton } from "@/components/CopyInviteButton";
 import { RulesModal } from "@/components/RulesModal";
@@ -20,6 +24,7 @@ import { StartCycleClient } from "@/components/StartCycleClient";
 import { MakeContributionClient } from "@/components/MakeContributionClient";
 import { FlagMemberClient } from "@/components/FlagMemberClient";
 import { SendRemindersClient } from "@/components/SendRemindersClient";
+import { ConfirmTransferClient } from "@/components/ConfirmTransferClient";
 
 export default async function GroupDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -91,6 +96,12 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
       .filter(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'completed')
       .map(tx => tx.user_id)
   );
+
+  // Pending manual bank transfers awaiting admin confirmation
+  const pendingTransactions = txList.filter(
+    tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'pending_confirmation'
+  );
+  const pendingUserIds = new Set(pendingTransactions.map(tx => tx.user_id));
 
   // Failed member auto-debits for this turn
   const failedMemberDebits = txList.filter(
@@ -182,6 +193,25 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         </div>
       </div>
 
+      {/* Pending Manual Bank Transfers Alert for Admin */}
+      {isAdmin && pendingTransactions.length > 0 && (
+        <div className="bg-amber-50 border border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs animate-in fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
+              <Sparkles className="h-5 w-5 text-amber-700" />
+            </div>
+            <div>
+              <h4 className="font-bold text-[#0B3022] text-sm">
+                {pendingTransactions.length} Manual Bank Transfer{pendingTransactions.length > 1 ? 's' : ''} Awaiting Review
+              </h4>
+              <p className="text-xs text-amber-800">
+                Members reported bank transfers for Turn {currentTurn}. Mono is ready to match deposits on your bank statement.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* REQ 7: High-Priority Admin Auto-Debit Disruption Alert (Visible to ALL Members) */}
       {failedAdminDebit && (
         <div className="bg-red-50 border-2 border-red-400 rounded-2xl p-6 shadow-sm animate-in zoom-in-95 duration-300 relative overflow-hidden">
@@ -200,7 +230,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                 The automated payout debit from Admin's tendered account ({adminBankName} - {adminMaskedAccount}) has failed.
               </p>
               <p className="text-xs text-red-800 leading-relaxed font-medium">
-                {failedAdminDebit.description || "The bank returned an insufficient funds or mandate error. Ajo Circle is not a bank and does not hold user funds. Contributions are held in the Admin settlement account and auto-debited to the collector."} All members are notified transparently. The Admin must fund the account and re-trigger auto-payout.
+                {failedAdminDebit.description || "The bank returned an insufficient funds or mandate error. Àjọṣe is not a bank and does not hold user funds. Contributions are held in the Admin settlement account and auto-debited to the collector."} All members are notified transparently. The Admin must fund the account and re-trigger auto-payout.
               </p>
             </div>
           </div>
@@ -254,7 +284,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                 </span>
               </div>
               <p className="text-[#1F2937]/70 text-xs leading-relaxed font-medium max-w-2xl">
-                Ajo Circle is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn's recipient (minus {group.admin_commission_pct}% admin cut and 2% platform fee).
+                Àjọṣe is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn's recipient (minus {group.admin_commission_pct}% admin cut and 2% platform fee).
               </p>
               
               <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">
@@ -304,14 +334,26 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
               {membersList.map((m) => {
                 const userProfile = m.users;
                 
-                let displayName = `User-${m.user_id.substring(0, 4)}`;
-                if (userProfile?.nickname) {
-                  displayName = userProfile.nickname;
-                } else if (userProfile?.first_name || userProfile?.last_name) {
-                  displayName = `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim();
-                } else if (userProfile?.phone) {
-                  displayName = userProfile.phone;
+                const realName = `${userProfile?.first_name || ''} ${userProfile?.last_name || ''}`.trim() || `User-${m.user_id.substring(0, 4)}`;
+                const hasAlias = Boolean(userProfile?.nickname);
+                const isSelf = m.user_id === user.id;
+
+                let displayName = realName;
+                let showAnonymousBadge = false;
+                let adminAliasNote = "";
+
+                if (hasAlias) {
+                  if (isAdmin) {
+                    displayName = realName;
+                    adminAliasNote = userProfile?.nickname || "";
+                  } else if (isSelf) {
+                    displayName = `${realName} (${userProfile?.nickname})`;
+                  } else {
+                    displayName = userProfile?.nickname || `Saver #${m.payout_turn}`;
+                    showAnonymousBadge = true;
+                  }
                 }
+
                 const isTurn = receivingMember?.id === m.id;
                 const isPaid = paidUserIds.has(m.user_id);
                 const hasFailedDebit = failedMemberUserIds.has(m.user_id);
@@ -324,7 +366,19 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                           {displayName.charAt(0)}
                         </div>
                         <div>
-                          <p className={`text-sm font-bold ${m.status === 'defaulted' ? 'text-red-700' : 'text-[#0B3022]'}`}>{displayName}</p>
+                          <div className="flex items-center gap-2">
+                            <p className={`text-sm font-bold ${m.status === 'defaulted' ? 'text-red-700' : 'text-[#0B3022]'}`}>{displayName}</p>
+                            {showAnonymousBadge && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                                <EyeOff className="h-2.5 w-2.5" /> Anonymous
+                              </span>
+                            )}
+                            {adminAliasNote && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
+                                Alias: {adminAliasNote}
+                              </span>
+                            )}
+                          </div>
                           {isTurn && (
                             <div className="flex items-center gap-3 mt-1.5">
                               <p className="text-xs text-[#C5A059] font-bold bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded">
@@ -345,42 +399,121 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {m.role === 'admin' ? (
-                        <span className="text-xs text-[#C5A059] font-bold bg-[#0B3022] text-white px-2.5 py-1 rounded-full">
-                          Admin Settlement Mandate
-                        </span>
-                      ) : isPaid ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
-                          <CheckCircle2 className="h-4 w-4 text-green-600" /> Paid (Auto-Debit)
-                        </span>
-                      ) : hasFailedDebit ? (
-                        <div className="space-y-1">
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-100 border border-red-200 px-3 py-1 rounded-full">
-                            <AlertCircle className="h-3.5 w-3.5 text-red-600" /> Auto-Debit Failed
-                          </span>
-                          {m.user_id === user.id && group.status === 'active' && (
-                            <div>
-                              <MakeContributionClient 
-                                groupId={groupId} 
-                                userId={user.id} 
-                                amount={group.contribution_amount} 
-                                currentTurn={currentTurn} 
-                              />
+                      {(() => {
+                        const userPendingTx = pendingTransactions.find(tx => tx.user_id === m.user_id);
+                        const isPending = Boolean(userPendingTx);
+                        const userCompletedTx = txList.find(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'completed' && tx.user_id === m.user_id);
+                        const isCdlCovered = userCompletedTx?.description?.toLowerCase().includes('credit direct') || userCompletedTx?.description?.toLowerCase().includes('cdl');
+                        const isManualPaid = userCompletedTx?.description?.toLowerCase().includes('manual') || userCompletedTx?.description?.toLowerCase().includes('mono verified');
+
+                        if (m.role === 'admin') {
+                          return (
+                            <span className="text-xs text-[#C5A059] font-bold bg-[#0B3022] text-white px-2.5 py-1 rounded-full">
+                              Admin Settlement Mandate
+                            </span>
+                          );
+                        }
+
+                        if (isCdlCovered) {
+                          return (
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-900 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-full">
+                              <Building2 className="h-3.5 w-3.5 text-indigo-600" /> Advanced by Credit Direct (CDL)
+                            </span>
+                          );
+                        }
+
+                        if (isPaid) {
+                          return (
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
+                              <CheckCircle2 className="h-4 w-4 text-green-600" /> {isManualPaid ? "Paid (Manual Transfer)" : "Paid (Auto-Debit)"}
+                            </span>
+                          );
+                        }
+
+                        if (isPending) {
+                          return (
+                            <div className="space-y-1.5">
+                              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-100 border border-amber-300 px-3 py-1 rounded-full">
+                                <Clock className="h-3.5 w-3.5 text-amber-600 animate-spin" /> Transfer Awaiting Review
+                              </span>
+                              {isAdmin && userPendingTx && (
+                                <div>
+                                  <ConfirmTransferClient 
+                                    transaction={userPendingTx}
+                                    groupId={groupId}
+                                    currentTurn={currentTurn}
+                                    memberName={displayName}
+                                    adminBankName={adminBankName}
+                                  />
+                                </div>
+                              )}
+                              {!isAdmin && m.user_id === user.id && (
+                                <div>
+                                  <MakeContributionClient 
+                                    groupId={groupId} 
+                                    userId={user.id} 
+                                    amount={group.contribution_amount} 
+                                    currentTurn={currentTurn} 
+                                    adminBankDetails={{
+                                      bankName: adminBankName,
+                                      accountNumber: adminRawAcct,
+                                      accountHolder: adminAccountHolder
+                                    }}
+                                    pendingTransaction={userPendingTx}
+                                  />
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      ) : m.user_id === user.id && group.status === 'active' ? (
-                        <MakeContributionClient 
-                          groupId={groupId} 
-                          userId={user.id} 
-                          amount={group.contribution_amount} 
-                          currentTurn={currentTurn} 
-                        />
-                      ) : (
-                        <span className="text-xs text-[#1F2937]/50 font-bold uppercase tracking-wider">
-                          Pending Sweep
-                        </span>
-                      )}
+                          );
+                        }
+
+                        if (hasFailedDebit) {
+                          return (
+                            <div className="space-y-1.5">
+                              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-100 border border-red-200 px-3 py-1 rounded-full">
+                                <AlertCircle className="h-3.5 w-3.5 text-red-600" /> Auto-Debit Failed
+                              </span>
+                              {m.user_id === user.id && group.status === 'active' && (
+                                <div>
+                                  <MakeContributionClient 
+                                    groupId={groupId} 
+                                    userId={user.id} 
+                                    amount={group.contribution_amount} 
+                                    currentTurn={currentTurn} 
+                                    adminBankDetails={{
+                                      bankName: adminBankName,
+                                      accountNumber: adminRawAcct,
+                                      accountHolder: adminAccountHolder
+                                    }}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        }
+
+                        if (m.user_id === user.id && group.status === 'active') {
+                          return (
+                            <MakeContributionClient 
+                              groupId={groupId} 
+                              userId={user.id} 
+                              amount={group.contribution_amount} 
+                              currentTurn={currentTurn} 
+                              adminBankDetails={{
+                                bankName: adminBankName,
+                                accountNumber: adminRawAcct,
+                                accountHolder: adminAccountHolder
+                              }}
+                            />
+                          );
+                        }
+
+                        return (
+                          <span className="text-xs text-[#1F2937]/50 font-bold uppercase tracking-wider">
+                            Pending Sweep
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4">
                       {userProfile?.bvn_verified ? (

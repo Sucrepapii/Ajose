@@ -9,7 +9,7 @@ export default function PrivacyPolicyPage() {
 
         <div className="prose prose-lg max-w-none text-[#1F2937]/90 marker:text-[#0B3022]">
           <p className="lead font-medium">
-            This Privacy Policy sets out the statutory and operational framework under which [Ajo Circle Limited] ("Company", "We", "Us") collects, processes, stores, and transfers your personal and financial data. We are committed to strict compliance with the Nigeria Data Protection Act (NDPA) 2023 and the guidelines established by the Nigeria Data Protection Commission (NDPC).
+            This Privacy Policy sets out the statutory and operational framework under which [Àjọṣe Limited] ("Company", "We", "Us") collects, processes, stores, and transfers your personal and financial data. We are committed to strict compliance with the Nigeria Data Protection Act (NDPA) 2023 and the guidelines established by the Nigeria Data Protection Commission (NDPC).
           </p>
           <p className="font-semibold mt-4">
             Data Protection Officer (DPO): <a href="mailto:[Insert Email]" className="text-[#C5A059] hover:underline">[Insert Email]</a>

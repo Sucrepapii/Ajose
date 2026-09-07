@@ -2,8 +2,8 @@ import { UserPlus, Shield, Users, ArrowRightLeft, CheckCircle2 } from "lucide-re
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How It Works | Ajo Circle",
-  description: "Learn how to use Ajo Circle to create, join, and manage your cooperative savings groups with complete transparency and security.",
+  title: "How It Works | Àjọṣe",
+  description: "Learn how to use Àjọṣe to create, join, and manage your cooperative savings groups with complete transparency and security.",
 };
 
 export default function HowItWorksPage() {
@@ -11,7 +11,7 @@ export default function HowItWorksPage() {
     {
       icon: <UserPlus className="h-6 w-6 text-white" />,
       title: "1. Create an Account",
-      description: "Sign up and create your secure Ajo Circle profile in less than 2 minutes.",
+      description: "Sign up and create your secure Àjọṣe profile in less than 2 minutes.",
       align: "right"
     },
     {
@@ -47,7 +47,7 @@ export default function HowItWorksPage() {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#C5A059]/20 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2"></div>
         <div className="container mx-auto px-6 relative z-10 text-center">
           <h1 className="text-4xl md:text-6xl font-black text-white mb-6 font-serif">
-            How <span className="text-[#C5A059]">Ajo Circle</span> Works
+            How <span className="text-[#C5A059]">Àjọṣe</span> Works
           </h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto font-medium">
             We've digitized the traditional African cooperative savings model, adding bank-grade security and complete automation.

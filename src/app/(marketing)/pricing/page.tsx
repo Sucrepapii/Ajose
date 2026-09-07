@@ -3,8 +3,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pricing | Ajo Circle",
-  description: "Simple, transparent pricing. Ajo Circle is free for group members with a small platform fee for administrators.",
+  title: "Pricing | Àjọṣe",
+  description: "Simple, transparent pricing. Àjọṣe is free for group members with a small platform fee for administrators.",
 };
 
 export default function PricingPage() {
@@ -18,7 +18,7 @@ export default function PricingPage() {
             Simple, Transparent <span className="text-[#C5A059]">Pricing</span>
           </h1>
           <p className="text-xl text-[#1F2937]/80 leading-relaxed max-w-2xl mx-auto font-medium">
-            Ajo Circle is completely free for group members. We only charge a small flat fee to the group administrator upon successful payouts.
+            Àjọṣe is completely free for group members. We only charge a small flat fee to the group administrator upon successful payouts.
           </p>
         </div>
 

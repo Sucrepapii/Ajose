@@ -21,7 +21,7 @@ export default async function VerifyPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#0B3022] tracking-tight mb-2">Identity & Bank Verification</h1>
         <p className="text-[#1F2937]/70 font-medium">
-          Ajo Circle requires identity verification and a continuous direct debit mandate to participate in cycles. 
+          Àjọṣe requires identity verification and a continuous direct debit mandate to participate in cycles. 
           Connect your bank securely via Mono to get started.
         </p>
       </div>

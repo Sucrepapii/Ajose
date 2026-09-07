@@ -11,11 +11,11 @@ export default function Loading() {
           {/* Inner pulsating logo image */}
           <div className="animate-pulse flex items-center justify-center z-10">
             <Image 
-              src="/logo.png" 
-              alt="Ajo Circle Loading" 
+              src="/ajose-rings-logo.png" 
+              alt="Àjọṣe Loading" 
               width={48} 
               height={48} 
-              className="object-contain"
+              className="object-contain drop-shadow-md animate-spin-slow"
             />
           </div>
         </div>

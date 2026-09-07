@@ -58,7 +58,7 @@ export function VerifyIdentityClient({
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">Identity Verified</h2>
         <p className="text-emerald-400/80 mb-6 max-w-md mx-auto">
-          Your identity has been successfully verified. You now have full access to Ajo Circle's trust-based features and a green verified badge next to your name.
+          Your identity has been successfully verified. You now have full access to Àjọṣe's trust-based features and a green verified badge next to your name.
         </p>
       </div>
     );

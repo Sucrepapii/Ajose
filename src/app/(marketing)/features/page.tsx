@@ -2,8 +2,8 @@ import { ShieldCheck, Zap, Repeat, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Features | Ajo Circle",
-  description: "Discover the powerful features of Ajo Circle that make cooperative savings secure, automated, and effortless.",
+  title: "Features | Àjọṣe",
+  description: "Discover the powerful features of Àjọṣe that make cooperative savings secure, automated, and effortless.",
 };
 
 export default function FeaturesPage() {
@@ -20,7 +20,7 @@ export default function FeaturesPage() {
             Built for <span className="text-[#C5A059]">Trust</span>. <br/> Engineered for <span className="text-[#C5A059]">Scale</span>.
           </h1>
           <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
-            Ajo Circle combines bank-grade open finance integrations with intuitive tools to completely automate and secure your savings groups.
+            Àjọṣe combines bank-grade open finance integrations with intuitive tools to completely automate and secure your savings groups.
           </p>
         </div>
       </section>
@@ -60,7 +60,7 @@ export default function FeaturesPage() {
               <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-8 border border-gray-100">
                 <Repeat className="h-8 w-8 text-[#0B3022]" />
               </div>
-              <h3 className="text-3xl font-black text-[#0B3022] mb-4">Ajo Circle Credit Score</h3>
+              <h3 className="text-3xl font-black text-[#0B3022] mb-4">Àjọṣe Credit Score</h3>
               <p className="text-[#1F2937]/80 text-lg leading-relaxed font-medium">
                 We track every successful payment and default across the platform to generate a universal credit score. Admins can restrict their groups to only allow members with high trust scores.
               </p>

@@ -9,7 +9,7 @@ export default function CookiePolicyPage() {
 
         <div className="prose prose-lg max-w-none text-[#1F2937]/90 marker:text-[#0B3022]">
           <p className="lead font-medium">
-            This Cookie Policy details how [Ajo Circle Limited] ("We", "Us") employs cookies and tracking technologies across our digital infrastructure in compliance with the Nigeria Data Protection Act (NDPA) 2023.
+            This Cookie Policy details how [Àjọṣe Limited] ("We", "Us") employs cookies and tracking technologies across our digital infrastructure in compliance with the Nigeria Data Protection Act (NDPA) 2023.
           </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">1. Definition of Cookies</h2>

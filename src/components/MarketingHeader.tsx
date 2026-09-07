@@ -8,16 +8,16 @@ export async function MarketingHeader() {
 
   return (
     <header className="px-6 lg:px-12 h-24 flex items-center justify-between border-b border-[#C5A059]/20 bg-[#0B3022] sticky top-0 z-50">
-      <Link className="flex items-center justify-center gap-3 hover:opacity-90 transition-opacity" href="/">
+      <Link className="flex items-center justify-center gap-3 group hover:opacity-90 transition-opacity" href="/">
         <Image 
-          src="/logo.png" 
-          alt="Ajo Circle Logo" 
-          width={64} 
-          height={64} 
-          className="object-contain w-auto h-12 brightness-0 invert drop-shadow-md"
+          src="/ajose-rings-logo.png" 
+          alt="Àjọṣe Logo" 
+          width={48} 
+          height={48} 
+          className="object-contain w-auto h-11 drop-shadow-md animate-spin-slow"
           priority
         />
-        <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Ajo <span className="text-[#C5A059]">Circle</span></span>
+        <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
       </Link>
       <nav className="flex items-center gap-8">
         <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#how-it-works">

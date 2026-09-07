@@ -23,7 +23,7 @@ export default async function SettingsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Settings</h1>
         <p className="text-zinc-400">
-          Manage your personal details and view your Ajo Circle Credit Score.
+          Manage your personal details and view your Àjọṣe Credit Score.
         </p>
       </div>
 
@@ -39,7 +39,7 @@ export default async function SettingsPage() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <Target className="h-5 w-5 text-blue-500" />
-              Ajo Circle Credit Score
+              Àjọṣe Credit Score
             </h3>
             
             <div className="flex items-end gap-2 mb-6">

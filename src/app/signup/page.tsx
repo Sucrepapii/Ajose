@@ -121,28 +121,28 @@ export default function SignupPage() {
             Back to Home
           </Link>
 
-          <Link href="/" className="lg:hidden flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <Link href="/" className="lg:hidden flex items-center gap-2 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/logo.png" 
-              alt="Ajo Circle Logo" 
+              src="/ajose-rings-logo.png" 
+              alt="Àjọṣe Logo" 
               width={28} 
               height={28} 
-              className="object-contain w-auto h-7"
+              className="object-contain w-auto h-7 drop-shadow-sm animate-spin-slow"
             />
-            <span className="text-[#0B402B] font-bold text-xl font-serif tracking-tight">Ajo <span className="text-[#D4AF37]">Circle</span></span>
+            <span className="text-[#0B402B] font-bold text-xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
           </Link>
         </div>
 
         <div className="hidden lg:flex items-center justify-between mb-12 relative z-10 mt-8">
-          <Link href="/" className="inline-flex items-center gap-4 hover:opacity-90 transition-opacity">
+          <Link href="/" className="inline-flex items-center gap-4 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/logo.png" 
-              alt="Ajo Circle Logo" 
+              src="/ajose-rings-logo.png" 
+              alt="Àjọṣe Logo" 
               width={64} 
               height={64} 
-              className="object-contain w-auto h-16"
+              className="object-contain w-auto h-16 drop-shadow-md animate-spin-slow"
             />
-            <span className="text-[#0B402B] font-bold text-3xl font-serif tracking-tight">Ajo <span className="text-[#D4AF37]">Circle</span></span>
+            <span className="text-[#0B402B] font-bold text-3xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
           </Link>
         </div>
 

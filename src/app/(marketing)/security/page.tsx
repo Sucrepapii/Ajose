@@ -2,8 +2,8 @@ import { ShieldCheck, Lock, Eye, FileText, AlertTriangle } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Security & Trust | Ajo Circle",
-  description: "Learn how Ajo Circle protects your savings with bank-grade encryption, BVN verification, and the Ajo Credit Penalty System.",
+  title: "Security & Trust | Àjọṣe",
+  description: "Learn how Àjọṣe protects your savings with bank-grade encryption, BVN verification, and the Ajo Credit Penalty System.",
 };
 
 export default function SecurityPage() {
@@ -38,7 +38,7 @@ export default function SecurityPage() {
             </div>
             <h3 className="text-2xl font-black text-[#0B3022] mb-3">Identity Verification</h3>
             <p className="text-[#1F2937]/80 leading-relaxed font-medium">
-              Every member on Ajo Circle must pass our strict Know Your Customer (KYC) protocols using valid BVN before they can join an active savings group.
+              Every member on Àjọṣe must pass our strict Know Your Customer (KYC) protocols using valid BVN before they can join an active savings group.
             </p>
           </div>
         </div>

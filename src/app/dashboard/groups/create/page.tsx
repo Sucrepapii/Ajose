@@ -328,7 +328,7 @@ export default function CreateGroupPage() {
                 <div className="space-y-1">
                   <p className="font-bold">Non-Custodial Direct Pass-Through Architecture</p>
                   <p className="text-[#1F2937]/80 text-xs leading-relaxed">
-                    Ajo Circle is a software platform, not a deposit-taking bank. We do not hold pooled money. Each admin tenders a designated settlement bank account. Members' contributions are paid directly into this account, and scheduled payouts are automatically debited from this account to turn beneficiaries.
+                    Àjọṣe is a software platform, not a deposit-taking bank. We do not hold pooled money. Each admin tenders a designated settlement bank account. Members' contributions are paid directly into this account, and scheduled payouts are automatically debited from this account to turn beneficiaries.
                   </p>
                 </div>
               </div>
@@ -451,7 +451,7 @@ export default function CreateGroupPage() {
                       className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                     />
                     <label htmlFor="adminTenderAgreed" className="text-xs text-[#1F2937]/90 leading-relaxed cursor-pointer select-none font-medium">
-                      <strong>Mandate Authorization:</strong> I tender this account as the designated settlement repository. I authorize Ajo Circle's automated payment engine to debit this account for member cycle payouts. I understand that if my account has insufficient funds and an auto-debit fails, <strong>all group members will be immediately notified</strong>.
+                      <strong>Mandate Authorization:</strong> I tender this account as the designated settlement repository. I authorize Àjọṣe's automated payment engine to debit this account for member cycle payouts. I understand that if my account has insufficient funds and an auto-debit fails, <strong>all group members will be immediately notified</strong>.
                     </label>
                   </div>
                 </div>

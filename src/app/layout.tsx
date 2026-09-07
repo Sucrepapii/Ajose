@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ajo Circle - The Guaranteed Ajo Platform",
+  title: "Àjọṣe - The Guaranteed Ajo Platform",
   description: "Join a group where everyone is credit-verified. We track defaults. We recover funds. You save in peace.",
 };
 

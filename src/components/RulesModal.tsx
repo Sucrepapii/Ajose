@@ -44,7 +44,7 @@ export function RulesModal() {
                   1. Non-Custodial Pass-Through Architecture
                 </h3>
                 <p>
-                  Ajo Circle is a licensed technology provider and is <strong>not a commercial deposit bank</strong>. We do not hold user money. Each Admin tenders an authorized settlement bank account. Contributions are deposited directly into this account and rotational payouts are automatically debited from it.
+                  Àjọṣe is a licensed technology provider and is <strong>not a commercial deposit bank</strong>. We do not hold user money. Each Admin tenders an authorized settlement bank account. Contributions are deposited directly into this account and rotational payouts are automatically debited from it.
                 </p>
               </div>
 

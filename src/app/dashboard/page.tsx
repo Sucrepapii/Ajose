@@ -118,7 +118,7 @@ export default async function DashboardOverview() {
         <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
           <div className="absolute -right-4 -top-4 w-24 h-24 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/10 transition-colors"></div>
           <div className="flex items-center justify-between mb-4 relative z-10">
-            <h3 className="text-[#1F2937]/70 font-medium">Ajo Circle Credit Score</h3>
+            <h3 className="text-[#1F2937]/70 font-medium">Àjọṣe Credit Score</h3>
             <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
               <TrendingUp className="h-5 w-5 text-[#0B3022]" />
             </div>

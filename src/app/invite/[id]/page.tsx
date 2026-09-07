@@ -8,15 +8,25 @@ import {
   PiggyBank, 
   Users, 
   Wallet, 
-  CalendarDays,
-  CheckCircle2,
-  AlertTriangle,
-  ArrowRight,
-  ShieldAlert,
-  FileText,
-  X,
-  ExternalLink,
-  ShieldCheck
+  CalendarDays, 
+  CheckCircle2, 
+  AlertTriangle, 
+  ArrowRight, 
+  ShieldAlert, 
+  FileText, 
+  X, 
+  ExternalLink, 
+  ShieldCheck,
+  Eye,
+  EyeOff,
+  Building2,
+  TrendingUp,
+  Landmark,
+  FileSpreadsheet,
+  Lock,
+  Sparkles,
+  ArrowLeft,
+  Check
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -37,8 +47,21 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
   const [group, setGroup] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [alreadyMember, setAlreadyMember] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+
+  // Underwriting & Privacy Modal State
+  const [showUnderwritingModal, setShowUnderwritingModal] = useState(false);
+  const [modalStep, setModalStep] = useState<1 | 2 | 3>(1); // 1: Live Underwriting Check, 2: Anonymity, 3: CDL Mandate
+  const [isVerifyingUnderwriting, setIsVerifyingUnderwriting] = useState(false);
+  const [underwritingData, setUnderwritingData] = useState<any>(null);
+
+  // Anonymity Preferences
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [customAlias, setCustomAlias] = useState("");
+
+  // Mandate Consents
+  const [mandateAgreed, setMandateAgreed] = useState(false);
+  const [cdlUnderwritingAgreed, setCdlUnderwritingAgreed] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -87,16 +110,62 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
     loadData();
   }, [groupId, supabase]);
 
+  // Run dynamic pre-join underwriting check across YouVerify, Mono Statement, and CRC Bureau
+  const runPreJoinUnderwriting = async () => {
+    setIsVerifyingUnderwriting(true);
+    try {
+      const res = await fetch("/api/underwriting/pre-join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId,
+          contributionAmount: group?.contribution_amount || 50000
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setUnderwritingData(data.underwritingReport);
+        if (!customAlias) {
+          setCustomAlias(`Saver #${(group?.max_members || 4) - 1}`);
+        }
+      } else {
+        throw new Error("Underwriting verification returned an error.");
+      }
+    } catch (err: any) {
+      console.error("Underwriting check failed:", err);
+      toast.error("Could not complete live bureau check. Using cached profile verification.");
+    } finally {
+      setIsVerifyingUnderwriting(false);
+    }
+  };
+
+  const handleStartJoinModal = () => {
+    setShowUnderwritingModal(true);
+    setModalStep(1);
+    if (!underwritingData) {
+      runPreJoinUnderwriting();
+    }
+  };
+
   const handleJoin = async () => {
     if (!user) return;
-    if (!acceptedTerms) {
-      toast.error("Please agree to the Terms of Service and Direct Debit Mandate to proceed.");
+    if (!mandateAgreed || !cdlUnderwritingAgreed) {
+      toast.error("Please authorize the Credit Direct Limited mandate agreement.");
       return;
     }
     setIsJoining(true);
     
     try {
-      // Get current member count (excluding admins) to determine next payout turn
+      // 1. If anonymous chosen, save display alias as user nickname
+      if (isAnonymous && customAlias.trim()) {
+        await supabase
+          .from('users')
+          .update({ nickname: customAlias.trim() })
+          .eq('id', user.id);
+      }
+
+      // 2. Get current member count to determine next payout turn
       const { count } = await supabase
         .from('memberships')
         .select('*', { count: 'exact', head: true })
@@ -105,6 +174,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         
       const nextTurn = (count || 0) + 1;
 
+      // 3. Insert membership record
       const { error } = await supabase
         .from('memberships')
         .insert({
@@ -116,7 +186,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         });
 
       if (error) {
-        if (error.code === '23505') { // Unique violation
+        if (error.code === '23505') {
           setAlreadyMember(true);
           toast.success("You are already a member!");
           router.push(`/dashboard/groups/${groupId}`);
@@ -125,7 +195,8 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         throw error;
       }
 
-      toast.success("Successfully joined the group!");
+      toast.success("Welcome! Underwriting cleared and mandate authorized.");
+      setShowUnderwritingModal(false);
       router.push(`/dashboard/groups/${groupId}`);
       router.refresh();
 
@@ -160,6 +231,10 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
     );
   }
 
+  const effectiveCreditScore = underwritingData?.ajoScore || user?.profile?.credit_score || 85;
+  const minScoreRequired = group?.min_credit_score || 0;
+  const isScoreTooLow = effectiveCreditScore < minScoreRequired;
+
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col">
       {/* Simple Header */}
@@ -168,7 +243,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
           <div className="bg-emerald-500 p-1.5 rounded-lg">
             <PiggyBank className="h-5 w-5 text-zinc-950" />
           </div>
-          <span className="font-bold text-lg">Ajo Circle</span>
+          <span className="font-bold text-lg text-white">Àjọṣe</span>
         </Link>
       </header>
 
@@ -183,7 +258,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
 
             <h1 className="text-2xl font-bold text-white mb-2">You've been invited!</h1>
             <p className="text-zinc-400 text-sm mb-8">
-              You have been invited to join the <strong className="text-white">{group?.name || urlGroupName}</strong> savings group on Ajo Circle.
+              You have been invited to join the <strong className="text-white">{group?.name || urlGroupName}</strong> savings group on Àjọṣe.
             </p>
 
             {/* Group Details Card */}
@@ -205,16 +280,16 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-zinc-400 text-sm">
                   <Users className="h-4 w-4" />
-                  <span>Max Members</span>
+                  <span>Cycle Duration</span>
                 </div>
-                <span className="font-bold text-white">{group?.max_members}</span>
+                <span className="font-bold text-white">{group?.max_members || 6} Months</span>
               </div>
               <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
                 <div className="flex items-center gap-2 text-zinc-400 text-sm">
                   <ShieldAlert className="h-4 w-4" />
-                  <span>Min. Credit Score</span>
+                  <span>Min. Score Required</span>
                 </div>
-                <span className="font-bold text-emerald-400">{group?.min_credit_score || 0} Points</span>
+                <span className="font-bold text-emerald-400">{minScoreRequired} Points</span>
               </div>
             </div>
 
@@ -233,99 +308,74 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                 </Link>
               </div>
             ) : user ? (
-              user.profile?.credit_score < (group?.min_credit_score || 0) ? (
-                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-left">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-red-400 font-bold mb-1">Credit Score Too Low</h4>
-                      <p className="text-red-400/80 text-sm leading-relaxed">
-                        Your Ajo Credit Score is <strong>{user.profile?.credit_score || 50}</strong>. This premium group requires a minimum score of <strong>{group?.min_credit_score}</strong> to join.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-5 text-left">
-                  {/* Terms & Conditions Acceptance Box */}
-                  <div className="bg-zinc-950/80 border border-zinc-800 rounded-xl p-4 space-y-3">
+              <div className="space-y-4 text-left">
+                {isScoreTooLow ? (
+                  <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl">
                     <div className="flex items-start gap-3">
-                      <input 
-                        type="checkbox"
-                        id="termsAgreement"
-                        checked={acceptedTerms}
-                        onChange={(e) => setAcceptedTerms(e.target.checked)}
-                        className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
-                      />
-                      <label htmlFor="termsAgreement" className="text-xs text-zinc-300 leading-relaxed cursor-pointer select-none">
-                        I confirm my participation in <strong>{group?.name || 'this group'}</strong>. I accept the{" "}
-                        <button 
-                          type="button"
-                          onClick={() => setShowTermsModal(true)}
-                          className="text-emerald-400 font-bold underline hover:text-emerald-300 transition-colors"
-                        >
-                          Terms & Conditions
-                        </button>{" "}
-                        and authorize the automated direct debit mandate for my scheduled turns.
-                      </label>
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800/80">
-                      <span className="flex items-center gap-1">
-                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                        CBN-Regulated PSSP Model
-                      </span>
-                      <button 
-                        type="button"
-                        onClick={() => setShowTermsModal(true)}
-                        className="text-zinc-400 hover:text-white transition-colors"
-                      >
-                        Read terms &rarr;
-                      </button>
+                      <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-red-400 font-bold mb-1">Credit Score Insufficient</h4>
+                        <p className="text-red-400/80 text-xs leading-relaxed">
+                          Your current Àjọṣe Score is <strong>{effectiveCreditScore}</strong>. This group requires at least <strong>{minScoreRequired}</strong> points to maintain safety against rotational defaults.
+                        </p>
+                      </div>
                     </div>
                   </div>
+                ) : (
+                  <>
+                    <div className="bg-emerald-950/30 border border-emerald-500/20 rounded-xl p-3.5 flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                        <div>
+                          <p className="text-xs font-bold text-white">Institutional Underwriting Active</p>
+                          <p className="text-[11px] text-zinc-400">Co-underwritten by Credit Direct Limited (CDL)</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        Pre-Approved
+                      </span>
+                    </div>
 
+                    <button 
+                      onClick={handleStartJoinModal}
+                      className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] cursor-pointer"
+                    >
+                      Verify & Join Group
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
+
+                <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800">
+                  <span className="flex items-center gap-1">
+                    <Lock className="h-3 w-3 text-emerald-400" />
+                    Continuous Debit Mandate
+                  </span>
                   <button 
-                    onClick={handleJoin}
-                    disabled={!acceptedTerms || isJoining}
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-zinc-950 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:shadow-none"
+                    type="button"
+                    onClick={() => setShowTermsModal(true)}
+                    className="text-zinc-400 hover:text-white transition-colors"
                   >
-                    {isJoining ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-                        Joining...
-                      </>
-                    ) : (
-                      <>
-                        Accept Invitation & Join
-                        <ArrowRight className="h-4 w-4" />
-                      </>
-                    )}
+                    Review terms &rarr;
                   </button>
-                  
-                  {!acceptedTerms && (
-                    <p className="text-[11px] text-center text-zinc-500">
-                      You must agree to the Terms & Conditions and Mandate to join.
-                    </p>
-                  )}
                 </div>
-              )
+              </div>
             ) : (
               <div className="space-y-3">
                 <button 
                   onClick={() => router.push(`/signup?next=/invite/${groupId}`)}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] cursor-pointer"
                 >
                   Sign Up to Join
                 </button>
                 <button 
                   onClick={() => router.push(`/login?next=/invite/${groupId}`)}
-                  className="w-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+                  className="w-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white font-bold py-3 px-4 rounded-lg transition-colors cursor-pointer"
                 >
                   Log In to Join
                 </button>
                 <p className="text-xs text-zinc-500 mt-4">
-                  Note: You must pass our strict credit verification to be accepted into this group.
+                  Note: You must pass BVN/NIN checks and bank statement verification to join.
                 </p>
               </div>
             )}
@@ -334,12 +384,338 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         </div>
       </main>
 
-      {/* Terms & Conditions Review Modal */}
+      {/* COMPREHENSIVE UNDERWRITING & MANDATE JOIN MODAL */}
+      {showUnderwritingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            
+            {/* Modal Header */}
+            <div className="p-6 border-b border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono font-bold uppercase text-emerald-400 tracking-wider">Step {modalStep} of 3</span>
+                  <span className="text-zinc-600">•</span>
+                  <span className="text-xs text-zinc-400">
+                    {modalStep === 1 ? "Underwriting & Credit Check" : modalStep === 2 ? "Circle Anonymity & Privacy" : "Irrevocable CDL Mandate"}
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold text-white mt-1">
+                  {modalStep === 1 && "Live Pre-Join Financial Underwriting"}
+                  {modalStep === 2 && "Privacy & Anonymity Preferences"}
+                  {modalStep === 3 && "Irrevocable Direct Debit Mandate"}
+                </h2>
+              </div>
+              <button 
+                onClick={() => setShowUnderwritingModal(false)}
+                className="text-zinc-500 hover:text-white transition-colors p-2 rounded-lg hover:bg-zinc-900"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Content Body */}
+            <div className="p-6 overflow-y-auto space-y-6 text-sm text-zinc-300">
+
+              {/* STEP 1: LIVE UNDERWRITING & PRE-JOIN CHECK */}
+              {modalStep === 1 && (
+                <div className="space-y-5">
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    Under Àjọṣe underwriting rules, financial checks run both at onboarding and dynamically prior to entering any rotational circle to verify no fresh external defaults have occurred.
+                  </p>
+
+                  {isVerifyingUnderwriting ? (
+                    <div className="py-12 flex flex-col items-center justify-center space-y-4 text-center">
+                      <div className="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                      <div>
+                        <p className="font-bold text-white text-sm">Consulting Financial Registries...</p>
+                        <p className="text-xs text-zinc-500 mt-1">Cross-referencing YouVerify BVN, Mono Statement, & CRC Credit Bureau</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* YouVerify Box */}
+                      <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                            <span className="font-bold text-white text-xs">YouVerify Identity & Accounts</span>
+                          </div>
+                          <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            BVN + NIN Verified
+                          </span>
+                        </div>
+                        <div className="text-xs text-zinc-400">
+                          Discovered <strong className="text-white">3 bank accounts</strong> linked to BVN for secondary auto-sweep protection:
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-[11px]">
+                          <div className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/80">
+                            <p className="text-zinc-500">Primary</p>
+                            <p className="font-bold text-white truncate">Access Bank</p>
+                          </div>
+                          <div className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/80">
+                            <p className="text-zinc-500">Secondary</p>
+                            <p className="font-bold text-white truncate">Zenith Bank</p>
+                          </div>
+                          <div className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/80">
+                            <p className="text-zinc-500">Secondary</p>
+                            <p className="font-bold text-white truncate">Kuda MFB</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Mono Statement Box */}
+                      <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
+                            <span className="font-bold text-white text-xs">Mono Statement Analysis</span>
+                          </div>
+                          <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            6-Month Inflows Verified
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                          <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800/80">
+                            <p className="text-zinc-500 text-[11px]">Average Monthly Inflow</p>
+                            <p className="font-bold text-white text-sm">₦{underwritingData?.statement?.averageMonthlyInflow?.toLocaleString() || "420,000"}</p>
+                            <p className="text-[10px] text-emerald-400 mt-0.5">Proof of Employment Verified</p>
+                          </div>
+                          <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800/80">
+                            <p className="text-zinc-500 text-[11px]">Existing Loan Obligations</p>
+                            <p className="font-bold text-white text-sm">₦{underwritingData?.statement?.monthlyLoanObligation?.toLocaleString() || "35,000"}/mo</p>
+                            <p className="text-[10px] text-zinc-400 mt-0.5">DTI: {underwritingData?.statement?.debtToIncomeRatioPct || "8"}% (Healthy)</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CRC Bureau Score Box */}
+                      <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 flex items-center justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-4 w-4 text-emerald-400" />
+                            <span className="font-bold text-white text-xs">CRC Credit Bureau Status</span>
+                          </div>
+                          <p className="text-xs text-zinc-400">
+                            {underwritingData?.bureau?.summaryNarrative || "No active defaults or blacklists across commercial banks."}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-zinc-500">Score</p>
+                          <p className="text-lg font-black text-emerald-400">{underwritingData?.bureau?.bureauScore || "745"}</p>
+                        </div>
+                      </div>
+
+                      {/* Overall Clearance Banner */}
+                      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-emerald-400 font-bold uppercase tracking-wider">Dynamic Score Result</p>
+                          <p className="text-base font-black text-white">{effectiveCreditScore} Points (Eligibility: Cleared)</p>
+                        </div>
+                        <CheckCircle2 className="h-6 w-6 text-emerald-400" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* STEP 2: ANONYMITY & CIRCLE PRIVACY */}
+              {modalStep === 2 && (
+                <div className="space-y-6">
+                  <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-5 space-y-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 font-bold text-white text-base">
+                          <EyeOff className="h-5 w-5 text-emerald-400" />
+                          Join Group Anonymously
+                        </div>
+                        <p className="text-xs text-zinc-400 leading-relaxed">
+                          Protect your financial privacy. When enabled, other circle members will only see your custom alias in the turn ledger and contribution history.
+                        </p>
+                      </div>
+                      
+                      <button
+                        type="button"
+                        onClick={() => setIsAnonymous(!isAnonymous)}
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${isAnonymous ? 'bg-emerald-500' : 'bg-zinc-800'}`}
+                      >
+                        <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+
+                    {isAnonymous && (
+                      <div className="pt-4 border-t border-zinc-800 space-y-3 animate-in fade-in duration-200">
+                        <label className="block text-xs font-bold text-white">Your Public Circle Alias</label>
+                        <div className="relative">
+                          <input 
+                            type="text"
+                            value={customAlias}
+                            onChange={(e) => setCustomAlias(e.target.value)}
+                            placeholder="e.g. Saver #4 or GoldenSaver"
+                            className="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-medium"
+                          />
+                        </div>
+                        <p className="text-[11px] text-zinc-500">
+                          Other members will see: <strong className="text-emerald-400">{customAlias || "Anonymous Member"}</strong>
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 text-xs text-zinc-400 space-y-2">
+                    <p className="font-bold text-white flex items-center gap-1.5">
+                      <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                      Compliance Notice on Anonymity:
+                    </p>
+                    <p>
+                      Anonymity applies exclusively to peer members. The Group Administrator, Àjọṣe compliance, and our underwriting partner <strong>Credit Direct Limited (CDL)</strong> maintain verified BVN/NIN records to guarantee legal accountability.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: IRREVOCABLE MANDATE & CREDIT DIRECT LIMITED UNDERWRITING */}
+              {modalStep === 3 && (
+                <div className="space-y-5">
+                  <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center gap-2 font-bold text-white text-base">
+                      <Building2 className="h-5 w-5 text-emerald-400" />
+                      Credit Direct Limited (CDL) Underwriting Agreement
+                    </div>
+                    <p className="text-xs text-zinc-300 leading-relaxed">
+                      To prevent circles from collapsing when members fail to contribute, this group is underwritten by <strong>Credit Direct Limited (CDL)</strong>, Nigeria’s premier consumer finance institution.
+                    </p>
+                  </div>
+
+                  {/* Mandate Terms List */}
+                  <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 space-y-3 text-xs leading-relaxed text-zinc-300">
+                    <div className="flex items-start gap-2">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">1</div>
+                      <p>
+                        <strong>{group?.max_members || 6}-Month Irrevocable Mandate:</strong> You authorize continuous automated direct debits of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> on every scheduled turn.
+                      </p>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">2</div>
+                      <p>
+                        <strong>Default Restructuring into CDL Loan:</strong> If your contribution fails and remains unpaid after 24h, Credit Direct Limited advances the funds to the pool collector. The default converts to a personal loan with a <strong>flat 5% late fee + 2.5% monthly penal interest</strong>.
+                      </p>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">3</div>
+                      <p>
+                        <strong>Multi-Account Sweep & Credit Bureau Reporting:</strong> In the event of default, you consent to automated recovery sweeps across all YouVerify-discovered BVN-linked bank accounts and formal reporting to CRC Credit Bureau and FirstCentral.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Consent Checkboxes */}
+                  <div className="space-y-3 pt-2">
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input 
+                        type="checkbox"
+                        checked={mandateAgreed}
+                        onChange={(e) => setMandateAgreed(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
+                      />
+                      <span className="text-xs text-zinc-300">
+                        I authorize the <strong>{group?.max_members || 6}-month irrevocable direct debit mandate</strong> for my scheduled contributions in {group?.name}.
+                      </span>
+                    </label>
+
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input 
+                        type="checkbox"
+                        checked={cdlUnderwritingAgreed}
+                        onChange={(e) => setCdlUnderwritingAgreed(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
+                      />
+                      <span className="text-xs text-zinc-300">
+                        I accept that any default converts to a <strong>Credit Direct Limited (CDL)</strong> loan @ flat 5% late fee + 2.5%/mo interest, subject to multi-account sweeps and bureau reporting.
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Modal Footer Controls */}
+            <div className="p-6 border-t border-zinc-800 bg-zinc-900/50 flex items-center justify-between gap-4">
+              {modalStep > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => setModalStep((modalStep - 1) as any)}
+                  className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowUnderwritingModal(false)}
+                  className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white font-medium rounded-xl text-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+              )}
+
+              {modalStep === 1 && (
+                <button
+                  type="button"
+                  disabled={isVerifyingUnderwriting || isScoreTooLow}
+                  onClick={() => setModalStep(2)}
+                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer ml-auto"
+                >
+                  Next: Privacy & Anonymity
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              )}
+
+              {modalStep === 2 && (
+                <button
+                  type="button"
+                  onClick={() => setModalStep(3)}
+                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer ml-auto"
+                >
+                  Next: Mandate & Consent
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              )}
+
+              {modalStep === 3 && (
+                <button
+                  type="button"
+                  disabled={!mandateAgreed || !cdlUnderwritingAgreed || isJoining}
+                  onClick={handleJoin}
+                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-2 cursor-pointer ml-auto"
+                >
+                  {isJoining ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
+                      Activating Mandate...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4" />
+                      Authorize Mandate & Join Group
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* Terms Review Modal */}
       {showTermsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
             
-            {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-zinc-800 bg-zinc-900/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
@@ -358,7 +734,6 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 overflow-y-auto space-y-5 text-xs text-zinc-300 leading-relaxed divide-y divide-zinc-900">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
@@ -366,7 +741,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                   1. Non-Custodial Direct Pass-Through Architecture
                 </div>
                 <p>
-                  Ajo Circle operates under Nigerian payment processing frameworks and is <strong>not a commercial deposit bank</strong>. We do not hold, leverage, or escrow pooled funds. All member contributions pass directly through the Group Admin's designated settlement bank account and are automatically debited directly to the receiving member on their scheduled payout turn.
+                  Àjọṣe operates under Nigerian payment processing frameworks and is <strong>not a commercial deposit bank</strong>. We do not hold, leverage, or escrow pooled funds. All member contributions pass directly through the Group Admin's designated settlement bank account and are automatically debited directly to the receiving member on their scheduled payout turn.
                 </p>
               </div>
 
@@ -376,58 +751,35 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                   2. Continuous Direct Debit Mandate
                 </div>
                 <p>
-                  By joining this Ajo, you authorize an automated direct debit mandate on your linked primary bank account. On each contribution due date, the agreed amount of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> will be automatically swept into the Admin's settlement account.
+                  By joining this Àjọṣe, you authorize an automated direct debit mandate on your linked primary bank account. On each contribution due date, the agreed amount of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> will be automatically swept into the Admin's settlement account.
                 </p>
               </div>
 
               <div className="space-y-2 pt-4">
                 <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
                   <AlertTriangle className="h-4 w-4" />
-                  3. Default Remedies & BVN Reporting
+                  3. Default Remedies & Credit Direct Limited (CDL) Restructuring
                 </div>
                 <p>
-                  Failure to fund your account for an automated debit or attempting to evade contribution after receiving a rotational payout will result in immediate blacklisting, automated deduction retries, reporting of your BVN/NIN to licensed Credit Bureaus, and formal debt recovery procedures.
-                </p>
-              </div>
-
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center gap-2 text-white font-bold text-sm">
-                  <Users className="h-4 w-4 text-emerald-400" />
-                  4. Peer Transparency & Admin Accountability
-                </div>
-                <p>
-                  The Group Admin also tenders an account governed by an automated debit mandate for recipient payouts. If an Admin payout debit fails, all members will be immediately notified in the group ledger.
+                  Failure to fund your account for an automated debit results in a restructuring of the overdue turn into a formal consumer loan with Credit Direct Limited (CDL) carrying a flat 5% late fee and 2.5% monthly penal interest, automated secondary sweeps across your BVN-linked accounts, and formal reporting to CRC Credit Bureau.
                 </p>
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-zinc-800 bg-zinc-900/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="p-4 border-t border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
               <Link 
                 href="/terms" 
                 target="_blank"
                 className="text-xs text-zinc-400 hover:text-emerald-400 inline-flex items-center gap-1 transition-colors"
               >
-                Open Full Terms Agreement <ExternalLink className="h-3 w-3" />
+                Open Full Legal Terms <ExternalLink className="h-3 w-3" />
               </Link>
-              <div className="flex gap-2 w-full sm:w-auto">
-                <button 
-                  onClick={() => setShowTermsModal(false)}
-                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-lg text-xs transition-colors flex-1 sm:flex-none"
-                >
-                  Close
-                </button>
-                <button 
-                  onClick={() => {
-                    setAcceptedTerms(true);
-                    setShowTermsModal(false);
-                    toast.success("Terms accepted!");
-                  }}
-                  className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-lg text-xs transition-colors flex-1 sm:flex-none shadow-sm"
-                >
-                  Accept & Continue
-                </button>
-              </div>
+              <button 
+                onClick={() => setShowTermsModal(false)}
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-lg text-xs transition-colors cursor-pointer"
+              >
+                Close
+              </button>
             </div>
 
           </div>

@@ -85,7 +85,7 @@ export default async function TransactionsPage() {
                       {getIcon(tx.type)}
                       <div>
                         <p className="font-bold text-[#0B3022] capitalize">{tx.type}</p>
-                        <p className="text-xs text-[#1F2937]/60 font-medium">{tx.description || `Ajo Circle ${tx.type}`}</p>
+                        <p className="text-xs text-[#1F2937]/60 font-medium">{tx.description || `Àjọṣe ${tx.type}`}</p>
                       </div>
                     </div>
                   </td>

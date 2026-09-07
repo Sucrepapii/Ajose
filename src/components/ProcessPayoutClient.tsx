@@ -185,7 +185,7 @@ export function ProcessPayoutClient({
               <div className="bg-[#0B3022]/5 border border-[#0B3022]/10 rounded-xl p-3.5 flex gap-3 text-[#0B3022]">
                 <ShieldCheck className="h-5 w-5 text-[#C5A059] shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  <strong>Direct Pass-Through Architecture:</strong> Because Ajo Circle cannot hold funds as we are not a bank, executing this payout initiates an <strong>Automated Direct Debit</strong> from your tendered settlement bank account directly into the beneficiary's bank account.
+                  <strong>Direct Pass-Through Architecture:</strong> Because Àjọṣe cannot hold funds as we are not a bank, executing this payout initiates an <strong>Automated Direct Debit</strong> from your tendered settlement bank account directly into the beneficiary's bank account.
                 </p>
               </div>
 

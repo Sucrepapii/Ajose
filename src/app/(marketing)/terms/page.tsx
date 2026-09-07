@@ -9,7 +9,7 @@ export default function TermsOfServicePage() {
 
         <div className="prose prose-lg max-w-none text-[#1F2937]/90 marker:text-[#0B3022]">
           <p className="lead font-medium">
-            This Terms of Service Agreement ("Agreement") constitutes a legally binding commercial contract between you ("User", "Customer", or "Member") and [Ajo Circle Limited / RC Number] ("Company", "We", "Us", or "Our"), the operator of the Ajo Circle application ("Platform").
+            This Terms of Service Agreement ("Agreement") constitutes a legally binding commercial contract between you ("User", "Customer", or "Member") and [Àjọṣe Limited / RC Number] ("Company", "We", "Us", or "Our"), the operator of the Àjọṣe application ("Platform").
           </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">1. Definitions and Interpretation</h2>

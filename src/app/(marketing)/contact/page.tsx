@@ -61,7 +61,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="text-xl font-black text-[#0B3022] mb-1">Email Support</h4>
-                    <p className="text-[#1F2937]/70 font-medium text-lg">support@ajocircle.com</p>
+                    <p className="text-[#1F2937]/70 font-medium text-lg">support@ajose.com</p>
                   </div>
                 </div>
 
@@ -71,7 +71,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="text-xl font-black text-[#0B3022] mb-1">Phone</h4>
-                    <p className="text-[#1F2937]/70 font-medium text-lg">+234 (0) 800 AJO CIRC</p>
+                    <p className="text-[#1F2937]/70 font-medium text-lg">+234 (0) 800 AJOSE</p>
                   </div>
                 </div>
 

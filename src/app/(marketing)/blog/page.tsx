@@ -3,7 +3,7 @@ import { ArrowRight, Calendar } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog | Ajo Circle",
+  title: "Blog | Àjọṣe",
   description: "Insights, news, and best practices on cooperative savings, personal finance, and the future of open banking.",
 };
 
@@ -19,8 +19,8 @@ const POSTS = [
   },
   {
     id: 2,
-    title: "How to Build Your Ajo Credit Score",
-    excerpt: "Your Ajo Credit Score unlocks premium savings pools. Learn the top 3 strategies to maintain a perfect score and avoid the dreaded default penalty.",
+    title: "How to Build Your Àjọṣe Credit Score",
+    excerpt: "Your Àjọṣe Credit Score unlocks premium savings pools. Learn the top 3 strategies to maintain a perfect score and avoid the dreaded default penalty.",
     date: "Sep 28, 2026",
     category: "Guides",
     readTime: "4 min read",
@@ -38,7 +38,7 @@ const POSTS = [
   {
     id: 4,
     title: "Protecting Your Savings: The Immutable Ledger",
-    excerpt: "Trust but verify. How Ajo Circle uses immutable ledger technology to ensure no administrator or member can secretly alter the payout history.",
+    excerpt: "Trust but verify. How Àjọṣe uses immutable ledger technology to ensure no administrator or member can secretly alter the payout history.",
     date: "Aug 30, 2026",
     category: "Security",
     readTime: "6 min read",
@@ -56,7 +56,7 @@ export default function BlogPage() {
         {/* Header */}
         <div className="text-center mb-20">
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-[#0B3022] mb-6 font-serif">
-            The Ajo Circle <span className="text-[#C5A059]">Journal</span>
+            The Àjọṣe <span className="text-[#C5A059]">Journal</span>
           </h1>
           <p className="text-xl text-[#1F2937]/80 leading-relaxed max-w-2xl mx-auto font-medium">
             Insights on modernizing cooperative finance, building trust at scale, and achieving your financial goals.

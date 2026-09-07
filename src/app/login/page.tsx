@@ -78,15 +78,15 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-[#122b22]/40"></div>
 
         <div className="relative z-10 max-w-lg px-12">
-          <Link href="/" className="inline-flex items-center gap-4 mb-16 hover:opacity-90 transition-opacity">
+          <Link href="/" className="inline-flex items-center gap-4 mb-16 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/logo.png" 
-              alt="Ajo Circle Logo" 
+              src="/ajose-rings-logo.png" 
+              alt="Àjọṣe Logo" 
               width={64} 
               height={64} 
-              className="object-contain w-auto h-16 brightness-0 invert" // Make it white for dark background
+              className="object-contain w-auto h-16 drop-shadow-md animate-spin-slow"
             />
-            <span className="text-white font-bold text-3xl font-serif tracking-tight">Ajo <span className="text-[#C5A059]">Circle</span></span>
+            <span className="text-white font-bold text-3xl font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
           </Link>
           
           <h1 className="text-5xl font-bold text-white leading-[1.1] tracking-tight">
@@ -105,15 +105,15 @@ export default function LoginPage() {
             Back to Home
           </Link>
 
-          <Link href="/" className="lg:hidden flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <Link href="/" className="lg:hidden flex items-center gap-2 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/logo.png" 
-              alt="Ajo Circle Logo" 
+              src="/ajose-rings-logo.png" 
+              alt="Àjọṣe Logo" 
               width={28} 
               height={28} 
-              className="object-contain w-auto h-7"
+              className="object-contain w-auto h-7 drop-shadow-sm animate-spin-slow"
             />
-            <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">Ajo <span className="text-[#C5A059]">Circle</span></span>
+            <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
           </Link>
         </div>
 
@@ -174,7 +174,7 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-8 text-center text-sm text-gray-500">
-            New to the circle? <Link href="/signup" className="text-[#1A362D] font-medium hover:underline">Create an account.</Link>
+            New to Àjọṣe? <Link href="/signup" className="text-[#1A362D] font-medium hover:underline">Create an account.</Link>
           </div>
         </div>
       </div>

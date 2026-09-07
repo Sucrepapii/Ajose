@@ -68,7 +68,7 @@ export default function Home() {
                 variants={fadeIn}
                 className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl"
               >
-                Managing your Ajo group just got world-class. Ditch the spreadsheets and WhatsApp groups. Ajo Circle brings institutional-grade tracking and accountability to your rotational savings group.
+                Managing your Ajo group just got world-class. Ditch the spreadsheets and WhatsApp groups. Àjọṣe brings institutional-grade tracking and accountability to your rotational savings group.
               </motion.p>
               
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4">
@@ -159,7 +159,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Process Section (How Ajo Circle Works) */}
+      {/* Process Section (How Àjọṣe Works) */}
       <section id="how-it-works" className="w-full py-24 md:py-32 bg-[#FDFBF7] relative z-10 border-b border-gray-200 overflow-hidden">
         <motion.div 
           initial="hidden"
@@ -170,7 +170,7 @@ export default function Home() {
         >
           <motion.div variants={fadeIn} className="text-center mb-20">
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
-              How Ajo Circle Works
+              How Àjọṣe Works
             </h2>
             <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
               Four simple steps to secure, transparent rotating savings.
@@ -352,7 +352,7 @@ export default function Home() {
             <div className="flex flex-col h-full">
               <motion.div variants={fadeIn} className="mb-8">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] mb-4">
-                  Why switch to Ajo Circle?
+                  Why switch to Àjọṣe?
                 </h2>
                 <p className="text-[#1F2937]/80 text-lg">
                   Say goodbye to messy spreadsheets and unverified WhatsApp messages.
@@ -363,7 +363,7 @@ export default function Home() {
                 <div className="grid grid-cols-3 bg-[#0B3022] text-white p-6 md:p-8 font-bold text-sm md:text-base">
                   <div>Feature</div>
                   <div className="text-center text-gray-400">Traditional</div>
-                  <div className="text-center text-[#C5A059]">Ajo Circle</div>
+                  <div className="text-center text-[#C5A059]">Àjọṣe</div>
                 </div>
                 
                 <div className="flex-1 flex flex-col">
@@ -594,7 +594,7 @@ export default function Home() {
               Loved by Communities
             </h2>
             <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
-              See what our beta users are saying about the Ajo Circle experience.
+              See what our beta users are saying about the Àjọṣe experience.
             </p>
           </motion.div>
           
@@ -660,11 +660,11 @@ export default function Home() {
           
           <div className="space-y-4">
             {[
-              { q: "Where does the money go?", a: "The money is collected by the Group Admin. Members pay their contributions directly to the Admin's bank account, and the Admin is responsible for transferring the final pool to the receiver. Ajo Circle simply provides the software to track these payments and turns." },
+              { q: "Where does the money go?", a: "The money is collected by the Group Admin. Members pay their contributions directly to the Admin's bank account, and the Admin is responsible for transferring the final pool to the receiver. Àjọṣe simply provides the software to track these payments and turns." },
               { q: "What happens if someone refuses to pay?", a: "Ajo is built on trust. As an Admin, you should only invite people you trust. If someone misses a payment, the Admin can manually mark them as defaulted on the platform, freezing their payouts and warning the group. Defaulting also incurs a -50 point penalty to their global Ajo Credit Score." },
               { q: "Can I leave a group before the cycle ends?", a: "Once a group cycle is marked as 'Active' by the Admin, the roster is locked. This ensures that people who have already collected their payout cannot abandon the group before paying back into the pool." },
               { q: "What is the Ajo Credit Score?", a: "Your Ajo Credit Score is a global metric that tracks your reliability across all groups. You gain points for successful contributions and lose 50 points immediately if you default. A low score will automatically restrict you from joining high-value groups." },
-              { q: "Are there any fees?", a: "Ajo Circle charges a flat 2% platform fee per payout to maintain our secure infrastructure. Group Admins may also choose to charge their own management commission (between 0% and 5%), which is clearly displayed before you join." },
+              { q: "Are there any fees?", a: "Àjọṣe charges a flat 2% platform fee per payout to maintain our secure infrastructure. Group Admins may also choose to charge their own management commission (between 0% and 5%), which is clearly displayed before you join." },
               { q: "Is my personal data secure?", a: "Yes. All data, including verification details and ledger history, is secured with AES-256 bank-grade encryption and protected by strict security policies." }
             ].map((faq, i) => (
               <motion.div 
@@ -721,7 +721,7 @@ export default function Home() {
             Ready to secure your savings group?
           </motion.h2>
           <motion.p variants={fadeIn} className="text-xl text-gray-300 mb-10 max-w-2xl">
-            Join thousands of smart savers who have upgraded from spreadsheets to Ajo Circle.
+            Join thousands of smart savers who have upgraded from spreadsheets to Àjọṣe.
           </motion.p>
           <motion.div variants={fadeIn}>
             <Link

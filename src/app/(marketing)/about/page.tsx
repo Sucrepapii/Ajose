@@ -6,10 +6,10 @@ export default function AboutPage() {
       <div className="container mx-auto px-6 lg:px-12 max-w-5xl">
         <div className="text-center mb-20">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-6">
-            About Ajo Circle
+            About Àjọṣe
           </h1>
           <p className="text-xl text-[#1F2937]/80 leading-relaxed max-w-3xl mx-auto">
-            We are redefining community finance. Ajo Circle brings institutional trust, accountability, and seamless software to the world's oldest form of collaborative saving.
+            We are redefining community finance. Àjọṣe brings institutional trust, accountability, and seamless software to the world's oldest form of collaborative saving.
           </p>
         </div>
 
@@ -56,13 +56,13 @@ export default function AboutPage() {
               But even trust has its limits. For every success story, there is a tale of a circle broken—a member who vanished with the pot, a ledger lost to a spilled drink, an argument over who paid what. These age-old systems, while beautiful in their intent, have always been plagued by administrative friction, a frustrating lack of transparency, and the devastating risk of default. The fear of loss has always been the shadow cast by the light of mutual aid.
             </p>
             <p className="font-bold text-white text-xl">
-              We founded Ajo Circle to banish that shadow for good.
+              We founded Àjọṣe to banish that shadow for good.
             </p>
             <p>
               We saw an opportunity to elevate a time-honored tradition by giving it a modern backbone. We didn't come to replace the soul of the circle; we came to fortify it. By weaving in ironclad KYC protocols, we replace blind trust with verifiable identity. By introducing automated, tamper-proof ledgers, we replace the anxiety of manual counting with absolute, real-time clarity. And with seamless, direct bank payouts, we replace the risk of a lost envelope with the certainty of a digital transaction.
             </p>
             <p>
-              We are not just building an app; we are building a renaissance in collaborative finance. We are preserving the profound human connection of the circle, while stripping away the fear that has held it back for centuries. Ajo Circle is where ancient tradition meets modern engineering. It is where the collective strength of the community is safeguarded by the unshakeable reliability of code.
+              We are not just building an app; we are building a renaissance in collaborative finance. We are preserving the profound human connection of the circle, while stripping away the fear that has held it back for centuries. Àjọṣe is where ancient tradition meets modern engineering. It is where the collective strength of the community is safeguarded by the unshakeable reliability of code.
             </p>
             <p className="font-bold text-[#C5A059]">
               We are building a world where saving together is not a leap of faith, but a guarantee. We are building the modern standard for collaborative finance.

@@ -9,15 +9,15 @@ export function MarketingFooter() {
           
           {/* Column 1 */}
           <div className="col-span-1 lg:col-span-2">
-            <Link className="flex items-center gap-3 mb-6 hover:opacity-90 transition-opacity" href="/">
+            <Link className="flex items-center gap-3 mb-6 group hover:opacity-90 transition-opacity" href="/">
               <Image 
-                src="/logo.png" 
-                alt="Ajo Circle Logo" 
-                width={64} 
-                height={64} 
-                className="object-contain w-auto h-12 brightness-0 invert drop-shadow-md"
+                src="/ajose-rings-logo.png" 
+                alt="Àjọṣe Logo" 
+                width={48} 
+                height={48} 
+                className="object-contain w-auto h-11 drop-shadow-md animate-spin-slow"
               />
-              <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Ajo <span className="text-[#C5A059]">Circle</span></span>
+              <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
             </Link>
             <p className="text-gray-300 leading-relaxed max-w-sm">
               The modern operating system for Rotational savings groups. Built for trust, transparency, and accountability.
@@ -58,7 +58,7 @@ export function MarketingFooter() {
         
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-[#1F2937]/50 font-medium">© {new Date().getFullYear()} Ajo Circle Technologies. All rights reserved.</p>
+          <p className="text-[#1F2937]/50 font-medium">© {new Date().getFullYear()} Àjọṣe Technologies. All rights reserved.</p>
         </div>
       </div>
     </footer>
