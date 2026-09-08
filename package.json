@@ -6,9 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cap:sync": "npx cap sync",
+    "cap:icons": "npx capacitor-assets generate --iconBackgroundColor '#FFFFFF' --iconBackgroundColorDark '#0D3B1E' --splashBackgroundColor '#FFFFFF' --splashBackgroundColorDark '#0D3B1E'",
+    "cap:android": "npx cap open android",
+    "cap:ios": "npx cap open ios"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/ios": "^8.5.1",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",
     "framer-motion": "^13.1.1",
@@ -19,6 +27,7 @@
     "sonner": "^2.0.8"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
