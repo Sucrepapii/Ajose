@@ -88,10 +88,10 @@ export async function POST(req: NextRequest) {
         },
         hasActiveDefaults: bureauReport.hasActiveDefaults,
         isEligible: !bureauReport.hasActiveDefaults && computedAjoScore >= 60,
-        underwriterPartner: "Credit Direct Limited (CDL)",
+        verificationEngine: "Mono Open-Banking & Bureau Engine",
         message: bureauReport.hasActiveDefaults
           ? "Active default detected on Credit Bureau. Eligibility restricted."
-          : "Underwriting verified successfully across YouVerify, Mono, and CRC Bureau."
+          : "Underwriting verified successfully across Mono Statement and Credit Bureau."
       }
     });
 

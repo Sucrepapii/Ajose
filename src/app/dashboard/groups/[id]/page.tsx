@@ -403,7 +403,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                         const userPendingTx = pendingTransactions.find(tx => tx.user_id === m.user_id);
                         const isPending = Boolean(userPendingTx);
                         const userCompletedTx = txList.find(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'completed' && tx.user_id === m.user_id);
-                        const isCdlCovered = userCompletedTx?.description?.toLowerCase().includes('credit direct') || userCompletedTx?.description?.toLowerCase().includes('cdl');
+                        const isReserveCovered = userCompletedTx?.description?.toLowerCase().includes('reserve pool') || userCompletedTx?.description?.toLowerCase().includes('credit direct') || userCompletedTx?.description?.toLowerCase().includes('cdl');
                         const isManualPaid = userCompletedTx?.description?.toLowerCase().includes('manual') || userCompletedTx?.description?.toLowerCase().includes('mono verified');
 
                         if (m.role === 'admin') {
@@ -414,10 +414,10 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                           );
                         }
 
-                        if (isCdlCovered) {
+                        if (isReserveCovered) {
                           return (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-900 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-full">
-                              <Building2 className="h-3.5 w-3.5 text-indigo-600" /> Advanced by Credit Direct (CDL)
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Advanced by Reserve Pool
                             </span>
                           );
                         }

@@ -30,12 +30,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function InvitePage(props: { params: Promise<{ id: string }>, searchParams: Promise<{ name?: string }> }) {
+export default function InvitePage(props: { params: Promise<{ id: string }>, searchParams: Promise<{ name?: string, phase2?: string, underwriting?: string }> }) {
   const params = use(props.params);
   const searchParams = use(props.searchParams);
   
   const groupId = params.id;
   const urlGroupName = searchParams.name;
+  const isPhase2 = searchParams.phase2 === 'true' || searchParams.underwriting === 'true' || process.env.NEXT_PUBLIC_ENABLE_PHASE2 === 'true';
 
   const router = useRouter();
   const supabase = createClient();
@@ -51,7 +52,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
 
   // Underwriting & Privacy Modal State
   const [showUnderwritingModal, setShowUnderwritingModal] = useState(false);
-  const [modalStep, setModalStep] = useState<1 | 2 | 3>(1); // 1: Live Underwriting Check, 2: Anonymity, 3: CDL Mandate
+  const [modalStep, setModalStep] = useState<1 | 2 | 3>(1); // 1: Live Underwriting Check, 2: Anonymity, 3: Standing Debit Mandate
   const [isVerifyingUnderwriting, setIsVerifyingUnderwriting] = useState(false);
   const [underwritingData, setUnderwritingData] = useState<any>(null);
 
@@ -59,9 +60,8 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [customAlias, setCustomAlias] = useState("");
 
-  // Mandate Consents
+  // Mandate Consent
   const [mandateAgreed, setMandateAgreed] = useState(false);
-  const [cdlUnderwritingAgreed, setCdlUnderwritingAgreed] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -77,8 +77,24 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
           .eq('id', groupId)
           .single();
 
-        if (groupError || !groupData) throw new Error("Group not found or invalid link.");
-        setGroup(groupData);
+        if (groupError || !groupData) {
+          if (groupId === 'test-group-id' || groupId.startsWith('test')) {
+            const demoGroup = {
+              id: groupId,
+              name: urlGroupName || "Lekki Tech Professionals Circle",
+              contribution_amount: 50000,
+              frequency: "monthly",
+              max_members: 6,
+              description: "High-trust monthly rotational savings circle for vetted professionals.",
+              created_by: "demo-admin"
+            };
+            setGroup(demoGroup);
+          } else {
+            throw new Error("Group not found or invalid link.");
+          }
+        } else {
+          setGroup(groupData);
+        }
 
         // 3. If logged in, fetch profile and check if already a member
         if (user) {
@@ -100,6 +116,19 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
           if (membership) {
             setAlreadyMember(true);
           }
+        } else if (groupId === 'test-group-id' || groupId.startsWith('test')) {
+          // Provide demo user preview for local testing
+          setUser({
+            id: 'demo-user-test',
+            email: 'member@ajose.ng',
+            profile: {
+              first_name: 'Adewale',
+              last_name: 'Adeyemi',
+              credit_score: 85,
+              bvn_verified: true,
+              nin_verified: true
+            }
+          });
         }
       } catch (err: any) {
         setErrorMsg(err.message);
@@ -148,10 +177,60 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
     }
   };
 
+  // Phase 1 Public Join: Direct, frictionless membership creation
+  const handleDirectJoin = async () => {
+    if (!user) {
+      router.push(`/signup?next=/invite/${groupId}`);
+      return;
+    }
+    setIsJoining(true);
+
+    try {
+      // 1. Get current member count to determine next payout turn
+      const { count } = await supabase
+        .from('memberships')
+        .select('*', { count: 'exact', head: true })
+        .eq('group_id', groupId)
+        .neq('role', 'admin');
+        
+      const nextTurn = (count || 0) + 1;
+
+      // 2. Insert membership record directly
+      const { error } = await supabase
+        .from('memberships')
+        .insert({
+          group_id: groupId,
+          user_id: user.id,
+          role: 'member',
+          status: 'active',
+          payout_turn: nextTurn
+        });
+
+      if (error) {
+        if (error.code === '23505') {
+          setAlreadyMember(true);
+          toast.success("You are already a member!");
+          router.push(`/dashboard/groups/${groupId}`);
+          return;
+        }
+        throw error;
+      }
+
+      toast.success("Welcome! You have joined the group.");
+      router.push(`/dashboard/groups/${groupId}`);
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to join group.");
+    } finally {
+      setIsJoining(false);
+    }
+  };
+
+  // Join Group with Financial Verification & Standing Mandate
   const handleJoin = async () => {
     if (!user) return;
-    if (!mandateAgreed || !cdlUnderwritingAgreed) {
-      toast.error("Please authorize the Credit Direct Limited mandate agreement.");
+    if (!mandateAgreed) {
+      toast.error("Please authorize the standing direct debit mandate.");
       return;
     }
     setIsJoining(true);
@@ -195,7 +274,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         throw error;
       }
 
-      toast.success("Welcome! Underwriting cleared and mandate authorized.");
+      toast.success("Welcome! Verification cleared and mandate authorized.");
       setShowUnderwritingModal(false);
       router.push(`/dashboard/groups/${groupId}`);
       router.refresh();
@@ -327,12 +406,12 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                       <div className="flex items-center gap-2.5">
                         <ShieldCheck className="h-5 w-5 text-emerald-400" />
                         <div>
-                          <p className="text-xs font-bold text-white">Institutional Underwriting Active</p>
-                          <p className="text-[11px] text-zinc-400">Co-underwritten by Credit Direct Limited (CDL)</p>
+                          <p className="text-xs font-bold text-white">Financial Verification Active</p>
+                          <p className="text-[11px] text-zinc-400">Bank Statement &amp; Bureau Check via Mono</p>
                         </div>
                       </div>
                       <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                        Pre-Approved
+                        Active
                       </span>
                     </div>
 
@@ -340,7 +419,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                       onClick={handleStartJoinModal}
                       className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] cursor-pointer"
                     >
-                      Verify & Join Group
+                      Verify &amp; Join Group
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </>
@@ -349,7 +428,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                 <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800">
                   <span className="flex items-center gap-1">
                     <Lock className="h-3 w-3 text-emerald-400" />
-                    Continuous Debit Mandate
+                    Standing Direct Debit Mandate
                   </span>
                   <button 
                     type="button"
@@ -375,7 +454,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                   Log In to Join
                 </button>
                 <p className="text-xs text-zinc-500 mt-4">
-                  Note: You must pass BVN/NIN checks and bank statement verification to join.
+                  Note: Group membership includes bank statement review and credit bureau check powered by Mono.
                 </p>
               </div>
             )}
@@ -396,13 +475,13 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                   <span className="text-xs font-mono font-bold uppercase text-emerald-400 tracking-wider">Step {modalStep} of 3</span>
                   <span className="text-zinc-600">•</span>
                   <span className="text-xs text-zinc-400">
-                    {modalStep === 1 ? "Underwriting & Credit Check" : modalStep === 2 ? "Circle Anonymity & Privacy" : "Irrevocable CDL Mandate"}
+                    {modalStep === 1 ? "Underwriting & Credit Check" : modalStep === 2 ? "Circle Anonymity & Privacy" : "Standing Debit Mandate"}
                   </span>
                 </div>
                 <h2 className="text-xl font-bold text-white mt-1">
                   {modalStep === 1 && "Live Pre-Join Financial Underwriting"}
                   {modalStep === 2 && "Privacy & Anonymity Preferences"}
-                  {modalStep === 3 && "Irrevocable Direct Debit Mandate"}
+                  {modalStep === 3 && "Standing Direct Debit Mandate"}
                 </h2>
               </div>
               <button 
@@ -420,7 +499,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
               {modalStep === 1 && (
                 <div className="space-y-5">
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Under Àjọṣe underwriting rules, financial checks run both at onboarding and dynamically prior to entering any rotational circle to verify no fresh external defaults have occurred.
+                    Under Àjọṣe underwriting rules, financial checks run dynamically prior to entering any rotational circle to verify verified monthly inflows and ensure no active external defaults have occurred.
                   </p>
 
                   {isVerifyingUnderwriting ? (
@@ -428,7 +507,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                       <div className="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
                       <div>
                         <p className="font-bold text-white text-sm">Consulting Financial Registries...</p>
-                        <p className="text-xs text-zinc-500 mt-1">Cross-referencing YouVerify BVN, Mono Statement, & CRC Credit Bureau</p>
+                        <p className="text-xs text-zinc-500 mt-1">Cross-referencing YouVerify BVN, Mono Statement, &amp; Credit Bureau via Mono</p>
                       </div>
                     </div>
                   ) : (
@@ -438,14 +517,14 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                            <span className="font-bold text-white text-xs">YouVerify Identity & Accounts</span>
+                            <span className="font-bold text-white text-xs">Identity &amp; Account Discovery</span>
                           </div>
                           <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                             BVN + NIN Verified
                           </span>
                         </div>
                         <div className="text-xs text-zinc-400">
-                          Discovered <strong className="text-white">3 bank accounts</strong> linked to BVN for secondary auto-sweep protection:
+                          Discovered <strong className="text-white">3 bank accounts</strong> linked to BVN for automated mandate routing:
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-[11px]">
                           <div className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/80">
@@ -481,19 +560,19 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                             <p className="text-[10px] text-emerald-400 mt-0.5">Proof of Employment Verified</p>
                           </div>
                           <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800/80">
-                            <p className="text-zinc-500 text-[11px]">Existing Loan Obligations</p>
+                            <p className="text-zinc-500 text-[11px]">Monthly Recurring Commitments</p>
                             <p className="font-bold text-white text-sm">₦{underwritingData?.statement?.monthlyLoanObligation?.toLocaleString() || "35,000"}/mo</p>
                             <p className="text-[10px] text-zinc-400 mt-0.5">DTI: {underwritingData?.statement?.debtToIncomeRatioPct || "8"}% (Healthy)</p>
                           </div>
                         </div>
                       </div>
 
-                      {/* CRC Bureau Score Box */}
+                      {/* Credit Bureau Status Box (powered by Mono) */}
                       <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 flex items-center justify-between">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <Building2 className="h-4 w-4 text-emerald-400" />
-                            <span className="font-bold text-white text-xs">CRC Credit Bureau Status</span>
+                            <span className="font-bold text-white text-xs">Credit Bureau Status (via Mono)</span>
                           </div>
                           <p className="text-xs text-zinc-400">
                             {underwritingData?.bureau?.summaryNarrative || "No active defaults or blacklists across commercial banks."}
@@ -567,22 +646,22 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                       Compliance Notice on Anonymity:
                     </p>
                     <p>
-                      Anonymity applies exclusively to peer members. The Group Administrator, Àjọṣe compliance, and our underwriting partner <strong>Credit Direct Limited (CDL)</strong> maintain verified BVN/NIN records to guarantee legal accountability.
+                      Anonymity applies exclusively to peer members. The Group Administrator and Àjọṣe compliance maintain verified records via Mono Open-Banking and Bureau verification to guarantee legal accountability.
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* STEP 3: IRREVOCABLE MANDATE & CREDIT DIRECT LIMITED UNDERWRITING */}
+              {/* STEP 3: STANDING DIRECT DEBIT MANDATE */}
               {modalStep === 3 && (
                 <div className="space-y-5">
                   <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-5 space-y-3">
                     <div className="flex items-center gap-2 font-bold text-white text-base">
-                      <Building2 className="h-5 w-5 text-emerald-400" />
-                      Credit Direct Limited (CDL) Underwriting Agreement
+                      <Lock className="h-5 w-5 text-emerald-400" />
+                      Standing Direct Debit Mandate Agreement
                     </div>
                     <p className="text-xs text-zinc-300 leading-relaxed">
-                      To prevent circles from collapsing when members fail to contribute, this group is underwritten by <strong>Credit Direct Limited (CDL)</strong>, Nigeria’s premier consumer finance institution.
+                      To protect this rotational savings circle and ensure every member receives their payout on time, all members authorize an automated standing direct debit mandate.
                     </p>
                   </div>
 
@@ -591,26 +670,26 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                     <div className="flex items-start gap-2">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">1</div>
                       <p>
-                        <strong>{group?.max_members || 6}-Month Irrevocable Mandate:</strong> You authorize continuous automated direct debits of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> on every scheduled turn.
+                        <strong>{group?.max_members || 6}-Month Standing Direct Debit Mandate:</strong> You authorize continuous automated direct debits of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> on each scheduled cycle turn.
                       </p>
                     </div>
 
                     <div className="flex items-start gap-2">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">2</div>
                       <p>
-                        <strong>Default Restructuring into CDL Loan:</strong> If your contribution fails and remains unpaid after 24h, Credit Direct Limited advances the funds to the pool collector. The default converts to a personal loan with a <strong>flat 5% late fee + 2.5% monthly penal interest</strong>.
+                        <strong>Continuous Account Reconciliation via Mono:</strong> Your account status and sufficient balance are monitored and reconciled through Mono Open-Banking to guarantee timely cycle clearance.
                       </p>
                     </div>
 
                     <div className="flex items-start gap-2">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">3</div>
                       <p>
-                        <strong>Multi-Account Sweep & Credit Bureau Reporting:</strong> In the event of default, you consent to automated recovery sweeps across all YouVerify-discovered BVN-linked bank accounts and formal reporting to CRC Credit Bureau and FirstCentral.
+                        <strong>Credit Reputation &amp; Bureau Preservation:</strong> Consistent on-time contributions positively build your rotational savings track record and uphold your credit bureau standing.
                       </p>
                     </div>
                   </div>
 
-                  {/* Consent Checkboxes */}
+                  {/* Consent Checkbox */}
                   <div className="space-y-3 pt-2">
                     <label className="flex items-start gap-3 cursor-pointer select-none">
                       <input 
@@ -620,19 +699,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                         className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
                       />
                       <span className="text-xs text-zinc-300">
-                        I authorize the <strong>{group?.max_members || 6}-month irrevocable direct debit mandate</strong> for my scheduled contributions in {group?.name}.
-                      </span>
-                    </label>
-
-                    <label className="flex items-start gap-3 cursor-pointer select-none">
-                      <input 
-                        type="checkbox"
-                        checked={cdlUnderwritingAgreed}
-                        onChange={(e) => setCdlUnderwritingAgreed(e.target.checked)}
-                        className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
-                      />
-                      <span className="text-xs text-zinc-300">
-                        I accept that any default converts to a <strong>Credit Direct Limited (CDL)</strong> loan @ flat 5% late fee + 2.5%/mo interest, subject to multi-account sweeps and bureau reporting.
+                        I authorize the <strong>{group?.max_members || 6}-month standing direct debit mandate</strong> for my scheduled contributions in {group?.name}.
                       </span>
                     </label>
                   </div>
@@ -688,7 +755,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
               {modalStep === 3 && (
                 <button
                   type="button"
-                  disabled={!mandateAgreed || !cdlUnderwritingAgreed || isJoining}
+                  disabled={!mandateAgreed || isJoining}
                   onClick={handleJoin}
                   className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-2 cursor-pointer ml-auto"
                 >
@@ -756,12 +823,12 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
               </div>
 
               <div className="space-y-2 pt-4">
-                <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
-                  <AlertTriangle className="h-4 w-4" />
-                  3. Default Remedies & Credit Direct Limited (CDL) Restructuring
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <CheckCircle2 className="h-4 w-4" />
+                  3. Timely Contribution Commitment &amp; Bureau Standing
                 </div>
                 <p>
-                  Failure to fund your account for an automated debit results in a restructuring of the overdue turn into a formal consumer loan with Credit Direct Limited (CDL) carrying a flat 5% late fee and 2.5% monthly penal interest, automated secondary sweeps across your BVN-linked accounts, and formal reporting to CRC Credit Bureau.
+                  Members commit to maintaining sufficient funds for automated debit on or before each scheduled cycle due date. Continuous verification via Mono Open-Banking and Credit Bureau reporting protects the circle and preserves member reputation.
                 </p>
               </div>
             </div>

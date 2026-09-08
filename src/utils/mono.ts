@@ -45,7 +45,7 @@ export async function verifyTransferWithMono({
   senderName?: string;
   adminBankName?: string;
 }): Promise<MonoTransactionMatch> {
-  const monoSecretKey = process.env.MONO_SECRET_KEY;
+  const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
 
   // 1. Live Mono API check if secret key and account ID are available
   if (monoSecretKey && adminAccountId && adminAccountId !== "simulated_account") {
@@ -138,7 +138,7 @@ export async function analyzeBankStatementWithMono({
   monoAccountId?: string;
   targetMonthlyContribution?: number;
 }): Promise<MonoStatementAnalysis> {
-  const monoSecretKey = process.env.MONO_SECRET_KEY;
+  const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
 
   if (monoSecretKey && monoAccountId && monoAccountId !== "simulated_account") {
     try {
@@ -223,7 +223,7 @@ export async function analyzeBankStatementWithMono({
     statementPeriodMonths: 6,
     overallStabilityScore: 88,
     safeContributionCapacity: Math.round(sampleInflow * 0.35),
-    detectedLoanEntities: ["Credit Direct Limited (CDL)"]
+    detectedLoanEntities: ["Commercial Overdraft Facility"]
   };
 }
 

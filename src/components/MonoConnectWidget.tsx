@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -20,6 +21,49 @@ export function MonoConnectWidget({ userId, isVerified }: { userId: string, isVe
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<"select" | "login" | "loading" | "success">("select");
   const [selectedBank, setSelectedBank] = useState<typeof BANKS[0] | null>(null);
+
+  const handleConnectWithMono = () => {
+    const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "test_pk_dwxofr8xxi2dfheang41";
+
+    if (typeof window !== "undefined" && (window as any).Connect) {
+      try {
+        const monoInstance = new (window as any).Connect({
+          key: monoPublicKey,
+          onSuccess: async ({ code }: { code: string }) => {
+            toast.loading("Linking bank account via Mono...", { id: "mono-linking" });
+            try {
+              const res = await fetch("/api/mono/exchange-token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code })
+              });
+              const data = await res.json();
+              if (res.ok) {
+                toast.success(`Connected ${data.bankName || "Bank"} successfully via Mono!`, { id: "mono-linking" });
+                router.refresh();
+              } else {
+                throw new Error(data.error || "Failed to link account");
+              }
+            } catch (err: any) {
+              toast.error(err.message || "Failed to link bank account.", { id: "mono-linking" });
+            }
+          },
+          onClose: () => {
+            console.log("Mono widget closed");
+          }
+        });
+        monoInstance.setup();
+        monoInstance.open();
+        return;
+      } catch (err) {
+        console.warn("Mono Connect initiation fallback:", err);
+      }
+    }
+
+    // Fallback to simulated bank selector if Connect script is not loaded
+    setStep("select");
+    setIsOpen(true);
+  };
   
   const handleSelectBank = (bank: typeof BANKS[0]) => {
     setSelectedBank(bank);
@@ -97,8 +141,8 @@ export function MonoConnectWidget({ userId, isVerified }: { userId: string, isVe
           </div>
         </div>
         <button 
-          onClick={() => { setStep("select"); setIsOpen(true); }}
-          className="shrink-0 px-6 py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl transition-all shadow-md flex items-center gap-2 w-full md:w-auto justify-center"
+          onClick={handleConnectWithMono}
+          className="shrink-0 px-6 py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl transition-all shadow-md flex items-center gap-2 w-full md:w-auto justify-center cursor-pointer"
         >
           <Lock className="h-4 w-4" />
           Connect with Mono
@@ -236,6 +280,11 @@ export function MonoConnectWidget({ userId, isVerified }: { userId: string, isVe
           </div>
         </div>
       )}
+      {/* Load official Mono Connect SDK script */}
+      <Script 
+        src="https://connect.withmono.com/connect.js" 
+        strategy="lazyOnload" 
+      />
     </>
   );
 }

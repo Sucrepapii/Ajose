@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         amount: Number(amount),
         type: "contribution",
         status: "completed",
-        description: `Turn ${cycleTurn} covered by Credit Direct Limited (CDL Loan: ${cdlLoanRecord.cdlLoanId}) | Recovering @ 5% flat fee + 2.5%/mo penal interest`
+        description: `Turn ${cycleTurn} covered by Reserve Pool Guarantee | Automated Recovery Active`
       });
 
     return NextResponse.json({
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       cdlLoan: cdlLoanRecord,
       bureauReport: bureauReportResult,
       updatedCreditScore: newScore,
-      message: `Default of ₦${amount.toLocaleString()} successfully restructured into Credit Direct Limited (CDL) loan and reported to Credit Bureaus.`
+      message: `Default of ₦${amount.toLocaleString()} successfully covered by Reserve Pool Guarantee and reported to Credit Bureaus.`
     });
 
   } catch (error: any) {
