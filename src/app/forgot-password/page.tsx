@@ -42,7 +42,14 @@ export default function ForgotPasswordPage() {
       setStep(2);
       toast.success("6-digit OTP code sent to your email!");
     } catch (err: any) {
-      toast.error(err.message || "Failed to send OTP code. Please try again.");
+      console.error("Supabase resetPasswordForEmail error:", err);
+      if (err.status === 500 || err.message?.includes("500") || err.message?.includes("Internal Server Error")) {
+        toast.error("Email service error. Please check Supabase Custom SMTP settings or use OTP code directly.");
+        // Still allow transitioning to Step 2 so user can input their OTP code if dispatched
+        setStep(2);
+      } else {
+        toast.error(err.message || "Failed to send OTP code. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
