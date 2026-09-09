@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Ajose</string>
+    <string name="title_activity_main">Ajose</string>
+    <string name="package_name">ng.ajose.app</string>
+    <string name="custom_url_scheme">ng.ajose.app</string>
+</resources>

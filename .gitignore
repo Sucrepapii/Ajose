@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# android signing
+/ajose-keys/
+/android/key.properties
+
+# capacitor
+/out/
