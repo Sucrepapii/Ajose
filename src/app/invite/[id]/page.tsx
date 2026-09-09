@@ -4,6 +4,8 @@ import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { sendEmail } from "@/utils/resend";
+import { getWelcomeEmailTemplate } from "@/utils/emailTemplates";
 import { 
   PiggyBank, 
   Users, 
@@ -272,6 +274,18 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
           return;
         }
         throw error;
+      }
+
+      // 4. Send Welcome & Onboarding Email via Resend
+      if (user?.email) {
+        sendEmail({
+          to: user.email,
+          subject: `Welcome to ${group?.name || 'Àjọṣe Savings Circle'}! 🎉`,
+          html: getWelcomeEmailTemplate({
+            userName: user.user_metadata?.first_name || 'Member',
+            groupName: group?.name || 'Àjọṣe Savings Circle',
+          }),
+        }).catch((err) => console.error("Welcome email error:", err));
       }
 
       toast.success("Welcome! Verification cleared and mandate authorized.");

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { sendEmail } from "@/utils/resend";
+import { getContributionReceiptEmailTemplate } from "@/utils/emailTemplates";
 import { toast } from "sonner";
 import { 
   CreditCard, 
@@ -154,6 +156,27 @@ export function MakeContributionClient({
           .from('users')
           .update({ credit_score: (profile.credit_score ?? 50) + 5 })
           .eq('id', userId);
+      }
+
+      // Fetch user profile to get email for receipt
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('first_name, last_name, email')
+        .eq('id', userId)
+        .single();
+
+      if (userProfile?.email) {
+        sendEmail({
+          to: userProfile.email,
+          subject: `Contribution Payment Receipt - ₦${amount.toLocaleString()}`,
+          html: getContributionReceiptEmailTemplate({
+            userName: userProfile.first_name || 'Member',
+            groupName: 'Àjọ Circle',
+            amount: amount,
+            reference: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
+            date: new Date().toLocaleString(),
+          }),
+        }).catch((err) => console.error("Contribution receipt email error:", err));
       }
 
       // Find the admin of this group

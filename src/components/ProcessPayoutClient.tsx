@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { sendEmail } from "@/utils/resend";
+import { getPayoutReceivedEmailTemplate } from "@/utils/emailTemplates";
 import { toast } from "sonner";
 import { Landmark, ArrowRight, CheckCircle2, AlertTriangle, ShieldCheck, RefreshCw, Zap } from "lucide-react";
 
@@ -92,6 +94,20 @@ export function ProcessPayoutClient({
           message: `Your rotational payout for Turn ${currentTurn} has been automatically debited from the Admin account and credited to your bank.`,
           type: 'success'
         });
+
+      // Send Payout Email via Resend
+      if (receivingUser?.email) {
+        sendEmail({
+          to: receivingUser.email,
+          subject: `Payout Received! ₦${payoutAmount.toLocaleString()} - ${group.name}`,
+          html: getPayoutReceivedEmailTemplate({
+            userName: getDisplayName(),
+            groupName: group.name,
+            amount: payoutAmount,
+            turnNumber: currentTurn,
+          }),
+        }).catch((err) => console.error("Payout email error:", err));
+      }
 
       toast.success(`Turn ${currentTurn} auto-payout completed! Advanced to Turn ${nextTurn}.`);
       setIsOpen(false);
