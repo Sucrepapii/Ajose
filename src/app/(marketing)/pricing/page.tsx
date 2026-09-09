@@ -51,7 +51,7 @@ export default function PricingPage() {
             <h3 className="text-2xl font-black text-white mb-2 relative z-10">Group Admins</h3>
             <div className="text-5xl font-black text-[#C5A059] mb-6 relative z-10">2% <span className="text-xl text-white/50 font-medium">/ payout</span></div>
             <p className="text-white/80 mb-8 flex-1 relative z-10 font-medium">
-              Create and manage rotational savings groups with institutional-grade tools and zero manual tracking.
+              Create and manage rotational contribution groups with institutional-grade tools and zero manual tracking.
             </p>
             <ul className="space-y-5 mb-10 relative z-10">
               {['Automated turn scheduling', 'Default risk management', 'One-click payouts', 'Group performance analytics'].map((feature, i) => (

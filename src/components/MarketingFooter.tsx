@@ -23,7 +23,7 @@ export function MarketingFooter() {
               &ldquo;Saving together, growing together.&rdquo;
             </p>
             <p className="text-gray-300 leading-relaxed max-w-sm">
-              The modern operating system for Rotational savings groups. Built for trust, transparency, and accountability.
+              The modern operating system for Rotational contribution groups. Built for trust, transparency, and accountability.
             </p>
           </div>
 

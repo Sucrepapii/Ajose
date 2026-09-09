@@ -213,7 +213,12 @@ export function ProcessPayoutClient({
 
               {/* Receiver Account Details */}
               <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-2">
-                <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Recipient Destination Bank</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Recipient Destination Bank</h3>
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <ShieldCheck className="h-3 w-3 text-emerald-600" /> Mono Verified
+                  </span>
+                </div>
                 
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-gray-500">Bank Name</span>

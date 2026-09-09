@@ -6,15 +6,24 @@ export default async function VerifyPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  let currentUserId = user?.id;
+  let isVerified = false;
 
-  const { data: profile } = await supabase
-    .from('users')
-    .select('bvn_verified, bank_name, account_number')
-    .eq('id', user.id)
-    .single();
+  if (!user) {
+    if (process.env.NODE_ENV === 'development') {
+      currentUserId = 'demo-user';
+      isVerified = false;
+    } else {
+      redirect("/login");
+    }
+  } else {
+    const { data: profile } = await supabase
+      .from('users')
+      .select('bvn_verified, bank_name, account_number')
+      .eq('id', user.id)
+      .single();
+    isVerified = !!profile?.bvn_verified;
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in pb-20 mt-8">
@@ -27,8 +36,8 @@ export default async function VerifyPage() {
       </div>
 
       <MonoConnectWidget 
-        userId={user.id} 
-        isVerified={!!profile?.bvn_verified} 
+        userId={currentUserId || "demo-user"} 
+        isVerified={isVerified} 
       />
     </div>
   );

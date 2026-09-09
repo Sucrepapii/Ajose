@@ -219,7 +219,7 @@ export default function CreateGroupPage() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#0B3022]">Create Rotational Savings Group</h1>
+          <h1 className="text-2xl font-bold text-[#0B3022]">Create Rotational Contribution Group</h1>
           <p className="text-[#1F2937]/70 text-sm">Set up terms, determine your commission percentage, and tender your settlement account.</p>
         </div>
       </div>
@@ -388,9 +388,20 @@ export default function CreateGroupPage() {
 
               {/* Admin Tendered Settlement Account (Req 7) */}
               <div className="space-y-4 p-5 rounded-xl border border-emerald-500/30 bg-emerald-50/20">
-                <div className="flex items-center gap-2 text-[#0B3022]">
-                  <Landmark className="h-5 w-5 text-emerald-700" />
-                  <h3 className="text-sm font-bold">Admin Tendered Settlement Bank Account</h3>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-[#0B3022]">
+                    <Landmark className="h-5 w-5 text-emerald-700" />
+                    <h3 className="text-sm font-bold">Admin Tendered Settlement Bank Account</h3>
+                  </div>
+                  {formData.adminAccountNumber ? (
+                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3 text-emerald-600" /> Pre-filled from Mono
+                    </span>
+                  ) : (
+                    <Link href="/dashboard/verify" className="text-xs text-emerald-700 hover:underline font-bold">
+                      Link via Mono &rarr;
+                    </Link>
+                  )}
                 </div>
                 <p className="text-xs text-[#1F2937]/70 leading-relaxed font-medium">
                   Tender the official bank account for this group. Contributions will be paid into this account, and automated debits will disburse turn payouts from this account.

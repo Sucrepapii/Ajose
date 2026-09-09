@@ -68,7 +68,7 @@ export default function Home() {
                 variants={fadeIn}
                 className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl"
               >
-                Managing your Ajo group just got world-class. Ditch the spreadsheets and WhatsApp groups. Àjọṣe brings institutional-grade tracking and accountability to your rotational savings group.
+                Managing your Ajo group just got world-class. Ditch the spreadsheets and WhatsApp groups. Àjọṣe brings institutional-grade tracking and accountability to your rotational contribution group.
               </motion.p>
               
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4">

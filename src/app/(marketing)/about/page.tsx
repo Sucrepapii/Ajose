@@ -20,7 +20,7 @@ export default function AboutPage() {
             </div>
             <h3 className="text-xl font-bold text-[#0B3022] mb-3">Community First</h3>
             <p className="text-[#1F2937]/70 leading-relaxed">
-              Rotational savings groups are built on trust between people. We provide the tools to scale that trust securely across wider networks.
+              Rotational contribution groups are built on trust between people. We provide the tools to scale that trust securely across wider networks.
             </p>
           </div>
           
