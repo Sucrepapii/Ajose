@@ -32,23 +32,36 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
 
     try {
+      // 1. Attempt native Supabase resetPasswordForEmail
       const redirectUrl = `${window.location.origin}/reset-password`;
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: redirectUrl,
       });
 
       if (error) throw error;
 
       setStep(2);
-      toast.success("6-digit OTP code sent to your email!");
+      toast.success("Password recovery email sent!");
     } catch (err: any) {
-      console.error("Supabase resetPasswordForEmail error:", err);
-      if (err.status === 500 || err.message?.includes("500") || err.message?.includes("Internal Server Error")) {
-        toast.error("Email service error. Please check Supabase Custom SMTP settings or use OTP code directly.");
-        // Still allow transitioning to Step 2 so user can input their OTP code if dispatched
+      console.warn("Supabase resetPasswordForEmail native SMTP error, invoking Resend API fallback:", err);
+      
+      // 2. Resend API Fallback if Supabase native SMTP fails or returns 500
+      try {
+        const resendRes = await fetch("/api/auth/send-recovery-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.trim() }),
+        });
+
+        const resendData = await resendRes.json();
+        if (!resendRes.ok || !resendData.success) {
+          throw new Error(resendData.error || "Failed to deliver recovery email.");
+        }
+
         setStep(2);
-      } else {
-        toast.error(err.message || "Failed to send OTP code. Please try again.");
+        toast.success("Password reset code delivered via Resend!");
+      } catch (fallbackErr: any) {
+        toast.error(fallbackErr.message || "Failed to send reset code. Please check your email.");
       }
     } finally {
       setIsSubmitting(false);

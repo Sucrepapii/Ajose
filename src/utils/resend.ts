@@ -47,7 +47,7 @@ export async function sendPayoutTurnEmail({
 }) {
   return sendEmail({
     to,
-    subject: `Your turn don reach! 🎯 — ${groupName} Payout Ready`,
+    subject: `Your turn don reach!  — ${groupName} Payout Ready`,
     html: `
       <div style="font-family: sans-serif; background-color: #FDFBF7; padding: 32px; border-radius: 12px; color: #0B3022;">
         <h2 style="color: #0B3022; margin-bottom: 8px;">Turn by turn, no wahala.</h2>
