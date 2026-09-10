@@ -33,12 +33,21 @@ export default function LoginPage() {
         throw new Error("Please enter your email and password.");
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email.trim(),
         password: formData.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle standard Supabase Auth 400 error codes
+        if (error.message?.includes("Invalid login credentials") || error.status === 400) {
+          throw new Error("Invalid email or password. If you just registered, please check your email or ensure your password is correct.");
+        }
+        if (error.message?.includes("Email not confirmed")) {
+          throw new Error("Your email address has not been confirmed yet. Please check your inbox for the verification link.");
+        }
+        throw error;
+      }
       
       toast.success("Logged in successfully!");
       
@@ -54,6 +63,7 @@ export default function LoginPage() {
       router.refresh();
 
     } catch (err: any) {
+      console.error("Login error:", err);
       toast.error(err.message || "Failed to log in.");
     } finally {
       setIsSubmitting(false);

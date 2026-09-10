@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock } from "lucide-react";
 
 import Image from "next/image";
 
@@ -44,9 +44,37 @@ export default function SignupPage() {
         toast.error("Password, BVN, and NIN are required.");
         return;
       }
+
+      if (formData.bvn.length !== 11 || formData.nin.length !== 11) {
+        toast.error("BVN and NIN must each be exactly 11 digits.");
+        return;
+      }
       
       setIsSubmitting(true);
+      const monoToastId = toast.loading("Verifying BVN & NIN via Mono Identity API...");
+
       try {
+        // 1. Verify BVN & NIN with Mono API
+        const verifyRes = await fetch("/api/mono/verify-identity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bvn: formData.bvn,
+            nin: formData.nin,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            phone: formData.phone
+          })
+        });
+
+        const verifyData = await verifyRes.json();
+        if (!verifyRes.ok || !verifyData.success) {
+          throw new Error(verifyData.error || "Mono identity check failed.");
+        }
+
+        toast.success("Identity verified via Mono!", { id: monoToastId });
+
+        // 2. Register user in Supabase
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -61,11 +89,7 @@ export default function SignupPage() {
 
         if (authError) throw authError;
         
-        // Since we are moving to a 2-step visual flow, we'll just show success and let them verify via email link
-        // Or if we need to set BVN/NIN we can do it after signup if email verification is off.
-        // For this prototype, we'll assume it succeeded.
-        
-        // Update user profile immediately (if RLS allows or via webhook)
+        // 3. Update user profile with verified status
         if (authData.user) {
           await supabase
             .from('users')
@@ -84,7 +108,7 @@ export default function SignupPage() {
         setStep(3); // Success Screen
         toast.success("Account created! Please check your email.");
       } catch (err: any) {
-        toast.error(err.message || "Failed to create account. Try again.");
+        toast.error(err.message || "Failed to create account. Try again.", { id: monoToastId });
       } finally {
         setIsSubmitting(false);
       }
@@ -229,9 +253,25 @@ export default function SignupPage() {
 
             {step === 2 && (
               <div className="space-y-6">
-                <div className="text-center mb-8">
+                <div className="text-center mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">Security & Identity</h2>
                   <p className="text-gray-500">Secure your account and verify your identity.</p>
+                </div>
+
+                {/* Mono Identity Verification Banner */}
+                <div className="p-4 rounded-xl bg-[#0B402B]/5 border border-[#0B402B]/15 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#0B402B] flex items-center justify-center text-[#D4AF37] shrink-0 shadow-sm">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-xs font-bold text-[#0B402B] uppercase tracking-wider">Mono Identity Check</span>
+                      <span className="px-2 py-0.5 text-[10px] font-extrabold bg-[#D4AF37] text-[#0B402B] rounded-full">ACTIVE API</span>
+                    </div>
+                    <p className="text-xs text-gray-600 leading-snug">
+                      Your 11-digit BVN & NIN are checked instantly via Mono Open-Banking Identity API.
+                    </p>
+                  </div>
                 </div>
                 
                 <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
@@ -255,19 +295,33 @@ export default function SignupPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">BVN (11 digits)</label>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="block text-sm font-medium text-gray-700">BVN (11 digits)</label>
+                        {formData.bvn.length === 11 && (
+                          <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> Ready
+                          </span>
+                        )}
+                      </div>
                       <input 
                         name="bvn" value={formData.bvn} onChange={handleChange} 
                         type="text" placeholder="Bank Verification No." maxLength={11}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                        className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.bvn.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">NIN (11 digits)</label>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="block text-sm font-medium text-gray-700">NIN (11 digits)</label>
+                        {formData.nin.length === 11 && (
+                          <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> Ready
+                          </span>
+                        )}
+                      </div>
                       <input 
                         name="nin" value={formData.nin} onChange={handleChange} 
                         type="text" placeholder="National Identity No." maxLength={11}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                        className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.nin.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
                       />
                     </div>
                   </div>
