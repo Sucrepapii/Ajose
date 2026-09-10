@@ -28,7 +28,7 @@ const getEmailHeader = (title: string) => `
   <div class="container">
     <div class="header">
       <div class="header-logo">Àjọ<span class="header-gold">ṣe</span></div>
-      <p style="color: #a7f3d0; font-size: 12px; margin: 6px 0 0 0; font-style: italic;">&ldquo;Saving together, growing together.&rdquo;</p>
+      <p style="color: #a7f3d0; font-size: 12px; margin: 6px 0 0 0; font-style: italic;">&ldquo;Turn by turn, no wahala.&rdquo;</p>
     </div>
     <div class="body">
 `;
@@ -58,7 +58,7 @@ export function getWelcomeEmailTemplate({
   ${getEmailHeader("Welcome to Àjọṣe")}
     <h1 class="title">Welcome to Àjọṣe! 👋</h1>
     <p class="text">Hello ${userName},</p>
-    <p class="text">Welcome to <strong>Àjọṣe</strong> — the modern, institutional-grade operating system for rotational contribution groups.</p>
+    <p class="text">Welcome to <strong>Ajose</strong> — the digital platform that runs your Ajo group. Turn by turn, no wahala.</p>
 
     ${groupName ? `
     <div class="card">

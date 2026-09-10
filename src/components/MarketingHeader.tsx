@@ -25,7 +25,7 @@ export async function MarketingHeader() {
             <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#061B13]/95 backdrop-blur-md border border-[#C5A059]/60 shadow-[0_4px_25px_rgba(0,0,0,0.6)]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse"></span>
               <span className="text-xs font-medium tracking-wide text-[#F3E5C8] font-sans">
-                Saving together, growing together.
+                Turn by turn, no wahala.
               </span>
             </div>
           </div>

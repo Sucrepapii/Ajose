@@ -20,10 +20,11 @@ export function MarketingFooter() {
               <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
             </Link>
             <p className="text-[#C5A059] font-medium text-sm mb-4 italic">
-              &ldquo;Saving together, growing together.&rdquo;
+              &ldquo;Turn by turn, no wahala.&rdquo;
+              {/* &ldquo;Turn by turn, no wahala.&rdquo; */}
             </p>
             <p className="text-gray-300 leading-relaxed max-w-sm">
-              The modern operating system for Rotational contribution groups. Built for trust, transparency, and accountability.
+              Ajose is the digital platform that runs your Ajo group, collecting contributions, tracking every round, and making sure everyone gets their turn. Turn by turn, no wahala.
             </p>
           </div>
 

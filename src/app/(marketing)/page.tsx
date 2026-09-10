@@ -57,18 +57,31 @@ export default function Home() {
               animate="visible"
               className="z-20"
             >
+              <motion.div 
+                variants={fadeIn} 
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#C5A059]/25 via-[#D4AF37]/15 to-[#C5A059]/25 border border-[#C5A059]/50 shadow-[0_0_25px_rgba(197,160,89,0.3)] backdrop-blur-md mb-8 group hover:scale-[1.03] transition-all duration-300 cursor-default"
+              >
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C5A059] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#C5A059]"></span>
+                </span>
+                <span className="text-base md:text-lg font-extrabold tracking-wide text-[#FDFBF7] drop-shadow-sm">
+                  Turn by turn, no wahala.
+                </span>
+              </motion.div>
+
               <motion.h1 
                 variants={fadeIn}
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.15]"
               >
-                The modern standard for Rotating Savings
+                Because life is turn by turn, Ajose makes sure yours comes.
               </motion.h1>
               
               <motion.p 
                 variants={fadeIn}
                 className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl"
               >
-                Managing your Ajo group just got world-class. Ditch the spreadsheets and WhatsApp groups. Àjọṣe brings institutional-grade tracking and accountability to your rotational contribution group.
+                Run your Ajo. Track every round. Trust every naira. Ditch messy WhatsApp groups and handwritten ledgers for an automated, transparent contribution platform built for Nigeria.
               </motion.p>
               
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4">
@@ -76,7 +89,7 @@ export default function Home() {
                   href="/signup"
                   className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-md bg-[#C5A059] px-8 text-base font-bold text-[#0B3022] shadow-lg hover:bg-[#A48243] hover:scale-[1.02] active:scale-95 transition-all"
                 >
-                  Create a Group Free
+                  Start Your Ajo Group
                 </Link>
                 <Link
                   href="#how-it-works"
@@ -105,16 +118,16 @@ export default function Home() {
                   <div className="flex justify-between items-center mb-5">
                     <div>
                       <h3 className="text-[#0B3022] font-bold text-lg">Group Roster</h3>
-                      <p className="text-[#1F2937]/70 text-sm">October Cycle</p>
+                      <p className="text-[#1F2937]/70 text-sm">October Payout Cycle</p>
                     </div>
-                    <div className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">ACTIVE</div>
+                    <div className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">ACTIVE ROUND</div>
                   </div>
                   
                   <div className="space-y-3">
                     {[
-                      { name: "Sarah J.", status: "Paid", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
-                      { name: "Michael O.", status: "Paid", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
-                      { name: "David K.", status: "Pending", icon: Activity, color: "text-amber-600", bg: "bg-amber-100" }
+                      { name: "Sarah J.", status: "E don pay ✓", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
+                      { name: "Michael O.", status: "E don pay ✓", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
+                      { name: "David K.", status: "Your turn don reach 🎯", icon: Activity, color: "text-amber-700", bg: "bg-amber-100" }
                     ].map((user, i) => (
                       <motion.div 
                         key={i}

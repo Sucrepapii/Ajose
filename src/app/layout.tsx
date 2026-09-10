@@ -13,8 +13,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Àjọṣe - The Guaranteed Ajo Platform",
-  description: "Join a group where everyone is credit-verified. We track defaults. We recover funds. You save in peace.",
+  title: "Ajose — Turn by turn, no wahala.",
+  description: "Ajose is the digital platform that runs your Ajo group — collecting contributions, tracking every round, and making sure everyone gets their turn.",
+  keywords: ["Ajo", "Esusu", "Osusu", "Rotational Savings", "Nigeria Fintech", "Group Contribution", "Ajose"],
+  openGraph: {
+    title: "Ajose — Turn by turn, no wahala.",
+    description: "Run your Ajo. Track every round. Trust every naira.",
+    siteName: "Ajose",
+    locale: "en_NG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ajose — Turn by turn, no wahala.",
+    description: "The modern digital platform for managing Ajo & Esusu contribution schemes in Nigeria.",
+  },
 };
 
 import { Toaster } from 'sonner';
