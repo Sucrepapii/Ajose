@@ -76,7 +76,7 @@ export function getWelcomeEmailTemplate({
     <p class="text">With Àjọṣe, your contributions and payouts are backed by Mono Open-Banking, automated direct debits, and credit bureau accountability.</p>
 
     <div style="text-align: center; margin-top: 28px;">
-      <a href="http://localhost:3000/dashboard" class="btn">Go to Dashboard</a>
+      <a href="https://ajose.ng/dashboard" class="btn">Go to Dashboard</a>
     </div>
   ${getEmailFooter()}
   `;
@@ -124,7 +124,7 @@ export function getContributionReceiptEmailTemplate({
     <p class="text">Thank you for maintaining a 100% on-time contribution record! This builds your Àjọṣe Credit Score.</p>
 
     <div style="text-align: center; margin-top: 28px;">
-      <a href="http://localhost:3000/dashboard" class="btn">View Contribution Progress</a>
+      <a href="https://ajose.ng/dashboard" class="btn">View Contribution Progress</a>
     </div>
   ${getEmailFooter()}
   `;
@@ -159,7 +159,7 @@ export function getPayoutReceivedEmailTemplate({
     <p class="text">You can review transaction details and cycle activity on your dashboard anytime.</p>
 
     <div style="text-align: center; margin-top: 28px;">
-      <a href="http://localhost:3000/dashboard" class="btn">View Dashboard</a>
+      <a href="https://ajose.ng/dashboard" class="btn">View Dashboard</a>
     </div>
   ${getEmailFooter()}
   `;
@@ -228,7 +228,7 @@ export function getContributionDueEmailTemplate({
     <p class="text">Please ensure your linked bank account has sufficient balance to allow seamless clearance.</p>
 
     <div style="text-align: center; margin-top: 28px;">
-      <a href="http://localhost:3000/dashboard" class="btn">Check Account Balance</a>
+      <a href="https://ajose.ng/dashboard" class="btn">Check Account Balance</a>
     </div>
   ${getEmailFooter()}
   `;
