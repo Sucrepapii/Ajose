@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
 
     const cleanOtp = otp.trim();
     if (!cleanOtp) {
-      toast.error("Please enter the 6-digit OTP code sent to your email.");
+      toast.error("Please enter the verification code sent to your email.");
       return;
     }
 
@@ -252,18 +252,18 @@ export default function ForgotPasswordPage() {
               </div>
               <h2 className="text-3xl font-bold text-[#111827] mb-2">Enter OTP &amp; Reset</h2>
               <p className="text-gray-500 mb-6 text-sm">
-                We sent a 6-digit OTP code to <strong className="text-[#0B402B]">{email}</strong>. Enter the code and your new password below.
+                We sent a verification code to <strong className="text-[#0B402B]">{email}</strong>. Enter the code and your new password below.
               </p>
 
               <form onSubmit={handleVerifyOtpAndResetPassword} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">6-Digit OTP Code</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Verification Code (OTP)</label>
                   <input 
                     type="text" 
-                    maxLength={6}
+                    maxLength={10}
                     value={otp} 
                     onChange={(e) => setOtp(e.target.value)} 
-                    placeholder="e.g. 123456" 
+                    placeholder="e.g. 47193002" 
                     className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-colors font-mono tracking-widest text-center text-xl font-bold"
                     required
                   />
