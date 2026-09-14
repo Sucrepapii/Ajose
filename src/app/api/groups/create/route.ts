@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import { createClient as createSupabaseJsClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 
 export async function POST(req: Request) {
   try {
+    const authHeader = req.headers.get("authorization");
     const body = await req.json();
     const {
       name,
@@ -19,7 +21,7 @@ export async function POST(req: Request) {
       userEmail: bodyUserEmail
     } = body;
 
-    // 1. Authenticate user from server cookies
+    // 1. Authenticate user session
     const supabaseServer = await createClient();
     const { data: { user: serverUser } } = await supabaseServer.auth.getUser();
 
@@ -40,8 +42,19 @@ export async function POST(req: Request) {
       );
     }
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://npvwtzmlhpagsdohkuvm.supabase.co";
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
     const hasServiceRole = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
-    const dbClient = hasServiceRole ? createAdminClient() : supabaseServer;
+
+    // If Authorization header is provided, instantiate client passing Bearer token to satisfy RLS (auth.uid())
+    const userClient = authHeader
+      ? createSupabaseJsClient(supabaseUrl, supabaseAnonKey, {
+          global: { headers: { Authorization: authHeader } },
+          auth: { persistSession: false, autoRefreshToken: false }
+        })
+      : supabaseServer;
+
+    const dbClient = hasServiceRole ? createAdminClient() : userClient;
     const supabaseAdmin = createAdminClient();
 
     // Persist Admin settlement bank details on user profile if provided
@@ -150,7 +163,7 @@ export async function POST(req: Request) {
             status: "pending"
           };
 
-          const { data: data4, error: err4 } = await supabaseAdmin
+          const { data: data4, error: err4 } = await userClient
             .from("groups")
             .insert(payload4)
             .select()
@@ -172,7 +185,7 @@ export async function POST(req: Request) {
 
     // 3. Create Admin membership record in public.memberships
     try {
-      const { error: memberError } = await supabaseAdmin
+      const { error: memberError } = await dbClient
         .from("memberships")
         .upsert({
           group_id: finalGroupId,
@@ -183,7 +196,14 @@ export async function POST(req: Request) {
         }, { onConflict: "group_id, user_id" });
 
       if (memberError) {
-        console.warn("Membership upsert warning on admin client:", memberError.message);
+        console.warn("Membership upsert warning on dbClient, retrying via userClient:", memberError.message);
+        await userClient.from("memberships").upsert({
+          group_id: finalGroupId,
+          user_id: userId,
+          role: "admin",
+          status: "active",
+          payout_turn: null
+        }, { onConflict: "group_id, user_id" });
       }
     } catch (memberErr) {
       console.error("Admin membership insertion error:", memberErr);
