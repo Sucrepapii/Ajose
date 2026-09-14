@@ -38,7 +38,46 @@ export default function SignupPage() {
         toast.error("Please fill in all required fields.");
         return;
       }
-      setStep(2);
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        toast.error("Please enter a valid email address.");
+        return;
+      }
+
+      const phoneDigits = formData.phone.replace(/\D/g, "");
+      if (phoneDigits.length < 10) {
+        toast.error("Please enter a valid 10-digit or 11-digit phone number.");
+        return;
+      }
+
+      setIsSubmitting(true);
+      const checkToastId = toast.loading("Verifying profile details...");
+
+      try {
+        const dupRes = await fetch("/api/auth/check-duplicates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            phone: formData.phone
+          })
+        });
+
+        const dupData = await dupRes.json();
+        if (!dupRes.ok || dupData.exists) {
+          toast.error(dupData.error || "An account with this phone number or email already exists.", { id: checkToastId });
+          setIsSubmitting(false);
+          return;
+        }
+
+        toast.dismiss(checkToastId);
+        setStep(2);
+      } catch (err: any) {
+        toast.error("Failed to verify details. Please try again.", { id: checkToastId });
+      } finally {
+        setIsSubmitting(false);
+      }
     } else if (step === 2) {
       if (!formData.password || !formData.bvn || !formData.nin) {
         toast.error("Password, BVN, and NIN are required.");
@@ -51,10 +90,31 @@ export default function SignupPage() {
       }
       
       setIsSubmitting(true);
-      const monoToastId = toast.loading("Verifying BVN & NIN via Mono Identity API...");
+      const monoToastId = toast.loading("Checking identity uniqueness...");
 
       try {
-        // 1. Verify BVN & NIN with Mono API
+        // 1. Pre-flight duplicate check for Phone, Email, BVN, and NIN
+        const dupRes = await fetch("/api/auth/check-duplicates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            phone: formData.phone,
+            bvn: formData.bvn,
+            nin: formData.nin
+          })
+        });
+
+        const dupData = await dupRes.json();
+        if (!dupRes.ok || dupData.exists) {
+          toast.error(dupData.error || "An account with these identity details already exists.", { id: monoToastId });
+          setIsSubmitting(false);
+          return;
+        }
+
+        toast.loading("Verifying BVN & NIN via Mono Identity API...", { id: monoToastId });
+
+        // 2. Verify BVN & NIN with Mono API
         const verifyRes = await fetch("/api/mono/verify-identity", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -74,7 +134,7 @@ export default function SignupPage() {
 
         toast.success("Identity verified via Mono!", { id: monoToastId });
 
-        // 2. Register user in Supabase
+        // 3. Register user in Supabase
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -89,20 +149,51 @@ export default function SignupPage() {
 
         if (authError) throw authError;
         
-        // 3. Update user profile with verified status
+        // 4. Update user profile with verified status, BVN, NIN and phone
         if (authData.user) {
           await supabase
             .from('users')
-            .update({
+            .upsert({
+              id: authData.user.id,
+              email: formData.email,
               first_name: formData.firstName,
               last_name: formData.lastName,
               phone: formData.phone,
+              bvn: formData.bvn,
+              nin: formData.nin,
               bvn_verified: true,
               nin_verified: true,
               credit_score: 85,
               auto_sweep_enabled: true
-            })
-            .eq('id', authData.user.id);
+            });
+
+          // 5. Auto-join group if inviteCode or next parameter contains a group ID
+          let targetGroupId = formData.inviteCode.trim();
+          if (!targetGroupId && typeof window !== "undefined") {
+            const searchParams = new URLSearchParams(window.location.search);
+            const nextParam = searchParams.get('next');
+            if (nextParam && nextParam.includes('/invite/')) {
+              const parts = nextParam.split('/invite/');
+              if (parts[1]) {
+                targetGroupId = parts[1].split('?')[0];
+              }
+            }
+          }
+
+          if (targetGroupId) {
+            try {
+              await fetch('/api/groups/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  groupId: targetGroupId,
+                  userId: authData.user.id
+                })
+              });
+            } catch (joinErr) {
+              console.error("Auto group join error on signup:", joinErr);
+            }
+          }
         }
 
         setStep(3); // Success Screen
@@ -358,8 +449,16 @@ export default function SignupPage() {
                 </p>
 
                 <button 
-                  onClick={() => router.push("/login")}
-                  className="w-full max-w-sm mx-auto py-4 px-4 bg-[#0B402B] hover:bg-[#072a1c] text-white font-bold text-lg rounded-lg transition-colors block"
+                  onClick={() => {
+                    const searchParams = new URLSearchParams(window.location.search);
+                    const nextParam = searchParams.get('next') || (formData.inviteCode ? `/invite/${formData.inviteCode.trim()}` : null);
+                    if (nextParam) {
+                      router.push(`/login?next=${encodeURIComponent(nextParam)}`);
+                    } else {
+                      router.push("/login");
+                    }
+                  }}
+                  className="w-full max-w-sm mx-auto py-4 px-4 bg-[#0B402B] hover:bg-[#072a1c] text-white font-bold text-lg rounded-lg transition-colors block cursor-pointer"
                 >
                   Go to Login
                 </button>

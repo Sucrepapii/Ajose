@@ -99,6 +99,11 @@ export default function CreateGroupPage() {
       toast.error("Contribution amount must be greater than zero.");
       return;
     }
+    const memsCount = parseInt(formData.maxMembers);
+    if (isNaN(memsCount) || memsCount < 2) {
+      toast.error("Total members must be at least 2.");
+      return;
+    }
     setStep(2);
   };
   
@@ -145,51 +150,18 @@ export default function CreateGroupPage() {
     setIsSubmitting(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("You must be logged in to create a group.");
+      const res = await fetch("/api/groups/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
 
-      // 1. Persist/update the admin's settlement bank account details on their profile
-      await supabase
-        .from('users')
-        .update({
-          bank_name: formData.adminBankName.trim(),
-          account_number: formData.adminAccountNumber.trim(),
-          account_name: formData.adminAccountName.trim()
-        })
-        .eq('id', user.id);
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to create group.");
+      }
 
-      // 2. Insert into public.groups
-      const { data: groupData, error: groupError } = await supabase
-        .from('groups')
-        .insert({
-          name: formData.name.trim(),
-          contribution_amount: parseInt(formData.contributionAmount),
-          max_members: parseInt(formData.maxMembers),
-          frequency: formData.frequency,
-          admin_commission_pct: parseFloat(formData.adminCommission) || 0,
-          min_credit_score: parseInt(formData.minCreditScore) || 0,
-          status: 'pending',
-          admin_id: user.id
-        })
-        .select()
-        .single();
-
-      if (groupError) throw groupError;
-
-      // 3. Insert creator into public.memberships as admin
-      const { error: membershipError } = await supabase
-        .from('memberships')
-        .insert({
-          group_id: groupData.id,
-          user_id: user.id,
-          role: 'admin',
-          status: 'active',
-          payout_turn: null
-        });
-
-      if (membershipError) throw membershipError;
-
-      setNewGroupId(groupData.id);
+      setNewGroupId(data.groupId);
       setShowConfirm(false);
       setStep(3); // Success
       toast.success("Rotational group created successfully!");
@@ -272,19 +244,40 @@ export default function CreateGroupPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-[#0B3022]">Total Members (Including You)</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-bold text-[#0B3022]">Total Members (Including You)</label>
+                      <span className="text-xs font-bold text-[#0B3022] bg-[#C5A059]/20 px-2 py-0.5 rounded-full">
+                        {formData.maxMembers || "0"} Members
+                      </span>
+                    </div>
                     <div className="relative">
                       <Users className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
-                      <select 
+                      <input 
                         name="maxMembers"
                         value={formData.maxMembers}
                         onChange={handleChange}
-                        className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium"
-                      >
-                        {[2,3,4,5,6,7,8,9,10,11,12].map(num => (
-                          <option key={num} value={num}>{num} Members</option>
-                        ))}
-                      </select>
+                        type="number"
+                        min="2"
+                        placeholder="Enter any member count (e.g. 15, 50)" 
+                        className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium"
+                      />
+                    </div>
+                    {/* Quick Preset Chips */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {[5, 10, 12, 15, 20, 30, 50, 100].map((num) => (
+                        <button
+                          type="button"
+                          key={num}
+                          onClick={() => setFormData(prev => ({ ...prev, maxMembers: num.toString() }))}
+                          className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                            formData.maxMembers === num.toString()
+                              ? 'bg-[#0B3022] text-[#C5A059]'
+                              : 'bg-[#FDFBF7] border border-gray-200 text-[#1F2937]/70 hover:bg-gray-100'
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>

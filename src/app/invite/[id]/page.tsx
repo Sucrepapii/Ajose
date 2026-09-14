@@ -187,49 +187,27 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
     setIsJoining(true);
 
     try {
-      // 1. Ensure group record exists in database
-      await supabase
-        .from('groups')
-        .upsert({
-          id: groupId,
-          name: group?.name || 'Ajose Contribution Circle',
-          contribution_amount: group?.contribution_amount || 50000,
-          frequency: group?.frequency || 'monthly',
-          max_members: group?.max_members || 10,
-          description: group?.description || 'Rotational contribution group on Ajose.'
-        }, { onConflict: 'id', ignoreDuplicates: true });
+      // Join group via Admin API route to guarantee DB creation & roster entry
+      const res = await fetch("/api/groups/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId,
+          userId: user.id,
+          groupName: group?.name
+        })
+      });
 
-      // 2. Get current member count to determine next payout turn
-      const { count } = await supabase
-        .from('memberships')
-        .select('*', { count: 'exact', head: true })
-        .eq('group_id', groupId)
-        .neq('role', 'admin');
-        
-      const nextTurn = (count || 0) + 1;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to join group.");
 
-      // 3. Insert membership record directly
-      const { error } = await supabase
-        .from('memberships')
-        .insert({
-          group_id: groupId,
-          user_id: user.id,
-          role: 'member',
-          status: 'active',
-          payout_turn: nextTurn
-        });
-
-      if (error) {
-        if (error.code === '23505') {
-          setAlreadyMember(true);
-          toast.success("You are already a member!");
-          router.push(`/dashboard/groups/${groupId}`);
-          return;
-        }
-        throw error;
+      if (data.alreadyMember) {
+        setAlreadyMember(true);
+        toast.success("You are already a member!");
+      } else {
+        toast.success("Welcome! You have joined the group.");
       }
 
-      toast.success("Welcome! You have joined the group.");
       router.push(`/dashboard/groups/${groupId}`);
       router.refresh();
     } catch (err: any) {
@@ -257,37 +235,26 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
           .eq('id', user.id);
       }
 
-      // 2. Get current member count to determine next payout turn
-      const { count } = await supabase
-        .from('memberships')
-        .select('*', { count: 'exact', head: true })
-        .eq('group_id', groupId)
-        .neq('role', 'admin');
-        
-      const nextTurn = (count || 0) + 1;
+      // 2. Join group via Admin API route to guarantee DB creation & roster entry
+      const res = await fetch("/api/groups/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId,
+          userId: user.id,
+          groupName: group?.name
+        })
+      });
 
-      // 3. Insert membership record
-      const { error } = await supabase
-        .from('memberships')
-        .insert({
-          group_id: groupId,
-          user_id: user.id,
-          role: 'member',
-          status: 'active',
-          payout_turn: nextTurn
-        });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to join group.");
 
-      if (error) {
-        if (error.code === '23505') {
-          setAlreadyMember(true);
-          toast.success("You are already a member!");
-          router.push(`/dashboard/groups/${groupId}`);
-          return;
-        }
-        throw error;
+      if (data.alreadyMember) {
+        setAlreadyMember(true);
+        toast.success("You are already a member!");
       }
 
-      // 4. Send Welcome & Onboarding Email via Resend
+      // 3. Send Welcome & Onboarding Email via Resend
       if (user?.email) {
         sendEmail({
           to: user.email,
