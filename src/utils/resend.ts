@@ -10,7 +10,7 @@ export async function sendEmail({
   to,
   subject,
   html,
-  from = process.env.SENDER_EMAIL || 'Ajose <onboarding@resend.dev>',
+  from = process.env.SENDER_EMAIL || 'Àjọṣe <noreply@ajose.ng>',
 }: {
   to: string | string[];
   subject: string;
