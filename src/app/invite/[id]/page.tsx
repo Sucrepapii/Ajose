@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { sendEmail } from "@/utils/resend";
@@ -339,153 +340,215 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
   const isScoreTooLow = effectiveCreditScore < minScoreRequired;
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col">
-      {/* Simple Header */}
-      <header className="p-6 flex items-center justify-center">
-        <Link className="flex items-center gap-2" href="/">
-          <div className="bg-emerald-500 p-1.5 rounded-lg">
-            <PiggyBank className="h-5 w-5 text-zinc-950" />
-          </div>
-          <span className="font-bold text-lg text-white">Àjọṣe</span>
-        </Link>
-      </header>
+    <div className="min-h-screen flex bg-[#FAFAFA] font-sans">
+      
+      {/* Left Pane - Branding & Visuals */}
+      <div className="hidden lg:flex w-[45%] relative bg-[#0B402B] items-center justify-center overflow-hidden">
+        <Image src="/custom-signup-bg.jpg" alt="Invite Background" fill className="object-cover opacity-70 mix-blend-overlay" priority />
+        <div className="absolute inset-0 bg-[#0B402B]/40"></div>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md animate-in zoom-in-95 duration-500">
+        <div className="relative z-10 p-12 text-center flex flex-col items-center max-w-lg">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#C5A059]/20 border border-[#C5A059]/40 mb-6 backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-[#C5A059] animate-pulse" />
+            <span className="text-xs font-semibold text-[#C5A059]">Turn by turn, no wahala.</span>
+          </div>
+
+          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-4">
+            You've been invited<br/>to save together.
+          </h1>
+
+          <p className="text-gray-200 text-base leading-relaxed mb-8">
+            Join <strong>{group?.name || urlGroupName || "Ajose Circle"}</strong> — Nigeria's trusted digital platform for rotational contributions.
+          </p>
+
+          <div className="w-full bg-[#072B1D]/80 border border-[#C5A059]/30 rounded-2xl p-6 backdrop-blur-md text-left space-y-3.5 shadow-xl">
+            <div className="flex items-center gap-3 text-sm text-gray-200">
+              <div className="w-8 h-8 rounded-full bg-[#C5A059]/20 flex items-center justify-center text-[#C5A059] shrink-0">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <span>Institutional-grade tracking &amp; accountability</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-200">
+              <div className="w-8 h-8 rounded-full bg-[#C5A059]/20 flex items-center justify-center text-[#C5A059] shrink-0">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <span>Fair turn-by-turn payout rotation</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-200">
+              <div className="w-8 h-8 rounded-full bg-[#C5A059]/20 flex items-center justify-center text-[#C5A059] shrink-0">
+                <Lock className="w-4 h-4" />
+              </div>
+              <span>Verified open-banking identity via Mono</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Pane - Content Card */}
+      <div className="w-full lg:w-[55%] flex flex-col pt-8 pb-16 px-6 sm:px-12 md:px-20 overflow-y-auto relative justify-center min-h-screen">
+        
+        {/* Header & Logo */}
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#0B402B] transition-colors font-medium text-sm">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Link>
+
+          <Link href="/" className="inline-flex items-center gap-3 group hover:opacity-90 transition-opacity">
+            <Image 
+              src="/ajose-rings-logo.png" 
+              alt="Àjọṣe Logo" 
+              width={40} 
+              height={40} 
+              className="object-contain w-auto h-10 drop-shadow-sm animate-spin-slow"
+            />
+            <span className="text-[#0B402B] font-bold text-2xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
+          </Link>
+        </div>
+
+        <div className="w-full max-w-xl mx-auto">
           
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8 backdrop-blur-sm shadow-xl text-center">
+          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-gray-100 relative overflow-hidden">
             
-            <div className="mx-auto w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
-              <Users className="h-8 w-8 text-emerald-400" />
+            {/* Header Badge */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0B402B]/10 text-[#0B402B] font-bold text-xs uppercase tracking-wider mb-3">
+                <Users className="w-4 h-4 text-[#D4AF37]" />
+                Group Invitation
+              </div>
+              <h2 className="text-3xl font-extrabold text-gray-900 mb-2 leading-tight">
+                {group?.name || urlGroupName || "Rotational Contribution Circle"}
+              </h2>
+              <p className="text-gray-500 text-sm">
+                You have been invited to join this contribution circle on Ajose.
+              </p>
             </div>
 
-            <h1 className="text-2xl font-bold text-white mb-2">You've been invited!</h1>
-            <p className="text-zinc-400 text-sm mb-8">
-              You have been invited to join the <strong className="text-white">{group?.name || urlGroupName}</strong> savings group on Àjọṣe.
-            </p>
-
-            {/* Group Details Card */}
-            <div className="bg-zinc-950 rounded-xl border border-zinc-800 p-4 mb-8 text-left space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-zinc-400 text-sm">
-                  <Wallet className="h-4 w-4" />
-                  <span>Contribution</span>
+            {/* Group Financial Details Grid */}
+            <div className="bg-[#F8F6F0] rounded-2xl p-5 mb-8 space-y-3.5 border border-gray-200/80">
+              <div className="flex items-center justify-between py-1">
+                <div className="flex items-center gap-2.5 text-gray-600 text-sm">
+                  <Wallet className="h-4 w-4 text-[#0B402B]" />
+                  <span className="font-medium">Contribution Amount</span>
                 </div>
-                <span className="font-bold text-white">₦{group?.contribution_amount?.toLocaleString()}</span>
+                <span className="font-extrabold text-lg text-[#0B402B]">₦{group?.contribution_amount?.toLocaleString() || '50,000'}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-zinc-400 text-sm">
-                  <CalendarDays className="h-4 w-4" />
-                  <span>Frequency</span>
+              <div className="flex items-center justify-between py-1 border-t border-gray-200/60 pt-3">
+                <div className="flex items-center gap-2.5 text-gray-600 text-sm">
+                  <CalendarDays className="h-4 w-4 text-[#0B402B]" />
+                  <span className="font-medium">Contribution Frequency</span>
                 </div>
-                <span className="font-bold text-white capitalize">{group?.frequency}</span>
+                <span className="font-bold text-gray-900 capitalize">{group?.frequency || 'monthly'}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-zinc-400 text-sm">
-                  <Users className="h-4 w-4" />
-                  <span>Cycle Duration</span>
+              <div className="flex items-center justify-between py-1 border-t border-gray-200/60 pt-3">
+                <div className="flex items-center gap-2.5 text-gray-600 text-sm">
+                  <Users className="h-4 w-4 text-[#0B402B]" />
+                  <span className="font-medium">Cycle Duration</span>
                 </div>
-                <span className="font-bold text-white">{group?.max_members || 6} Months</span>
+                <span className="font-bold text-gray-900">{group?.max_members || 6} Rounds</span>
               </div>
-              <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
-                <div className="flex items-center gap-2 text-zinc-400 text-sm">
-                  <ShieldAlert className="h-4 w-4" />
-                  <span>Min. Score Required</span>
+              <div className="flex items-center justify-between py-1 border-t border-gray-200/60 pt-3">
+                <div className="flex items-center gap-2.5 text-gray-600 text-sm">
+                  <ShieldAlert className="h-4 w-4 text-[#0B402B]" />
+                  <span className="font-medium">Min. Score Required</span>
                 </div>
-                <span className="font-bold text-emerald-400">{minScoreRequired} Points</span>
+                <span className="font-bold text-emerald-700">{minScoreRequired} Points</span>
               </div>
             </div>
 
             {/* Action Buttons */}
             {alreadyMember ? (
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 text-emerald-400 font-medium mb-2">
-                  <CheckCircle2 className="h-5 w-5" />
-                  You are already a member
+              <div className="space-y-4 text-center">
+                <div className="inline-flex items-center gap-2 text-emerald-700 font-bold bg-emerald-50 px-4 py-2 rounded-full border border-emerald-200 text-sm">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                  You are already an active member of this group
                 </div>
                 <Link 
                   href={`/dashboard/groups/${groupId}`}
-                  className="block w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border border-zinc-700"
+                  className="block w-full bg-[#0B402B] hover:bg-[#072B1D] text-white font-bold py-4 px-6 rounded-xl transition-colors shadow-md text-center text-base"
                 >
-                  View Group
+                  View Group Dashboard &rarr;
                 </Link>
               </div>
             ) : user ? (
-              <div className="space-y-4 text-left">
+              <div className="space-y-5 text-left">
                 {isScoreTooLow ? (
-                  <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl">
+                  <div className="bg-red-50 border border-red-200 p-4 rounded-2xl">
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                      <AlertTriangle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="text-red-400 font-bold mb-1">Credit Score Insufficient</h4>
-                        <p className="text-red-400/80 text-xs leading-relaxed">
-                          Your current Àjọṣe Score is <strong>{effectiveCreditScore}</strong>. This group requires at least <strong>{minScoreRequired}</strong> points to maintain safety against rotational defaults.
+                        <h4 className="text-red-900 font-bold mb-1">Credit Score Insufficient</h4>
+                        <p className="text-red-700 text-xs leading-relaxed">
+                          Your current Ajose Score is <strong>{effectiveCreditScore}</strong>. This group requires at least <strong>{minScoreRequired}</strong> points to maintain safety against rotational defaults.
                         </p>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <>
-                    <div className="bg-emerald-950/30 border border-emerald-500/20 rounded-xl p-3.5 flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                    <div className="bg-[#0B402B]/5 border border-[#0B402B]/15 rounded-2xl p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-[#0B402B] flex items-center justify-center text-[#D4AF37] shrink-0">
+                          <ShieldCheck className="h-5 w-5" />
+                        </div>
                         <div>
-                          <p className="text-xs font-bold text-white">Financial Verification Active</p>
-                          <p className="text-[11px] text-zinc-400">Bank Statement &amp; Bureau Check via Mono</p>
+                          <p className="text-xs font-bold text-[#0B402B]">Mono Financial Check Active</p>
+                          <p className="text-[11px] text-gray-500">Statement review &amp; standing mandate verified</p>
                         </div>
                       </div>
-                      <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                        Active
+                      <span className="text-[11px] font-extrabold text-[#0B402B] bg-[#D4AF37]/20 px-2.5 py-1 rounded-full border border-[#D4AF37]/30">
+                        VERIFIED
                       </span>
                     </div>
 
                     <button 
                       onClick={handleStartJoinModal}
-                      className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] cursor-pointer"
+                      className="w-full py-4 px-6 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      Verify &amp; Join Group
-                      <ArrowRight className="h-4 w-4" />
+                      Accept Invite &amp; Join Group
+                      <ArrowRight className="h-5 w-5" />
                     </button>
                   </>
                 )}
 
-                <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-800">
-                  <span className="flex items-center gap-1">
-                    <Lock className="h-3 w-3 text-emerald-400" />
+                <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Lock className="h-3.5 w-3.5 text-[#0B402B]" />
                     Standing Direct Debit Mandate
                   </span>
                   <button 
                     type="button"
                     onClick={() => setShowTermsModal(true)}
-                    className="text-zinc-400 hover:text-white transition-colors"
+                    className="text-[#0B402B] font-bold hover:underline"
                   >
                     Review terms &rarr;
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <button 
                   onClick={() => router.push(`/signup?next=/invite/${groupId}`)}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] cursor-pointer"
+                  className="w-full py-4 px-6 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  Sign Up to Join
+                  Accept Invite &amp; Sign Up
+                  <ArrowRight className="h-5 w-5" />
                 </button>
                 <button 
                   onClick={() => router.push(`/login?next=/invite/${groupId}`)}
-                  className="w-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white font-bold py-3 px-4 rounded-lg transition-colors cursor-pointer"
+                  className="w-full py-3.5 px-6 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-colors cursor-pointer text-base"
                 >
                   Log In to Join
                 </button>
-                <p className="text-xs text-zinc-500 mt-4">
-                  Note: Group membership includes bank statement review and credit bureau check powered by Mono.
+                <p className="text-xs text-gray-500 text-center mt-4 leading-relaxed">
+                  🔒 Note: Group membership includes statement verification powered by Mono Open-Banking.
                 </p>
               </div>
             )}
 
           </div>
         </div>
-      </main>
+      </div>
 
       {/* COMPREHENSIVE UNDERWRITING & MANDATE JOIN MODAL */}
       {showUnderwritingModal && (
