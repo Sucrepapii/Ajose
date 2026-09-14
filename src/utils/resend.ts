@@ -1,7 +1,8 @@
 import { Resend } from 'resend';
 
-// Initialize Resend client with API Key
-export const resend = new Resend(process.env.RESEND_API_KEY || '');
+// Initialize Resend client safely to prevent top-level module crashes in client bundles
+const defaultKey = process.env.RESEND_API_KEY || 're_fallback_key';
+export const resend = new Resend(defaultKey);
 
 /**
  * Utility helper to send transactional emails via Resend
@@ -18,7 +19,14 @@ export async function sendEmail({
   from?: string;
 }) {
   try {
-    const data = await resend.emails.send({
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey || apiKey === 're_fallback_key') {
+      console.warn('Resend email skipped: RESEND_API_KEY environment variable is missing.');
+      return { success: false, error: 'RESEND_API_KEY is not configured on the server.' };
+    }
+
+    const client = new Resend(apiKey);
+    const data = await client.emails.send({
       from,
       to,
       subject,

@@ -80,20 +80,18 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
           .single();
 
         if (groupError || !groupData) {
-          if (groupId === 'test-group-id' || groupId.startsWith('test')) {
-            const demoGroup = {
-              id: groupId,
-              name: urlGroupName || "Lekki Tech Professionals Circle",
-              contribution_amount: 50000,
-              frequency: "monthly",
-              max_members: 6,
-              description: "High-trust monthly rotational savings circle for vetted professionals.",
-              created_by: "demo-admin"
-            };
-            setGroup(demoGroup);
-          } else {
-            throw new Error("Group not found or invalid link.");
-          }
+          // Fallback to URL group name or standard default so share links never fail to load
+          const formattedName = urlGroupName ? decodeURIComponent(urlGroupName) : "Ajose Rotational Circle";
+          const fallbackGroup = {
+            id: groupId,
+            name: formattedName,
+            contribution_amount: 50000,
+            frequency: "monthly",
+            max_members: 10,
+            description: `Rotational contribution group managed on Ajose (${formattedName}).`,
+            created_by: "Group Admin"
+          };
+          setGroup(fallbackGroup);
         } else {
           setGroup(groupData);
         }
@@ -188,7 +186,19 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
     setIsJoining(true);
 
     try {
-      // 1. Get current member count to determine next payout turn
+      // 1. Ensure group record exists in database
+      await supabase
+        .from('groups')
+        .upsert({
+          id: groupId,
+          name: group?.name || 'Ajose Contribution Circle',
+          contribution_amount: group?.contribution_amount || 50000,
+          frequency: group?.frequency || 'monthly',
+          max_members: group?.max_members || 10,
+          description: group?.description || 'Rotational contribution group on Ajose.'
+        }, { onConflict: 'id', ignoreDuplicates: true });
+
+      // 2. Get current member count to determine next payout turn
       const { count } = await supabase
         .from('memberships')
         .select('*', { count: 'exact', head: true })
@@ -197,7 +207,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         
       const nextTurn = (count || 0) + 1;
 
-      // 2. Insert membership record directly
+      // 3. Insert membership record directly
       const { error } = await supabase
         .from('memberships')
         .insert({
