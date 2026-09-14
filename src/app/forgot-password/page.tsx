@@ -96,32 +96,55 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
 
     try {
-      // 1. Verify OTP code with Supabase Auth
+      // 1. Attempt native Supabase verifyOtp
       const { data: otpData, error: otpError } = await supabase.auth.verifyOtp({
-        email: email,
+        email: email.trim(),
         token: cleanOtp,
         type: 'recovery',
       });
 
-      if (otpError) {
-        throw new Error(otpError.message || "Invalid or expired OTP code.");
+      if (!otpError) {
+        // Update password for authenticated recovery session
+        const { error: updateError } = await supabase.auth.updateUser({
+          password: password,
+        });
+
+        if (updateError) throw updateError;
+
+        setStep(3);
+        toast.success("Password reset successfully!");
+        setTimeout(() => {
+          router.push("/login");
+        }, 3000);
+        return;
       }
 
-      // 2. Update password for authenticated recovery session
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: password,
+      console.warn("Supabase native verifyOtp failed, trying backend Resend OTP verification fallback:", otpError);
+
+      // 2. Resend Custom OTP Verification Fallback via Server API
+      const verifyRes = await fetch("/api/auth/verify-reset-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          otp: cleanOtp,
+          password: password,
+        }),
       });
 
-      if (updateError) throw updateError;
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok || !verifyData.success) {
+        throw new Error(verifyData.error || "Invalid or expired OTP code.");
+      }
 
       setStep(3);
       toast.success("Password reset successfully!");
-
       setTimeout(() => {
         router.push("/login");
       }, 3000);
+
     } catch (err: any) {
-      toast.error(err.message || "Failed to reset password. Please check your OTP code.");
+      toast.error(err.message || "Failed to reset password. Please check your 6-digit code.");
     } finally {
       setIsSubmitting(false);
     }
