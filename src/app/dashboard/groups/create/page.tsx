@@ -150,10 +150,16 @@ export default function CreateGroupPage() {
     setIsSubmitting(true);
     
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+
       const res = await fetch("/api/groups/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          userId: user?.id,
+          userEmail: user?.email
+        })
       });
 
       const data = await res.json();
