@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
     const hasServiceRole = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-    // If Authorization header is provided, instantiate client passing Bearer token to satisfy RLS (auth.uid())
+    // Instantiate userClient with Bearer token if provided to satisfy RLS (auth.uid() = admin_id)
     const userClient = authHeader
       ? createSupabaseJsClient(supabaseUrl, supabaseAnonKey, {
           global: { headers: { Authorization: authHeader } },
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 
     let insertedGroup: any = null;
 
-    // Attempt 1: Full payload
+    // Attempt 1: Full payload with admin_id (without created_by)
     const payload1 = {
       id: groupId,
       name: name.trim(),
@@ -93,7 +93,6 @@ export async function POST(req: Request) {
       min_credit_score: parsedMinScore,
       status: "pending",
       admin_id: userId,
-      created_by: userId,
       description: `Rotational contribution group managed on Ajose (${name.trim()}).`
     };
 
@@ -106,9 +105,9 @@ export async function POST(req: Request) {
     if (!err1 && (data1 || payload1)) {
       insertedGroup = data1 || payload1;
     } else {
-      console.warn("Insert attempt 1 error:", err1?.message);
+      console.warn("Insert attempt 1 warning:", err1?.message);
 
-      // Attempt 2: Without optional custom commission & score, without created_by (using admin_id)
+      // Attempt 2: Standard schema with admin_id (without optional custom commission & score)
       const payload2 = {
         id: groupId,
         name: name.trim(),
@@ -129,9 +128,9 @@ export async function POST(req: Request) {
       if (!err2) {
         insertedGroup = data2 || payload2;
       } else {
-        console.warn("Insert attempt 2 error:", err2?.message);
+        console.warn("Insert attempt 2 warning:", err2?.message);
 
-        // Attempt 3: Standard minimal schema without created_by or admin_id
+        // Attempt 3: Core schema with admin_id (guarantees NOT NULL admin_id constraint)
         const payload3 = {
           id: groupId,
           name: name.trim(),
@@ -139,7 +138,7 @@ export async function POST(req: Request) {
           max_members: parsedMembers,
           frequency: frequency || "monthly",
           status: "pending",
-          description: `Rotational contribution group managed on Ajose (${name.trim()}).`
+          admin_id: userId
         };
 
         const { data: data3, error: err3 } = await dbClient
@@ -151,32 +150,11 @@ export async function POST(req: Request) {
         if (!err3) {
           insertedGroup = data3 || payload3;
         } else {
-          console.warn("Insert attempt 3 error:", err3?.message);
-
-          // Attempt 4: Bare minimum schema (id, name, contribution_amount, max_members, frequency, status)
-          const payload4 = {
-            id: groupId,
-            name: name.trim(),
-            contribution_amount: parsedContrib,
-            max_members: parsedMembers,
-            frequency: frequency || "monthly",
-            status: "pending"
-          };
-
-          const { data: data4, error: err4 } = await userClient
-            .from("groups")
-            .insert(payload4)
-            .select()
-            .maybeSingle();
-
-          if (err4) {
-            console.error("All group insert attempts failed:", err4);
-            return NextResponse.json(
-              { error: err4.message || "Failed to create group in database.", details: err4 },
-              { status: 500 }
-            );
-          }
-          insertedGroup = data4 || payload4;
+          console.error("All group insert attempts failed:", err3);
+          return NextResponse.json(
+            { error: err3.message || "Failed to create group in database.", details: err3 },
+            { status: 500 }
+          );
         }
       }
     }
