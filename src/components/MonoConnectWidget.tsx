@@ -5,7 +5,7 @@ import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { Landmark, ShieldCheck, Lock, Building, CheckCircle2, ArrowRight } from "lucide-react";
+import { Landmark, ShieldCheck, Lock, Building, CheckCircle2, ArrowRight, RefreshCw } from "lucide-react";
 
 const BANKS = [
   { id: "gtb", name: "Guaranty Trust Bank (GTB)", color: "#E35205" },
@@ -109,45 +109,52 @@ export function MonoConnectWidget({ userId, isVerified }: { userId: string, isVe
     }
   };
 
-  if (isVerified) {
-    return (
-      <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-            <CheckCircle2 className="h-6 w-6 text-green-600" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-[#0B3022]">Identity & Bank Verified</h3>
-            <p className="text-sm text-[#1F2937]/70 font-medium">Your BVN and Direct Debit Mandate are active.</p>
-          </div>
-        </div>
-        <div className="px-3 py-1 bg-green-600 text-white text-xs font-bold rounded-full">SECURED BY MONO</div>
-      </div>
-    );
-  }
-
   return (
     <>
-      <div className="bg-white border border-[#C5A059]/30 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 bg-[#0B3022]/5 rounded-full border border-[#0B3022]/10 flex items-center justify-center shrink-0">
-            <Landmark className="h-6 w-6 text-[#0B3022]" />
+      {isVerified ? (
+        <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+              <CheckCircle2 className="h-6 w-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[#0B3022]">Identity & Bank Verified</h3>
+              <p className="text-sm text-[#1F2937]/70 font-medium">Your BVN and Direct Debit Mandate are active.</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-[#0B3022] mb-1">Link Your Bank Account</h3>
-            <p className="text-sm text-[#1F2937]/70 max-w-xl leading-relaxed font-medium">
-              Àjọṣe uses Mono Open-Banking to securely verify your BVN and establish a direct debit mandate for your scheduled contributions. We never see or store your login credentials.
-            </p>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <button 
+              onClick={handleConnectWithMono}
+              className="px-4 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+            >
+              <RefreshCw className="h-3.5 w-3.5 text-[#C5A059]" />
+              Change / Re-link Bank Account
+            </button>
+            <span className="px-3 py-1 bg-green-600 text-white text-xs font-bold rounded-full whitespace-nowrap">SECURED BY MONO</span>
           </div>
         </div>
-        <button 
-          onClick={handleConnectWithMono}
-          className="shrink-0 px-6 py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl transition-all shadow-md flex items-center gap-2 w-full md:w-auto justify-center cursor-pointer"
-        >
-          <Lock className="h-4 w-4" />
-          Connect with Mono
-        </button>
-      </div>
+      ) : (
+        <div className="bg-white border border-[#C5A059]/30 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-[#0B3022]/5 rounded-full border border-[#0B3022]/10 flex items-center justify-center shrink-0">
+              <Landmark className="h-6 w-6 text-[#0B3022]" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[#0B3022] mb-1">Link Your Bank Account</h3>
+              <p className="text-sm text-[#1F2937]/70 max-w-xl leading-relaxed font-medium">
+                Àjọṣe uses Mono Open-Banking to securely verify your BVN and establish a direct debit mandate for your scheduled contributions. We never see or store your login credentials.
+              </p>
+            </div>
+          </div>
+          <button 
+            onClick={handleConnectWithMono}
+            className="shrink-0 px-6 py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl transition-all shadow-md flex items-center gap-2 w-full md:w-auto justify-center cursor-pointer"
+          >
+            <Lock className="h-4 w-4" />
+            Connect with Mono
+          </button>
+        </div>
+      )}
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
