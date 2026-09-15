@@ -27,6 +27,7 @@ export function MakeContributionClient({
   userId, 
   amount, 
   currentTurn,
+  frequency = "monthly",
   adminBankDetails,
   pendingTransaction
 }: { 
@@ -34,6 +35,7 @@ export function MakeContributionClient({
   userId: string; 
   amount: number; 
   currentTurn: number; 
+  frequency?: string;
   adminBankDetails?: {
     bankName?: string;
     accountNumber?: string;
@@ -364,7 +366,12 @@ export function MakeContributionClient({
               <div className="bg-[#FDFBF7] border border-gray-200 rounded-2xl p-4 text-center shadow-inner">
                 <p className="text-[10px] text-[#1F2937]/60 font-bold uppercase tracking-wider mb-0.5">Amount Due</p>
                 <p className="text-2xl font-black text-[#0B3022] tracking-tight">₦{amount.toLocaleString()}</p>
-                <p className="text-[10px] text-gray-500 mt-0.5">Direct to Admin's Settlement Account</p>
+                <p className="text-[10px] text-[#0B3022]/70 font-semibold mt-1 bg-amber-50 border border-amber-200 py-1 px-2.5 rounded-full inline-flex items-center gap-1">
+                  {frequency === "weekly" && "⏳ 2-Day Grace Period • Opens Mon, Cutoff Tue"}
+                  {frequency === "biweekly" && "⏳ 3-Day Grace Period • Opens Mon, Cutoff Wed"}
+                  {frequency !== "weekly" && frequency !== "biweekly" && "⏳ 5-Day Grace Period • Collection & Cutoff on the 5th"}
+                </p>
+                <p className="text-[10px] text-gray-500 mt-1">Direct to Admin's Settlement Account</p>
               </div>
 
               {/* Payment Method Selector */}

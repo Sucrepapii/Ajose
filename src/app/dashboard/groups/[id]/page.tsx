@@ -454,6 +454,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                                     userId={user.id} 
                                     amount={group.contribution_amount} 
                                     currentTurn={currentTurn} 
+                                    frequency={group.frequency}
                                     adminBankDetails={{
                                       bankName: adminBankName,
                                       accountNumber: adminRawAcct,
@@ -480,6 +481,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                                     userId={user.id} 
                                     amount={group.contribution_amount} 
                                     currentTurn={currentTurn} 
+                                    frequency={group.frequency}
                                     adminBankDetails={{
                                       bankName: adminBankName,
                                       accountNumber: adminRawAcct,
@@ -499,6 +501,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                               userId={user.id} 
                               amount={group.contribution_amount} 
                               currentTurn={currentTurn} 
+                              frequency={group.frequency}
                               adminBankDetails={{
                                 bankName: adminBankName,
                                 accountNumber: adminRawAcct,

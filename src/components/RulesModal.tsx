@@ -51,11 +51,16 @@ export function RulesModal() {
               <div className="space-y-1.5 pt-4">
                 <h3 className="font-bold text-[#0B3022] flex items-center gap-2 text-sm">
                   <Zap className="h-4 w-4 text-[#C5A059]" />
-                  2. Automatic Member Debits (Auto-Sweep)
+                  2. Frequency-Based Grace Periods & Automated Collection Cutoffs
                 </h3>
                 <p>
-                  On the scheduled cycle due date, the exact contribution is automatically swept from each member's linked primary bank account under the authorized direct debit mandate.
+                  To ensure predictable liquidity and smooth banking settlements, all contribution cycles feature structured grace periods before automated debits and rotational payouts execute:
                 </p>
+                <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1 mt-1">
+                  <li><strong>Monthly Groups:</strong> 5-day grace period (opens 1st, final collection & payout cutoff on the <strong>5th of the new month</strong>).</li>
+                  <li><strong>Weekly Groups:</strong> 2-day grace period (opens Monday, final collection & payout cutoff on <strong>Tuesday</strong>).</li>
+                  <li><strong>Bi-Weekly Groups:</strong> 3-day grace period (opens Monday, final collection & payout cutoff on <strong>Wednesday</strong>).</li>
+                </ul>
               </div>
 
               <div className="space-y-1.5 pt-4">
