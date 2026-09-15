@@ -97,6 +97,14 @@ export default async function SettingsPage() {
                     <CheckCircle2 className="h-3.5 w-3.5" /> Verified via Mono Open-Banking
                   </span>
                 </div>
+                <div className="pt-2 flex justify-end">
+                  <Link 
+                    href="/dashboard/verify"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 border border-zinc-700 rounded-lg text-xs font-bold transition-colors"
+                  >
+                    Change / Re-link Bank Account
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-3">

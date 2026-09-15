@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { Trash2, AlertTriangle, Users, ShieldAlert, Percent, Landmark, ShieldCheck, Check } from "lucide-react";
+import Link from "next/link";
+import { Trash2, AlertTriangle, Users, ShieldAlert, Percent, Landmark, ShieldCheck, Check, Edit3 } from "lucide-react";
 
 type Group = any;
 type Member = any;
@@ -182,9 +183,17 @@ export function GroupSettingsClient({
               <p className="text-[#1F2937]/70 text-xs font-medium">Non-Custodial Pass-Through & Auto-Debit Engine</p>
             </div>
           </div>
-          <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-full">
-            MANDATE ACTIVE
-          </span>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/dashboard/settings"
+              className="text-xs font-bold text-[#0B3022] bg-white border border-gray-200 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 shadow-sm"
+            >
+              <Edit3 className="h-3.5 w-3.5 text-[#C5A059]" /> Change Bank Account
+            </Link>
+            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-full">
+              MANDATE ACTIVE
+            </span>
+          </div>
         </div>
 
         <div className="p-6 space-y-3">
