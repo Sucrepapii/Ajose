@@ -121,6 +121,66 @@ export default async function SettingsPage() {
               </div>
             )}
           </div>
+
+          {/* Mono DirectPay / Auto-Debit */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <Activity className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Mono DirectPay</h3>
+                <p className="text-xs text-zinc-400">Automated contribution deductions</p>
+              </div>
+            </div>
+            
+            <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
+               <div className="flex justify-between items-center">
+                  <span className="text-zinc-500 text-xs">Auto-Debit Status</span>
+                  {currentProfile?.bvn_verified ? (
+                    <span className="text-emerald-400 font-bold text-xs flex items-center gap-1"><CheckCircle2 className="h-3 w-3"/> Active</span>
+                  ) : (
+                    <span className="text-amber-400 font-bold text-xs">Pending Setup</span>
+                  )}
+               </div>
+               <div className="pt-3">
+                 <button className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold transition-colors">
+                   Manage Auto-Debit Preferences
+                 </button>
+               </div>
+            </div>
+          </div>
+
+          {/* Phase 2: Financial Data */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4 opacity-50 relative overflow-hidden select-none">
+            <div className="absolute inset-0 bg-zinc-950/40 z-10 flex items-center justify-center backdrop-blur-[1px]">
+              <span className="bg-zinc-800 text-zinc-300 text-xs font-bold px-3 py-1.5 rounded-full border border-zinc-700 shadow-xl flex items-center gap-2">
+                <Lock className="h-3.5 w-3.5" /> Coming in Phase 2
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
+                <Target className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Financial Data Analysis</h3>
+                <p className="text-xs text-zinc-400">Advanced credit scoring via bank statements</p>
+              </div>
+            </div>
+            
+            <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
+               <div className="flex justify-between items-center">
+                  <span className="text-zinc-500 text-xs">Statement Analysis</span>
+                  <span className="text-zinc-600 font-bold text-xs flex items-center gap-1"><Lock className="h-3 w-3"/> Inactive</span>
+               </div>
+               <div className="pt-3">
+                 <button disabled className="w-full py-2 bg-zinc-800 text-zinc-500 rounded-lg text-xs font-bold cursor-not-allowed">
+                   Enable Statement Sync
+                 </button>
+               </div>
+            </div>
+          </div>
+
         </div>
 
         <div className="space-y-6">
