@@ -335,8 +335,8 @@ export default function SignupPage() {
                   >
                     Continue to Security
                   </button>
-                  <div className="mt-6 text-center text-base text-gray-600">
-                    Already have an account? <Link href="/login" className="text-[#0B402B] font-bold hover:underline">Log In</Link>
+                  <div className="mt-6 text-center text-lg text-gray-700 font-medium bg-gray-50 py-3 rounded-lg border border-gray-100">
+                    Already have an account? <Link href="/login" className="text-[#0B402B] font-extrabold hover:underline">Log In here</Link>
                   </div>
                 </div>
               </div>
