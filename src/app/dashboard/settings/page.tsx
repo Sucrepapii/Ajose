@@ -41,9 +41,9 @@ export default async function SettingsPage() {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in pb-20">
       
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Settings</h1>
-        <p className="text-zinc-400">
-          Manage your personal details, Mono bank mandate, and view your Àjọṣe Credit Score.
+        <h1 className="text-3xl font-bold text-[#0B3022] tracking-tight mb-2">Settings</h1>
+        <p className="text-[#1F2937]/70 font-medium">
+          Update your profile, connect your bank for automated contributions, and view your trust score.
         </p>
       </div>
 
