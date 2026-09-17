@@ -35,6 +35,9 @@ export default function TermsOfServicePage() {
           <p>
             3.2. <strong>User Liability:</strong> You bear absolute legal and financial liability for any revoked mandates, deliberately emptied bank accounts, or otherwise willfully failed automated debits. The revocation of a Mono mandate while you have an outstanding obligation to an active Ajo cycle constitutes a material breach of this Agreement and prima facie evidence of intent to defraud the group.
           </p>
+          <p>
+            3.3. <strong>Failed Auto-Debit Protocol & Non-Custodial Direct Settlement:</strong> In the event that a scheduled automated Mono direct debit sweep fails or is declined by your issuing bank (due to insufficient funds, temporary network downtime, or bank limits), <strong>you must NOT attempt to remit payment to Àjọṣe corporate or central accounts</strong>. Àjọṣe operates strictly as a non-custodial technology platform and does not accept, custody, or escrow group pool deposits. To prevent default penalties and protect your credit score, you must immediately settle the outstanding contribution by initiating a direct bank transfer to the <strong>Circle Admin's Tendered Settlement Account</strong> citing your unique circle Narration Code. Once the deposit matches on the Admin's bank statement via Mono or is confirmed by the Admin, the contribution ledger will be credited.
+          </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">4. Default, Indemnity, and Recovery Mechanisms</h2>
           <p>

@@ -102,3 +102,34 @@ export async function sendPaymentReceivedEmail({
   });
 }
 
+/**
+ * Admin Invitation and Provisioning Email
+ */
+export async function sendAdminInvitationEmail({
+  to,
+  fullName,
+  role,
+  temporaryPassword,
+  loginUrl,
+}: {
+  to: string;
+  fullName: string;
+  role: string;
+  temporaryPassword: string;
+  loginUrl?: string;
+}) {
+  const { getAdminInvitationEmailTemplate } = await import("@/utils/emailTemplates");
+  return sendEmail({
+    to,
+    subject: `🔐 Àjọṣe Operations — Your Administrative Access Details`,
+    html: getAdminInvitationEmailTemplate({
+      fullName,
+      email: to,
+      role,
+      temporaryPassword,
+      loginUrl,
+    }),
+  });
+}
+
+

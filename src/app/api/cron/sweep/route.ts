@@ -272,7 +272,7 @@ async function handleSweep(req: NextRequest) {
           await supabase.from("notifications").insert({
             user_id: member.user_id,
             title: `⚠️ Auto-Debit Failed for ${group.name}`,
-            message: `Your contribution of ₦${group.contribution_amount.toLocaleString()} failed: ${debitMessage}. Please fund your bank account to avoid credit score penalty.`,
+            message: `Your contribution of ₦${group.contribution_amount.toLocaleString()} failed: ${debitMessage}. Please transfer directly to the Admin's Settlement Account using your circle narration code to avoid default penalties.`,
             type: "warning"
           });
 

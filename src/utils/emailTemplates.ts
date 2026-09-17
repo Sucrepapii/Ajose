@@ -233,3 +233,65 @@ export function getContributionDueEmailTemplate({
   ${getEmailFooter()}
   `;
 }
+
+/**
+ * 6. Admin Account Provisioning & Invitation Template
+ */
+export function getAdminInvitationEmailTemplate({
+  fullName,
+  email,
+  role,
+  temporaryPassword,
+  loginUrl = "https://ajose.ng/admin/login",
+}: {
+  fullName: string;
+  email: string;
+  role: string;
+  temporaryPassword: string;
+  loginUrl?: string;
+}) {
+  return `
+  ${getEmailHeader("Àjọṣe Operations — Administrative Account Provisioned")}
+    <h1 class="title">Welcome to Àjọṣe Operations 🔐</h1>
+    <p class="text">Hello <strong>${fullName}</strong>,</p>
+    <p class="text">You have been provisioned with administrative privileges on the <strong>Àjọṣe Operations Gateway</strong> as an authorized team member.</p>
+
+    <div class="card" style="background-color: #080B09; border: 1px solid #27272a; color: #ffffff; padding: 24px; border-radius: 14px;">
+      <div style="font-size: 11px; font-family: monospace; text-transform: uppercase; color: #10b981; font-weight: bold; letter-spacing: 1px; margin-bottom: 12px;">
+        CONFIDENTIAL CREDENTIALS
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <span style="font-size: 12px; color: #a1a1aa;">Assigned Role:</span>
+        <div style="font-size: 16px; font-weight: bold; color: #D4AF37;">${role}</div>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <span style="font-size: 12px; color: #a1a1aa;">Login Email:</span>
+        <div style="font-size: 15px; font-weight: 600; font-family: monospace; color: #ffffff;">${email}</div>
+      </div>
+
+      <div style="background-color: #18181b; border: 1px solid #3f3f46; border-radius: 8px; padding: 12px; margin-top: 14px;">
+        <span style="font-size: 11px; color: #fbbf24; font-weight: bold; text-transform: uppercase;">Temporary Password:</span>
+        <div style="font-size: 20px; font-weight: 800; font-family: monospace; color: #D4AF37; margin-top: 4px; letter-spacing: 1px;">
+          ${temporaryPassword}
+        </div>
+      </div>
+    </div>
+
+    <div style="background-color: #fef3c7; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin: 20px 0; color: #92400e; font-size: 13px; line-height: 1.5;">
+      <strong>⚠️ Mandatory First Sign-In Password Change:</strong><br/>
+      For institutional security and compliance, you are required to change this temporary password to a permanent one upon your first login.
+    </div>
+
+    <div style="text-align: center; margin-top: 28px;">
+      <a href="${loginUrl}" class="btn" style="background-color: #0B402B; color: #D4AF37; border: 1px solid #D4AF37; padding: 14px 32px;">Access Admin Command Center</a>
+    </div>
+
+    <p style="font-size: 12px; color: #71717a; text-align: center; margin-top: 20px;">
+      Direct login link: <a href="${loginUrl}" style="color: #0B402B;">${loginUrl}</a>
+    </p>
+  ${getEmailFooter()}
+  `;
+}
+

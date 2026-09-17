@@ -50,6 +50,7 @@ export function MakeContributionClient({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSimulatingFailure, setIsSimulatingFailure] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [autoDebitFailed, setAutoDebitFailed] = useState(false);
 
   // Manual Transfer Form State
   const narrationCode = generateNarrationCode(groupId, currentTurn, userId);
@@ -120,13 +121,14 @@ export function MakeContributionClient({
           await supabase.from('notifications').insert({
             user_id: adminMembership.user_id,
             title: "Member Auto-Debit Failed",
-            message: `A member's automated debit sweep of ₦${amount.toLocaleString()} failed for Turn ${currentTurn}.`,
+            message: `A member's automated debit sweep of ₦${amount.toLocaleString()} failed for Turn ${currentTurn}. The member has been redirected to transfer directly to your settlement account.`,
             type: "error"
           });
         }
 
-        toast.error("Auto-debit sweep failed! Insufficient funds in linked bank account.");
-        setIsOpen(false);
+        setAutoDebitFailed(true);
+        setMethod("transfer");
+        toast.error("Auto-debit sweep was declined. Please make a direct transfer to the Admin's settlement account below.");
         router.refresh();
         return;
       }
@@ -421,6 +423,15 @@ export function MakeContributionClient({
                   {method === "transfer" && (
                     <form onSubmit={handleSubmitManualTransfer} className="space-y-3 animate-in fade-in duration-150">
                       
+                      {autoDebitFailed && (
+                        <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-start gap-2.5 text-xs text-amber-900 animate-in fade-in">
+                          <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                          <p>
+                            <strong>Auto-debit was declined.</strong> Àjọṣe is non-custodial and never holds group pool funds. Please complete your contribution by transferring directly to the <strong>Admin&apos;s Settlement Account</strong> below using your unique narration code.
+                          </p>
+                        </div>
+                      )}
+
                       {/* Destination Bank Account Box */}
                       <div className="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2">
                         <div className="flex justify-between items-center text-[11px] text-gray-500 font-bold uppercase tracking-wider">
