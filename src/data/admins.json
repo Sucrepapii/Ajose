@@ -1,5 +1,18 @@
 [
   {
+    "id": "admin-mu5lzg0j-7mn6",
+    "fullName": "Kemi Adeleke",
+    "email": "kemi@ajose.ng",
+    "role": "Super Admin",
+    "status": "active",
+    "createdAt": "2026-09-17T14:12:16.723Z",
+    "isSuperAdmin": true,
+    "createdBy": "System Seed",
+    "password": "KemiSecure2026!",
+    "requiresPasswordChange": false,
+    "lastLogin": "2026-09-17T14:56:08.516Z"
+  },
+  {
     "id": "admin-mu5mek7a-ml8w",
     "fullName": "Tunde Bello",
     "email": "tunde@ajose.ng",
@@ -8,33 +21,9 @@
     "status": "active",
     "createdAt": "2026-09-17T14:24:01.990Z",
     "isSuperAdmin": false,
-    "createdBy": "admin@ajose.ng",
+    "createdBy": "kemi@ajose.ng",
     "password": "MyPermanentSecurePassword2026!",
     "lastLogin": "2026-09-17T14:24:03.560Z"
-  },
-  {
-    "id": "admin-mu5lzg0j-7mn6",
-    "fullName": "Kemi Adeleke",
-    "email": "kemi@ajose.ng",
-    "role": "Operations Lead",
-    "status": "active",
-    "createdAt": "2026-09-17T14:12:16.723Z",
-    "isSuperAdmin": false,
-    "createdBy": "admin@ajose.ng",
-    "password": "KemiSecure2026!",
-    "requiresPasswordChange": false,
-    "lastLogin": "2026-09-17T14:56:08.516Z"
-  },
-  {
-    "id": "admin-super-01",
-    "fullName": "Super Administrator",
-    "email": "admin@ajose.ng",
-    "role": "Super Admin",
-    "temporaryPassword": "AjoseAdmin2026!",
-    "status": "active",
-    "createdAt": "2026-08-01T00:00:00.000Z",
-    "isSuperAdmin": true,
-    "createdBy": "System Seed"
   },
   {
     "id": "admin-ops-02",
@@ -45,7 +34,7 @@
     "status": "active",
     "createdAt": "2026-08-10T09:30:00.000Z",
     "isSuperAdmin": false,
-    "createdBy": "admin@ajose.ng"
+    "createdBy": "kemi@ajose.ng"
   },
   {
     "id": "admin-risk-03",
@@ -56,6 +45,6 @@
     "status": "active",
     "createdAt": "2026-08-15T14:15:00.000Z",
     "isSuperAdmin": false,
-    "createdBy": "admin@ajose.ng"
+    "createdBy": "kemi@ajose.ng"
   }
 ]

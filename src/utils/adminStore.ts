@@ -22,19 +22,19 @@ export interface AdminUser {
 const DATA_DIR = path.join(process.cwd(), "src", "data");
 const ADMINS_FILE = path.join(DATA_DIR, "admins.json");
 
-// Default initial seeded admins including the temporary Super Admin
+// Default initial seeded admins
 const SEED_ADMINS: AdminUser[] = [
   {
-    id: "admin-super-01",
-    fullName: "Super Administrator",
-    email: "admin@ajose.ng",
+    id: "admin-mu5lzg0j-7mn6",
+    fullName: "Kemi Adeleke",
+    email: "kemi@ajose.ng",
     role: "Super Admin",
-    temporaryPassword: "AjoseAdmin2026!",
-    requiresPasswordChange: false, // Root demo account pre-configured
     status: "active",
-    createdAt: "2026-08-01T00:00:00.000Z",
+    createdAt: "2026-09-17T14:12:16.723Z",
     isSuperAdmin: true,
-    createdBy: "System Seed"
+    createdBy: "System Seed",
+    password: "KemiSecure2026!",
+    requiresPasswordChange: false
   },
   {
     id: "admin-ops-02",
@@ -46,7 +46,7 @@ const SEED_ADMINS: AdminUser[] = [
     status: "active",
     createdAt: "2026-08-10T09:30:00.000Z",
     isSuperAdmin: false,
-    createdBy: "admin@ajose.ng"
+    createdBy: "kemi@ajose.ng"
   },
   {
     id: "admin-risk-03",
@@ -58,7 +58,7 @@ const SEED_ADMINS: AdminUser[] = [
     status: "active",
     createdAt: "2026-08-15T14:15:00.000Z",
     isSuperAdmin: false,
-    createdBy: "admin@ajose.ng"
+    createdBy: "kemi@ajose.ng"
   }
 ];
 
@@ -186,8 +186,11 @@ export async function deleteAdminUser(id: string): Promise<boolean> {
   const adminToDelete = admins.find(a => a.id === id);
 
   if (!adminToDelete) return false;
-  if (adminToDelete.email === "admin@ajose.ng") {
-    throw new Error("Cannot delete primary root super administrator.");
+  
+  // Guard: Prevent deleting the last remaining Super Administrator
+  const superAdmins = admins.filter(a => a.isSuperAdmin || a.role === "Super Admin");
+  if (superAdmins.length <= 1 && (adminToDelete.isSuperAdmin || adminToDelete.role === "Super Admin")) {
+    throw new Error("Cannot delete the last remaining Super Administrator.");
   }
 
   const updatedList = admins.filter(a => a.id !== id);
@@ -221,11 +224,6 @@ export async function validateAdminCredentials(
 
   // 2. Check temporary password
   if (admin.temporaryPassword && admin.temporaryPassword === inputPassword) {
-    return admin;
-  }
-
-  // 3. In development, allow master password for root admin
-  if (process.env.NODE_ENV === "development" && admin.email === "admin@ajose.ng" && inputPassword === "AjoseAdmin2026!") {
     return admin;
   }
 

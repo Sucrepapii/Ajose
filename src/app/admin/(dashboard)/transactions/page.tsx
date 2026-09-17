@@ -12,14 +12,43 @@ export const metadata = {
 export default async function AdminTransactionsPage() {
   const supabase = createAdminClient();
 
-  const { data: transactions } = await supabase
+  const { data: rawTransactions, error } = await supabase
     .from("transactions")
     .select(`
-      *,
-      groups ( name )
+      id,
+      amount,
+      type,
+      status,
+      cycle_turn,
+      created_at,
+      memberships (
+        id,
+        user_id,
+        users (
+          id,
+          first_name,
+          last_name,
+          email
+        ),
+        groups (
+          id,
+          name
+        )
+      )
     `)
     .order("created_at", { ascending: false })
     .limit(100);
+
+  if (error) {
+    console.warn("Transactions query warning:", error.message);
+  }
+
+  const transactions = (rawTransactions || []).map((t: any) => ({
+    ...t,
+    groups: t.memberships?.groups || null,
+    user: t.memberships?.users || null,
+    reference: t.reference || `TX-${t.id.slice(0, 8).toUpperCase()}`
+  }));
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">

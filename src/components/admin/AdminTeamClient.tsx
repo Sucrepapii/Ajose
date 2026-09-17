@@ -256,7 +256,6 @@ export function AdminTeamClient({
                 </tr>
               ) : (
                 filteredAdmins.map((admin) => {
-                  const isPrimaryRoot = admin.email === "admin@ajose.ng";
                   return (
                     <tr key={admin.id} className="hover:bg-white/[0.02] transition-colors">
                       {/* Name & Email */}
@@ -348,7 +347,7 @@ export function AdminTeamClient({
 
                       {/* Actions */}
                       <td className="px-5 py-4 text-right">
-                        {!isPrimaryRoot && isSuperAdmin ? (
+                        {isSuperAdmin ? (
                           <button
                             type="button"
                             onClick={() => {
@@ -361,7 +360,7 @@ export function AdminTeamClient({
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         ) : (
-                          <span className="text-[10px] text-zinc-600 italic">Immutable</span>
+                          <span className="text-[10px] text-zinc-600 italic">Restricted</span>
                         )}
                       </td>
                     </tr>

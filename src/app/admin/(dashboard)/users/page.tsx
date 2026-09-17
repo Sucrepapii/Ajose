@@ -12,7 +12,8 @@ export const metadata = {
 export default async function AdminUsersPage() {
   const supabase = createAdminClient();
 
-  const { data: users } = await supabase
+  // Query actual Supabase users table with confirmed columns
+  const { data: users, error } = await supabase
     .from("users")
     .select(`
       id,
@@ -20,10 +21,8 @@ export default async function AdminUsersPage() {
       phone,
       first_name,
       last_name,
-      nickname,
+      account_name,
       credit_score,
-      bvn,
-      nin,
       bvn_verified,
       nin_verified,
       bank_name,
@@ -32,6 +31,10 @@ export default async function AdminUsersPage() {
     `)
     .order("created_at", { ascending: false })
     .limit(100);
+
+  if (error) {
+    console.warn("Users query warning:", error.message);
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">

@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 
     let insertedGroup: any = null;
 
-    // Attempt 1: Full payload with admin_id (without created_by)
+    // Attempt 1: Direct insert matching confirmed groups table columns
     const payload1 = {
       id: groupId,
       name: name.trim(),
@@ -92,8 +92,7 @@ export async function POST(req: Request) {
       admin_commission_pct: parsedCommission,
       min_credit_score: parsedMinScore,
       status: "pending",
-      admin_id: userId,
-      description: `Rotational contribution group managed on Ajose (${name.trim()}).`
+      admin_id: userId
     };
 
     const { data: data1, error: err1 } = await dbClient

@@ -11,66 +11,86 @@ export const metadata = {
 export default async function AdminDefaultsPage() {
   const supabase = createAdminClient();
 
-  // 1. Query real penalty/fine transactions from the database
-  const { data: rawFines } = await supabase
+  // 1. Query real penalty transactions from the database (transaction_type enum has 'penalty')
+  const { data: rawFines, error: finesError } = await supabase
     .from("transactions")
     .select(`
       id,
       amount,
       type,
       status,
-      description,
       cycle_turn,
-      reference,
       created_at,
-      user_id,
-      group_id,
-      groups ( id, name, contribution_amount, max_members, current_turn )
+      memberships (
+        id,
+        user_id,
+        users (
+          id,
+          first_name,
+          last_name,
+          phone,
+          email,
+          credit_score,
+          account_number,
+          bank_name
+        ),
+        groups (
+          id,
+          name,
+          contribution_amount,
+          max_members
+        )
+      )
     `)
-    .in("type", ["penalty", "fine"])
+    .eq("type", "penalty")
     .order("created_at", { ascending: false });
 
+  if (finesError) {
+    console.warn("Fines query warning:", finesError.message);
+  }
+
   // 2. Query real failed transactions (defaulters)
-  const { data: rawFailed } = await supabase
+  const { data: rawFailed, error: failedError } = await supabase
     .from("transactions")
     .select(`
       id,
       amount,
       type,
       status,
-      description,
       cycle_turn,
-      reference,
       created_at,
-      user_id,
-      group_id,
-      groups ( id, name, contribution_amount, max_members, current_turn )
+      memberships (
+        id,
+        user_id,
+        users (
+          id,
+          first_name,
+          last_name,
+          phone,
+          email,
+          credit_score,
+          account_number,
+          bank_name
+        ),
+        groups (
+          id,
+          name,
+          contribution_amount,
+          max_members
+        )
+      )
     `)
     .eq("status", "failed")
     .order("created_at", { ascending: false });
 
-  // 3. Resolve user details for all related transactions
-  const userIds = Array.from(new Set([
-    ...(rawFines || []).map(f => f.user_id),
-    ...(rawFailed || []).map(f => f.user_id)
-  ])).filter(Boolean);
-
-  let usersMap: Record<string, any> = {};
-  if (userIds.length > 0) {
-    const { data: usersData } = await supabase
-      .from("users")
-      .select("id, first_name, last_name, phone, email, credit_score, account_number, bank_name")
-      .in("id", userIds);
-
-    (usersData || []).forEach(u => {
-      usersMap[u.id] = u;
-    });
+  if (failedError) {
+    console.warn("Failed transactions query warning:", failedError.message);
   }
 
-  // 4. Map to live fines array
-  const liveFines = (rawFines || []).map(f => {
-    const user = usersMap[f.user_id] || {};
-    const group = (f as any).groups || {};
+  // 3. Map to live fines array
+  const liveFines = (rawFines || []).map((f: any) => {
+    const user = f.memberships?.users || {};
+    const group = f.memberships?.groups || {};
     const pool = (group.contribution_amount || 0) * (group.max_members || 1);
     const fineAmount = Number(f.amount || 0);
     const adminCut = Math.round(fineAmount * (10 / 15));
@@ -85,27 +105,27 @@ export default async function AdminDefaultsPage() {
       groupName: group.name || "Ajo Circle",
       departureDate: f.created_at ? new Date(f.created_at).toISOString().split("T")[0] : "Recent",
       type: "15% Departure Fine",
-      status: f.status === "completed" ? "Settled" : "Pending Collection",
+      status: (f.status === "successful" || f.status === "completed") ? "Settled" : "Pending Collection",
       payoutTurn: f.cycle_turn || 1,
-      currentTurn: group.current_turn || 1,
+      currentTurn: f.cycle_turn || 1,
       poolAmount: pool || fineAmount,
       totalFine15Pct: fineAmount,
       adminCut10Pct: adminCut,
       ajoseCut5Pct: ajoseCut,
-      payoutAction: f.description || `15% exit fine on ${group.name || "Ajo Circle"}`,
-      recoveryStatus: f.status === "completed" ? "Resolved (Mono Mandate)" : "Automated Sweep Active"
+      payoutAction: `15% exit fine on ${group.name || "Ajo Circle"}`,
+      recoveryStatus: (f.status === "successful" || f.status === "completed") ? "Resolved (Mono Mandate)" : "Automated Sweep Active"
     };
   });
 
-  // 5. Map to live defaulters array
-  const liveDefaulters = (rawFailed || []).map(f => {
-    const user = usersMap[f.user_id] || {};
-    const group = (f as any).groups || {};
+  // 4. Map to live defaulters array
+  const liveDefaulters = (rawFailed || []).map((f: any) => {
+    const user = f.memberships?.users || {};
+    const group = f.memberships?.groups || {};
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ") || user.email || "Platform Member";
 
     return {
       id: f.id,
-      userId: f.user_id,
+      userId: f.memberships?.user_id || "",
       memberName: name,
       email: user.email || "",
       phone: user.phone || "No phone",
@@ -116,7 +136,7 @@ export default async function AdminDefaultsPage() {
       bankName: user.bank_name || "Linked Account",
       accountNumber: user.account_number || "••••••••••",
       timestamp: f.created_at,
-      reference: f.reference || f.id
+      reference: `DEF-${f.id.slice(0, 8).toUpperCase()}`
     };
   });
 

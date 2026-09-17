@@ -149,23 +149,27 @@ export default function SignupPage() {
 
         if (authError) throw authError;
         
-        // 4. Update user profile with verified status, BVN, NIN and phone
+        // 4. Update user profile with verified status, phone, and initial credit score
         if (authData.user) {
-          await supabase
+          const profilePayload = {
+            id: authData.user.id,
+            email: formData.email,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            phone: formData.phone,
+            bvn_verified: true,
+            nin_verified: true,
+            credit_score: 85,
+            auto_sweep_enabled: true
+          };
+
+          const { error: upsertError } = await supabase
             .from('users')
-            .upsert({
-              id: authData.user.id,
-              email: formData.email,
-              first_name: formData.firstName,
-              last_name: formData.lastName,
-              phone: formData.phone,
-              bvn: formData.bvn,
-              nin: formData.nin,
-              bvn_verified: true,
-              nin_verified: true,
-              credit_score: 85,
-              auto_sweep_enabled: true
-            });
+            .upsert(profilePayload);
+
+          if (upsertError) {
+            console.warn("User profile upsert warning:", upsertError.message);
+          }
 
           // 5. Auto-join group if inviteCode or next parameter contains a group ID
           let targetGroupId = formData.inviteCode.trim();

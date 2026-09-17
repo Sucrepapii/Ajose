@@ -41,18 +41,34 @@ export default async function AdminCommandCenterPage() {
     return acc + pool;
   }, 0);
 
-  // 2. Fetch transactions
-  const { data: transactions } = await supabase
+  // 2. Fetch transactions with correct membership join
+  const { data: rawTransactions, error: txError } = await supabase
     .from("transactions")
     .select(`
-      *,
-      groups ( name )
+      id,
+      amount,
+      type,
+      status,
+      cycle_turn,
+      created_at,
+      memberships (
+        groups ( name )
+      )
     `)
     .order("created_at", { ascending: false })
     .limit(20);
 
-  const txList = transactions || [];
-  const completedTxs = txList.filter(t => t.status === "completed");
+  if (txError) {
+    console.warn("Command Center transactions warning:", txError.message);
+  }
+
+  const txList = (rawTransactions || []).map((t: any) => ({
+    ...t,
+    groups: t.memberships?.groups || null,
+    reference: `TX-${t.id.slice(0, 8).toUpperCase()}`
+  }));
+
+  const completedTxs = txList.filter(t => t.status === "successful" || t.status === "completed");
   const failedTxs = txList.filter(t => t.status === "failed");
   
   // Sweep Success Rate calculation
@@ -66,7 +82,7 @@ export default async function AdminCommandCenterPage() {
   const { data: revenueTxs } = await supabase
     .from("transactions")
     .select("amount, type")
-    .in("type", ["penalty", "fine", "platform_fee", "fee"]);
+    .eq("type", "penalty");
 
   const actualFineAndFeeRevenue = (revenueTxs || []).reduce(
     (acc, tx) => acc + (Number(tx.amount) || 0),
@@ -332,7 +348,7 @@ export default async function AdminCommandCenterPage() {
                     </td>
                     <td className="px-5 py-3.5">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                        tx.status === "completed"
+                        (tx.status === "successful" || tx.status === "completed")
                           ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                           : tx.status === "failed"
                           ? "bg-red-500/10 text-red-400 border border-red-500/20"

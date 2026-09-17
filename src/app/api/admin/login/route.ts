@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     }
 
     // If admin is using a temporary password or requires password change, require permanent password change
-    const needsPasswordChange = admin.requiresPasswordChange || (Boolean(admin.temporaryPassword) && !admin.password && admin.email !== "admin@ajose.ng");
+    const needsPasswordChange = admin.requiresPasswordChange || (Boolean(admin.temporaryPassword) && !admin.password);
 
     if (needsPasswordChange) {
       return NextResponse.json({
