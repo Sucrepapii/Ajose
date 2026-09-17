@@ -10,12 +10,11 @@ import {
   ArrowRightLeft, 
   ShieldAlert, 
   UserCheck, 
-  ArrowLeft,
-  Menu,
-  X,
-  ShieldCheck,
-  Zap,
-  Activity
+  Menu, 
+  X, 
+  ShieldCheck, 
+  Zap, 
+  Activity 
 } from "lucide-react";
 import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton";
 
@@ -72,18 +71,6 @@ export function AdminSidebarNav({
           </Link>
         );
       })}
-
-      <div className="pt-6 pb-2 px-3 text-[10px] font-mono uppercase tracking-widest text-zinc-600 font-bold">
-        Application Exit
-      </div>
-      <Link
-        href="/dashboard"
-        onClick={() => setMobileOpen(false)}
-        className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4 text-zinc-500" />
-        <span>Return to User Dashboard</span>
-      </Link>
     </div>
   );
 
@@ -169,21 +156,6 @@ export function AdminSidebarNav({
                 </span>
               </div>
               <p className="text-[10px] text-zinc-500 font-mono">Platform Admin Desk</p>
-            </div>
-          </div>
-
-          {/* System Telemetry Pill */}
-          <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Mono Sandbox
-              </span>
-              <span className="text-[10px] font-bold text-emerald-400">ONLINE</span>
-            </div>
-            <div className="flex items-center justify-between text-[10px] text-zinc-500">
-              <span>Auto-Sweeps:</span>
-              <span className="text-zinc-300 font-medium">Listening</span>
             </div>
           </div>
 

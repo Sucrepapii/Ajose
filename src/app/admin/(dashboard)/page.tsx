@@ -1,6 +1,9 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminQuickActions } from "@/components/admin/AdminQuickActions";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
+
 import { 
   TrendingUp, 
   Users, 
@@ -19,7 +22,7 @@ import {
 } from "lucide-react";
 
 export default async function AdminCommandCenterPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // 1. Fetch all groups
   const { data: groups } = await supabase
@@ -56,13 +59,21 @@ export default async function AdminCommandCenterPage() {
   const totalSweeps = completedTxs.length + failedTxs.length;
   const sweepSuccessRate = totalSweeps > 0 
     ? Math.round((completedTxs.length / totalSweeps) * 100) 
-    : 99.4; // Default high health indicator if transactions are starting
+    : 100;
 
-  // Platform Revenue Estimation:
-  // 2% from successful pools + 5% from mid-cycle exit fines
+  // Real Platform Revenue Calculation from live database:
+  // 2% projected from pool volumes + actual recorded platform fees & exit penalty shares
+  const { data: revenueTxs } = await supabase
+    .from("transactions")
+    .select("amount, type")
+    .in("type", ["penalty", "fine", "platform_fee", "fee"]);
+
+  const actualFineAndFeeRevenue = (revenueTxs || []).reduce(
+    (acc, tx) => acc + (Number(tx.amount) || 0),
+    0
+  );
   const estimated2PctPayoutRevenue = Math.round(totalPlatformVolume * 0.02);
-  const estimatedFineRevenue = 45000; // Tracked from 15% exit fines
-  const totalPlatformRevenue = estimated2PctPayoutRevenue + estimatedFineRevenue;
+  const totalPlatformRevenue = estimated2PctPayoutRevenue + actualFineAndFeeRevenue;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">

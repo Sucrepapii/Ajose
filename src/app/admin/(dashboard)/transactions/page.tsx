@@ -1,6 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminTransactionsClient } from "@/components/admin/AdminTransactionsClient";
 import { ArrowRightLeft } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Mono Transactions Ledger | Àjọṣe Operations",
@@ -8,7 +10,7 @@ export const metadata = {
 };
 
 export default async function AdminTransactionsPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: transactions } = await supabase
     .from("transactions")

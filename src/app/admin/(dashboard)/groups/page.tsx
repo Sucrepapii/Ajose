@@ -1,6 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminGroupsClient } from "@/components/admin/AdminGroupsClient";
 import { Users } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Circles Monitor | Àjọṣe Operations",
@@ -8,7 +10,7 @@ export const metadata = {
 };
 
 export default async function AdminGroupsPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: groups } = await supabase
     .from("groups")

@@ -33,11 +33,11 @@ export default async function AdminDashboardLayout({
           Your account (<strong className="text-white">{user.email}</strong>) does not have platform administrative privileges. If you are an authorized operations agent, please contact the Lead Super Administrator.
         </p>
         <Link
-          href="/dashboard"
+          href="/login"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold text-xs transition-colors shadow-md"
         >
           <ArrowLeft className="w-4 h-4" />
-          Return to Standard Dashboard
+          Return to Sign In
         </Link>
       </div>
     );
@@ -58,7 +58,7 @@ export default async function AdminDashboardLayout({
       {/* Main Backoffice Canvas */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         {/* Top Banner Status Bar */}
-        <div className="h-14 border-b border-zinc-800/60 px-6 sm:px-10 flex items-center justify-between bg-[#080B09]/80 backdrop-blur-md sticky top-0 z-30">
+        <div className="h-14 border-b border-zinc-800/60 px-6 sm:px-8 flex items-center justify-between bg-[#080B09]/80 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-xs font-mono font-medium text-zinc-300">
@@ -72,7 +72,7 @@ export default async function AdminDashboardLayout({
           </div>
         </div>
 
-        <main className="p-6 sm:p-10 max-w-7xl w-full mx-auto space-y-8">
+        <main className="p-6 sm:p-8 w-full space-y-8">
           {children}
         </main>
       </div>

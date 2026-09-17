@@ -1,6 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminUsersClient } from "@/components/admin/AdminUsersClient";
 import { UserCheck } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "User KYC & Credit Bureau Registry | Àjọṣe Operations",
@@ -8,7 +10,7 @@ export const metadata = {
 };
 
 export default async function AdminUsersPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: users } = await supabase
     .from("users")
@@ -20,6 +22,8 @@ export default async function AdminUsersPage() {
       last_name,
       nickname,
       credit_score,
+      bvn,
+      nin,
       bvn_verified,
       nin_verified,
       bank_name,

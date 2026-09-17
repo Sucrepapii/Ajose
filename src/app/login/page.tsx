@@ -10,11 +10,9 @@ import {
   Eye, 
   EyeOff, 
   ArrowLeft, 
-  ShieldCheck, 
   KeyRound, 
   Lock, 
-  CheckCircle2, 
-  Zap 
+  CheckCircle2 
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -328,9 +326,7 @@ export default function LoginPage() {
             /* STEP 1: UNIFIED LOGIN FORM WITH AUTOMATIC SWITCHING */
             <>
               <h2 className="text-3xl font-bold text-[#111827] mb-2">Welcome Back</h2>
-              <p className="text-gray-500 mb-8">
-                Please enter your credentials. Platform administrators will automatically be routed to the Operations Desk.
-              </p>
+              <p className="text-gray-500 mb-8">Please enter your details to sign in.</p>
 
               <form onSubmit={handleLogin} className="space-y-5">
                 <div>
@@ -384,27 +380,7 @@ export default function LoginPage() {
                 </button>
               </form>
 
-              {/* DEMO / ADMIN QUICK FILL HELPER (DEV & TESTING) */}
-              <div className="mt-6 pt-4 border-t border-gray-100 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-400 flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#C5A059]" />
-                    Superadmin Demo:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFormData({ email: "admin@ajose.ng", password: "AjoseAdmin2026!" });
-                      toast.info("Filled with Temporary Super Admin credentials. Click 'Log In' to switch to Admin!");
-                    }}
-                    className="text-[#0B3022] hover:text-[#C5A059] font-bold font-mono text-[11px] hover:underline cursor-pointer"
-                  >
-                    Fill admin@ajose.ng
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-6 text-center text-sm text-gray-500">
+              <div className="mt-8 text-center text-sm text-gray-500">
                 New to Àjọṣe? <Link href="/signup" className="text-[#1A362D] font-medium hover:underline">Create an account.</Link>
               </div>
             </>
