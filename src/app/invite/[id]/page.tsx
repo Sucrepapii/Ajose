@@ -174,8 +174,8 @@ export default function InvitePage(props: {
           if (membership) {
             setAlreadyMember(true);
           }
-        } else if (groupId === 'test-group-id' || groupId.startsWith('test')) {
-          // Provide demo user preview for local testing
+        } else if (groupId === 'test-demo-preview') {
+          // Provide demo user preview only for synthetic test preview
           setUser({
             id: 'demo-user-test',
             email: 'member@ajose.ng',

@@ -45,8 +45,7 @@ export async function POST(req: Request) {
       : supabaseServer;
 
     const adminClient = createAdminClient();
-    // Use admin client if service role is present, otherwise userClient
-    const queryClient = hasServiceRole ? adminClient : userClient;
+    const queryClient = adminClient;
 
     // 2. Resolve Group
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -156,17 +155,15 @@ export async function POST(req: Request) {
       payout_turn: nextTurn
     };
 
-    // Primary attempt
-    const primaryClient = hasServiceRole ? adminClient : userClient;
-    const { error: primaryErr } = await primaryClient
+    // Primary attempt with adminClient (bypasses RLS)
+    const { error: primaryErr } = await adminClient
       .from("memberships")
       .insert(membershipPayload);
 
     if (primaryErr) {
-      console.warn("Primary membership insertion error, trying fallback client:", primaryErr.message);
-      // Secondary attempt with the other client
-      const fallbackClient = primaryClient === adminClient ? userClient : adminClient;
-      const { error: fallbackErr } = await fallbackClient
+      console.warn("adminClient membership insertion error, trying userClient fallback:", primaryErr.message);
+      // Secondary attempt with userClient
+      const { error: fallbackErr } = await userClient
         .from("memberships")
         .insert(membershipPayload);
 
