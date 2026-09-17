@@ -6,6 +6,7 @@ export const ADMIN_SESSION_COOKIE = "ajose_admin_session";
 
 // Default admin emails or configure via ADMIN_EMAILS environment variable
 const DEFAULT_SUPER_ADMINS = [
+  "samuel@paylodeservices.com",
   "kemi@ajose.ng",
   "superadmin@ajose.ng",
   "operations@ajose.ng",

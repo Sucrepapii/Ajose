@@ -247,10 +247,18 @@ export default function InvitePage(props: {
     setIsJoining(true);
 
     try {
+      // Fetch active auth session token to pass to the API route
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       // Join group via Admin API route to guarantee DB creation & roster entry
       const res = await fetch("/api/groups/join", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           groupId,
           userId: user.id,
@@ -299,10 +307,18 @@ export default function InvitePage(props: {
           .eq('id', user.id);
       }
 
+      // Fetch active auth session token to pass to the API route
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       // 2. Join group via Admin API route to guarantee DB creation & roster entry
       const res = await fetch("/api/groups/join", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           groupId,
           userId: user.id,

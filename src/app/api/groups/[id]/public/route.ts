@@ -9,28 +9,52 @@ export async function GET(
 ) {
   try {
     const params = await props.params;
-    const groupId = params.id;
+    let cleanCode = (params.id || "").trim();
 
-    if (!groupId) {
+    if (!cleanCode) {
       return NextResponse.json({ error: "groupId is required" }, { status: 400 });
     }
 
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(groupId)) {
-      return NextResponse.json({ error: "Group not found" }, { status: 404 });
+    if (cleanCode.includes("/invite/")) {
+      const parts = cleanCode.split("/invite/");
+      cleanCode = parts[1].split("?")[0].split("/")[0].trim();
     }
+    cleanCode = cleanCode.replace(/^#/, "").trim();
 
     const supabase = createAdminClient();
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    let group: any = null;
 
-    const { data: group, error: groupErr } = await supabase
-      .from("groups")
-      .select("id, name, contribution_amount, max_members, frequency, min_credit_score, admin_commission_pct, status, created_at")
-      .eq("id", groupId)
-      .maybeSingle();
+    if (uuidRegex.test(cleanCode)) {
+      const { data: directMatch } = await supabase
+        .from("groups")
+        .select("id, name, contribution_amount, max_members, frequency, min_credit_score, admin_commission_pct, status, created_at")
+        .eq("id", cleanCode)
+        .maybeSingle();
 
-    if (groupErr) {
-      console.error("Public group fetch error:", groupErr);
-      return NextResponse.json({ error: groupErr.message }, { status: 500 });
+      if (directMatch) {
+        group = directMatch;
+      }
+    }
+
+    if (!group) {
+      const { data: allGroups } = await supabase
+        .from("groups")
+        .select("id, name, contribution_amount, max_members, frequency, min_credit_score, admin_commission_pct, status, created_at");
+
+      const normalizedInput = cleanCode.toLowerCase().replace(/-/g, "");
+
+      group = (allGroups || []).find((g: any) => {
+        const idLower = g.id.toLowerCase();
+        const idNoHyphens = idLower.replace(/-/g, "");
+        const nameLower = (g.name || "").toLowerCase().trim();
+
+        return (
+          idLower.startsWith(cleanCode.toLowerCase()) ||
+          idNoHyphens.startsWith(normalizedInput) ||
+          nameLower === cleanCode.toLowerCase().trim()
+        );
+      });
     }
 
     if (!group) {

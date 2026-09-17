@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock, Users } from "lucide-react";
 
 import Image from "next/image";
 
@@ -15,6 +15,7 @@ export default function SignupPage() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [verifiedGroup, setVerifiedGroup] = useState<any | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -27,6 +28,63 @@ export default function SignupPage() {
     nin: "",
     inviteCode: ""
   });
+
+  // Auto-detect invite code from URL parameters (?next=/invite/..., ?code=..., ?invite=...)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const directCode = params.get("code") || params.get("invite");
+    const nextParam = params.get("next");
+    let initialCode = directCode || "";
+
+    if (!initialCode && nextParam && nextParam.includes("/invite/")) {
+      const parts = nextParam.split("/invite/");
+      if (parts[1]) {
+        initialCode = parts[1].split("?")[0].split("/")[0].trim();
+      }
+    }
+
+    if (initialCode) {
+      setFormData(prev => ({ ...prev, inviteCode: initialCode }));
+    }
+  }, []);
+
+  // Validate and display group info when inviteCode is provided
+  useEffect(() => {
+    const raw = formData.inviteCode.trim();
+    if (!raw || raw.length < 3) {
+      setVerifiedGroup(null);
+      return;
+    }
+
+    let active = true;
+    let clean = raw;
+    if (clean.includes("/invite/")) {
+      const parts = clean.split("/invite/");
+      clean = parts[1].split("?")[0].split("/")[0].trim();
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/groups/${encodeURIComponent(clean)}/public`);
+        if (res.ok) {
+          const data = await res.json();
+          if (active && data?.group) {
+            setVerifiedGroup(data.group);
+          }
+        } else {
+          if (active) setVerifiedGroup(null);
+        }
+      } catch (err) {
+        if (active) setVerifiedGroup(null);
+      }
+    }, 300);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [formData.inviteCode]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -191,9 +249,14 @@ export default function SignupPage() {
 
           if (targetGroupId) {
             try {
+              const token = authData?.session?.access_token;
+              const headers: Record<string, string> = { "Content-Type": "application/json" };
+              if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+              }
               await fetch('/api/groups/join', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({
                   groupId: targetGroupId,
                   userId: authData.user.id,
@@ -336,9 +399,18 @@ export default function SignupPage() {
                     </label>
                     <input 
                       name="inviteCode" value={formData.inviteCode} onChange={handleChange} 
-                      type="text" placeholder="e.g. AA88BC1" 
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors uppercase"
+                      type="text" placeholder="e.g. Samuel or paste invite link" 
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
                     />
+                    {verifiedGroup && (
+                      <div className="mt-2 flex items-center gap-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 animate-in fade-in duration-200">
+                        <Users className="h-4 w-4 text-emerald-600 shrink-0" />
+                        <span>
+                          Invited to join: <strong className="text-emerald-950 font-bold">{verifiedGroup.name}</strong>
+                          {verifiedGroup.contribution_amount && ` (₦${Number(verifiedGroup.contribution_amount).toLocaleString()} / ${verifiedGroup.frequency || "monthly"})`}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </form>
 

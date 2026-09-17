@@ -25,40 +25,40 @@ const ADMINS_FILE = path.join(DATA_DIR, "admins.json");
 // Default initial seeded admins
 const SEED_ADMINS: AdminUser[] = [
   {
+    id: "admin-samuel-paylode",
+    fullName: "Samuel Akinboro",
+    email: "samuel@paylodeservices.com",
+    role: "Super Admin",
+    status: "active",
+    createdAt: "2026-08-01T00:00:00.000Z",
+    isSuperAdmin: true,
+    createdBy: "System Seed",
+    requiresPasswordChange: false
+  },
+  {
     id: "admin-mu5lzg0j-7mn6",
     fullName: "Kemi Adeleke",
     email: "kemi@ajose.ng",
-    role: "Super Admin",
+    role: "Operations Lead",
     status: "active",
     createdAt: "2026-09-17T14:12:16.723Z",
-    isSuperAdmin: true,
-    createdBy: "System Seed",
+    isSuperAdmin: false,
+    createdBy: "samuel@paylodeservices.com",
     password: "KemiSecure2026!",
     requiresPasswordChange: false
   },
   {
-    id: "admin-ops-02",
-    fullName: "Operations Manager",
-    email: "operations@ajose.ng",
-    role: "Operations Lead",
-    temporaryPassword: "AjoseOps2026!",
-    requiresPasswordChange: true,
-    status: "active",
-    createdAt: "2026-08-10T09:30:00.000Z",
-    isSuperAdmin: false,
-    createdBy: "kemi@ajose.ng"
-  },
-  {
-    id: "admin-risk-03",
-    fullName: "Risk & Compliance Desk",
-    email: "compliance@ajose.ng",
+    id: "admin-mu5mek7a-ml8w",
+    fullName: "Tunde Bello",
+    email: "tunde@ajose.ng",
     role: "Risk & Compliance",
-    temporaryPassword: "AjoseRisk2026!",
-    requiresPasswordChange: true,
+    requiresPasswordChange: false,
     status: "active",
-    createdAt: "2026-08-15T14:15:00.000Z",
+    createdAt: "2026-09-17T14:24:01.990Z",
     isSuperAdmin: false,
-    createdBy: "kemi@ajose.ng"
+    createdBy: "samuel@paylodeservices.com",
+    password: "MyPermanentSecurePassword2026!",
+    lastLogin: "2026-09-17T14:24:03.560Z"
   }
 ];
 
@@ -187,7 +187,12 @@ export async function deleteAdminUser(id: string): Promise<boolean> {
 
   if (!adminToDelete) return false;
   
-  // Guard: Prevent deleting the last remaining Super Administrator
+  // Guard 1: samuel@paylodeservices.com is immutable root super administrator
+  if (adminToDelete.email.toLowerCase() === "samuel@paylodeservices.com") {
+    throw new Error("Cannot delete primary root super administrator (samuel@paylodeservices.com).");
+  }
+
+  // Guard 2: Prevent deleting the last remaining Super Administrator
   const superAdmins = admins.filter(a => a.isSuperAdmin || a.role === "Super Admin");
   if (superAdmins.length <= 1 && (adminToDelete.isSuperAdmin || adminToDelete.role === "Super Admin")) {
     throw new Error("Cannot delete the last remaining Super Administrator.");

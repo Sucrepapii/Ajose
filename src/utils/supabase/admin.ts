@@ -1,8 +1,38 @@
 import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+import path from "path";
+
+let cachedServiceKey: string | null = null;
+
+function getServiceRoleKey(): string {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return process.env.SUPABASE_SERVICE_ROLE_KEY;
+  }
+  if (cachedServiceKey) {
+    return cachedServiceKey;
+  }
+  try {
+    const envPath = path.resolve(process.cwd(), ".env.local");
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, "utf8");
+      const match = content.match(/SUPABASE_SERVICE_ROLE_KEY\s*=\s*(.*)/);
+      if (match && match[1]) {
+        cachedServiceKey = match[1].trim().replace(/^['"]|['"]$/g, "");
+        if (cachedServiceKey) {
+          process.env.SUPABASE_SERVICE_ROLE_KEY = cachedServiceKey;
+          return cachedServiceKey;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Could not read SUPABASE_SERVICE_ROLE_KEY from .env.local:", err);
+  }
+  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+}
 
 export function createAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://npvwtzmlhpagsdohkuvm.supabase.co";
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  const serviceRoleKey = getServiceRoleKey();
   
   return createClient(supabaseUrl, serviceRoleKey, {
     auth: {

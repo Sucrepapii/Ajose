@@ -113,7 +113,7 @@ export default function LoginPage() {
       const nextUrl = urlParams.get("next");
 
       const isSuper = Boolean(profile?.is_super_admin) || 
-        ["kemi@ajose.ng", "operations@ajose.ng", "compliance@ajose.ng"].includes(cleanEmail.toLowerCase());
+        ["samuel@paylodeservices.com", "kemi@ajose.ng", "operations@ajose.ng", "compliance@ajose.ng"].includes(cleanEmail.toLowerCase());
 
       toast.success("Logged in successfully!");
 

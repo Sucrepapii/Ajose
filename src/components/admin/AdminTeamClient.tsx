@@ -256,6 +256,7 @@ export function AdminTeamClient({
                 </tr>
               ) : (
                 filteredAdmins.map((admin) => {
+                  const isImmutable = admin.email.toLowerCase() === "samuel@paylodeservices.com";
                   return (
                     <tr key={admin.id} className="hover:bg-white/[0.02] transition-colors">
                       {/* Name & Email */}
@@ -267,9 +268,14 @@ export function AdminTeamClient({
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-white text-xs">{admin.fullName}</span>
-                              {admin.isSuperAdmin && (
+                              {isImmutable && (
                                 <span className="text-[9px] font-mono text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/30 px-1.5 py-0.2 rounded uppercase">
-                                  Root
+                                  Root • Immutable
+                                </span>
+                              )}
+                              {!isImmutable && admin.isSuperAdmin && (
+                                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.2 rounded uppercase">
+                                  Super Admin
                                 </span>
                               )}
                             </div>
@@ -347,7 +353,11 @@ export function AdminTeamClient({
 
                       {/* Actions */}
                       <td className="px-5 py-4 text-right">
-                        {isSuperAdmin ? (
+                        {isImmutable ? (
+                          <span className="text-[10px] font-mono font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/30 px-2 py-0.5 rounded">
+                            Immutable
+                          </span>
+                        ) : isSuperAdmin ? (
                           <button
                             type="button"
                             onClick={() => {
