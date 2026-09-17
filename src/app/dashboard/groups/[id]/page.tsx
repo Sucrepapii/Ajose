@@ -157,25 +157,39 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     <div className="space-y-6 animate-in fade-in duration-500 pb-20 max-w-5xl mx-auto">
       
       {/* Header with Breadcrumbs */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard/groups" className="p-2 rounded-xl bg-white border border-gray-200 text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-[#0B3022]">{group.name}</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <span className={`px-2 py-0.5 text-xs font-bold rounded ${group.status === 'active' ? 'bg-green-500/10 text-green-700 border border-green-500/20' : 'bg-[#C5A059]/10 text-[#0B3022] border border-[#C5A059]/20'}`}>
-                {group.status.toUpperCase()}
-              </span>
-              <span className="text-[#1F2937]/70 text-sm font-medium">Rotational Ajo</span>
-              <span className="text-gray-300 text-sm">•</span>
-              <span className="text-[#1F2937]/50 text-sm font-mono truncate max-w-[150px]">ID: {groupId}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center justify-between sm:justify-start gap-4 w-full sm:w-auto">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <Link href="/dashboard/groups" className="p-2 rounded-xl bg-white border border-gray-200 text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm shrink-0">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-bold text-[#0B3022] truncate">{group.name}</h1>
+                <span className={`px-2 py-0.5 text-xs font-bold rounded shrink-0 ${group.status === 'active' ? 'bg-green-500/10 text-green-700 border border-green-500/20' : 'bg-[#C5A059]/10 text-[#0B3022] border border-[#C5A059]/20'}`}>
+                  {group.status.toUpperCase()}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <span className="text-[#1F2937]/70 text-xs sm:text-sm font-medium">Rotational Ajo</span>
+                <span className="text-gray-300 text-sm">•</span>
+                <span className="text-[#1F2937]/50 text-xs sm:text-sm font-mono truncate max-w-[130px] sm:max-w-[150px]">ID: {groupId}</span>
+              </div>
             </div>
           </div>
+
+          {/* Group Settings Button for mobile screens */}
+          <Link 
+            href={`/dashboard/groups/${groupId}/settings`}
+            className="flex sm:hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-gray-200 text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm font-semibold text-xs shrink-0"
+            title="Group Settings"
+          >
+            <Settings className="h-4 w-4 text-[#C5A059]" />
+            <span>Settings</span>
+          </Link>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 justify-end">
           {isAdmin && group.status === 'active' && (
             <SendRemindersClient 
               unpaidUserIds={unpaidUserIds} 
@@ -184,11 +198,14 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
               amount={group.contribution_amount} 
             />
           )}
+          {/* Group Settings Button for tablet and desktop screens */}
           <Link 
             href={`/dashboard/groups/${groupId}/settings`}
-            className="p-2 rounded-xl bg-white border border-gray-200 text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-50 transition-colors hidden md:block shadow-sm"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-gray-200 text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm font-semibold text-sm"
+            title="Group Settings"
           >
-            <Settings className="h-5 w-5" />
+            <Settings className="h-4 w-4 text-[#C5A059]" />
+            <span>Settings</span>
           </Link>
         </div>
       </div>

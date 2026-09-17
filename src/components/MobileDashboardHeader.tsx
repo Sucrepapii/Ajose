@@ -113,7 +113,7 @@ export function MobileDashboardHeader({
                   className="object-contain w-auto h-6"
                 />
                 <span className="font-bold text-base text-white font-serif tracking-tight">
-                  Àjọ<span className="text-[#C5A059]">ṣe</span> Menu
+                  Àjọ<span className="text-[#C5A059]">ṣe</span>
                 </span>
               </div>
               <button 
