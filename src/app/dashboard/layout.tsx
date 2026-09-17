@@ -12,6 +12,7 @@ import {
 import { LogoutButton } from "@/components/LogoutButton";
 import { SidebarNav } from "@/components/SidebarNav";
 import { NotificationBell } from "@/components/NotificationBell";
+import { MobileDashboardHeader } from "@/components/MobileDashboardHeader";
 import { AutoLogout } from "@/components/AutoLogout";
 import Image from "next/image";
 
@@ -78,22 +79,13 @@ export default async function DashboardLayout({
         </div>
       </aside>
 
-      {/* Mobile Header */}
-      <header className="md:hidden h-16 bg-[#0B3022] border-b border-white/10 flex items-center justify-between px-4 shadow-md z-20">
-        <Link className="flex items-center gap-2 group hover:opacity-90 transition-opacity" href="/">
-          <Image 
-            src="/ajose-rings-logo.png" 
-            alt="Àjọṣe Logo" 
-            width={28} 
-            height={28} 
-            className="object-contain w-auto h-7 drop-shadow-sm animate-spin-slow"
-          />
-          <span className="font-bold text-lg text-white font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
-        </Link>
-        <button className="text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-        </button>
-      </header>
+      {/* Interactive Mobile Header with Working Burger Drawer */}
+      <MobileDashboardHeader 
+        userId={user.id} 
+        displayName={displayName} 
+        email={email} 
+        initials={initials} 
+      />
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#FDFBF7]">

@@ -262,7 +262,14 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
 
       {/* Start Cycle Banner for Admins if Pending */}
       {group.status === 'pending' && isAdmin && (
-        <StartCycleClient groupId={groupId} />
+        <StartCycleClient 
+          groupId={groupId} 
+          groupName={group.name}
+          currentMembersCount={contributingMembers.length}
+          maxMembers={group.max_members}
+          contributionAmount={group.contribution_amount}
+          frequency={group.frequency}
+        />
       )}
 
       {/* REQ 7: Admin Tendered Settlement Account & Pass-Through Card (Visible to ALL members) */}
@@ -408,8 +415,9 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
 
                         if (m.role === 'admin') {
                           return (
-                            <span className="text-xs text-[#C5A059] font-bold bg-[#0B3022] text-white px-2.5 py-1 rounded-full">
-                              Admin Settlement Mandate
+                            <span className="text-xs text-[#C5A059] font-bold bg-[#0B3022] text-white px-2.5 py-1 rounded-full inline-block whitespace-nowrap">
+                              <span className="hidden sm:inline">Admin Settlement Mandate</span>
+                              <span className="sm:hidden">Admin</span>
                             </span>
                           );
                         }

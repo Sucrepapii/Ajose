@@ -49,12 +49,30 @@ export default function TermsOfServicePage() {
             <li>Sharing of the User's identity, transactional data, and mandate records with lawful, licensed debt collection agencies and law enforcement for the purpose of asset recovery and criminal prosecution.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">5. Dispute Resolution and Governing Law</h2>
+          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">5. Mid-Cycle Exits, Cancellation, and 15% Early Departure Fine</h2>
           <p>
-            5.1. <strong>Governing Law:</strong> This Agreement, and any non-contractual obligations arising out of or in connection with it, shall be governed by, and construed in accordance with, the laws of the Federal Republic of Nigeria.
+            5.1. <strong>Pre-Cycle Modifications:</strong> Prior to the formal activation of an Ajo cycle (status: "pending"), the Group Admin may add or remove participants at will, and members may freely opt out without penalty, fine, or credit impact.
           </p>
           <p>
-            5.2. <strong>Mandatory Arbitration:</strong> Any dispute, controversy, or claim arising out of or relating to this Agreement, including the breach, termination, or invalidity thereof, shall be settled by mandatory, binding arbitration at the Lagos Multi-Door Courthouse (LMDC) in Lagos, Nigeria, prior to the commencement of any litigation. The arbitration shall be conducted by a single arbitrator appointed in accordance with the LMDC Rules.
+            5.2. <strong>Mandatory 15% Exit Fine:</strong> Once an Ajo cycle is launched and active, any member who leaves, requests premature withdrawal, or is removed for non-cooperation disrupts the collective rotational liquidity and is legally subject to an early departure fine of <strong>15% of their scheduled contribution amount</strong>. This fine is strictly apportioned as follows:
+          </p>
+          <ul className="list-disc pl-6 space-y-2 mt-2">
+            <li><strong>10% to the Group Admin:</strong> Compensating the Admin trustee for administrative restructuring, managing collection shortfalls, and onboarding a replacement member.</li>
+            <li><strong>5% to Àjọṣe:</strong> Covering platform open-banking ledger reconciliation, mandate re-routing, and infrastructure management.</li>
+          </ul>
+          <p className="mt-3">
+            5.3. <strong>Members Awaiting Payout (Must Wait Their Turn):</strong> If an exiting member has not yet received their Ajo Pot disbursement, <strong>they are strictly required to wait until their originally scheduled payout turn</strong> to collect their past contributions. Under no circumstances will early or accelerated disbursements be made. On their scheduled turn, their accumulated past contributions will be credited minus the mandatory 15% fine (10% to Admin, 5% to Àjọṣe).
+          </p>
+          <p>
+            5.4. <strong>Members Who Have Already Collected (Immediate Fine & Mandate Enforcement):</strong> A member who has already collected their rotational Ajo Pot has received other members' funds and is legally prohibited from absconding. If such a member attempts to exit or fails scheduled payments, <strong>they must pay the 15% fine immediately</strong> in addition to their full remaining contribution obligations. Their continuous Mono Direct Debit mandate remains fully enforceable, and failure to fulfill remaining debits constitutes an immediate default event subject to credit bureau reporting and debt recovery under Section 4.
+          </p>
+
+          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">6. Dispute Resolution and Governing Law</h2>
+          <p>
+            6.1. <strong>Governing Law:</strong> This Agreement, and any non-contractual obligations arising out of or in connection with it, shall be governed by, and construed in accordance with, the laws of the Federal Republic of Nigeria.
+          </p>
+          <p>
+            6.2. <strong>Mandatory Arbitration:</strong> Any dispute, controversy, or claim arising out of or relating to this Agreement, including the breach, termination, or invalidity thereof, shall be settled by mandatory, binding arbitration at the Lagos Multi-Door Courthouse (LMDC) in Lagos, Nigeria, prior to the commencement of any litigation. The arbitration shall be conducted by a single arbitrator appointed in accordance with the LMDC Rules.
           </p>
         </div>
       </div>

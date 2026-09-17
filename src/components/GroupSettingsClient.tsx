@@ -5,7 +5,21 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Trash2, AlertTriangle, Users, ShieldAlert, Percent, Landmark, ShieldCheck, Check, Edit3 } from "lucide-react";
+import { 
+  Trash2, 
+  AlertTriangle, 
+  Users, 
+  ShieldAlert, 
+  Percent, 
+  Landmark, 
+  ShieldCheck, 
+  Check, 
+  Edit3, 
+  UserPlus, 
+  DollarSign, 
+  X,
+  Coins
+} from "lucide-react";
 
 type Group = any;
 type Member = any;
@@ -23,18 +37,40 @@ export function GroupSettingsClient({
   const supabase = createClient();
   const isLocked = group.status !== 'pending';
 
+  // Member Removal & Fine States
   const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
+  const defaultFine = Math.round((group.contribution_amount || 50000) * 0.15);
+  const [fineAmount, setFineAmount] = useState<string>(defaultFine.toString());
+  const [removalReason, setRemovalReason] = useState<string>("Mid-cycle member departure");
 
+  // Add Member States
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [newMemberIdentifier, setNewMemberIdentifier] = useState("");
+  const [newMemberTurn, setNewMemberTurn] = useState<string>("");
+  const [isAddingMember, setIsAddingMember] = useState(false);
+
+  // Group Delete States
   const [showDeleteGroupConfirm, setShowDeleteGroupConfirm] = useState(false);
   const [isDeletingGroup, setIsDeletingGroup] = useState(false);
 
+  // Commission States
   const [commissionPct, setCommissionPct] = useState(group.admin_commission_pct?.toString() || "5");
   const [isSavingCommission, setIsSavingCommission] = useState(false);
 
   // Find admin profile for settlement account
   const adminMember = members.find(m => m.role === 'admin');
   const adminProfile = adminMember?.users;
+
+  // Contributing members & open turn slots
+  const contributingMembers = members.filter(m => m.role !== 'admin');
+  const occupiedTurns = new Set(contributingMembers.map(m => m.payout_turn));
+  const openTurns: number[] = [];
+  for (let i = 1; i <= group.max_members; i++) {
+    if (!occupiedTurns.has(i)) {
+      openTurns.push(i);
+    }
+  }
 
   // Determine user display name
   const getDisplayName = (m: Member) => {
@@ -67,20 +103,62 @@ export function GroupSettingsClient({
     }
   };
 
+  const handleAddMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemberIdentifier.trim()) {
+      toast.error("Please enter a user phone number or nickname.");
+      return;
+    }
+
+    setIsAddingMember(true);
+    try {
+      const res = await fetch("/api/groups/members/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId: group.id,
+          identifier: newMemberIdentifier.trim(),
+          turnSlot: newMemberTurn ? parseInt(newMemberTurn) : openTurns[0] || null
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to add member.");
+
+      toast.success(data.message || "Member added successfully.");
+      setNewMemberIdentifier("");
+      setShowAddMemberModal(false);
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to add member.");
+    } finally {
+      setIsAddingMember(false);
+    }
+  };
+
   const handleRemoveMember = async () => {
     if (!memberToRemove) return;
     setIsRemoving(true);
 
     try {
-      const { error } = await supabase
-        .from('memberships')
-        .delete()
-        .eq('id', memberToRemove.id);
+      const parsedFine = isLocked ? parseFloat(fineAmount) || defaultFine : 0;
+      const res = await fetch("/api/groups/members/remove", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId: group.id,
+          membershipId: memberToRemove.id,
+          fineAmount: parsedFine,
+          reason: removalReason
+        })
+      });
 
-      if (error) throw error;
-      toast.success("Member removed successfully.");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to remove member.");
+
+      toast.success(data.message || "Member removed successfully.");
       setMemberToRemove(null);
-      router.refresh(); // Refresh server data
+      router.refresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to remove member.");
     } finally {
@@ -113,15 +191,16 @@ export function GroupSettingsClient({
       
       {/* Warning Banner if Locked */}
       {isLocked && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-amber-800 text-sm font-medium">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-amber-800 text-sm font-medium shadow-xs">
           <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600" />
           <p>
-            This group is currently <strong>{group.status.toUpperCase()}</strong>. Cycles are underway. Core financial rules are locked to preserve mutual trust.
+            This group is currently <strong>{group.status.toUpperCase()}</strong> (Turn {group.current_turn || 1}). 
+            Cycles are underway. Removing members mid-cycle levies an early exit fine to protect remaining members.
           </p>
         </div>
       )}
 
-      {/* Admin Commission Settings (Req 4) */}
+      {/* Admin Commission Settings */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-6 border-b border-gray-100 flex items-center gap-3 bg-[#FDFBF7]">
           <div className="w-10 h-10 rounded-xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center">
@@ -161,7 +240,7 @@ export function GroupSettingsClient({
                 <button 
                   onClick={handleSaveCommission}
                   disabled={isSavingCommission || commissionPct === (group.admin_commission_pct?.toString() || "5")}
-                  className="px-4 py-2 bg-[#0B3022] hover:bg-[#0B3022]/90 disabled:opacity-40 text-white font-bold text-xs rounded-lg transition-colors shadow-sm"
+                  className="px-4 py-2 bg-[#0B3022] hover:bg-[#0B3022]/90 disabled:opacity-40 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer"
                 >
                   {isSavingCommission ? "Saving..." : "Save"}
                 </button>
@@ -171,9 +250,9 @@ export function GroupSettingsClient({
         </div>
       </div>
 
-      {/* Admin Tendered Settlement Account Card (Req 7) */}
+      {/* Admin Tendered Settlement Account Card */}
       <div className="bg-white border border-emerald-500/20 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-emerald-50/30">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-emerald-50/30 flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center">
               <Landmark className="h-5 w-5 text-emerald-700" />
@@ -218,36 +297,95 @@ export function GroupSettingsClient({
         </div>
       </div>
 
-      {/* Member Management */}
+      {/* Member Management with Add and Remove Controls */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-gray-100 flex items-center gap-3 bg-[#FDFBF7]">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-            <Users className="h-5 w-5 text-blue-600" />
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7] flex-wrap gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+              <Users className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[#0B3022]">
+                Member Roster ({contributingMembers.length}/{group.max_members})
+              </h2>
+              <p className="text-[#1F2937]/70 text-xs font-medium">
+                {isLocked 
+                  ? "Cycle active: Member departures incur exit fines and vacate slots for replacements" 
+                  : "Cycle pending: Admin can add and remove members freely without penalty"}
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-bold text-[#0B3022]">Member Management</h2>
-            <p className="text-[#1F2937]/70 text-sm">Manage roster and remove members</p>
-          </div>
+
+          {/* Add Member Button */}
+          {(!isLocked || openTurns.length > 0) && (
+            <button
+              onClick={() => setShowAddMemberModal(true)}
+              className="px-4 py-2 bg-[#0B3022] hover:bg-[#072418] text-[#C5A059] font-bold text-xs rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>{isLocked ? "Add Replacement Member" : "Add Member Directly"}</span>
+            </button>
+          )}
         </div>
 
         <div className="divide-y divide-gray-100">
-          {members.map(m => (
-            <div key={m.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-              <div>
-                <p className="font-bold text-[#0B3022]">{getDisplayName(m)}</p>
-                <p className="text-xs text-[#1F2937]/60 font-medium">{m.role === 'admin' ? 'Group Admin' : `Turn ${m.payout_turn}`}</p>
+          {members.map(m => {
+            const isTurnAdmin = m.role === 'admin';
+            const memberTurn = m.payout_turn;
+            const hasAlreadyCollected = !isTurnAdmin && memberTurn < (group.current_turn || 1);
+
+            return (
+              <div key={m.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-[#0B3022]">
+                    {getDisplayName(m).charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-bold text-[#0B3022] text-sm">{getDisplayName(m)}</p>
+                      {isTurnAdmin ? (
+                        <span className="text-[10px] font-bold bg-[#0B3022] text-white px-2 py-0.5 rounded-full">
+                          Admin Trustee
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
+                          Turn {memberTurn}
+                        </span>
+                      )}
+
+                      {isLocked && !isTurnAdmin && (
+                        hasAlreadyCollected ? (
+                          <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
+                            Collected Payout
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                            Awaiting Turn
+                          </span>
+                        )
+                      )}
+                    </div>
+                    <p className="text-xs text-[#1F2937]/50 font-mono mt-0.5">
+                      {m.users?.phone || m.user_id.substring(0, 10)}
+                    </p>
+                  </div>
+                </div>
+                
+                {!isTurnAdmin && m.user_id !== currentUserId && (
+                  <button 
+                    onClick={() => {
+                      setMemberToRemove(m);
+                      setFineAmount(defaultFine.toString());
+                    }}
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                    title={isLocked ? "Remove Member & Levy Fine" : "Remove Member"}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
-              
-              {m.user_id !== currentUserId && (
-                <button 
-                  onClick={() => setMemberToRemove(m)}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -268,7 +406,9 @@ export function GroupSettingsClient({
             <div>
               <h3 className="font-bold text-[#0B3022] mb-1">Delete this group</h3>
               <p className="text-sm text-[#1F2937]/70 font-medium">
-                Once you delete a group, there is no going back. Please be certain.
+                {isLocked 
+                  ? "Cannot delete an active circle while rounds are in progress." 
+                  : "Permanently delete this group and cancel pending invitations."}
               </p>
             </div>
             <button 
@@ -282,45 +422,281 @@ export function GroupSettingsClient({
         </div>
       </div>
 
-      {/* --- Modals --- */}
+      {/* --- MODALS --- */}
       
-      {/* Member Remove Modal */}
+      {/* 1. Member Removal Modal (Different for Pending vs Active) */}
       {memberToRemove && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="p-6 text-center space-y-4">
-              <div className="mx-auto w-12 h-12 bg-red-50 border border-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+            
+            {/* Modal Header */}
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isLocked ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-600'}`}>
+                  {isLocked ? <Coins className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#0B3022]">
+                    {isLocked ? "Mid-Cycle Removal & Exit Fine" : "Remove Member from Roster"}
+                  </h3>
+                  <p className="text-xs text-[#1F2937]/60">
+                    {isLocked ? "Cycle is currently active" : "Cycle has not started"}
+                  </p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[#0B3022]">Remove Member?</h3>
-              <p className="text-[#1F2937]/70 text-sm font-medium">
-                Are you sure you want to remove <strong className="text-[#0B3022]">{getDisplayName(memberToRemove)}</strong> from the group?
-              </p>
+              <button 
+                onClick={() => setMemberToRemove(null)}
+                disabled={isRemoving}
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 text-xs text-[#1F2937]/80">
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 font-medium">Member:</span>
+                  <span className="font-bold text-[#0B3022] text-sm">{getDisplayName(memberToRemove)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 font-medium">Assigned Turn:</span>
+                  <span className="font-bold text-[#0B3022]">Turn {memberToRemove.payout_turn}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 font-medium">Group Current Turn:</span>
+                  <span className="font-bold text-[#0B3022]">Turn {group.current_turn || 1}</span>
+                </div>
+              </div>
+
+              {/* Notice for Pre-Cycle vs Mid-Cycle */}
+              {!isLocked ? (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-emerald-900 leading-relaxed">
+                  <p className="font-bold text-xs mb-1">Pre-Cycle Clean Removal:</p>
+                  <p>
+                    Because this Ajo cycle has not started, removing this member carries <strong>no fine or credit penalties</strong>. 
+                    Their slot will open back up and turn numbers will be re-indexed.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {/* Warning & Turn Waiting Rule */}
+                  {memberToRemove.payout_turn < (group.current_turn || 1) ? (
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 text-red-900 leading-relaxed">
+                      <p className="font-bold text-xs mb-1 flex items-center gap-1.5">
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                        CRITICAL: Member Already Collected Payout!
+                      </p>
+                      <p>
+                        This member collected their lump sum on Turn {memberToRemove.payout_turn}. 
+                        They <strong>must pay the 15% fine immediately</strong>. Their ongoing Direct Debit mandate remains in effect to collect remaining rounds, their credit score drops (-50 points), and credit bureau reporting is initiated.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-amber-900 leading-relaxed">
+                      <p className="font-bold text-xs mb-1">
+                        Mid-Cycle Departure: 15% Fine & Must Wait Turn
+                      </p>
+                      <p>
+                        This member has not yet collected. An early departure fine of <strong>15%</strong> is assessed. 
+                        <strong>As per terms, they must wait until their scheduled turn (Turn {memberToRemove.payout_turn})</strong> to receive their reconciled contributions minus the 15% fine. No early lump-sum cashout is allowed.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* 15% Fine Breakdown Box */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-1.5">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-[#0B3022]">Total Exit Fine (15%):</span>
+                      <span className="font-black text-[#0B3022]">₦{Number(fineAmount || defaultFine).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px] text-gray-500 pt-1 border-t border-gray-200">
+                      <span>• Admin Compensation (10%):</span>
+                      <span className="font-bold text-emerald-700">
+                        ₦{Math.round(Number(fineAmount || defaultFine) * (10 / 15)).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px] text-gray-500">
+                      <span>• Àjọṣe Platform Handling (5%):</span>
+                      <span className="font-bold text-[#0B3022]">
+                        ₦{(Number(fineAmount || defaultFine) - Math.round(Number(fineAmount || defaultFine) * (10 / 15))).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Fine Input */}
+                  <div>
+                    <label className="block font-bold text-[#0B3022] mb-1">
+                      Customize Exit Fine Amount (₦):
+                    </label>
+                    <div className="relative">
+                      <input 
+                        type="number"
+                        min="0"
+                        step="1000"
+                        value={fineAmount}
+                        onChange={(e) => setFineAmount(e.target.value)}
+                        className="w-full bg-[#FDFBF7] border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold text-[#0B3022] focus:ring-2 focus:ring-[#C5A059]/50"
+                      />
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-1">
+                      Standard 15% departure penalty is ₦{defaultFine.toLocaleString()} (10% to Admin, 5% to Àjọṣe).
+                    </p>
+                  </div>
+
+                  {/* Reason Input */}
+                  <div>
+                    <label className="block font-bold text-[#0B3022] mb-1">
+                      Reason for Departure:
+                    </label>
+                    <input 
+                      type="text"
+                      value={removalReason}
+                      onChange={(e) => setRemovalReason(e.target.value)}
+                      placeholder="e.g. Voluntary exit, unable to contribute..."
+                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-xl px-3 py-2 text-xs font-medium text-[#0B3022] focus:ring-2 focus:ring-[#C5A059]/50"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Actions */}
             <div className="p-4 bg-gray-50 flex gap-3 border-t border-gray-100">
               <button 
                 onClick={() => setMemberToRemove(null)}
                 disabled={isRemoving}
-                className="flex-1 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-100 text-[#1F2937] font-bold rounded-lg transition-colors"
+                className="flex-1 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-100 text-[#1F2937] font-bold rounded-xl transition-colors text-xs"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleRemoveMember}
                 disabled={isRemoving}
-                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center shadow-sm"
+                className={`flex-1 px-4 py-2.5 font-bold rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer ${
+                  isLocked 
+                    ? "bg-amber-600 hover:bg-amber-700 text-white" 
+                    : "bg-red-600 hover:bg-red-700 text-white"
+                }`}
               >
-                {isRemoving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : 'Yes, Remove'}
+                {isRemoving ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : isLocked ? (
+                  <>
+                    <Coins className="h-4 w-4" />
+                    <span>Levy Fine & Remove</span>
+                  </>
+                ) : (
+                  <span>Yes, Remove</span>
+                )}
               </button>
             </div>
+
           </div>
         </div>
       )}
 
-      {/* Group Delete Modal */}
+      {/* 2. Add Member / Add Replacement Modal */}
+      {showAddMemberModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+            
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <UserPlus className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#0B3022]">
+                    {isLocked ? "Add Replacement Member" : "Add Member to Group"}
+                  </h3>
+                  <p className="text-xs text-[#1F2937]/60">
+                    {isLocked ? "Assign replacement into open turn slot" : "Direct Admin Onboarding"}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAddMemberModal(false)}
+                disabled={isAddingMember}
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddMember} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-[#0B3022] mb-1">
+                  User Phone Number or Nickname:
+                </label>
+                <input 
+                  type="text"
+                  required
+                  placeholder="e.g. 08012345678 or @emeka"
+                  value={newMemberIdentifier}
+                  onChange={(e) => setNewMemberIdentifier(e.target.value)}
+                  className="w-full bg-[#FDFBF7] border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#0B3022] focus:ring-2 focus:ring-[#C5A059]/50"
+                />
+                <p className="text-[11px] text-gray-500 mt-1">
+                  The user must be registered on Àjọṣe.
+                </p>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#0B3022] mb-1">
+                  Assign to Turn Slot:
+                </label>
+                <select
+                  value={newMemberTurn || (openTurns[0]?.toString() || "")}
+                  onChange={(e) => setNewMemberTurn(e.target.value)}
+                  className="w-full bg-[#FDFBF7] border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-[#0B3022] focus:ring-2 focus:ring-[#C5A059]/50"
+                >
+                  {openTurns.map(turn => (
+                    <option key={turn} value={turn}>
+                      Turn {turn} (Open Slot)
+                    </option>
+                  ))}
+                  {openTurns.length === 0 && (
+                    <option value="">No open slots available</option>
+                  )}
+                </select>
+              </div>
+
+              <div className="p-4 bg-gray-50 flex gap-3 border-t border-gray-100 -mx-6 -mb-6 mt-6">
+                <button 
+                  type="button"
+                  onClick={() => setShowAddMemberModal(false)}
+                  disabled={isAddingMember}
+                  className="flex-1 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-100 text-[#1F2937] font-bold rounded-xl transition-colors text-xs"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={isAddingMember || openTurns.length === 0}
+                  className="flex-1 px-4 py-2.5 bg-[#0B3022] hover:bg-[#072418] text-[#C5A059] font-bold rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
+                >
+                  {isAddingMember ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <UserPlus className="h-4 w-4" />
+                      <span>Confirm & Add</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* 3. Group Delete Modal */}
       {showDeleteGroupConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-red-200 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="p-6 text-center space-y-4">
               <div className="mx-auto w-12 h-12 bg-red-50 border border-red-100 rounded-full flex items-center justify-center">
                 <ShieldAlert className="h-6 w-6 text-red-600" />
@@ -334,14 +710,14 @@ export function GroupSettingsClient({
               <button 
                 onClick={() => setShowDeleteGroupConfirm(false)}
                 disabled={isDeletingGroup}
-                className="flex-1 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-100 text-[#1F2937] font-bold rounded-lg transition-colors"
+                className="flex-1 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-100 text-[#1F2937] font-bold rounded-lg transition-colors text-xs"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleDeleteGroup}
                 disabled={isDeletingGroup}
-                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center shadow-sm"
+                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center shadow-sm text-xs cursor-pointer"
               >
                 {isDeletingGroup ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : 'Delete Group'}
               </button>

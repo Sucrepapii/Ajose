@@ -93,6 +93,21 @@ export function RulesModal() {
                   If an automatic debit fails after receiving a payout, the defaulter faces immediate credit score degradation, mandatory blacklisting across PSSP networks, and BVN/NIN credit bureau reporting.
                 </p>
               </div>
+
+              <div className="space-y-1.5 pt-4">
+                <h3 className="font-bold text-[#0B3022] flex items-center gap-2 text-sm">
+                  <Users className="h-4 w-4 text-[#C5A059]" />
+                  6. Mid-Cycle Exits, 15% Departure Fine & Settlement Rules
+                </h3>
+                <p>
+                  Rotational contributions depend on mutual commitment throughout all rounds:
+                </p>
+                <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1.5 mt-1">
+                  <li><strong>Before Cycle Launch (Pending):</strong> The Admin trustee can freely add or remove members with <strong>zero fines or penalties</strong>.</li>
+                  <li><strong>Mid-Cycle Exit (Awaiting Payout):</strong> If a member leaves or is removed before their turn, a mandatory <strong>15% Early Departure Fine</strong> is assessed (<strong>10% to the Admin</strong> for schedule disruption and managing replacement, and <strong>5% to Àjọṣe</strong>). <em>Crucially, they must wait until their scheduled turn to collect their reconciled past contributions minus the 15% fine.</em> No premature cashouts are permitted.</li>
+                  <li><strong>Mid-Cycle Exit (Already Collected):</strong> Members who already received their Ajo Pot payout cannot abandon subsequent rounds. They <strong>must pay the 15% fine immediately</strong>, their ongoing Mono Direct Debit mandate remains fully active to recover all remaining contributions, their credit score is penalized (-50 points), and credit bureau default reporting is initiated.</li>
+                </ul>
+              </div>
             </div>
 
             <div className="p-4 border-t border-gray-100 bg-[#FDFBF7]">

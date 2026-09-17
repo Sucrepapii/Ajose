@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/server";
+import { MarketingNavClient } from "@/components/MarketingNavClient";
 
 export async function MarketingHeader() {
   const supabase = await createClient();
@@ -31,30 +32,7 @@ export async function MarketingHeader() {
           </div>
         </Link>
       </div>
-      <nav className="flex items-center gap-8">
-        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#how-it-works">
-          How it Works
-        </Link>
-        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white hidden sm:block" href="/#features">
-          Features
-        </Link>
-        
-        {user ? (
-          <Link
-            className="text-sm font-bold bg-[#C5A059] text-[#0B3022] px-6 py-3 rounded-md hover:bg-[#A48243] transition-all shadow-md"
-            href="/dashboard"
-          >
-            Dashboard
-          </Link>
-        ) : (
-          <Link
-            className="text-sm font-bold bg-[#C5A059] text-[#0B3022] px-6 py-3 rounded-md hover:bg-[#A48243] transition-all shadow-md"
-            href="/signup"
-          >
-            Create a Group Free
-          </Link>
-        )}
-      </nav>
+      <MarketingNavClient isLoggedIn={Boolean(user)} />
     </header>
   );
 }

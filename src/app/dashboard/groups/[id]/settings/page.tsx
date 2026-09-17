@@ -53,11 +53,11 @@ export default async function GroupSettingsPage(props: { params: Promise<{ id: s
       
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href={`/dashboard/groups/${groupId}`} className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+        <Link href={`/dashboard/groups/${groupId}`} className="p-2 rounded-xl bg-white border border-gray-200 text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Settings2 className="h-6 w-6 text-zinc-500" />
+        <h1 className="text-2xl font-bold text-[#0B3022] flex items-center gap-2">
+          <Settings2 className="h-6 w-6 text-[#C5A059]" />
           Group Settings
         </h1>
       </div>

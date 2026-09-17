@@ -45,55 +45,24 @@ export function ProcessPayoutClient({
   const platformFee = (2 / 100) * totalPool;
   const payoutAmount = Math.max(0, totalPool - adminFee - platformFee);
 
-  // 1. Successful Auto-Payout execution via Admin Auto-Debit
+  // 1. Successful Auto-Payout execution via Mono Payout API
   const handleProcessAutoPayout = async () => {
     setIsProcessing(true);
 
     try {
-      // Simulate network / automated banking mandate delay (1.5s)
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const res = await fetch("/api/groups/payout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId: group.id,
+          currentTurn,
+        }),
+      });
 
-      // Advance group turn
-      const nextTurn = currentTurn + 1;
-      const { error: updateError } = await supabase
-        .from('groups')
-        .update({ current_turn: nextTurn })
-        .eq('id', group.id);
-
-      if (updateError) throw updateError;
-
-      // Delete any prior failed transaction for this turn so the warning clears
-      await supabase
-        .from('transactions')
-        .delete()
-        .eq('group_id', group.id)
-        .eq('cycle_turn', currentTurn)
-        .eq('status', 'failed');
-
-      // Log successful Payout transaction
-      const { error: txError } = await supabase
-        .from('transactions')
-        .insert({
-          group_id: group.id,
-          user_id: receivingMember.user_id,
-          amount: payoutAmount,
-          type: 'payout',
-          status: 'completed',
-          description: `Auto-payout debited from Admin settlement account to ${getDisplayName()}`,
-          cycle_turn: currentTurn
-        });
-      
-      if (txError) console.error("Failed to log transaction:", txError);
-
-      // Notify the receiving member
-      await supabase
-        .from('notifications')
-        .insert({
-          user_id: receivingMember.user_id,
-          title: `Payout Received! ₦${payoutAmount.toLocaleString()}`,
-          message: `Your rotational payout for Turn ${currentTurn} has been automatically debited from the Admin account and credited to your bank.`,
-          type: 'success'
-        });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to process payout via Mono.");
+      }
 
       // Send Payout Email via Resend
       if (receivingUser?.email) {
@@ -109,12 +78,12 @@ export function ProcessPayoutClient({
         }).catch((err) => console.error("Payout email error:", err));
       }
 
-      toast.success(`Turn ${currentTurn} auto-payout completed! Advanced to Turn ${nextTurn}.`);
+      toast.success(data.message || `Turn ${currentTurn} payout of ₦${payoutAmount.toLocaleString()} completed via Mono!`);
       setIsOpen(false);
       router.refresh();
       
     } catch (err: any) {
-      toast.error(err.message || "Failed to process auto-payout.");
+      toast.error(err.message || "Failed to process auto-payout via Mono.");
     } finally {
       setIsProcessing(false);
     }
