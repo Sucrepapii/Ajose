@@ -169,13 +169,18 @@ export default function SignupPage() {
 
           // 5. Auto-join group if inviteCode or next parameter contains a group ID
           let targetGroupId = formData.inviteCode.trim();
+          let nextUrlParams: URLSearchParams | null = null;
           if (!targetGroupId && typeof window !== "undefined") {
             const searchParams = new URLSearchParams(window.location.search);
             const nextParam = searchParams.get('next');
             if (nextParam && nextParam.includes('/invite/')) {
               const parts = nextParam.split('/invite/');
               if (parts[1]) {
-                targetGroupId = parts[1].split('?')[0];
+                const subParts = parts[1].split('?');
+                targetGroupId = subParts[0];
+                if (subParts[1]) {
+                  nextUrlParams = new URLSearchParams(subParts[1]);
+                }
               }
             }
           }
@@ -187,7 +192,12 @@ export default function SignupPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   groupId: targetGroupId,
-                  userId: authData.user.id
+                  userId: authData.user.id,
+                  groupName: nextUrlParams?.get('name') ? decodeURIComponent(nextUrlParams.get('name')!) : undefined,
+                  contributionAmount: nextUrlParams?.get('amount') ? parseInt(nextUrlParams.get('amount')!, 10) : undefined,
+                  frequency: nextUrlParams?.get('freq') || undefined,
+                  maxMembers: nextUrlParams?.get('members') ? parseInt(nextUrlParams.get('members')!, 10) : undefined,
+                  minCreditScore: nextUrlParams?.get('score') ? parseInt(nextUrlParams.get('score')!, 10) : undefined
                 })
               });
             } catch (joinErr) {

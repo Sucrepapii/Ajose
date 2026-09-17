@@ -33,22 +33,49 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function InvitePage(props: { params: Promise<{ id: string }>, searchParams: Promise<{ name?: string, phase2?: string, underwriting?: string }> }) {
+export default function InvitePage(props: { 
+  params: Promise<{ id: string }>, 
+  searchParams: Promise<{ 
+    name?: string;
+    amount?: string;
+    freq?: string;
+    members?: string;
+    score?: string;
+    phase2?: string; 
+    underwriting?: string; 
+  }> 
+}) {
   const params = use(props.params);
   const searchParams = use(props.searchParams);
   
   const groupId = params.id;
-  const urlGroupName = searchParams.name;
+  const urlGroupName = searchParams.name ? decodeURIComponent(searchParams.name) : undefined;
+  const urlAmount = searchParams.amount ? parseInt(searchParams.amount, 10) : undefined;
+  const urlFreq = searchParams.freq;
+  const urlMembers = searchParams.members ? parseInt(searchParams.members, 10) : undefined;
+  const urlScore = searchParams.score ? parseInt(searchParams.score, 10) : undefined;
   const isPhase2 = searchParams.phase2 === 'true' || searchParams.underwriting === 'true' || process.env.NEXT_PUBLIC_ENABLE_PHASE2 === 'true';
 
   const router = useRouter();
   const supabase = createClient();
 
-  const [isLoading, setIsLoading] = useState(true);
+  const initialGroup = {
+    id: groupId,
+    name: urlGroupName || "Ajose Rotational Circle",
+    contribution_amount: (urlAmount !== undefined && !isNaN(urlAmount)) ? urlAmount : 50000,
+    frequency: urlFreq || "monthly",
+    max_members: (urlMembers !== undefined && !isNaN(urlMembers)) ? urlMembers : 6,
+    min_credit_score: (urlScore !== undefined && !isNaN(urlScore)) ? urlScore : 0,
+    description: `Rotational contribution group managed on Ajose (${urlGroupName || "Ajose Rotational Circle"}).`,
+    created_by: "Group Admin",
+    status: "pending"
+  };
+
+  const [isLoading, setIsLoading] = useState(!urlGroupName && !urlAmount);
   const [isJoining, setIsJoining] = useState(false);
   
   const [user, setUser] = useState<any>(null);
-  const [group, setGroup] = useState<any>(null);
+  const [group, setGroup] = useState<any>(initialGroup);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [alreadyMember, setAlreadyMember] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
@@ -73,29 +100,59 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         const { data: { user } } = await supabase.auth.getUser();
         setUser(user);
 
-        // 2. Fetch Group Details
-        const { data: groupData, error: groupError } = await supabase
-          .from('groups')
-          .select('*')
-          .eq('id', groupId)
-          .single();
-
-        if (groupError || !groupData) {
-          // Fallback to URL group name or standard default so share links never fail to load
-          const formattedName = urlGroupName ? decodeURIComponent(urlGroupName) : "Ajose Rotational Circle";
-          const fallbackGroup = {
-            id: groupId,
-            name: formattedName,
-            contribution_amount: 50000,
-            frequency: "monthly",
-            max_members: 10,
-            description: `Rotational contribution group managed on Ajose (${formattedName}).`,
-            created_by: "Group Admin"
-          };
-          setGroup(fallbackGroup);
-        } else {
-          setGroup(groupData);
+        // 2. Fetch Group Details: prioritize public admin API route to bypass RLS for invitees
+        let fetchedGroup: any = null;
+        try {
+          const apiRes = await fetch(`/api/groups/${groupId}/public`);
+          if (apiRes.ok) {
+            const apiData = await apiRes.json();
+            if (apiData?.group) {
+              fetchedGroup = apiData.group;
+            }
+          }
+        } catch (fetchErr) {
+          console.warn("Public API fetch warning:", fetchErr);
         }
+
+        if (!fetchedGroup) {
+          const { data: groupData } = await supabase
+            .from('groups')
+            .select('*')
+            .eq('id', groupId)
+            .maybeSingle();
+
+          if (groupData) {
+            fetchedGroup = groupData;
+          }
+        }
+
+        // Build group data with full fidelity from URL parameters or DB
+        const formattedName = urlGroupName || fetchedGroup?.name || "Ajose Rotational Circle";
+        const finalContribution = (urlAmount !== undefined && !isNaN(urlAmount))
+          ? urlAmount
+          : (fetchedGroup?.contribution_amount ? Number(fetchedGroup.contribution_amount) : 50000);
+        const finalFrequency = urlFreq || fetchedGroup?.frequency || "monthly";
+        const finalMembers = (urlMembers !== undefined && !isNaN(urlMembers))
+          ? urlMembers
+          : (fetchedGroup?.max_members ? Number(fetchedGroup.max_members) : 6);
+        const finalScore = (urlScore !== undefined && !isNaN(urlScore))
+          ? urlScore
+          : (fetchedGroup?.min_credit_score ? Number(fetchedGroup.min_credit_score) : 0);
+
+        const groupToSet = {
+          description: `Rotational contribution group managed on Ajose (${formattedName}).`,
+          created_by: "Group Admin",
+          status: "pending",
+          ...fetchedGroup,
+          id: groupId,
+          name: formattedName,
+          contribution_amount: finalContribution,
+          frequency: finalFrequency,
+          max_members: finalMembers,
+          min_credit_score: finalScore
+        };
+
+        setGroup(groupToSet);
 
         // 3. If logged in, fetch profile and check if already a member
         if (user) {
@@ -138,7 +195,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
       }
     }
     loadData();
-  }, [groupId, supabase]);
+  }, [groupId, supabase, urlAmount, urlFreq, urlGroupName, urlMembers, urlScore]);
 
   // Run dynamic pre-join underwriting check across YouVerify, Mono Statement, and CRC Bureau
   const runPreJoinUnderwriting = async () => {
@@ -180,8 +237,11 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
 
   // Phase 1 Public Join: Direct, frictionless membership creation
   const handleDirectJoin = async () => {
+    const currentQuery = typeof window !== "undefined" ? window.location.search : "";
+    const inviteRedirectPath = `/invite/${groupId}${currentQuery}`;
+
     if (!user) {
-      router.push(`/signup?next=/invite/${groupId}`);
+      router.push(`/signup?next=${encodeURIComponent(inviteRedirectPath)}`);
       return;
     }
     setIsJoining(true);
@@ -194,7 +254,11 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         body: JSON.stringify({
           groupId,
           userId: user.id,
-          groupName: group?.name
+          groupName: group?.name,
+          contributionAmount: group?.contribution_amount,
+          frequency: group?.frequency,
+          maxMembers: group?.max_members,
+          minCreditScore: group?.min_credit_score
         })
       });
 
@@ -242,7 +306,11 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
         body: JSON.stringify({
           groupId,
           userId: user.id,
-          groupName: group?.name
+          groupName: group?.name,
+          contributionAmount: group?.contribution_amount,
+          frequency: group?.frequency,
+          maxMembers: group?.max_members,
+          minCreditScore: group?.min_credit_score
         })
       });
 
@@ -495,14 +563,22 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
             ) : (
               <div className="space-y-4">
                 <button 
-                  onClick={() => router.push(`/signup?next=/invite/${groupId}`)}
+                  onClick={() => {
+                    const currentQuery = typeof window !== "undefined" ? window.location.search : "";
+                    const inviteRedirectPath = `/invite/${groupId}${currentQuery}`;
+                    router.push(`/signup?next=${encodeURIComponent(inviteRedirectPath)}`);
+                  }}
                   className="w-full py-4 px-6 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   Accept Invite &amp; Sign Up
                   <ArrowRight className="h-5 w-5" />
                 </button>
                 <button 
-                  onClick={() => router.push(`/login?next=/invite/${groupId}`)}
+                  onClick={() => {
+                    const currentQuery = typeof window !== "undefined" ? window.location.search : "";
+                    const inviteRedirectPath = `/invite/${groupId}${currentQuery}`;
+                    router.push(`/login?next=${encodeURIComponent(inviteRedirectPath)}`);
+                  }}
                   className="w-full py-3.5 px-6 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-colors cursor-pointer text-base"
                 >
                   Log In to Join

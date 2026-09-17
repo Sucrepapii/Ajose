@@ -323,7 +323,14 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           <h2 className="text-lg font-bold text-[#0B3022]">Group Roster ({contributingMembers.length}/{group.max_members})</h2>
           
           {contributingMembers.length < group.max_members && (
-            <CopyInviteButton groupId={groupId} groupName={group.name} />
+            <CopyInviteButton 
+              groupId={groupId} 
+              groupName={group.name} 
+              amount={group.contribution_amount}
+              frequency={group.frequency}
+              maxMembers={group.max_members}
+              minScore={group.min_credit_score ?? 0}
+            />
           )}
         </div>
 

@@ -3,7 +3,15 @@ import { createAdminClient } from "@/utils/supabase/admin";
 
 export async function POST(req: Request) {
   try {
-    const { groupId, userId, groupName } = await req.json();
+    const { 
+      groupId, 
+      userId, 
+      groupName, 
+      contributionAmount, 
+      frequency, 
+      maxMembers, 
+      minCreditScore 
+    } = await req.json();
 
     if (!groupId || !userId) {
       return NextResponse.json(
@@ -14,7 +22,7 @@ export async function POST(req: Request) {
 
     const supabase = createAdminClient();
 
-    // 1. Ensure Group exists in DB
+    // 1. Ensure Group exists in DB with accurate settings
     const { data: existingGroup } = await supabase
       .from("groups")
       .select("id")
@@ -25,10 +33,11 @@ export async function POST(req: Request) {
       await supabase.from("groups").upsert({
         id: groupId,
         name: groupName || "Ajose Contribution Circle",
-        contribution_amount: 50000,
-        frequency: "monthly",
-        max_members: 10,
-        description: "Rotational contribution group on Ajose."
+        contribution_amount: contributionAmount ? Number(contributionAmount) : 50000,
+        frequency: frequency || "monthly",
+        max_members: maxMembers ? Number(maxMembers) : 10,
+        min_credit_score: minCreditScore ? Number(minCreditScore) : 0,
+        description: `Rotational contribution group on Ajose (${groupName || "Ajose Contribution Circle"}).`
       }, { onConflict: "id", ignoreDuplicates: true });
     }
 

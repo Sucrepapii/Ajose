@@ -560,11 +560,19 @@ export default function CreateGroupPage() {
             <button 
               onClick={() => {
                 const baseUrl = window.location.origin;
-                const inviteUrl = `${baseUrl}/invite/${newGroupId}?name=${encodeURIComponent(formData.name)}`;
+                const params = new URLSearchParams();
+                if (formData.name) params.set("name", formData.name);
+                if (formData.contributionAmount) params.set("amount", formData.contributionAmount);
+                if (formData.frequency) params.set("freq", formData.frequency);
+                if (formData.maxMembers) params.set("members", formData.maxMembers);
+                if (formData.minCreditScore) params.set("score", formData.minCreditScore);
+
+                const queryString = params.toString();
+                const inviteUrl = `${baseUrl}/invite/${newGroupId}${queryString ? `?${queryString}` : ""}`;
                 navigator.clipboard.writeText(inviteUrl);
                 toast.success("Invite link copied to clipboard!");
               }}
-              className="text-[#C5A059] text-sm font-bold hover:text-[#A48243] ml-2 px-3 py-1.5 rounded-md hover:bg-[#C5A059]/10 transition-colors"
+              className="text-[#C5A059] text-sm font-bold hover:text-[#A48243] ml-2 px-3 py-1.5 rounded-md hover:bg-[#C5A059]/10 transition-colors cursor-pointer"
             >
               COPY LINK
             </button>
