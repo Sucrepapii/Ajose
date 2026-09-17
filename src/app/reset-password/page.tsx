@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
             Secure Password Reset.
           </h1>
           <p className="text-gray-300 mt-4 text-lg max-w-md">
-            Choose a strong new password to protect your account and savings group access.
+            Choose a strong new password to protect your account and Ajo group access.
           </p>
         </div>
       </div>

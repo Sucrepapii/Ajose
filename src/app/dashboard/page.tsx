@@ -202,7 +202,7 @@ export default async function DashboardOverview() {
                 </div>
                 <h3 className="text-lg font-bold text-[#0B3022] mb-2">No Active Groups</h3>
                 <p className="text-[#1F2937]/70 text-sm max-w-sm">
-                  You haven't joined any savings groups yet. Create an Admin-Managed group to get started.
+                  You haven't joined any Ajo contribution groups yet. Create an Admin-Managed group to get started.
                 </p>
               </div>
             ) : (

@@ -33,7 +33,7 @@ export default async function GroupsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">My Groups</h1>
-          <p className="text-sm text-zinc-400 mt-1">Manage and view your active Ajo savings groups.</p>
+          <p className="text-sm text-zinc-400 mt-1">Manage and view your active Ajo contribution groups.</p>
         </div>
         <Link 
           href="/dashboard/groups/create"

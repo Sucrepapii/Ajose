@@ -9,7 +9,7 @@ export default function AboutPage() {
             About Àjọṣe
           </h1>
           <p className="text-xl text-[#1F2937]/80 leading-relaxed max-w-3xl mx-auto">
-            We are redefining community finance. Àjọṣe brings institutional trust, accountability, and seamless software to the world's oldest form of collaborative saving.
+            We are redefining community finance. Àjọṣe brings institutional trust, accountability, and seamless software to the world's oldest form of collaborative contribution.
           </p>
         </div>
 
@@ -30,7 +30,7 @@ export default function AboutPage() {
             </div>
             <h3 className="text-xl font-bold text-[#0B3022] mb-3">Institutional Grade</h3>
             <p className="text-[#1F2937]/70 leading-relaxed">
-              We treat group savings with the same regulatory compliance, encryption, and rigor as a private bank.
+              We treat group contributions with the same regulatory compliance, encryption, and rigor as a private bank.
             </p>
           </div>
 
@@ -40,7 +40,7 @@ export default function AboutPage() {
             </div>
             <h3 className="text-xl font-bold text-[#0B3022] mb-3">Financial Inclusion</h3>
             <p className="text-[#1F2937]/70 leading-relaxed">
-              Our mission is to help people build credit and achieve financial goals through disciplined, collective saving.
+              Our mission is to help people build credit and achieve financial goals through disciplined, collective contribution.
             </p>
           </div>
         </div>
@@ -65,7 +65,7 @@ export default function AboutPage() {
               We are not just building an app; we are building a renaissance in collaborative finance. We are preserving the profound human connection of the circle, while stripping away the fear that has held it back for centuries. Àjọṣe is where ancient tradition meets modern engineering. It is where the collective strength of the community is safeguarded by the unshakeable reliability of code.
             </p>
             <p className="font-bold text-[#C5A059]">
-              We are building a world where saving together is not a leap of faith, but a guarantee. We are building the modern standard for collaborative finance.
+              We are building a world where contributing together is not a leap of faith, but a guarantee. We are building the modern standard for collaborative finance.
             </p>
           </div>
         </div>

@@ -4,13 +4,13 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Blog | Àjọṣe",
-  description: "Insights, news, and best practices on cooperative savings, personal finance, and the future of open banking.",
+  description: "Insights, news, and best practices on rotational contributions, personal finance, and the future of open banking.",
 };
 
 const POSTS = [
   {
     id: 1,
-    title: "The Future of Cooperative Savings in Nigeria",
+    title: "The Future of Rotational Contributions in Nigeria",
     excerpt: "How open banking and digital identities are transforming the traditional rotational contribution group model from informal cash groups into secure, scalable financial instruments.",
     date: "Oct 12, 2026",
     category: "Industry",
@@ -20,7 +20,7 @@ const POSTS = [
   {
     id: 2,
     title: "How to Build Your Àjọṣe Credit Score",
-    excerpt: "Your Àjọṣe Credit Score unlocks premium savings pools. Learn the top 3 strategies to maintain a perfect score and avoid the dreaded default penalty.",
+    excerpt: "Your Àjọṣe Credit Score unlocks premium contribution pools. Learn the top 3 strategies to maintain a perfect score and avoid the dreaded default penalty.",
     date: "Sep 28, 2026",
     category: "Guides",
     readTime: "4 min read",
@@ -37,7 +37,7 @@ const POSTS = [
   },
   {
     id: 4,
-    title: "Protecting Your Savings: The Immutable Ledger",
+    title: "Protecting Your Contribution Pool: The Immutable Ledger",
     excerpt: "Trust but verify. How Àjọṣe uses immutable ledger technology to ensure no administrator or member can secretly alter the payout history.",
     date: "Aug 30, 2026",
     category: "Security",

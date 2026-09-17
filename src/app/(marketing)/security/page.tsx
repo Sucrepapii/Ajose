@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Security & Trust | Àjọṣe",
-  description: "Learn how Àjọṣe protects your savings with bank-grade encryption, BVN verification, and the Ajo Credit Penalty System.",
+  description: "Learn how Àjọṣe protects your contributions with bank-grade encryption, BVN verification, and the Ajo Credit Penalty System.",
 };
 
 export default function SecurityPage() {
@@ -17,7 +17,7 @@ export default function SecurityPage() {
             Institutional-Grade <span className="text-[#C5A059]">Security</span>
           </h1>
           <p className="text-xl text-[#1F2937]/80 leading-relaxed max-w-3xl mx-auto font-medium">
-            Your savings are protected by rigorous identity verification, an immutable ledger system, and strict credit penalty enforcement.
+            Your contributions are protected by rigorous identity verification, an immutable ledger system, and strict credit penalty enforcement.
           </p>
         </div>
 
@@ -38,7 +38,7 @@ export default function SecurityPage() {
             </div>
             <h3 className="text-2xl font-black text-[#0B3022] mb-3">Identity Verification</h3>
             <p className="text-[#1F2937]/80 leading-relaxed font-medium">
-              Every member on Àjọṣe must pass our strict Know Your Customer (KYC) protocols using valid BVN before they can join an active savings group.
+              Every member on Àjọṣe must pass our strict Know Your Customer (KYC) protocols using valid BVN before they can join an active Ajo group.
             </p>
           </div>
         </div>
@@ -56,7 +56,7 @@ export default function SecurityPage() {
             <div className="md:w-2/3">
               <h2 className="text-3xl font-black text-white mb-4">The Ajo Credit Penalty System</h2>
               <p className="text-white/80 leading-relaxed font-medium text-lg mb-6">
-                Trust is the foundation of cooperative savings. To protect the pool, we enforce a strict penalty system:
+                Trust is the foundation of cooperative contributions. To protect the pool, we enforce a strict penalty system:
               </p>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">

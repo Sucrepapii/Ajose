@@ -258,10 +258,10 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
       if (user?.email) {
         sendEmail({
           to: user.email,
-          subject: `Welcome to ${group?.name || 'Àjọṣe Savings Circle'}! 🎉`,
+          subject: `Welcome to ${group?.name || 'Àjọṣe Ajo Circle'}! 🎉`,
           html: getWelcomeEmailTemplate({
             userName: user.user_metadata?.first_name || 'Member',
-            groupName: group?.name || 'Àjọṣe Savings Circle',
+            groupName: group?.name || 'Àjọṣe Ajo Circle',
           }),
         }).catch((err) => console.error("Welcome email error:", err));
       }
@@ -715,7 +715,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                       Standing Direct Debit Mandate Agreement
                     </div>
                     <p className="text-xs text-zinc-300 leading-relaxed">
-                      To protect this rotational savings circle and ensure every member receives their payout on time, all members authorize an automated standing direct debit mandate.
+                      To protect this rotational contribution circle and ensure every member receives their payout on time, all members authorize an automated standing direct debit mandate.
                     </p>
                   </div>
 
@@ -738,7 +738,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                     <div className="flex items-start gap-2">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">3</div>
                       <p>
-                        <strong>Credit Reputation &amp; Bureau Preservation:</strong> Consistent on-time contributions positively build your rotational savings track record and uphold your credit bureau standing.
+                        <strong>Credit Reputation &amp; Bureau Preservation:</strong> Consistent on-time contributions positively build your rotational contribution track record and uphold your credit bureau standing.
                       </p>
                     </div>
                   </div>
@@ -844,7 +844,7 @@ export default function InvitePage(props: { params: Promise<{ id: string }>, sea
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">Terms of Service & Mandate</h2>
-                  <p className="text-xs text-zinc-400">Rotational Savings Agreement</p>
+                  <p className="text-xs text-zinc-400">Rotational Contribution Agreement</p>
                 </div>
               </div>
               <button 

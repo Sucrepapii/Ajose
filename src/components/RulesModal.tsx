@@ -26,7 +26,7 @@ export function RulesModal() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-[#0B3022]">Governance & Settlement Rules</h2>
-                  <p className="text-xs text-[#1F2937]/70">Rotational Savings Framework</p>
+                  <p className="text-xs text-[#1F2937]/70">Rotational Contribution Framework</p>
                 </div>
               </div>
               <button 

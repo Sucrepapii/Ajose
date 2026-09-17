@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "How It Works | Àjọṣe",
-  description: "Learn how to use Àjọṣe to create, join, and manage your cooperative savings groups with complete transparency and security.",
+  description: "Learn how to use Àjọṣe to create, join, and manage your cooperative rotational contribution groups with complete transparency and security.",
 };
 
 export default function HowItWorksPage() {
@@ -23,7 +23,7 @@ export default function HowItWorksPage() {
     {
       icon: <Users className="h-6 w-6 text-white" />,
       title: "3. Join or Create a Group",
-      description: "Start your own 'Ajo' as an Admin and invite friends, or join a public group that matches your savings goals. Groups only start when fully funded.",
+      description: "Start your own 'Ajo' as an Admin and invite trusted friends, or join a group that matches your contribution target. Groups only start when fully filled.",
       align: "right"
     },
     {
@@ -50,7 +50,7 @@ export default function HowItWorksPage() {
             How <span className="text-[#C5A059]">Àjọṣe</span> Works
           </h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto font-medium">
-            We've digitized the traditional African cooperative savings model, adding bank-grade security and complete automation.
+            We've digitized the traditional African Ajo rotational contribution model, adding bank-grade security and complete automation.
           </p>
         </div>
       </section>

@@ -114,7 +114,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     tx => tx.status === 'failed' && (tx.type === 'admin_payout_debit' || tx.type === 'payout')
   );
 
-  // The admin manages the group; contributing members receive rotational turns
+  // The admin manages the group as a trustee; contributing members receive rotational turns
   const contributingMembers = membersList.filter(m => m.role !== 'admin');
   const totalPool = group.contribution_amount * contributingMembers.length;
   const isAdmin = membersList.some(m => m.user_id === user.id && m.role === 'admin');
@@ -168,7 +168,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
               <span className={`px-2 py-0.5 text-xs font-bold rounded ${group.status === 'active' ? 'bg-green-500/10 text-green-700 border border-green-500/20' : 'bg-[#C5A059]/10 text-[#0B3022] border border-[#C5A059]/20'}`}>
                 {group.status.toUpperCase()}
               </span>
-              <span className="text-[#1F2937]/70 text-sm font-medium">Rotational Savings</span>
+              <span className="text-[#1F2937]/70 text-sm font-medium">Rotational Ajo</span>
               <span className="text-gray-300 text-sm">•</span>
               <span className="text-[#1F2937]/50 text-sm font-mono truncate max-w-[150px]">ID: {groupId}</span>
             </div>

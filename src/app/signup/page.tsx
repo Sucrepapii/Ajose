@@ -221,7 +221,7 @@ export default function SignupPage() {
 
         <div className="relative z-10 p-12 text-center flex flex-col items-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-            Join a trusted savings<br/>circle today.
+            Join a trusted Ajo<br/>circle today.
           </h1>
         </div>
       </div>

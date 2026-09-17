@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Features | Àjọṣe",
-  description: "Discover the powerful features of Àjọṣe that make cooperative savings secure, automated, and effortless.",
+  description: "Discover the powerful features of Àjọṣe that make rotational contributions secure, automated, and effortless.",
 };
 
 export default function FeaturesPage() {
@@ -20,7 +20,7 @@ export default function FeaturesPage() {
             Built for <span className="text-[#C5A059]">Trust</span>. <br/> Engineered for <span className="text-[#C5A059]">Scale</span>.
           </h1>
           <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
-            Àjọṣe combines bank-grade open finance integrations with intuitive tools to completely automate and secure your savings groups.
+            Àjọṣe combines bank-grade open finance integrations with intuitive tools to completely automate and secure your Ajo contribution groups.
           </p>
         </div>
       </section>

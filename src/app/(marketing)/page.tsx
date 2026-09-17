@@ -186,7 +186,7 @@ export default function Home() {
               How Àjọṣe Works
             </h2>
             <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
-              Four simple steps to secure, transparent rotating savings.
+              Four simple steps to secure, transparent rotating contributions.
             </p>
           </motion.div>
           
@@ -466,7 +466,7 @@ export default function Home() {
               Everything in one place
             </h2>
             <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
-              A beautifully designed dashboard to manage every aspect of your savings group.
+              A beautifully designed dashboard to manage every aspect of your Ajo group.
             </p>
           </motion.div>
 
@@ -732,10 +732,10 @@ export default function Home() {
           className="container mx-auto px-6 lg:px-12 relative z-10 flex flex-col items-center text-center"
         >
           <motion.h2 variants={fadeIn} className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-6">
-            Ready to secure your savings group?
+            Ready to secure your Ajo group?
           </motion.h2>
           <motion.p variants={fadeIn} className="text-xl text-gray-300 mb-10 max-w-2xl">
-            Join thousands of smart savers who have upgraded from spreadsheets to Àjọṣe.
+            Upgrade from stressful WhatsApp groups and manual ledgers to Àjọṣe. Turn by turn, no wahala.
           </motion.p>
           <motion.div variants={fadeIn}>
             <Link

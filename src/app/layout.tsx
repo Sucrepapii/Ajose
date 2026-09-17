@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Ajose — Turn by turn, no wahala.",
   description: "Ajose is the digital platform that runs your Ajo group — collecting contributions, tracking every round, and making sure everyone gets their turn.",
-  keywords: ["Ajo", "Esusu", "Osusu", "Rotational Savings", "Nigeria Fintech", "Group Contribution", "Ajose"],
+  keywords: ["Ajo", "Esusu", "Osusu", "Rotational Contribution", "Nigeria Fintech", "Group Contribution", "Ajose"],
   openGraph: {
     title: "Ajose — Turn by turn, no wahala.",
     description: "Run your Ajo. Track every round. Trust every naira.",
