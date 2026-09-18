@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check, Star, X, ShieldAlert, Smartphone, LineChart, Percent, LayoutDashboard, History } from "lucide-react";
@@ -24,6 +24,38 @@ export default function Home() {
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [activeShowcase, setActiveShowcase] = useState(0);
+
+  const [communityTestimonials, setCommunityTestimonials] = useState<Array<{ quote: string; author: string; role: string; rating?: number }>>([
+    {
+      quote: "Finally, a way to do Ajo without the endless WhatsApp arguments. The automated turns feature is a lifesaver.",
+      author: "Bisi A.",
+      role: "Group Admin",
+      rating: 5
+    },
+    {
+      quote: "I love the transparency. Being able to see exactly who has paid and who is next builds so much trust.",
+      author: "Emeka O.",
+      role: "Member",
+      rating: 5
+    },
+    {
+      quote: "We moved our alumni contribution group here. The dashboard makes managing millions of Naira completely stress-free.",
+      author: "Tola F.",
+      role: "Alumni President",
+      rating: 5
+    }
+  ]);
+
+  useEffect(() => {
+    fetch("/api/feedback?featured=true")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.testimonials && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
+          setCommunityTestimonials(data.testimonials);
+        }
+      })
+      .catch((err) => console.warn("Dynamic testimonials fetch fallback:", err));
+  }, []);
 
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
@@ -599,7 +631,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-t border-gray-200">
+      <section id="testimonials" className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-t border-gray-200">
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -612,28 +644,12 @@ export default function Home() {
               Loved by Communities
             </h2>
             <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
-              See what our beta users are saying about the Àjọṣe experience.
+              See what our beta users and active circle leaders are saying about the Àjọṣe experience.
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                quote: "Finally, a way to do Ajo without the endless WhatsApp arguments. The automated turns feature is a lifesaver.",
-                author: "Bisi A.",
-                role: "Group Admin"
-              },
-              {
-                quote: "I love the transparency. Being able to see exactly who has paid and who is next builds so much trust.",
-                author: "Emeka O.",
-                role: "Member"
-              },
-              {
-                quote: "We moved our alumni contribution group here. The dashboard makes managing millions of Naira completely stress-free.",
-                author: "Tola F.",
-                role: "Alumni President"
-              }
-            ].map((testimonial, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {communityTestimonials.map((testimonial, i) => (
               <motion.div 
                 variants={fadeIn}
                 key={i} 

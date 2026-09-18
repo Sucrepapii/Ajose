@@ -14,7 +14,8 @@ import {
   X, 
   ShieldCheck, 
   Zap, 
-  Activity 
+  Activity,
+  HeartHandshake 
 } from "lucide-react";
 import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton";
 
@@ -24,6 +25,7 @@ const adminNavItems = [
   { href: "/admin/transactions", label: "Mono Transactions", icon: ArrowRightLeft },
   { href: "/admin/defaults", label: "Risk & 15% Fines", icon: ShieldAlert },
   { href: "/admin/users", label: "User KYC Registry", icon: UserCheck },
+  { href: "/admin/feedback", label: "Feedback & Community", icon: HeartHandshake },
   { href: "/admin/team", label: "Admin Team & Access", icon: ShieldCheck },
 ];
 

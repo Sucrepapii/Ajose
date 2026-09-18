@@ -1,0 +1,58 @@
+[
+  {
+    "id": "fb-seed-bisi",
+    "name": "Bisi A.",
+    "email": "bisi.a@example.com",
+    "category": "General Feedback",
+    "message": "Finally, a way to do Ajo without the endless WhatsApp arguments. The automated turns feature is a lifesaver.",
+    "rating": 5,
+    "createdAt": "2026-09-01T10:15:00.000Z",
+    "sourceUrl": "Marketing Landing",
+    "isFeaturedInCommunity": true,
+    "featuredQuote": "Finally, a way to do Ajo without the endless WhatsApp arguments. The automated turns feature is a lifesaver.",
+    "featuredAuthor": "Bisi A.",
+    "featuredRole": "Group Admin"
+  },
+  {
+    "id": "fb-seed-emeka",
+    "name": "Emeka O.",
+    "email": "emeka.o@example.com",
+    "category": "General Feedback",
+    "message": "I love the transparency. Being able to see exactly who has paid and who is next builds so much trust.",
+    "rating": 5,
+    "createdAt": "2026-09-05T14:30:00.000Z",
+    "sourceUrl": "Dashboard Roster",
+    "isFeaturedInCommunity": true,
+    "featuredQuote": "I love the transparency. Being able to see exactly who has paid and who is next builds so much trust.",
+    "featuredAuthor": "Emeka O.",
+    "featuredRole": "Member"
+  },
+  {
+    "id": "fb-seed-tola",
+    "name": "Tola F.",
+    "email": "tola.f@example.com",
+    "category": "General Feedback",
+    "message": "We moved our alumni contribution group here. The dashboard makes managing millions of Naira completely stress-free.",
+    "rating": 5,
+    "createdAt": "2026-09-10T16:45:00.000Z",
+    "sourceUrl": "Alumni Circle Monitor",
+    "isFeaturedInCommunity": true,
+    "featuredQuote": "We moved our alumni contribution group here. The dashboard makes managing millions of Naira completely stress-free.",
+    "featuredAuthor": "Tola F.",
+    "featuredRole": "Alumni President"
+  },
+  {
+    "id": "fb-seed-diaspora",
+    "name": "Dr. Kunle Adeleke",
+    "email": "k.adeleke@uk-alumni.org",
+    "category": "Feature Idea",
+    "message": "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool. Would love direct GBP debit rails next!",
+    "rating": 5,
+    "createdAt": "2026-09-15T09:20:00.000Z",
+    "sourceUrl": "Footer Widget",
+    "isFeaturedInCommunity": false,
+    "featuredQuote": "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool.",
+    "featuredAuthor": "Dr. Kunle A.",
+    "featuredRole": "Diaspora Circle Lead"
+  }
+]
