@@ -58,6 +58,9 @@ export function GroupSettingsClient({
   const [commissionPct, setCommissionPct] = useState(group.admin_commission_pct?.toString() || "5");
   const [isSavingCommission, setIsSavingCommission] = useState(false);
 
+  // Strict Admin Verification
+  const isAdmin = members.some(m => m.user_id === currentUserId && m.role === 'admin') || group.admin_id === currentUserId;
+
   // Find admin profile for settlement account
   const adminMember = members.find(m => m.role === 'admin');
   const adminProfile = adminMember?.users;
@@ -82,6 +85,10 @@ export function GroupSettingsClient({
   };
 
   const handleSaveCommission = async () => {
+    if (!isAdmin) {
+      toast.error("Unauthorized. Only the group admin can update commission.");
+      return;
+    }
     const val = parseFloat(commissionPct);
     if (isNaN(val) || val < 0 || val > 50) {
       toast.error("Please enter a valid percentage between 0% and 50%.");
@@ -105,6 +112,10 @@ export function GroupSettingsClient({
 
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAdmin) {
+      toast.error("Unauthorized. Only the group admin can add members.");
+      return;
+    }
     if (!newMemberIdentifier.trim()) {
       toast.error("Please enter a user phone number or nickname.");
       return;
@@ -137,7 +148,10 @@ export function GroupSettingsClient({
   };
 
   const handleRemoveMember = async () => {
-    if (!memberToRemove) return;
+    if (!memberToRemove || !isAdmin) {
+      toast.error("Unauthorized. Only the group admin can remove members.");
+      return;
+    }
     setIsRemoving(true);
 
     try {
@@ -167,7 +181,10 @@ export function GroupSettingsClient({
   };
 
   const handleDeleteGroup = async () => {
-    if (isLocked) return;
+    if (isLocked || !isAdmin) {
+      toast.error("Unauthorized. Only the group admin can delete this group.");
+      return;
+    }
     setIsDeletingGroup(true);
 
     try {
@@ -185,6 +202,28 @@ export function GroupSettingsClient({
       setIsDeletingGroup(false);
     }
   };
+
+  if (!isAdmin) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center space-y-4 max-w-lg mx-auto mt-8 shadow-sm">
+        <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto text-red-600">
+          <ShieldAlert className="h-6 w-6" />
+        </div>
+        <h2 className="text-lg font-bold text-red-950">Access Restricted</h2>
+        <p className="text-sm text-red-700 leading-relaxed">
+          Group settings, member management, and fee configurations are strictly reserved for the Group Admin trustee. Members cannot view or modify these settings.
+        </p>
+        <div className="pt-2">
+          <Link 
+            href={`/dashboard/groups/${group.id}`}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-white font-medium rounded-xl text-sm transition-colors shadow-xs"
+          >
+            Return to Group
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 mt-8">

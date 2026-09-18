@@ -117,7 +117,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
   // The admin manages the group as a trustee; contributing members receive rotational turns
   const contributingMembers = membersList.filter(m => m.role !== 'admin');
   const totalPool = group.contribution_amount * contributingMembers.length;
-  const isAdmin = membersList.some(m => m.user_id === user.id && m.role === 'admin');
+  const isAdmin = membersList.some(m => m.user_id === user.id && m.role === 'admin') || group.admin_id === user.id;
 
   // Admin Profile & Settlement Bank Account Details
   const adminMembership = membersList.find(m => m.role === 'admin');
@@ -178,15 +178,17 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
             </div>
           </div>
 
-          {/* Group Settings Button for mobile screens */}
-          <Link 
-            href={`/dashboard/groups/${groupId}/settings`}
-            className="flex sm:hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-gray-200 text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm font-semibold text-xs shrink-0"
-            title="Group Settings"
-          >
-            <Settings className="h-4 w-4 text-[#C5A059]" />
-            <span>Settings</span>
-          </Link>
+          {/* Group Settings Button for mobile screens (Admin Only) */}
+          {isAdmin && (
+            <Link 
+              href={`/dashboard/groups/${groupId}/settings`}
+              className="flex sm:hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-gray-200 text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm font-semibold text-xs shrink-0"
+              title="Group Settings"
+            >
+              <Settings className="h-4 w-4 text-[#C5A059]" />
+              <span>Settings</span>
+            </Link>
+          )}
         </div>
         
         <div className="flex items-center gap-2 sm:gap-3 justify-end">
@@ -198,15 +200,17 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
               amount={group.contribution_amount} 
             />
           )}
-          {/* Group Settings Button for tablet and desktop screens */}
-          <Link 
-            href={`/dashboard/groups/${groupId}/settings`}
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-gray-200 text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm font-semibold text-sm"
-            title="Group Settings"
-          >
-            <Settings className="h-4 w-4 text-[#C5A059]" />
-            <span>Settings</span>
-          </Link>
+          {/* Group Settings Button for tablet and desktop screens (Admin Only) */}
+          {isAdmin && (
+            <Link 
+              href={`/dashboard/groups/${groupId}/settings`}
+              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-gray-200 text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm font-semibold text-sm"
+              title="Group Settings"
+            >
+              <Settings className="h-4 w-4 text-[#C5A059]" />
+              <span>Settings</span>
+            </Link>
+          )}
         </div>
       </div>
 

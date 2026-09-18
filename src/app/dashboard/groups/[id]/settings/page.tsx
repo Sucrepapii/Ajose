@@ -48,6 +48,14 @@ export default async function GroupSettingsPage(props: { params: Promise<{ id: s
     .eq('group_id', groupId)
     .order('joined_at', { ascending: true });
 
+  const membersList = members || [];
+  const isAdmin = membersList.some(m => m.user_id === user.id && m.role === 'admin') || group.admin_id === user.id;
+
+  // Strict Access Control: Members cannot view or change group settings
+  if (!isAdmin) {
+    redirect(`/dashboard/groups/${groupId}`);
+  }
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-20 max-w-3xl mx-auto">
       
@@ -64,7 +72,7 @@ export default async function GroupSettingsPage(props: { params: Promise<{ id: s
 
       <GroupSettingsClient 
         group={group} 
-        members={members || []} 
+        members={membersList} 
         currentUserId={user.id} 
       />
 
