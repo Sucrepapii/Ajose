@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSuperAdminSession } from "@/utils/adminAuth";
 import { AdminSidebarNav } from "@/components/admin/AdminSidebarNav";
+import { AdminAutoLogout } from "@/components/admin/AdminAutoLogout";
 import { ShieldAlert, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -48,6 +49,7 @@ export default async function AdminDashboardLayout({
 
   return (
     <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-[#050806] flex flex-col lg:flex-row font-sans text-zinc-100">
+      <AdminAutoLogout />
       <AdminSidebarNav 
         adminEmail={user.email || ""} 
         adminName={adminName} 

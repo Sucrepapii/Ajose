@@ -23,7 +23,16 @@ export default async function SettingsPage() {
         bvn_verified: true,
         bank_name: 'Access Bank',
         account_number: '0123456789',
-        account_name: 'Adewale Adeyemi'
+        account_name: 'Adewale Adeyemi',
+        next_of_kin_name: 'Folake Adeyemi',
+        next_of_kin_relationship: 'Spouse',
+        next_of_kin_phone: '+2348098765432',
+        next_of_kin_email: 'folake.adeyemi@example.com',
+        next_of_kin_address: '14 Admiralty Way, Lekki Phase 1, Lagos',
+        guarantor_name: 'Babatunde Adeyemi',
+        guarantor_phone: '+2348033344556',
+        guarantor_relationship: 'Brother',
+        has_pin: true
       };
     } else {
       redirect("/signup");
@@ -33,8 +42,15 @@ export default async function SettingsPage() {
       .from('users')
       .select('*')
       .eq('id', user.id)
-      .single();
-    currentProfile = profile;
+      .maybeSingle();
+
+    currentProfile = {
+      ...(profile || {}),
+      ...(user.user_metadata || {}),
+      id: user.id,
+      email: user.email,
+      has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash)
+    };
   }
 
   return (

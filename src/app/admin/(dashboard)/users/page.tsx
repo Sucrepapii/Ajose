@@ -1,6 +1,5 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminUsersClient } from "@/components/admin/AdminUsersClient";
-import { UserCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +11,7 @@ export const metadata = {
 export default async function AdminUsersPage() {
   const supabase = createAdminClient();
 
-  // Query actual Supabase users table with confirmed columns
+  // 1. Query Supabase users table
   const { data: users, error } = await supabase
     .from("users")
     .select(`
@@ -21,6 +20,7 @@ export default async function AdminUsersPage() {
       phone,
       first_name,
       last_name,
+      nickname,
       account_name,
       credit_score,
       bvn_verified,
@@ -36,6 +36,35 @@ export default async function AdminUsersPage() {
     console.warn("Users query warning:", error.message);
   }
 
+  // 2. Fetch Auth metadata for Next of Kin, Guarantor, and PIN statuses
+  const authUsersMap = new Map<string, any>();
+  try {
+    const { data: authData } = await supabase.auth.admin.listUsers();
+    if (authData?.users) {
+      for (const u of authData.users) {
+        authUsersMap.set(u.id, u.user_metadata || {});
+      }
+    }
+  } catch (err) {
+    console.warn("Could not fetch auth users for metadata:", err);
+  }
+
+  const enrichedUsers = (users || []).map((u: any) => {
+    const meta = authUsersMap.get(u.id) || {};
+    return {
+      ...u,
+      next_of_kin_name: u.next_of_kin_name || meta.next_of_kin_name || null,
+      next_of_kin_relationship: u.next_of_kin_relationship || meta.next_of_kin_relationship || null,
+      next_of_kin_phone: u.next_of_kin_phone || meta.next_of_kin_phone || null,
+      next_of_kin_email: u.next_of_kin_email || meta.next_of_kin_email || null,
+      next_of_kin_address: u.next_of_kin_address || meta.next_of_kin_address || null,
+      guarantor_name: u.guarantor_name || meta.guarantor_name || null,
+      guarantor_phone: u.guarantor_phone || meta.guarantor_phone || null,
+      guarantor_relationship: u.guarantor_relationship || meta.guarantor_relationship || null,
+      has_pin: Boolean(u.has_pin || meta.has_pin || meta.pin_hash)
+    };
+  });
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-800/80">
@@ -45,18 +74,18 @@ export default async function AdminUsersPage() {
               Identity &amp; KYC
             </span>
             <span className="text-zinc-600">•</span>
-            <span className="text-xs text-zinc-400">Open-Banking Identity Registry</span>
+            <span className="text-xs text-zinc-400">Open-Banking &amp; Social Dossier Registry</span>
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">
             User KYC &amp; Verification Registry
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Central registry of verified member BVN, NIN, credit scores, and linked settlement accounts.
+            Central registry of verified member BVN, NIN, Next of Kin, Guarantors, and PIN security statuses.
           </p>
         </div>
       </div>
 
-      <AdminUsersClient users={users || []} />
+      <AdminUsersClient users={enrichedUsers} />
     </div>
   );
 }
