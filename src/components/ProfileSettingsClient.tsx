@@ -13,8 +13,10 @@ import {
   HeartHandshake, 
   AlertCircle, 
   Lock, 
+  Unlock,
   X,
-  Users
+  Users,
+  RotateCcw
 } from "lucide-react";
 
 export function ProfileSettingsClient({ 
@@ -47,11 +49,21 @@ export function ProfileSettingsClient({
     guarantor_relationship: initialProfile?.guarantor_relationship || "Brother"
   });
 
-  // Track original bank values to detect if PIN is required for update
+  // Track original bank values to detect if changed and allow reverting
   const originalBank = {
     bank_name: initialProfile?.bank_name || "",
-    account_number: initialProfile?.account_number || ""
+    account_number: initialProfile?.account_number || "",
+    account_name: initialProfile?.account_name || ""
   };
+
+  // Bank Lock State: If bank account exists, lock it by default until 4-digit PIN is entered
+  const [isBankEditingUnlocked, setIsBankEditingUnlocked] = useState(
+    !initialProfile?.account_number && !initialProfile?.bank_name
+  );
+  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
+  const [isPinRequiredNoticeOpen, setIsPinRequiredNoticeOpen] = useState(false);
+  const [unlockPinInput, setUnlockPinInput] = useState("");
+  const [isVerifyingUnlock, setIsVerifyingUnlock] = useState(false);
 
   // PIN modal & auth states
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
@@ -63,8 +75,7 @@ export function ProfileSettingsClient({
   });
   const [isPinSubmitting, setIsPinSubmitting] = useState(false);
 
-  // Bank change PIN prompt dialog state
-  const [isBankPinPromptOpen, setIsBankPinPromptOpen] = useState(false);
+  // Bank change PIN token/cache for saving
   const [bankAuthPin, setBankAuthPin] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -74,17 +85,79 @@ export function ProfileSettingsClient({
     }));
   };
 
-  const handleSaveProfile = async (authorizationPin?: string) => {
+  // Trigger PIN challenge when user clicks to unlock bank editing
+  const handleInitiateBankUnlock = () => {
+    if (isBankEditingUnlocked) return;
+    
+    if (hasPin) {
+      setUnlockPinInput("");
+      setIsUnlockModalOpen(true);
+    } else {
+      setIsPinRequiredNoticeOpen(true);
+    }
+  };
+
+  // Verify PIN to unlock bank inputs
+  const handleConfirmBankUnlock = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (unlockPinInput.length !== 4) {
+      toast.error("Please enter a 4-digit numeric PIN.");
+      return;
+    }
+
+    setIsVerifyingUnlock(true);
+
+    try {
+      const res = await fetch("/api/user/pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "verify",
+          pin: unlockPinInput
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Incorrect 4-digit PIN. Authorization failed.");
+      }
+
+      setIsBankEditingUnlocked(true);
+      setBankAuthPin(unlockPinInput);
+      setIsUnlockModalOpen(false);
+      toast.success("Identity verified! Settlement bank details are unlocked for editing.");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to verify PIN.");
+    } finally {
+      setIsVerifyingUnlock(false);
+    }
+  };
+
+  // Cancel bank edit and re-lock
+  const handleRelockBank = () => {
+    setFormData(prev => ({
+      ...prev,
+      bank_name: originalBank.bank_name,
+      account_number: originalBank.account_number,
+      account_name: originalBank.account_name
+    }));
+    setIsBankEditingUnlocked(false);
+    setBankAuthPin("");
+    toast.info("Bank account edits discarded. Payout account re-locked.");
+  };
+
+  // Save profile changes
+  const handleSaveProfile = async () => {
     setIsProcessing(true);
 
     try {
-      // Check if bank details are altered and PIN is set
       const bankChanged = 
         (formData.bank_name && formData.bank_name !== originalBank.bank_name) ||
         (formData.account_number && formData.account_number !== originalBank.account_number);
 
-      if (hasPin && bankChanged && !authorizationPin) {
-        setIsBankPinPromptOpen(true);
+      // If bank changed and user has PIN but never unlocked with PIN, prompt now
+      if (hasPin && bankChanged && !bankAuthPin) {
+        setIsUnlockModalOpen(true);
         setIsProcessing(false);
         return;
       }
@@ -94,7 +167,7 @@ export function ProfileSettingsClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          pin: authorizationPin || bankAuthPin || undefined
+          pin: bankAuthPin || undefined
         })
       });
 
@@ -102,7 +175,7 @@ export function ProfileSettingsClient({
 
       if (!res.ok) {
         if (data.requiresPin) {
-          setIsBankPinPromptOpen(true);
+          setIsUnlockModalOpen(true);
           toast.error(data.error || "Please enter your 4-digit PIN to authorize bank change.");
           return;
         }
@@ -110,7 +183,7 @@ export function ProfileSettingsClient({
       }
 
       toast.success(data.message || "Profile & Next of Kin records saved successfully!");
-      setIsBankPinPromptOpen(false);
+      setIsBankEditingUnlocked(false);
       setBankAuthPin("");
       router.refresh();
     } catch (err: any) {
@@ -270,74 +343,153 @@ export function ProfileSettingsClient({
             </div>
           </div>
 
-          {/* Settlement Account */}
+          {/* Settlement Account with PIN Gate & Visual Lock */}
           <div className="pt-6 border-t border-zinc-800/80 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Landmark className="h-5 w-5 text-emerald-400" />
                 <h3 className="text-base font-bold text-white">Settlement Bank Account Details</h3>
               </div>
-              {hasPin && (
+              
+              {hasPin ? (
                 <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
-                  <Lock className="h-3 w-3" /> Protected by 4-Digit PIN
+                  <Lock className="h-3 w-3" /> PIN Protected
+                </span>
+              ) : (
+                <span className="text-[11px] font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> PIN Not Set
                 </span>
               )}
             </div>
-            <p className="text-xs text-zinc-400">
-              Rotational pool payouts and collection sweeps are credited directly to this verified account.
-            </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="bank_name" className="block text-sm font-medium text-zinc-400 mb-2">Bank Institution</label>
-                <select
-                  id="bank_name"
-                  name="bank_name"
-                  value={formData.bank_name}
-                  onChange={handleChange}
-                  className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
+            {/* Lock / Unlock Banner */}
+            {!isBankEditingUnlocked ? (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">Settlement Account Locked for Security</p>
+                    <p className="text-[11px] text-zinc-400">
+                      Enter your 4-digit PIN to authorize modifying your payout destination bank account.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleInitiateBankUnlock}
+                  className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-lg text-xs transition-all flex items-center gap-1.5 shadow-sm shrink-0"
                 >
-                  <option value="">Select Bank</option>
-                  <option value="Access Bank">Access Bank</option>
-                  <option value="Guaranty Trust Bank (GTB)">Guaranty Trust Bank (GTB)</option>
-                  <option value="Zenith Bank">Zenith Bank</option>
-                  <option value="United Bank for Africa (UBA)">United Bank for Africa (UBA)</option>
-                  <option value="First Bank of Nigeria">First Bank of Nigeria</option>
-                  <option value="Kuda Bank">Kuda Bank</option>
-                  <option value="OPay">OPay</option>
-                  <option value="PalmPay">PalmPay</option>
-                  <option value="Stanbic IBTC">Stanbic IBTC</option>
-                  <option value="Fidelity Bank">Fidelity Bank</option>
-                  <option value="Other Bank">Other Bank</option>
-                </select>
+                  <KeyRound className="h-3.5 w-3.5" />
+                  Enter PIN to Unlock
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl animate-in fade-in">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                    <Unlock className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-emerald-300">Bank Account Unlocked for Editing</p>
+                    <p className="text-[11px] text-emerald-400/80">
+                      You can now change your bank details. Click Save when finished.
+                    </p>
+                  </div>
+                </div>
+
+                {originalBank.account_number && (
+                  <button
+                    type="button"
+                    onClick={handleRelockBank}
+                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white font-bold rounded-lg text-xs transition-all flex items-center gap-1.5 border border-zinc-700 shrink-0"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Discard &amp; Re-lock
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className={`space-y-4 transition-all ${!isBankEditingUnlocked ? "opacity-75" : ""}`}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="bank_name" className="block text-sm font-medium text-zinc-400 mb-2">
+                    Bank Institution {!isBankEditingUnlocked && <Lock className="inline h-3 w-3 ml-1 text-zinc-500" />}
+                  </label>
+                  <select
+                    id="bank_name"
+                    name="bank_name"
+                    disabled={!isBankEditingUnlocked}
+                    value={formData.bank_name}
+                    onChange={handleChange}
+                    onClick={() => !isBankEditingUnlocked && handleInitiateBankUnlock()}
+                    className={`block w-full px-3 py-3 border rounded-xl bg-zinc-950 text-white transition-colors ${
+                      !isBankEditingUnlocked 
+                        ? "border-zinc-800/80 bg-zinc-950/60 cursor-not-allowed text-zinc-400" 
+                        : "border-emerald-500/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    }`}
+                  >
+                    <option value="">Select Bank</option>
+                    <option value="Access Bank">Access Bank</option>
+                    <option value="Guaranty Trust Bank (GTB)">Guaranty Trust Bank (GTB)</option>
+                    <option value="Zenith Bank">Zenith Bank</option>
+                    <option value="United Bank for Africa (UBA)">United Bank for Africa (UBA)</option>
+                    <option value="First Bank of Nigeria">First Bank of Nigeria</option>
+                    <option value="Kuda Bank">Kuda Bank</option>
+                    <option value="OPay">OPay</option>
+                    <option value="PalmPay">PalmPay</option>
+                    <option value="Stanbic IBTC">Stanbic IBTC</option>
+                    <option value="Fidelity Bank">Fidelity Bank</option>
+                    <option value="Other Bank">Other Bank</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="account_number" className="block text-sm font-medium text-zinc-400 mb-2">
+                    10-Digit NUBAN Account {!isBankEditingUnlocked && <Lock className="inline h-3 w-3 ml-1 text-zinc-500" />}
+                  </label>
+                  <input
+                    type="text"
+                    id="account_number"
+                    name="account_number"
+                    maxLength={10}
+                    disabled={!isBankEditingUnlocked}
+                    value={formData.account_number}
+                    onChange={handleChange}
+                    onClick={() => !isBankEditingUnlocked && handleInitiateBankUnlock()}
+                    className={`block w-full px-3 py-3 border rounded-xl bg-zinc-950 text-emerald-400 font-mono font-bold transition-colors ${
+                      !isBankEditingUnlocked 
+                        ? "border-zinc-800/80 bg-zinc-950/60 cursor-not-allowed opacity-90" 
+                        : "border-emerald-500/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    }`}
+                    placeholder="e.g. 0123456789"
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="account_number" className="block text-sm font-medium text-zinc-400 mb-2">10-Digit NUBAN Account</label>
+                <label htmlFor="account_name" className="block text-sm font-medium text-zinc-400 mb-2">
+                  Verified Account Name {!isBankEditingUnlocked && <Lock className="inline h-3 w-3 ml-1 text-zinc-500" />}
+                </label>
                 <input
                   type="text"
-                  id="account_number"
-                  name="account_number"
-                  maxLength={10}
-                  value={formData.account_number}
+                  id="account_name"
+                  name="account_name"
+                  disabled={!isBankEditingUnlocked}
+                  value={formData.account_name}
                   onChange={handleChange}
-                  className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-emerald-400 font-mono font-bold placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
-                  placeholder="e.g. 0123456789"
+                  onClick={() => !isBankEditingUnlocked && handleInitiateBankUnlock()}
+                  className={`block w-full px-3 py-3 border rounded-xl bg-zinc-950 text-white transition-colors ${
+                    !isBankEditingUnlocked 
+                      ? "border-zinc-800/80 bg-zinc-950/60 cursor-not-allowed text-zinc-400" 
+                      : "border-emerald-500/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                  }`}
+                  placeholder="e.g. Adewale Adeyemi Settlement"
                 />
               </div>
-            </div>
-
-            <div>
-              <label htmlFor="account_name" className="block text-sm font-medium text-zinc-400 mb-2">Verified Account Name</label>
-              <input
-                type="text"
-                id="account_name"
-                name="account_name"
-                value={formData.account_name}
-                onChange={handleChange}
-                className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
-                placeholder="e.g. Adewale Adeyemi Settlement"
-              />
             </div>
           </div>
         </div>
@@ -541,8 +693,8 @@ export function ProfileSettingsClient({
               </p>
               <p className="text-xs text-zinc-400 max-w-xl">
                 {hasPin 
-                  ? "Your 4-digit PIN is active. It will be prompted whenever you initiate a payout withdrawal sweep or change your linked settlement bank account."
-                  : "We strongly recommend setting a 4-digit numeric PIN now. It protects your payouts if your phone is left unlocked or borrowed."
+                  ? "Your 4-digit PIN is active. It is prompted whenever you initiate a payout withdrawal sweep or unlock your linked settlement bank account."
+                  : "We strongly recommend setting a 4-digit numeric PIN now. It prevents unauthorized parties from redirecting your lump-sum savings."
                 }
               </p>
             </div>
@@ -567,7 +719,7 @@ export function ProfileSettingsClient({
       <div className="flex justify-end pt-2">
         <button 
           type="button"
-          onClick={() => handleSaveProfile()}
+          onClick={handleSaveProfile}
           disabled={isProcessing}
           className="px-8 py-3.5 bg-emerald-500 text-zinc-950 hover:bg-emerald-400 font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] disabled:opacity-50 disabled:shadow-none flex items-center gap-2.5 text-sm"
         >
@@ -585,7 +737,120 @@ export function ProfileSettingsClient({
         </button>
       </div>
 
-      {/* PIN Setup / Change Modal */}
+      {/* MODAL 1: Enter PIN to Unlock Bank Account Editing */}
+      {isUnlockModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => setIsUnlockModalOpen(false)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+                <Lock className="h-6 w-6" />
+              </div>
+              <h3 className="text-base font-bold text-white">Enter 4-Digit Security PIN</h3>
+              <p className="text-xs text-zinc-400">
+                To protect your Ajo payouts from redirection, please enter your PIN to unlock your bank details.
+              </p>
+            </div>
+
+            <form onSubmit={handleConfirmBankUnlock} className="space-y-4">
+              <input
+                type="password"
+                maxLength={4}
+                autoFocus
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={unlockPinInput}
+                onChange={(e) => setUnlockPinInput(e.target.value.replace(/\D/g, ''))}
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-2xl tracking-[0.5em] text-emerald-400 font-mono focus:outline-none focus:border-emerald-500"
+                placeholder="••••"
+                required
+              />
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsUnlockModalOpen(false)}
+                  className="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={unlockPinInput.length !== 4 || isVerifyingUnlock}
+                  className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  {isVerifyingUnlock ? (
+                    <div className="w-4 h-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <Unlock className="h-3.5 w-3.5" />
+                      Verify &amp; Unlock
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: Notice if user tries to edit bank without having set a PIN */}
+      {isPinRequiredNoticeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative text-center">
+            <button
+              type="button"
+              onClick={() => setIsPinRequiredNoticeOpen(false)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+              <KeyRound className="h-6 w-6" />
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-base font-bold text-white">Security PIN Required</h3>
+              <p className="text-xs text-zinc-400">
+                To protect your lump-sum savings from unauthorized diversion, you must set a 4-digit Transaction Security PIN before editing settlement bank details.
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsPinRequiredNoticeOpen(false);
+                  setPinModalMode("set");
+                  setPinInputs({ currentPin: "", newPin: "", confirmPin: "" });
+                  setIsPinModalOpen(true);
+                }}
+                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+              >
+                <KeyRound className="h-3.5 w-3.5" />
+                Set 4-Digit PIN Now
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsPinRequiredNoticeOpen(false)}
+                className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: PIN Setup / Change Modal */}
       {isPinModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 space-y-6 shadow-2xl relative">
@@ -607,7 +872,7 @@ export function ProfileSettingsClient({
                 </h3>
                 <p className="text-xs text-zinc-400">
                   {pinModalMode === "set" 
-                    ? "Enter 4 numeric digits for authorizing payouts and changes."
+                    ? "Enter 4 numeric digits for authorizing payouts and bank updates."
                     : "Verify your existing PIN and choose a new 4-digit code."
                   }
                 </p>
@@ -692,63 +957,6 @@ export function ProfileSettingsClient({
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Bank Change PIN Authorization Modal */}
-      {isBankPinPromptOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative">
-            <button
-              type="button"
-              onClick={() => setIsBankPinPromptOpen(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
-                <Lock className="h-6 w-6" />
-              </div>
-              <h3 className="text-base font-bold text-white">Authorize Settlement Change</h3>
-              <p className="text-xs text-zinc-400">
-                Enter your 4-digit PIN to authorize switching your settlement bank account.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <input
-                type="password"
-                maxLength={4}
-                autoFocus
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={bankAuthPin}
-                onChange={(e) => setBankAuthPin(e.target.value.replace(/\D/g, ''))}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-2xl tracking-[0.5em] text-white font-mono focus:outline-none focus:border-emerald-500"
-                placeholder="••••"
-              />
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsBankPinPromptOpen(false)}
-                  className="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSaveProfile(bankAuthPin)}
-                  disabled={bankAuthPin.length !== 4 || isProcessing}
-                  className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs disabled:opacity-50"
-                >
-                  Authorize &amp; Save
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       )}

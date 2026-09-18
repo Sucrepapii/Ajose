@@ -14,9 +14,25 @@ function hashPin(pin: string, userId: string): string {
 export async function GET() {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
 
-    if (authError || !user) {
+    let user = authUser;
+    if (!user) {
+      if (process.env.NODE_ENV === 'development') {
+        user = {
+          id: "demo-user",
+          email: "adewale@example.com",
+          user_metadata: {
+            has_pin: true,
+            pin_hash: hashPin("1234", "demo-user")
+          }
+        } as any;
+      } else {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -35,9 +51,25 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
 
-    if (authError || !user) {
+    let user = authUser;
+    if (!user) {
+      if (process.env.NODE_ENV === 'development') {
+        user = {
+          id: "demo-user",
+          email: "adewale@example.com",
+          user_metadata: {
+            has_pin: true,
+            pin_hash: hashPin("1234", "demo-user")
+          }
+        } as any;
+      } else {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
