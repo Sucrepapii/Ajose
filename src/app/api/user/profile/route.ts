@@ -122,12 +122,12 @@ export async function POST(req: Request) {
       first_name: first_name || "",
       last_name: last_name || "",
       nickname: nickname || "",
-      phone: phone || "",
-      bank_name: bank_name || "",
-      account_number: account_number || "",
-      account_name: account_name || "",
-      bvn_verified: true
+      phone: phone || ""
     };
+
+    if (bank_name) coreUpdatePayload.bank_name = bank_name;
+    if (account_number) coreUpdatePayload.account_number = account_number;
+    if (account_name) coreUpdatePayload.account_name = account_name;
 
     const { error: dbError } = await adminSupabase
       .from("users")
@@ -145,9 +145,9 @@ export async function POST(req: Request) {
       last_name,
       nickname,
       phone,
-      bank_name,
-      account_number,
-      account_name,
+      ...(bank_name ? { bank_name } : {}),
+      ...(account_number ? { account_number } : {}),
+      ...(account_name ? { account_name } : {}),
       next_of_kin_name: next_of_kin_name || "",
       next_of_kin_relationship: next_of_kin_relationship || "",
       next_of_kin_phone: next_of_kin_phone || "",

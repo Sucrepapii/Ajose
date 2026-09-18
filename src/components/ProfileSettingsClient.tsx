@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 import { 
   User, 
@@ -13,10 +14,9 @@ import {
   HeartHandshake, 
   AlertCircle, 
   Lock, 
-  Unlock,
   X,
   Users,
-  RotateCcw
+  ExternalLink
 } from "lucide-react";
 
 export function ProfileSettingsClient({ 
@@ -30,15 +30,12 @@ export function ProfileSettingsClient({
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasPin, setHasPin] = useState(Boolean(initialProfile?.has_pin));
   
-  // Profile form state
+  // Profile form state (Personal details and Next of Kin/Guarantor)
   const [formData, setFormData] = useState({
     first_name: initialProfile?.first_name || "",
     last_name: initialProfile?.last_name || "",
     nickname: initialProfile?.nickname || "",
     phone: initialProfile?.phone || "",
-    bank_name: initialProfile?.bank_name || "",
-    account_number: initialProfile?.account_number || "",
-    account_name: initialProfile?.account_name || "",
     next_of_kin_name: initialProfile?.next_of_kin_name || "",
     next_of_kin_relationship: initialProfile?.next_of_kin_relationship || "Spouse",
     next_of_kin_phone: initialProfile?.next_of_kin_phone || "",
@@ -49,23 +46,21 @@ export function ProfileSettingsClient({
     guarantor_relationship: initialProfile?.guarantor_relationship || "Brother"
   });
 
-  // Track original bank values to detect if changed and allow reverting
-  const originalBank = {
-    bank_name: initialProfile?.bank_name || "",
-    account_number: initialProfile?.account_number || "",
-    account_name: initialProfile?.account_name || ""
+  // Verified Bank details (Strictly synchronized with Identity & Bank Verification / Mono)
+  const isBankVerified = Boolean(initialProfile?.bvn_verified && initialProfile?.bank_name);
+  const verifiedBank = {
+    bank_name: initialProfile?.bank_name || "Commercial Bank",
+    account_number: initialProfile?.account_number || "••••••••••",
+    account_name: initialProfile?.account_name || `${initialProfile?.first_name || ''} ${initialProfile?.last_name || ''}`.trim() || "Verified Account"
   };
 
-  // Bank Lock State: If bank account exists, lock it by default until 4-digit PIN is entered
-  const [isBankEditingUnlocked, setIsBankEditingUnlocked] = useState(
-    !initialProfile?.account_number && !initialProfile?.bank_name
-  );
-  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
-  const [isPinRequiredNoticeOpen, setIsPinRequiredNoticeOpen] = useState(false);
-  const [unlockPinInput, setUnlockPinInput] = useState("");
-  const [isVerifyingUnlock, setIsVerifyingUnlock] = useState(false);
+  // Re-link bank PIN authorization states
+  const [isRelinkPinModalOpen, setIsRelinkPinModalOpen] = useState(false);
+  const [isRelinkNoticeOpen, setIsRelinkNoticeOpen] = useState(false);
+  const [relinkPinInput, setRelinkPinInput] = useState("");
+  const [isVerifyingRelink, setIsVerifyingRelink] = useState(false);
 
-  // PIN modal & auth states
+  // PIN Management modal & form states
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pinModalMode, setPinModalMode] = useState<"set" | "change">("set");
   const [pinInputs, setPinInputs] = useState({
@@ -75,9 +70,6 @@ export function ProfileSettingsClient({
   });
   const [isPinSubmitting, setIsPinSubmitting] = useState(false);
 
-  // Bank change PIN token/cache for saving
-  const [bankAuthPin, setBankAuthPin] = useState("");
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
       ...prev,
@@ -85,27 +77,25 @@ export function ProfileSettingsClient({
     }));
   };
 
-  // Trigger PIN challenge when user clicks to unlock bank editing
-  const handleInitiateBankUnlock = () => {
-    if (isBankEditingUnlocked) return;
-    
+  // Initiating bank re-link: Prompt PIN if configured before routing to /dashboard/verify
+  const handleInitiateBankRelink = () => {
     if (hasPin) {
-      setUnlockPinInput("");
-      setIsUnlockModalOpen(true);
+      setRelinkPinInput("");
+      setIsRelinkPinModalOpen(true);
     } else {
-      setIsPinRequiredNoticeOpen(true);
+      setIsRelinkNoticeOpen(true);
     }
   };
 
-  // Verify PIN to unlock bank inputs
-  const handleConfirmBankUnlock = async (e: React.FormEvent) => {
+  // Verify PIN before navigating to Mono verification page
+  const handleConfirmRelinkPin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (unlockPinInput.length !== 4) {
+    if (relinkPinInput.length !== 4) {
       toast.error("Please enter a 4-digit numeric PIN.");
       return;
     }
 
-    setIsVerifyingUnlock(true);
+    setIsVerifyingRelink(true);
 
     try {
       const res = await fetch("/api/user/pin", {
@@ -113,7 +103,7 @@ export function ProfileSettingsClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "verify",
-          pin: unlockPinInput
+          pin: relinkPinInput
         })
       });
 
@@ -122,69 +112,34 @@ export function ProfileSettingsClient({
         throw new Error(data.error || "Incorrect 4-digit PIN. Authorization failed.");
       }
 
-      setIsBankEditingUnlocked(true);
-      setBankAuthPin(unlockPinInput);
-      setIsUnlockModalOpen(false);
-      toast.success("Identity verified! Settlement bank details are unlocked for editing.");
+      setIsRelinkPinModalOpen(false);
+      toast.success("Identity authorized! Redirecting to Identity & Bank Verification...");
+      router.push("/dashboard/verify");
     } catch (err: any) {
       toast.error(err.message || "Failed to verify PIN.");
     } finally {
-      setIsVerifyingUnlock(false);
+      setIsVerifyingRelink(false);
     }
   };
 
-  // Cancel bank edit and re-lock
-  const handleRelockBank = () => {
-    setFormData(prev => ({
-      ...prev,
-      bank_name: originalBank.bank_name,
-      account_number: originalBank.account_number,
-      account_name: originalBank.account_name
-    }));
-    setIsBankEditingUnlocked(false);
-    setBankAuthPin("");
-    toast.info("Bank account edits discarded. Payout account re-locked.");
-  };
-
-  // Save profile changes
+  // Save personal profile and Next of Kin changes
   const handleSaveProfile = async () => {
     setIsProcessing(true);
 
     try {
-      const bankChanged = 
-        (formData.bank_name && formData.bank_name !== originalBank.bank_name) ||
-        (formData.account_number && formData.account_number !== originalBank.account_number);
-
-      // If bank changed and user has PIN but never unlocked with PIN, prompt now
-      if (hasPin && bankChanged && !bankAuthPin) {
-        setIsUnlockModalOpen(true);
-        setIsProcessing(false);
-        return;
-      }
-
       const res = await fetch("/api/user/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          pin: bankAuthPin || undefined
-        })
+        body: JSON.stringify(formData)
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        if (data.requiresPin) {
-          setIsUnlockModalOpen(true);
-          toast.error(data.error || "Please enter your 4-digit PIN to authorize bank change.");
-          return;
-        }
         throw new Error(data.error || "Failed to update profile.");
       }
 
       toast.success(data.message || "Profile & Next of Kin records saved successfully!");
-      setIsBankEditingUnlocked(false);
-      setBankAuthPin("");
       router.refresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to update profile.");
@@ -270,15 +225,15 @@ export function ProfileSettingsClient({
 
   return (
     <div className="space-y-8">
-      {/* 1. Personal & Bank Settlement Details */}
+      {/* 1. Personal Identity Details */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-6 border-b border-zinc-800 flex items-center gap-4">
           <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center shrink-0">
             <User className="h-6 w-6 text-emerald-400" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white mb-1">Personal &amp; Settlement Account</h2>
-            <p className="text-zinc-400 text-sm">Your identity and default rotational payout account.</p>
+            <h2 className="text-xl font-bold text-white mb-1">Personal Details</h2>
+            <p className="text-zinc-400 text-sm">Your primary identity and contact credentials on Àjọṣe.</p>
           </div>
         </div>
 
@@ -342,160 +297,106 @@ export function ProfileSettingsClient({
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Settlement Account with PIN Gate & Visual Lock */}
-          <div className="pt-6 border-t border-zinc-800/80 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Landmark className="h-5 w-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">Settlement Bank Account Details</h3>
-              </div>
-              
-              {hasPin ? (
-                <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
-                  <Lock className="h-3 w-3" /> PIN Protected
-                </span>
-              ) : (
-                <span className="text-[11px] font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" /> PIN Not Set
-                </span>
-              )}
+      {/* 2. Settlement Bank Account Details (Synchronized with Identity & Bank Verification) */}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+        <div className="p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center shrink-0">
+              <Landmark className="h-6 w-6 text-emerald-400" />
             </div>
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">Settlement Bank Account</h2>
+              <p className="text-zinc-400 text-sm">
+                Synchronized directly with your verified identity via Mono Open-Banking.
+              </p>
+            </div>
+          </div>
 
-            {/* Lock / Unlock Banner */}
-            {!isBankEditingUnlocked ? (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-amber-500/5 border border-amber-500/20 rounded-xl">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-                    <Lock className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white">Settlement Account Locked for Security</p>
-                    <p className="text-[11px] text-zinc-400">
-                      Enter your 4-digit PIN to authorize modifying your payout destination bank account.
-                    </p>
-                  </div>
+          <div>
+            {isBankVerified ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/30">
+                <ShieldCheck className="h-3.5 w-3.5" /> Verified Account Active
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-bold rounded-full border border-amber-500/30">
+                <AlertCircle className="h-3.5 w-3.5" /> Verification Pending
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {isBankVerified ? (
+            <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80">
+                  <span className="text-[11px] text-zinc-500 font-medium">Bank Institution</span>
+                  <p className="text-sm font-bold text-white mt-1">{verifiedBank.bank_name}</p>
+                </div>
+
+                <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80">
+                  <span className="text-[11px] text-zinc-500 font-medium">10-Digit Account Number</span>
+                  <p className="text-sm font-mono font-bold text-emerald-400 mt-1">{verifiedBank.account_number}</p>
+                </div>
+
+                <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80">
+                  <span className="text-[11px] text-zinc-500 font-medium">Account Name</span>
+                  <p className="text-sm font-bold text-white mt-1 truncate">{verifiedBank.account_name}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2 text-xs text-zinc-400">
+                <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+                <span>
+                  Your rotational payout disbursements and auto-debit sweeps are strictly routed to this verified identity account.
+                </span>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-zinc-800/80">
+                <div className="flex items-center gap-2 text-xs text-zinc-500">
+                  <Lock className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>Changing settlement account requires 4-digit PIN verification.</span>
                 </div>
 
                 <button
                   type="button"
-                  onClick={handleInitiateBankUnlock}
-                  className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-lg text-xs transition-all flex items-center gap-1.5 shadow-sm shrink-0"
+                  onClick={handleInitiateBankRelink}
+                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 hover:text-emerald-300 font-bold rounded-xl text-xs border border-zinc-700 transition-all flex items-center justify-center gap-1.5"
                 >
                   <KeyRound className="h-3.5 w-3.5" />
-                  Enter PIN to Unlock
+                  Change / Re-link Bank Account
                 </button>
               </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl animate-in fade-in">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
-                    <Unlock className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-emerald-300">Bank Account Unlocked for Editing</p>
-                    <p className="text-[11px] text-emerald-400/80">
-                      You can now change your bank details. Click Save when finished.
-                    </p>
-                  </div>
-                </div>
-
-                {originalBank.account_number && (
-                  <button
-                    type="button"
-                    onClick={handleRelockBank}
-                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white font-bold rounded-lg text-xs transition-all flex items-center gap-1.5 border border-zinc-700 shrink-0"
-                  >
-                    <RotateCcw className="h-3.5 w-3.5" />
-                    Discard &amp; Re-lock
-                  </button>
-                )}
+            </div>
+          ) : (
+            <div className="bg-zinc-950 p-6 rounded-xl border border-zinc-800 text-center space-y-4">
+              <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+                <Landmark className="h-6 w-6" />
               </div>
-            )}
-
-            <div className={`space-y-4 transition-all ${!isBankEditingUnlocked ? "opacity-75" : ""}`}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="bank_name" className="block text-sm font-medium text-zinc-400 mb-2">
-                    Bank Institution {!isBankEditingUnlocked && <Lock className="inline h-3 w-3 ml-1 text-zinc-500" />}
-                  </label>
-                  <select
-                    id="bank_name"
-                    name="bank_name"
-                    disabled={!isBankEditingUnlocked}
-                    value={formData.bank_name}
-                    onChange={handleChange}
-                    onClick={() => !isBankEditingUnlocked && handleInitiateBankUnlock()}
-                    className={`block w-full px-3 py-3 border rounded-xl bg-zinc-950 text-white transition-colors ${
-                      !isBankEditingUnlocked 
-                        ? "border-zinc-800/80 bg-zinc-950/60 cursor-not-allowed text-zinc-400" 
-                        : "border-emerald-500/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                    }`}
-                  >
-                    <option value="">Select Bank</option>
-                    <option value="Access Bank">Access Bank</option>
-                    <option value="Guaranty Trust Bank (GTB)">Guaranty Trust Bank (GTB)</option>
-                    <option value="Zenith Bank">Zenith Bank</option>
-                    <option value="United Bank for Africa (UBA)">United Bank for Africa (UBA)</option>
-                    <option value="First Bank of Nigeria">First Bank of Nigeria</option>
-                    <option value="Kuda Bank">Kuda Bank</option>
-                    <option value="OPay">OPay</option>
-                    <option value="PalmPay">PalmPay</option>
-                    <option value="Stanbic IBTC">Stanbic IBTC</option>
-                    <option value="Fidelity Bank">Fidelity Bank</option>
-                    <option value="Other Bank">Other Bank</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="account_number" className="block text-sm font-medium text-zinc-400 mb-2">
-                    10-Digit NUBAN Account {!isBankEditingUnlocked && <Lock className="inline h-3 w-3 ml-1 text-zinc-500" />}
-                  </label>
-                  <input
-                    type="text"
-                    id="account_number"
-                    name="account_number"
-                    maxLength={10}
-                    disabled={!isBankEditingUnlocked}
-                    value={formData.account_number}
-                    onChange={handleChange}
-                    onClick={() => !isBankEditingUnlocked && handleInitiateBankUnlock()}
-                    className={`block w-full px-3 py-3 border rounded-xl bg-zinc-950 text-emerald-400 font-mono font-bold transition-colors ${
-                      !isBankEditingUnlocked 
-                        ? "border-zinc-800/80 bg-zinc-950/60 cursor-not-allowed opacity-90" 
-                        : "border-emerald-500/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                    }`}
-                    placeholder="e.g. 0123456789"
-                  />
-                </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-bold text-white">No Bank Account Connected Yet</h3>
+                <p className="text-xs text-zinc-400 max-w-md mx-auto">
+                  Connect your commercial bank account via Mono on the Identity &amp; Bank Verification page to verify your BVN and activate direct debit mandates for your Ajo cycles.
+                </p>
               </div>
-
               <div>
-                <label htmlFor="account_name" className="block text-sm font-medium text-zinc-400 mb-2">
-                  Verified Account Name {!isBankEditingUnlocked && <Lock className="inline h-3 w-3 ml-1 text-zinc-500" />}
-                </label>
-                <input
-                  type="text"
-                  id="account_name"
-                  name="account_name"
-                  disabled={!isBankEditingUnlocked}
-                  value={formData.account_name}
-                  onChange={handleChange}
-                  onClick={() => !isBankEditingUnlocked && handleInitiateBankUnlock()}
-                  className={`block w-full px-3 py-3 border rounded-xl bg-zinc-950 text-white transition-colors ${
-                    !isBankEditingUnlocked 
-                      ? "border-zinc-800/80 bg-zinc-950/60 cursor-not-allowed text-zinc-400" 
-                      : "border-emerald-500/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                  }`}
-                  placeholder="e.g. Adewale Adeyemi Settlement"
-                />
+                <Link
+                  href="/dashboard/verify"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Go to Identity &amp; Bank Verification
+                </Link>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
-      {/* 2. Next of Kin & Social Guarantor Section */}
+      {/* 3. Next of Kin & Social Guarantor Section */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -659,7 +560,7 @@ export function ProfileSettingsClient({
         </div>
       </div>
 
-      {/* 3. 4-Digit Transaction Security PIN Card */}
+      {/* 4. 4-Digit Transaction Security PIN Card */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -668,7 +569,7 @@ export function ProfileSettingsClient({
             </div>
             <div>
               <h2 className="text-xl font-bold text-white mb-1">4-Digit Transaction Security PIN</h2>
-              <p className="text-zinc-400 text-sm">Protects lump-sum payout sweeps and authorizes settlement bank edits.</p>
+              <p className="text-zinc-400 text-sm">Protects lump-sum payout sweeps and authorizes settlement bank changes.</p>
             </div>
           </div>
 
@@ -693,7 +594,7 @@ export function ProfileSettingsClient({
               </p>
               <p className="text-xs text-zinc-400 max-w-xl">
                 {hasPin 
-                  ? "Your 4-digit PIN is active. It is prompted whenever you initiate a payout withdrawal sweep or unlock your linked settlement bank account."
+                  ? "Your 4-digit PIN is active. It is prompted whenever you initiate a payout withdrawal sweep or re-link your verified settlement bank account."
                   : "We strongly recommend setting a 4-digit numeric PIN now. It prevents unauthorized parties from redirecting your lump-sum savings."
                 }
               </p>
@@ -737,13 +638,13 @@ export function ProfileSettingsClient({
         </button>
       </div>
 
-      {/* MODAL 1: Enter PIN to Unlock Bank Account Editing */}
-      {isUnlockModalOpen && (
+      {/* MODAL 1: Authorize Re-linking Bank Account with PIN */}
+      {isRelinkPinModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative">
             <button
               type="button"
-              onClick={() => setIsUnlockModalOpen(false)}
+              onClick={() => setIsRelinkPinModalOpen(false)}
               className="absolute top-4 right-4 text-zinc-400 hover:text-white"
             >
               <X className="h-5 w-5" />
@@ -753,21 +654,21 @@ export function ProfileSettingsClient({
               <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
                 <Lock className="h-6 w-6" />
               </div>
-              <h3 className="text-base font-bold text-white">Enter 4-Digit Security PIN</h3>
+              <h3 className="text-base font-bold text-white">Authorize Bank Account Change</h3>
               <p className="text-xs text-zinc-400">
-                To protect your Ajo payouts from redirection, please enter your PIN to unlock your bank details.
+                Enter your 4-digit Transaction Security PIN to authorize switching your verified settlement bank account via Mono.
               </p>
             </div>
 
-            <form onSubmit={handleConfirmBankUnlock} className="space-y-4">
+            <form onSubmit={handleConfirmRelinkPin} className="space-y-4">
               <input
                 type="password"
                 maxLength={4}
                 autoFocus
                 inputMode="numeric"
                 pattern="[0-9]*"
-                value={unlockPinInput}
-                onChange={(e) => setUnlockPinInput(e.target.value.replace(/\D/g, ''))}
+                value={relinkPinInput}
+                onChange={(e) => setRelinkPinInput(e.target.value.replace(/\D/g, ''))}
                 className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-2xl tracking-[0.5em] text-emerald-400 font-mono focus:outline-none focus:border-emerald-500"
                 placeholder="••••"
                 required
@@ -776,22 +677,22 @@ export function ProfileSettingsClient({
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsUnlockModalOpen(false)}
+                  onClick={() => setIsRelinkPinModalOpen(false)}
                   className="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={unlockPinInput.length !== 4 || isVerifyingUnlock}
+                  disabled={relinkPinInput.length !== 4 || isVerifyingRelink}
                   className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs disabled:opacity-50 flex items-center justify-center gap-1.5"
                 >
-                  {isVerifyingUnlock ? (
+                  {isVerifyingRelink ? (
                     <div className="w-4 h-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin"></div>
                   ) : (
                     <>
-                      <Unlock className="h-3.5 w-3.5" />
-                      Verify &amp; Unlock
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Authorize &amp; Proceed
                     </>
                   )}
                 </button>
@@ -801,13 +702,13 @@ export function ProfileSettingsClient({
         </div>
       )}
 
-      {/* MODAL 2: Notice if user tries to edit bank without having set a PIN */}
-      {isPinRequiredNoticeOpen && (
+      {/* MODAL 2: Notice if user tries to re-link bank without having set a PIN */}
+      {isRelinkNoticeOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative text-center">
             <button
               type="button"
-              onClick={() => setIsPinRequiredNoticeOpen(false)}
+              onClick={() => setIsRelinkNoticeOpen(false)}
               className="absolute top-4 right-4 text-zinc-400 hover:text-white"
             >
               <X className="h-5 w-5" />
@@ -818,9 +719,9 @@ export function ProfileSettingsClient({
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-base font-bold text-white">Security PIN Required</h3>
+              <h3 className="text-base font-bold text-white">Security PIN Recommended</h3>
               <p className="text-xs text-zinc-400">
-                To protect your lump-sum savings from unauthorized diversion, you must set a 4-digit Transaction Security PIN before editing settlement bank details.
+                To protect your lump-sum savings from unauthorized diversion, we recommend configuring a 4-digit PIN before switching your verified payout bank account.
               </p>
             </div>
 
@@ -828,7 +729,7 @@ export function ProfileSettingsClient({
               <button
                 type="button"
                 onClick={() => {
-                  setIsPinRequiredNoticeOpen(false);
+                  setIsRelinkNoticeOpen(false);
                   setPinModalMode("set");
                   setPinInputs({ currentPin: "", newPin: "", confirmPin: "" });
                   setIsPinModalOpen(true);
@@ -836,15 +737,16 @@ export function ProfileSettingsClient({
                 className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2"
               >
                 <KeyRound className="h-3.5 w-3.5" />
-                Set 4-Digit PIN Now
+                Set 4-Digit PIN First
               </button>
-              <button
-                type="button"
-                onClick={() => setIsPinRequiredNoticeOpen(false)}
-                className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs"
+              <Link
+                href="/dashboard/verify"
+                onClick={() => setIsRelinkNoticeOpen(false)}
+                className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
               >
-                Cancel
-              </button>
+                <ExternalLink className="h-3.5 w-3.5" />
+                Proceed to Verification Anyway
+              </Link>
             </div>
           </div>
         </div>

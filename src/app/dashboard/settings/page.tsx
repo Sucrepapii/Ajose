@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { ProfileSettingsClient } from "@/components/ProfileSettingsClient";
 import Link from "next/link";
-import { ShieldCheck, Target, Activity, Landmark, CheckCircle2, Lock } from "lucide-react";
+import { Target, Lock } from "lucide-react";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -70,102 +70,7 @@ export default async function SettingsPage() {
             initialProfile={currentProfile || {}} 
           />
 
-          {/* Mono Open-Banking & Mandate Status Card */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-                  <Landmark className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">Mono Banking &amp; Mandate Status</h3>
-                  <p className="text-xs text-zinc-400">Linked commercial bank account for automated rotational cycles</p>
-                </div>
-              </div>
-              {currentProfile?.bvn_verified ? (
-                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5" /> Mandate Active
-                </span>
-              ) : (
-                <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30">
-                  Not Connected
-                </span>
-              )}
-            </div>
 
-            {currentProfile?.bvn_verified ? (
-              <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3 text-xs">
-                <div className="flex justify-between items-center">
-                  <span className="text-zinc-500">Bank Institution</span>
-                  <span className="font-bold text-white">{currentProfile?.bank_name || "Access Bank"}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-zinc-500">Account Number</span>
-                  <span className="font-mono font-bold text-emerald-400">{currentProfile?.account_number || "0123456789"}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-zinc-500">Account Name</span>
-                  <span className="font-bold text-white">{currentProfile?.account_name || `${currentProfile?.first_name || ''} ${currentProfile?.last_name || ''}`}</span>
-                </div>
-                <div className="flex justify-between items-center pt-2 border-t border-zinc-800/80">
-                  <span className="text-zinc-500">Identity &amp; BVN</span>
-                  <span className="text-emerald-400 font-bold flex items-center gap-1">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Verified via Mono Open-Banking
-                  </span>
-                </div>
-                <div className="pt-2 flex justify-end">
-                  <Link 
-                    href="/dashboard/verify"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 border border-zinc-700 rounded-lg text-xs font-bold transition-colors"
-                  >
-                    Change / Re-link Bank Account
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-3">
-                <p className="text-xs text-zinc-400">
-                  Connect your bank account to verify your BVN and activate direct debit mandates for your Ajo cycles.
-                </p>
-                <Link 
-                  href="/dashboard/verify"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md"
-                >
-                  <Lock className="h-3.5 w-3.5" />
-                  Connect with Mono
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mono DirectPay / Auto-Debit */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-                <Activity className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-white">Mono DirectPay</h3>
-                <p className="text-xs text-zinc-400">Automated contribution deductions</p>
-              </div>
-            </div>
-            
-            <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
-               <div className="flex justify-between items-center">
-                  <span className="text-zinc-500 text-xs">Auto-Debit Status</span>
-                  {currentProfile?.bvn_verified ? (
-                    <span className="text-emerald-400 font-bold text-xs flex items-center gap-1"><CheckCircle2 className="h-3 w-3"/> Active</span>
-                  ) : (
-                    <span className="text-amber-400 font-bold text-xs">Pending Setup</span>
-                  )}
-               </div>
-               <div className="pt-3">
-                 <button className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold transition-colors">
-                   Manage Auto-Debit Preferences
-                 </button>
-               </div>
-            </div>
-          </div>
 
           {/* Phase 2: Financial Data */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4 opacity-50 relative overflow-hidden select-none">
