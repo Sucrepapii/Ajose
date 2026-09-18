@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 
 export async function POST(req: NextRequest) {
   try {
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
       console.warn("Could not fetch full account details:", e);
     }
 
-    // 3. Update Supabase user record
+    // 3. Update Supabase user record in database
     await supabase
       .from("users")
       .update({
@@ -67,6 +68,20 @@ export async function POST(req: NextRequest) {
         account_name: accountName
       })
       .eq("id", user.id);
+
+    // 4. Ensure Supabase Auth metadata stays free of stale bank fields
+    try {
+      const adminSupabase = createAdminClient();
+      await adminSupabase.auth.admin.updateUserById(user.id, {
+        user_metadata: {
+          bank_name: null,
+          account_number: null,
+          account_name: null
+        }
+      });
+    } catch (metaErr) {
+      console.warn("Could not clean user_metadata during Mono exchange:", metaErr);
+    }
 
     return NextResponse.json({
       success: true,

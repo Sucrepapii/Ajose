@@ -45,10 +45,14 @@ export default async function SettingsPage() {
       .maybeSingle();
 
     currentProfile = {
-      ...(profile || {}),
       ...(user.user_metadata || {}),
+      ...(profile || {}),
       id: user.id,
       email: user.email,
+      bank_name: profile?.bank_name ?? null,
+      account_number: profile?.account_number ?? null,
+      account_name: profile?.account_name ?? null,
+      bvn_verified: Boolean(profile?.bvn_verified),
       has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash)
     };
   }

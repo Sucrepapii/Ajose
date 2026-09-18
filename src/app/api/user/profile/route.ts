@@ -27,10 +27,14 @@ export async function GET() {
       .maybeSingle();
 
     const mergedProfile = {
-      ...(dbUser || {}),
       ...(user.user_metadata || {}),
+      ...(dbUser || {}),
       id: user.id,
       email: user.email,
+      bank_name: dbUser?.bank_name ?? null,
+      account_number: dbUser?.account_number ?? null,
+      account_name: dbUser?.account_name ?? null,
+      bvn_verified: Boolean(dbUser?.bvn_verified),
       has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash)
     };
 
@@ -117,17 +121,13 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Update core verified fields in public.users table
+    // 3. Update core profile fields in public.users table (Bank details can ONLY be altered via Mono verification)
     const coreUpdatePayload: Record<string, any> = {
       first_name: first_name || "",
       last_name: last_name || "",
       nickname: nickname || "",
       phone: phone || ""
     };
-
-    if (bank_name) coreUpdatePayload.bank_name = bank_name;
-    if (account_number) coreUpdatePayload.account_number = account_number;
-    if (account_name) coreUpdatePayload.account_name = account_name;
 
     const { error: dbError } = await adminSupabase
       .from("users")
@@ -139,15 +139,16 @@ export async function POST(req: Request) {
     }
 
     // 4. Update Supabase Auth user_metadata with Next of Kin, Guarantor, and profile data
+    // Strictly ensure bank_name, account_number, account_name are null in metadata to prevent overriding DB
     const updatedMetadata = {
       ...user.user_metadata,
-      first_name,
-      last_name,
-      nickname,
-      phone,
-      ...(bank_name ? { bank_name } : {}),
-      ...(account_number ? { account_number } : {}),
-      ...(account_name ? { account_name } : {}),
+      first_name: first_name ?? user.user_metadata?.first_name,
+      last_name: last_name ?? user.user_metadata?.last_name,
+      nickname: nickname ?? user.user_metadata?.nickname,
+      phone: phone ?? user.user_metadata?.phone,
+      bank_name: null,
+      account_number: null,
+      account_name: null,
       next_of_kin_name: next_of_kin_name || "",
       next_of_kin_relationship: next_of_kin_relationship || "",
       next_of_kin_phone: next_of_kin_phone || "",
