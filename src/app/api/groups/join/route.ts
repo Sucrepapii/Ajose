@@ -191,6 +191,31 @@ export async function POST(req: Request) {
       console.warn("Could not insert join notification:", notifErr);
     }
 
+    // 7. Dispatch Welcome & Onboarding Email via Resend
+    try {
+      const { data: memberUser } = await adminClient
+        .from("users")
+        .select("email, first_name, last_name, nickname")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (memberUser?.email) {
+        const userName = memberUser.first_name || memberUser.nickname || "Member";
+        const { sendEmail } = await import("@/utils/resend");
+        const { getWelcomeEmailTemplate } = await import("@/utils/emailTemplates");
+        await sendEmail({
+          to: memberUser.email,
+          subject: `Welcome to ${targetGroup.name || "Àjọṣe Ajo Circle"}! 🎉`,
+          html: getWelcomeEmailTemplate({
+            userName,
+            groupName: targetGroup.name || "Àjọṣe Ajo Circle",
+          }),
+        });
+      }
+    } catch (emailErr) {
+      console.warn("Could not dispatch welcome email on join:", emailErr);
+    }
+
     return NextResponse.json({
       success: true,
       alreadyMember: false,

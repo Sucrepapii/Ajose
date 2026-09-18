@@ -109,13 +109,33 @@ export async function POST(req: Request) {
       cycle_turn: turn
     });
 
-    // 10. Notify receiving member
+    // 10. Notify receiving member (in-app)
     await supabaseAdmin.from("notifications").insert({
       user_id: receiverUser.id,
       title: `🎉 Payout Received! ₦${netPayoutAmount.toLocaleString()}`,
       message: `Your rotational payout for Turn ${turn} in ${group.name} was successfully disbursed to your bank account via Mono Payout.`,
       type: "success"
     });
+
+    // 11. Dispatch Payout Notification Email via Resend
+    if (receiverUser?.email) {
+      try {
+        const { sendEmail } = await import("@/utils/resend");
+        const { getPayoutReceivedEmailTemplate } = await import("@/utils/emailTemplates");
+        await sendEmail({
+          to: receiverUser.email,
+          subject: `Payout Received! ₦${netPayoutAmount.toLocaleString()} - ${group.name}`,
+          html: getPayoutReceivedEmailTemplate({
+            userName: receiverName,
+            groupName: group.name,
+            amount: netPayoutAmount,
+            turnNumber: turn,
+          }),
+        });
+      } catch (emailErr) {
+        console.warn("Could not dispatch payout notification email:", emailErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,

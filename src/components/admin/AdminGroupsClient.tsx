@@ -14,17 +14,51 @@ import {
   Wallet,
   X,
   Copy,
-  Check
+  Check,
+  Trash2
 } from "lucide-react";
 import { toast } from "sonner";
 
-export function AdminGroupsClient({ groups }: { groups: any[] }) {
+export function AdminGroupsClient({ 
+  groups,
+  isSuperAdmin = false 
+}: { 
+  groups: any[];
+  isSuperAdmin?: boolean;
+}) {
+  const [groupList, setGroupList] = useState<any[]>(groups || []);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [inspectingGroup, setInspectingGroup] = useState<any | null>(null);
+  const [deletingGroup, setDeletingGroup] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const filteredGroups = groups.filter((g) => {
+  const handleDeleteCircle = async () => {
+    if (!deletingGroup) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/groups?id=${encodeURIComponent(deletingGroup.id)}`, {
+        method: "DELETE"
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete circle.");
+      }
+      toast.success(data.message || `Circle "${deletingGroup.name}" deleted successfully.`);
+      setGroupList(prev => prev.filter(g => g.id !== deletingGroup.id));
+      if (inspectingGroup?.id === deletingGroup.id) {
+        setInspectingGroup(null);
+      }
+      setDeletingGroup(null);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete circle.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const filteredGroups = groupList.filter((g) => {
     const matchesSearch = 
       g.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       g.id?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -62,7 +96,7 @@ export function AdminGroupsClient({ groups }: { groups: any[] }) {
                   : "bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800"
               }`}
             >
-              {status} ({status === "all" ? groups.length : groups.filter(g => g.status === status).length})
+              {status} ({status === "all" ? groupList.length : groupList.filter(g => g.status === status).length})
             </button>
           ))}
         </div>
@@ -160,6 +194,18 @@ export function AdminGroupsClient({ groups }: { groups: any[] }) {
                             <ShieldCheck className="h-3 w-3 text-emerald-400" />
                             <span>Inspect Circle</span>
                           </button>
+
+                          {isSuperAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => setDeletingGroup(group)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold transition-colors cursor-pointer"
+                              title="Delete Circle Permanently"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                              <span className="hidden sm:inline">Delete</span>
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -256,13 +302,85 @@ export function AdminGroupsClient({ groups }: { groups: any[] }) {
               </p>
             </div>
 
-            <div className="flex justify-end pt-2">
+            <div className="flex items-center justify-between pt-2">
+              {isSuperAdmin ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const grp = inspectingGroup;
+                    setInspectingGroup(null);
+                    setDeletingGroup(grp);
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>Delete Circle</span>
+                </button>
+              ) : <div />}
+
               <button
                 type="button"
                 onClick={() => setInspectingGroup(null)}
-                className="px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs transition-colors"
+                className="px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs transition-colors cursor-pointer"
               >
                 Close Audit View
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Super Admin Delete Confirmation Modal */}
+      {deletingGroup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-[#0C100D] border border-red-500/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 p-6 space-y-5">
+            <div className="flex items-start gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white tracking-tight">
+                  Permanently Delete Circle?
+                </h3>
+                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                  You are about to delete <strong className="text-white">{deletingGroup.name}</strong>.
+                </p>
+                <p className="text-[11px] font-mono text-zinc-500 mt-0.5">
+                  ID: {deletingGroup.id}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-red-950/25 border border-red-500/20 text-[11px] text-red-300 space-y-1.5 leading-relaxed">
+              <p className="font-bold flex items-center gap-1.5 text-red-400">
+                <span>⚠️ Super Administrator Irreversible Action</span>
+              </p>
+              <p className="text-zinc-400">
+                This will permanently eradicate this circle from the platform, remove all member seats ({deletingGroup.memberships?.length || 0} members), and purge all rotational ledger records.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setDeletingGroup(null)}
+                className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer border border-zinc-800"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleDeleteCircle}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer shadow-lg shadow-red-950"
+              >
+                {isDeleting ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                <span>{isDeleting ? "Deleting Circle..." : "Confirm & Delete Circle"}</span>
               </button>
             </div>
           </div>

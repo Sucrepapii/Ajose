@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     const cleanIdentifier = identifier.trim().toLowerCase();
     const { data: matchedUsers, error: userSearchErr } = await supabaseAdmin
       .from("users")
-      .select("id, phone, first_name, last_name, nickname")
+      .select("id, phone, first_name, last_name, nickname, email")
       .or(`phone.ilike.%${cleanIdentifier}%,nickname.ilike.%${cleanIdentifier}%`);
 
     let targetUser: any = matchedUsers?.[0];
@@ -70,11 +70,12 @@ export async function POST(req: Request) {
         if (foundAuth) {
           const { data: userProfile } = await supabaseAdmin
             .from("users")
-            .select("id, phone, first_name, last_name, nickname")
+            .select("id, phone, first_name, last_name, nickname, email")
             .eq("id", foundAuth.id)
             .maybeSingle();
           targetUser = userProfile || { 
             id: foundAuth.id, 
+            email: foundAuth.email || (cleanIdentifier.includes("@") ? cleanIdentifier : undefined),
             phone: foundAuth.phone || cleanIdentifier,
             first_name: "",
             last_name: "",
@@ -157,6 +158,25 @@ export async function POST(req: Request) {
     });
 
     const targetName = `${targetUser.first_name || ""} ${targetUser.last_name || ""}`.trim() || targetUser.nickname || targetUser.phone || "Member";
+
+    // 9. Dispatch Welcome & Onboarding Email via Resend
+    try {
+      const emailToUse = targetUser.email || (cleanIdentifier.includes("@") ? cleanIdentifier : null);
+      if (emailToUse) {
+        const { sendEmail } = await import("@/utils/resend");
+        const { getWelcomeEmailTemplate } = await import("@/utils/emailTemplates");
+        await sendEmail({
+          to: emailToUse,
+          subject: `Welcome to ${group.name}! 🎉`,
+          html: getWelcomeEmailTemplate({
+            userName: targetName,
+            groupName: group.name,
+          }),
+        });
+      }
+    } catch (emailErr) {
+      console.warn("Could not dispatch add member welcome email:", emailErr);
+    }
 
     return NextResponse.json({
       success: true,

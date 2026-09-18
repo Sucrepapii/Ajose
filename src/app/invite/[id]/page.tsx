@@ -5,8 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { sendEmail } from "@/utils/resend";
-import { getWelcomeEmailTemplate } from "@/utils/emailTemplates";
 import { 
   PiggyBank, 
   Users, 
@@ -336,18 +334,6 @@ export default function InvitePage(props: {
       if (data.alreadyMember) {
         setAlreadyMember(true);
         toast.success("You are already a member!");
-      }
-
-      // 3. Send Welcome & Onboarding Email via Resend
-      if (user?.email) {
-        sendEmail({
-          to: user.email,
-          subject: `Welcome to ${group?.name || 'Àjọṣe Ajo Circle'}! 🎉`,
-          html: getWelcomeEmailTemplate({
-            userName: user.user_metadata?.first_name || 'Member',
-            groupName: group?.name || 'Àjọṣe Ajo Circle',
-          }),
-        }).catch((err) => console.error("Welcome email error:", err));
       }
 
       toast.success("Welcome! Verification cleared and mandate authorized.");

@@ -43,7 +43,7 @@ export function AdminSidebarNav({
 
   const renderNavLinks = () => (
     <div className="space-y-1">
-      <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-widest text-emerald-400/60 font-bold">
+      <div className="px-3 pb-1.5 text-[10px] font-mono uppercase tracking-widest text-emerald-400/60 font-bold">
         Operations Navigation
       </div>
       {adminNavItems.map((item) => {
@@ -57,16 +57,16 @@ export function AdminSidebarNav({
             key={item.href}
             href={item.href}
             onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs transition-all duration-200 ${
+            className={`flex items-center gap-3 px-3 py-2 rounded-xl font-medium text-xs transition-all duration-200 ${
               isActive
                 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold shadow-sm"
                 : "text-zinc-400 hover:text-white hover:bg-white/5"
             }`}
           >
-            <Icon className={`h-4 w-4 ${isActive ? "text-emerald-400" : "text-zinc-500"}`} />
-            <span>{item.label}</span>
+            <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-emerald-400" : "text-zinc-500"}`} />
+            <span className="truncate">{item.label}</span>
             {isActive && (
-              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             )}
           </Link>
         );
@@ -110,7 +110,7 @@ export function AdminSidebarNav({
           onClick={() => setMobileOpen(false)}
         >
           <div 
-            className="absolute top-0 right-0 w-[80%] max-w-xs h-full bg-[#080B09] border-l border-zinc-800 p-5 flex flex-col justify-between"
+            className="absolute top-0 right-0 w-[80%] max-w-xs h-full bg-[#080B09] border-l border-zinc-800 p-5 flex flex-col justify-between overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div>
@@ -136,16 +136,16 @@ export function AdminSidebarNav({
         </div>
       )}
 
-      {/* Desktop Persistent Sidebar */}
-      <aside className="hidden lg:flex w-64 bg-[#080B09] border-r border-zinc-800/80 flex-col justify-between p-5 shrink-0 min-h-screen sticky top-0">
-        <div className="space-y-6">
+      {/* Desktop Persistent Sidebar - Non-scrollable and locked to screen */}
+      <aside className="hidden lg:flex w-64 bg-[#080B09] border-r border-zinc-800/80 flex-col justify-between p-4 shrink-0 h-screen max-h-screen overflow-hidden sticky top-0 select-none">
+        <div className="space-y-4">
           {/* Logo & Super Admin Badge */}
           <div className="flex items-center gap-3 px-2 py-1">
             <Image 
               src="/ajose-rings-logo.png" 
               alt="Àjọṣe Logo" 
-              width={30} 
-              height={30} 
+              width={28} 
+              height={28} 
               className="object-contain w-auto h-7 drop-shadow-md animate-spin-slow"
             />
             <div>
@@ -164,9 +164,9 @@ export function AdminSidebarNav({
         </div>
 
         {/* User Card & Logout */}
-        <div className="space-y-4 pt-4 border-t border-zinc-800/80">
-          <div className="flex items-center gap-2.5 px-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase">
+        <div className="space-y-3 pt-3 border-t border-zinc-800/80">
+          <div className="flex items-center gap-2.5 px-1.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase shrink-0">
               {adminName.charAt(0) || "A"}
             </div>
             <div className="min-w-0 flex-1">

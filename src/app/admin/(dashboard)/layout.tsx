@@ -47,7 +47,7 @@ export default async function AdminDashboardLayout({
   const displayRole = role || (isSuperAdmin ? "Super Admin" : "Staff");
 
   return (
-    <div className="min-h-screen bg-[#050806] flex flex-col lg:flex-row font-sans text-zinc-100">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-[#050806] flex flex-col lg:flex-row font-sans text-zinc-100">
       <AdminSidebarNav 
         adminEmail={user.email || ""} 
         adminName={adminName} 
@@ -56,9 +56,9 @@ export default async function AdminDashboardLayout({
       />
       
       {/* Main Backoffice Canvas */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <div className="flex-1 flex flex-col min-w-0 lg:h-screen overflow-y-auto">
         {/* Top Banner Status Bar */}
-        <div className="h-14 border-b border-zinc-800/60 px-6 sm:px-8 flex items-center justify-between bg-[#080B09]/80 backdrop-blur-md sticky top-0 z-30">
+        <div className="h-14 border-b border-zinc-800/60 px-6 sm:px-8 flex items-center justify-between bg-[#080B09]/80 backdrop-blur-md sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-xs font-mono font-medium text-zinc-300">

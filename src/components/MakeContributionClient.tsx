@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { sendEmail } from "@/utils/resend";
-import { getContributionReceiptEmailTemplate } from "@/utils/emailTemplates";
 import { toast } from "sonner";
 import { 
   CreditCard, 
@@ -170,16 +168,17 @@ export function MakeContributionClient({
         .single();
 
       if (userProfile?.email) {
-        sendEmail({
-          to: userProfile.email,
-          subject: `Contribution Payment Receipt - ₦${amount.toLocaleString()}`,
-          html: getContributionReceiptEmailTemplate({
+        fetch('/api/groups/contribution-receipt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: userProfile.email,
             userName: userProfile.first_name || 'Member',
             groupName: 'Àjọ Circle',
             amount: amount,
             reference: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
             date: new Date().toLocaleString(),
-          }),
+          })
         }).catch((err) => console.error("Contribution receipt email error:", err));
       }
 

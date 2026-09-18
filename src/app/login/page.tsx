@@ -105,7 +105,7 @@ export default function LoginPage() {
       // 3. Check if user has is_super_admin flag in their Supabase profile
       const { data: profile } = await supabase
         .from("users")
-        .select("is_super_admin")
+        .select("*")
         .eq("id", data.user.id)
         .maybeSingle();
 

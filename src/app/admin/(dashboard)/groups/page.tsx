@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/utils/supabase/admin";
+import { getSuperAdminSession } from "@/utils/adminAuth";
 import { AdminGroupsClient } from "@/components/admin/AdminGroupsClient";
 import { Users } from "lucide-react";
 
@@ -10,6 +11,7 @@ export const metadata = {
 };
 
 export default async function AdminGroupsPage() {
+  const session = await getSuperAdminSession();
   const supabase = createAdminClient();
 
   const { data: groups } = await supabase
@@ -47,7 +49,7 @@ export default async function AdminGroupsPage() {
         </div>
       </div>
 
-      <AdminGroupsClient groups={groups || []} />
+      <AdminGroupsClient groups={groups || []} isSuperAdmin={session.isSuperAdmin} />
     </div>
   );
 }

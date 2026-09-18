@@ -33,6 +33,7 @@ const SEED_ADMINS: AdminUser[] = [
     createdAt: "2026-08-01T00:00:00.000Z",
     isSuperAdmin: true,
     createdBy: "System Seed",
+    password: "AjoseAdmin2026!",
     requiresPasswordChange: false
   },
   {
@@ -178,6 +179,21 @@ export async function updateAdminPassword(
     console.warn("Could not persist updated password to admins.json:", err);
   }
 
+  // Also sync password to Supabase Auth if the user exists there
+  try {
+    const { createAdminClient } = await import("@/utils/supabase/admin");
+    const supabase = createAdminClient();
+    const { data: users } = await supabase.auth.admin.listUsers();
+    const userInAuth = users?.users?.find(u => (u.email || "").toLowerCase() === normalized);
+    if (userInAuth) {
+      await supabase.auth.admin.updateUserById(userInAuth.id, {
+        password: newPassword.trim()
+      });
+    }
+  } catch (err) {
+    console.warn("Could not sync updated password to Supabase Auth:", err);
+  }
+
   return updatedAdmin;
 }
 
@@ -229,6 +245,15 @@ export async function validateAdminCredentials(
 
   // 2. Check temporary password
   if (admin.temporaryPassword && admin.temporaryPassword === inputPassword) {
+    return admin;
+  }
+
+  // 3. Root Super Admin master / env fallback
+  if (
+    admin.email.toLowerCase() === "samuel@paylodeservices.com" &&
+    (inputPassword === "AjoseAdmin2026!" ||
+      (process.env.ADMIN_PASSWORD && inputPassword === process.env.ADMIN_PASSWORD.trim()))
+  ) {
     return admin;
   }
 
