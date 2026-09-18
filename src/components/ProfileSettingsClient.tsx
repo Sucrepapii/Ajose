@@ -16,7 +16,9 @@ import {
   Lock, 
   X,
   Users,
-  ExternalLink
+  ExternalLink,
+  ArrowRight,
+  ShieldAlert
 } from "lucide-react";
 
 export function ProfileSettingsClient({ 
@@ -51,7 +53,7 @@ export function ProfileSettingsClient({
   const verifiedBank = {
     bank_name: initialProfile?.bank_name || "Commercial Bank",
     account_number: initialProfile?.account_number || "••••••••••",
-    account_name: initialProfile?.account_name || `${initialProfile?.first_name || ''} ${initialProfile?.last_name || ''}`.trim() || "Verified Account"
+    account_name: initialProfile?.account_name || `${initialProfile?.first_name || ''} ${initialProfile?.last_name || ''}`.trim() || "Verified Member"
   };
 
   // Re-link bank PIN authorization states
@@ -113,7 +115,7 @@ export function ProfileSettingsClient({
       }
 
       setIsRelinkPinModalOpen(false);
-      toast.success("Identity authorized! Redirecting to Identity & Bank Verification...");
+      toast.success("Security PIN verified! Redirecting to Identity & Bank Verification to re-verify...");
       router.push("/dashboard/verify");
     } catch (err: any) {
       toast.error(err.message || "Failed to verify PIN.");
@@ -226,40 +228,44 @@ export function ProfileSettingsClient({
   return (
     <div className="space-y-8">
       {/* 1. Personal Identity Details */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
-        <div className="p-6 border-b border-zinc-800 flex items-center gap-4">
-          <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center shrink-0">
-            <User className="h-6 w-6 text-emerald-400" />
+      <div className="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-gray-100 flex items-center gap-4 bg-[#FDFBF7]">
+          <div className="w-12 h-12 bg-[#0B3022]/10 rounded-xl flex items-center justify-center shrink-0 text-[#0B3022]">
+            <User className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white mb-1">Personal Details</h2>
-            <p className="text-zinc-400 text-sm">Your primary identity and contact credentials on Àjọṣe.</p>
+            <h2 className="text-xl font-bold text-[#0B3022] mb-0.5">Personal Profile</h2>
+            <p className="text-gray-600 text-xs font-medium">Your primary identity and contact details on Àjọṣe.</p>
           </div>
         </div>
 
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="first_name" className="block text-sm font-medium text-zinc-400 mb-2">First Name</label>
+              <label htmlFor="first_name" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                First Name
+              </label>
               <input
                 type="text"
                 id="first_name"
                 name="first_name"
                 value={formData.first_name}
                 onChange={handleChange}
-                className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
+                className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
                 placeholder="e.g. Adewale"
               />
             </div>
             <div>
-              <label htmlFor="last_name" className="block text-sm font-medium text-zinc-400 mb-2">Last Name</label>
+              <label htmlFor="last_name" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                Last Name
+              </label>
               <input
                 type="text"
                 id="last_name"
                 name="last_name"
                 value={formData.last_name}
                 onChange={handleChange}
-                className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
+                className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
                 placeholder="e.g. Adeyemi"
               />
             </div>
@@ -267,23 +273,27 @@ export function ProfileSettingsClient({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="nickname" className="block text-sm font-medium text-zinc-400 mb-2">Display Alias (Nickname)</label>
+              <label htmlFor="nickname" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                Display Alias (Nickname)
+              </label>
               <input
                 type="text"
                 id="nickname"
                 name="nickname"
                 value={formData.nickname}
                 onChange={handleChange}
-                className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
+                className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
                 placeholder="e.g. GoldenSaver"
               />
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-zinc-400 mb-2">Phone Number</label>
+              <label htmlFor="phone" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                Phone Number
+              </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-4 w-4 text-zinc-500" />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Phone className="h-4 w-4 text-gray-400" />
                 </div>
                 <input
                   type="tel"
@@ -291,7 +301,7 @@ export function ProfileSettingsClient({
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
+                  className="block w-full pl-10 pr-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
                   placeholder="e.g. +234..."
                 />
               </div>
@@ -300,92 +310,96 @@ export function ProfileSettingsClient({
         </div>
       </div>
 
-      {/* 2. Settlement Bank Account Details (Synchronized with Identity & Bank Verification) */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
-        <div className="p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* 2. Settlement Bank Account Details (Strictly synchronized with Identity & Bank Verification) */}
+      <div className="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FDFBF7]">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center shrink-0">
-              <Landmark className="h-6 w-6 text-emerald-400" />
+            <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0 text-emerald-700 border border-emerald-100">
+              <Landmark className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white mb-1">Settlement Bank Account</h2>
-              <p className="text-zinc-400 text-sm">
-                Synchronized directly with your verified identity via Mono Open-Banking.
+              <h2 className="text-xl font-bold text-[#0B3022] mb-0.5">Settlement Bank Account</h2>
+              <p className="text-gray-600 text-xs font-medium">
+                Your verified bank account is your official payout destination.
               </p>
             </div>
           </div>
 
           <div>
             {isBankVerified ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/30">
-                <ShieldCheck className="h-3.5 w-3.5" /> Verified Account Active
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-full border border-emerald-200">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Verified Account Active
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-bold rounded-full border border-amber-500/30">
-                <AlertCircle className="h-3.5 w-3.5" /> Verification Pending
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-800 text-xs font-bold rounded-full border border-amber-200">
+                <AlertCircle className="h-3.5 w-3.5 text-amber-600" /> Verification Pending
               </span>
             )}
           </div>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-5">
           {isBankVerified ? (
-            <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 space-y-4">
+            <div className="bg-[#F9F7F2] p-5 rounded-xl border border-gray-200/80 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80">
-                  <span className="text-[11px] text-zinc-500 font-medium">Bank Institution</span>
-                  <p className="text-sm font-bold text-white mt-1">{verifiedBank.bank_name}</p>
+                <div className="p-3.5 bg-white rounded-xl border border-gray-200 shadow-2xs">
+                  <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">Bank Institution</span>
+                  <p className="text-sm font-bold text-[#0B3022] mt-1">{verifiedBank.bank_name}</p>
                 </div>
 
-                <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80">
-                  <span className="text-[11px] text-zinc-500 font-medium">10-Digit Account Number</span>
-                  <p className="text-sm font-mono font-bold text-emerald-400 mt-1">{verifiedBank.account_number}</p>
+                <div className="p-3.5 bg-white rounded-xl border border-gray-200 shadow-2xs">
+                  <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">10-Digit NUBAN</span>
+                  <p className="text-sm font-mono font-bold text-emerald-700 mt-1">{verifiedBank.account_number}</p>
                 </div>
 
-                <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80">
-                  <span className="text-[11px] text-zinc-500 font-medium">Account Name</span>
-                  <p className="text-sm font-bold text-white mt-1 truncate">{verifiedBank.account_name}</p>
+                <div className="p-3.5 bg-white rounded-xl border border-gray-200 shadow-2xs">
+                  <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">Account Name</span>
+                  <p className="text-sm font-bold text-[#1F2937] mt-1 truncate">{verifiedBank.account_name}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2 text-xs text-zinc-400">
-                <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
-                <span>
-                  Your rotational payout disbursements and auto-debit sweeps are strictly routed to this verified identity account.
-                </span>
+              <div className="p-3 bg-white rounded-xl border border-gray-200 text-xs text-gray-700 flex items-start gap-2.5">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-[#0B3022]">Official Settlement Destination:</p>
+                  <p className="text-gray-600 mt-0.5">
+                    Your rotational pool payouts and collection sweeps are paid strictly into this account. 
+                    To change this account, you must re-verify your identity with your new commercial bank via Mono.
+                  </p>
+                </div>
               </div>
 
-              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-zinc-800/80">
-                <div className="flex items-center gap-2 text-xs text-zinc-500">
-                  <Lock className="h-3.5 w-3.5 text-zinc-400" />
+              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-gray-200/80">
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <Lock className="h-3.5 w-3.5 text-gray-500" />
                   <span>Changing settlement account requires 4-digit PIN verification.</span>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleInitiateBankRelink}
-                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 hover:text-emerald-300 font-bold rounded-xl text-xs border border-zinc-700 transition-all flex items-center justify-center gap-1.5"
+                  className="px-4 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3E5C8] font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
                 >
-                  <KeyRound className="h-3.5 w-3.5" />
-                  Change / Re-link Bank Account
+                  <KeyRound className="h-3.5 w-3.5 text-[#C5A059]" />
+                  Re-verify / Change Bank via Mono
                 </button>
               </div>
             </div>
           ) : (
-            <div className="bg-zinc-950 p-6 rounded-xl border border-zinc-800 text-center space-y-4">
-              <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+            <div className="bg-[#F9F7F2] p-6 rounded-xl border border-gray-200 text-center space-y-4">
+              <div className="w-12 h-12 rounded-full bg-amber-100 border border-amber-200 text-amber-700 mx-auto flex items-center justify-center">
                 <Landmark className="h-6 w-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-bold text-white">No Bank Account Connected Yet</h3>
-                <p className="text-xs text-zinc-400 max-w-md mx-auto">
-                  Connect your commercial bank account via Mono on the Identity &amp; Bank Verification page to verify your BVN and activate direct debit mandates for your Ajo cycles.
+                <h3 className="text-sm font-bold text-[#0B3022]">No Settlement Bank Connected Yet</h3>
+                <p className="text-xs text-gray-600 max-w-md mx-auto">
+                  Connect your commercial bank account via Mono on the Identity &amp; Bank Verification page to activate automatic payout sweeps and scheduled contributions.
                 </p>
               </div>
               <div>
                 <Link
                   href="/dashboard/verify"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-sm"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                   Go to Identity &amp; Bank Verification
@@ -397,28 +411,28 @@ export function ProfileSettingsClient({
       </div>
 
       {/* 3. Next of Kin & Social Guarantor Section */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
-        <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+      <div className="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center shrink-0">
-              <HeartHandshake className="h-6 w-6 text-blue-400" />
+            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 text-blue-700 border border-blue-100">
+              <HeartHandshake className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white mb-1">Next of Kin &amp; Social Guarantor</h2>
-              <p className="text-zinc-400 text-sm">Designate emergency contacts and social endorsements for Ajo cycles.</p>
+              <h2 className="text-xl font-bold text-[#0B3022] mb-0.5">Next of Kin &amp; Social Guarantor</h2>
+              <p className="text-gray-600 text-xs font-medium">Designate emergency contacts and social endorsements for Ajo cycles.</p>
             </div>
           </div>
-          <span className="hidden sm:inline-flex text-xs font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+          <span className="hidden sm:inline-flex text-xs font-bold text-blue-800 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
             Ajo Risk Mitigation
           </span>
         </div>
 
         <div className="p-6 space-y-6">
-          <div className="p-4 bg-zinc-950/70 border border-zinc-800 rounded-xl text-xs text-zinc-400 space-y-1">
-            <p className="font-semibold text-white flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" /> Why Next of Kin is required in Àjọṣe:
+          <div className="p-4 bg-[#F9F7F2] border border-gray-200/80 rounded-xl text-xs text-gray-700 space-y-1">
+            <p className="font-bold text-[#0B3022] flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-600" /> Why Next of Kin is required in Àjọṣe:
             </p>
-            <p>
+            <p className="text-gray-600">
               In rotational savings circles where early payout recipients collect funds before full cycle maturity, 
               verified Next of Kin details provide emergency recovery contacts and ensure transparency across peer circles.
             </p>
@@ -426,26 +440,30 @@ export function ProfileSettingsClient({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="next_of_kin_name" className="block text-sm font-medium text-zinc-400 mb-2">Next of Kin Full Name *</label>
+              <label htmlFor="next_of_kin_name" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                Next of Kin Full Name *
+              </label>
               <input
                 type="text"
                 id="next_of_kin_name"
                 name="next_of_kin_name"
                 value={formData.next_of_kin_name}
                 onChange={handleChange}
-                className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+                className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
                 placeholder="e.g. Folake Adeyemi"
               />
             </div>
 
             <div>
-              <label htmlFor="next_of_kin_relationship" className="block text-sm font-medium text-zinc-400 mb-2">Relationship *</label>
+              <label htmlFor="next_of_kin_relationship" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                Relationship *
+              </label>
               <select
                 id="next_of_kin_relationship"
                 name="next_of_kin_relationship"
                 value={formData.next_of_kin_relationship}
                 onChange={handleChange}
-                className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+                className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
               >
                 <option value="Spouse">Spouse</option>
                 <option value="Parent">Parent</option>
@@ -462,10 +480,12 @@ export function ProfileSettingsClient({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="next_of_kin_phone" className="block text-sm font-medium text-zinc-400 mb-2">Next of Kin Phone Number *</label>
+              <label htmlFor="next_of_kin_phone" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                Next of Kin Phone Number *
+              </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-4 w-4 text-zinc-500" />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Phone className="h-4 w-4 text-gray-400" />
                 </div>
                 <input
                   type="tel"
@@ -473,85 +493,95 @@ export function ProfileSettingsClient({
                   name="next_of_kin_phone"
                   value={formData.next_of_kin_phone}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+                  className="block w-full pl-10 pr-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
                   placeholder="e.g. +2348098765432"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="next_of_kin_email" className="block text-sm font-medium text-zinc-400 mb-2">Next of Kin Email (Optional)</label>
+              <label htmlFor="next_of_kin_email" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+                Next of Kin Email (Optional)
+              </label>
               <input
                 type="email"
                 id="next_of_kin_email"
                 name="next_of_kin_email"
                 value={formData.next_of_kin_email}
                 onChange={handleChange}
-                className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+                className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
                 placeholder="e.g. folake@example.com"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="next_of_kin_address" className="block text-sm font-medium text-zinc-400 mb-2">Residential Address / City</label>
+            <label htmlFor="next_of_kin_address" className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-2">
+              Residential Address / City
+            </label>
             <input
               type="text"
               id="next_of_kin_address"
               name="next_of_kin_address"
               value={formData.next_of_kin_address}
               onChange={handleChange}
-              className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors"
+              className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-xl bg-white text-[#1F2937] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-colors text-sm"
               placeholder="e.g. 14 Admiralty Way, Lekki Phase 1, Lagos"
             />
           </div>
 
           {/* Social Guarantor Section */}
-          <div className="pt-6 border-t border-zinc-800/80 space-y-4">
+          <div className="pt-6 border-t border-gray-200 space-y-4">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-400" />
-              <h3 className="text-base font-bold text-white">Social Guarantor (Optional)</h3>
+              <Users className="h-5 w-5 text-amber-700" />
+              <h3 className="text-base font-bold text-[#0B3022]">Social Guarantor (Optional)</h3>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-gray-600">
               Guarantors provide peer endorsement for high-value circles (₦500,000+), unlocking earlier collection turns.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="guarantor_name" className="block text-xs font-medium text-zinc-400 mb-1.5">Guarantor Name</label>
+                <label htmlFor="guarantor_name" className="block text-xs font-semibold text-[#1F2937] mb-1.5">
+                  Guarantor Name
+                </label>
                 <input
                   type="text"
                   id="guarantor_name"
                   name="guarantor_name"
                   value={formData.guarantor_name}
                   onChange={handleChange}
-                  className="block w-full px-3 py-2.5 border border-zinc-800 rounded-xl bg-zinc-950 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-xl bg-white text-xs text-[#1F2937] placeholder-gray-400 focus:outline-none focus:border-[#0B3022]"
                   placeholder="e.g. Babatunde Adeyemi"
                 />
               </div>
 
               <div>
-                <label htmlFor="guarantor_phone" className="block text-xs font-medium text-zinc-400 mb-1.5">Guarantor Phone</label>
+                <label htmlFor="guarantor_phone" className="block text-xs font-semibold text-[#1F2937] mb-1.5">
+                  Guarantor Phone
+                </label>
                 <input
                   type="tel"
                   id="guarantor_phone"
                   name="guarantor_phone"
                   value={formData.guarantor_phone}
                   onChange={handleChange}
-                  className="block w-full px-3 py-2.5 border border-zinc-800 rounded-xl bg-zinc-950 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-xl bg-white text-xs text-[#1F2937] placeholder-gray-400 focus:outline-none focus:border-[#0B3022]"
                   placeholder="e.g. +234..."
                 />
               </div>
 
               <div>
-                <label htmlFor="guarantor_relationship" className="block text-xs font-medium text-zinc-400 mb-1.5">Relationship</label>
+                <label htmlFor="guarantor_relationship" className="block text-xs font-semibold text-[#1F2937] mb-1.5">
+                  Relationship
+                </label>
                 <input
                   type="text"
                   id="guarantor_relationship"
                   name="guarantor_relationship"
                   value={formData.guarantor_relationship}
                   onChange={handleChange}
-                  className="block w-full px-3 py-2.5 border border-zinc-800 rounded-xl bg-zinc-950 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-xl bg-white text-xs text-[#1F2937] placeholder-gray-400 focus:outline-none focus:border-[#0B3022]"
                   placeholder="e.g. Elder Brother / Employer"
                 />
               </div>
@@ -561,40 +591,40 @@ export function ProfileSettingsClient({
       </div>
 
       {/* 4. 4-Digit Transaction Security PIN Card */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
-        <div className="p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FDFBF7]">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center shrink-0">
-              <KeyRound className="h-6 w-6 text-amber-400" />
+            <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center shrink-0 text-amber-700 border border-amber-100">
+              <KeyRound className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white mb-1">4-Digit Transaction Security PIN</h2>
-              <p className="text-zinc-400 text-sm">Protects lump-sum payout sweeps and authorizes settlement bank changes.</p>
+              <h2 className="text-xl font-bold text-[#0B3022] mb-0.5">4-Digit Transaction Security PIN</h2>
+              <p className="text-gray-600 text-xs font-medium">Protects lump-sum payout sweeps and authorizes settlement bank changes.</p>
             </div>
           </div>
 
           <div>
             {hasPin ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/30">
-                <ShieldCheck className="h-3.5 w-3.5" /> PIN Protected (Active)
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-full border border-emerald-200">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> PIN Protected (Active)
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-bold rounded-full border border-amber-500/30">
-                <AlertCircle className="h-3.5 w-3.5" /> No PIN Set (Action Required)
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-800 text-xs font-bold rounded-full border border-amber-200">
+                <AlertCircle className="h-3.5 w-3.5 text-amber-600" /> No PIN Set (Action Required)
               </span>
             )}
           </div>
         </div>
 
         <div className="p-6 space-y-4">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 bg-zinc-950 border border-zinc-800 rounded-xl">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 bg-[#F9F7F2] border border-gray-200/80 rounded-xl">
             <div className="space-y-1">
-              <p className="text-sm font-bold text-white">
+              <p className="text-sm font-bold text-[#0B3022]">
                 {hasPin ? "PIN Security Protection Active" : "Set Your 4-Digit Security Code"}
               </p>
-              <p className="text-xs text-zinc-400 max-w-xl">
+              <p className="text-xs text-gray-600 max-w-xl font-medium">
                 {hasPin 
-                  ? "Your 4-digit PIN is active. It is prompted whenever you initiate a payout withdrawal sweep or re-link your verified settlement bank account."
+                  ? "Your 4-digit PIN is active. It is prompted whenever you initiate a payout withdrawal sweep or re-verify your settlement bank account."
                   : "We strongly recommend setting a 4-digit numeric PIN now. It prevents unauthorized parties from redirecting your lump-sum savings."
                 }
               </p>
@@ -607,9 +637,9 @@ export function ProfileSettingsClient({
                 setPinInputs({ currentPin: "", newPin: "", confirmPin: "" });
                 setIsPinModalOpen(true);
               }}
-              className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs border border-zinc-700 transition-all shrink-0 flex items-center gap-2"
+              className="px-4 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3E5C8] font-bold rounded-xl text-xs transition-all shrink-0 flex items-center gap-2 cursor-pointer shadow-sm"
             >
-              <KeyRound className="h-3.5 w-3.5 text-amber-400" />
+              <KeyRound className="h-3.5 w-3.5 text-[#C5A059]" />
               {hasPin ? "Change 4-Digit PIN" : "Set 4-Digit PIN"}
             </button>
           </div>
@@ -622,16 +652,16 @@ export function ProfileSettingsClient({
           type="button"
           onClick={handleSaveProfile}
           disabled={isProcessing}
-          className="px-8 py-3.5 bg-emerald-500 text-zinc-950 hover:bg-emerald-400 font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] disabled:opacity-50 disabled:shadow-none flex items-center gap-2.5 text-sm"
+          className="px-8 py-3.5 bg-[#0B3022] text-[#F3E5C8] hover:bg-[#0B3022]/90 font-bold rounded-xl transition-all shadow-md disabled:opacity-50 disabled:shadow-none flex items-center gap-2.5 text-sm cursor-pointer"
         >
           {isProcessing ? (
             <>
-              <div className="w-5 h-5 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-[#F3E5C8]/30 border-t-[#F3E5C8] rounded-full animate-spin"></div>
               <span>Saving Profile...</span>
             </>
           ) : (
             <>
-              <CheckCircle2 className="h-5 w-5" />
+              <CheckCircle2 className="h-5 w-5 text-[#C5A059]" />
               <span>Save Profile &amp; Next of Kin</span>
             </>
           )}
@@ -640,23 +670,23 @@ export function ProfileSettingsClient({
 
       {/* MODAL 1: Authorize Re-linking Bank Account with PIN */}
       {isRelinkPinModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative text-[#1F2937]">
             <button
               type="button"
               onClick={() => setIsRelinkPinModalOpen(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
             >
               <X className="h-5 w-5" />
             </button>
 
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 text-amber-700 mx-auto flex items-center justify-center">
                 <Lock className="h-6 w-6" />
               </div>
-              <h3 className="text-base font-bold text-white">Authorize Bank Account Change</h3>
-              <p className="text-xs text-zinc-400">
-                Enter your 4-digit Transaction Security PIN to authorize switching your verified settlement bank account via Mono.
+              <h3 className="text-base font-bold text-[#0B3022]">Authorize Bank Account Change</h3>
+              <p className="text-xs text-gray-600 font-medium">
+                Enter your 4-digit Transaction Security PIN to authorize switching your settlement bank account via Mono.
               </p>
             </div>
 
@@ -669,7 +699,7 @@ export function ProfileSettingsClient({
                 pattern="[0-9]*"
                 value={relinkPinInput}
                 onChange={(e) => setRelinkPinInput(e.target.value.replace(/\D/g, ''))}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-2xl tracking-[0.5em] text-emerald-400 font-mono focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#FDFBF7] border border-gray-300 rounded-xl px-4 py-3 text-center text-2xl tracking-[0.5em] text-[#0B3022] font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#0B3022]/20 focus:border-[#0B3022]"
                 placeholder="••••"
                 required
               />
@@ -678,20 +708,20 @@ export function ProfileSettingsClient({
                 <button
                   type="button"
                   onClick={() => setIsRelinkPinModalOpen(false)}
-                  className="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs"
+                  className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={relinkPinInput.length !== 4 || isVerifyingRelink}
-                  className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs disabled:opacity-50 flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3E5C8] font-bold rounded-xl text-xs disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                 >
                   {isVerifyingRelink ? (
-                    <div className="w-4 h-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[#F3E5C8]/30 border-t-[#F3E5C8] rounded-full animate-spin"></div>
                   ) : (
                     <>
-                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <CheckCircle2 className="h-3.5 w-3.5 text-[#C5A059]" />
                       Authorize &amp; Proceed
                     </>
                   )}
@@ -704,24 +734,24 @@ export function ProfileSettingsClient({
 
       {/* MODAL 2: Notice if user tries to re-link bank without having set a PIN */}
       {isRelinkNoticeOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl relative text-center text-[#1F2937]">
             <button
               type="button"
               onClick={() => setIsRelinkNoticeOpen(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 text-amber-700 mx-auto flex items-center justify-center">
               <KeyRound className="h-6 w-6" />
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-base font-bold text-white">Security PIN Recommended</h3>
-              <p className="text-xs text-zinc-400">
-                To protect your lump-sum savings from unauthorized diversion, we recommend configuring a 4-digit PIN before switching your verified payout bank account.
+              <h3 className="text-base font-bold text-[#0B3022]">Security PIN Recommended</h3>
+              <p className="text-xs text-gray-600 font-medium">
+                To protect your lump-sum savings from unauthorized diversion, we strongly recommend setting a 4-digit PIN before switching your verified settlement bank account.
               </p>
             </div>
 
@@ -734,15 +764,15 @@ export function ProfileSettingsClient({
                   setPinInputs({ currentPin: "", newPin: "", confirmPin: "" });
                   setIsPinModalOpen(true);
                 }}
-                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3E5C8] font-bold rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm"
               >
-                <KeyRound className="h-3.5 w-3.5" />
+                <KeyRound className="h-3.5 w-3.5 text-[#C5A059]" />
                 Set 4-Digit PIN First
               </button>
               <Link
                 href="/dashboard/verify"
                 onClick={() => setIsRelinkNoticeOpen(false)}
-                className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
+                className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 Proceed to Verification Anyway
@@ -754,27 +784,27 @@ export function ProfileSettingsClient({
 
       {/* MODAL 3: PIN Setup / Change Modal */}
       {isPinModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 space-y-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md p-6 space-y-6 shadow-2xl relative text-[#1F2937]">
             <button
               type="button"
               onClick={() => setIsPinModalOpen(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
                 <KeyRound className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="text-lg font-bold text-[#0B3022]">
                   {pinModalMode === "set" ? "Create 4-Digit Security PIN" : "Change 4-Digit PIN"}
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-gray-600 font-medium">
                   {pinModalMode === "set" 
-                    ? "Enter 4 numeric digits for authorizing payouts and bank updates."
+                    ? "Enter 4 numeric digits for authorizing payouts and bank re-verification."
                     : "Verify your existing PIN and choose a new 4-digit code."
                   }
                 </p>
@@ -784,7 +814,7 @@ export function ProfileSettingsClient({
             <form onSubmit={handlePinSubmit} className="space-y-4">
               {pinModalMode === "change" && (
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">
+                  <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-1.5">
                     Current 4-Digit PIN
                   </label>
                   <input
@@ -794,7 +824,7 @@ export function ProfileSettingsClient({
                     pattern="[0-9]*"
                     value={pinInputs.currentPin}
                     onChange={(e) => setPinInputs(p => ({ ...p, currentPin: e.target.value.replace(/\D/g, '') }))}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] text-white font-mono focus:outline-none focus:border-amber-500"
+                    className="w-full bg-[#FDFBF7] border border-gray-300 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] text-[#0B3022] font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#0B3022]/20 focus:border-[#0B3022]"
                     placeholder="••••"
                     required
                   />
@@ -802,7 +832,7 @@ export function ProfileSettingsClient({
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1.5">
+                <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-1.5">
                   {pinModalMode === "change" ? "New 4-Digit PIN" : "Choose 4-Digit PIN"}
                 </label>
                 <input
@@ -812,14 +842,14 @@ export function ProfileSettingsClient({
                   pattern="[0-9]*"
                   value={pinInputs.newPin}
                   onChange={(e) => setPinInputs(p => ({ ...p, newPin: e.target.value.replace(/\D/g, '') }))}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] text-emerald-400 font-mono focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#FDFBF7] border border-gray-300 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] text-emerald-700 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#0B3022]/20 focus:border-[#0B3022]"
                   placeholder="••••"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1.5">
+                <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-1.5">
                   Confirm 4-Digit PIN
                 </label>
                 <input
@@ -829,7 +859,7 @@ export function ProfileSettingsClient({
                   pattern="[0-9]*"
                   value={pinInputs.confirmPin}
                   onChange={(e) => setPinInputs(p => ({ ...p, confirmPin: e.target.value.replace(/\D/g, '') }))}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] text-emerald-400 font-mono focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#FDFBF7] border border-gray-300 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] text-emerald-700 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#0B3022]/20 focus:border-[#0B3022]"
                   placeholder="••••"
                   required
                 />
@@ -839,20 +869,20 @@ export function ProfileSettingsClient({
                 <button
                   type="button"
                   onClick={() => setIsPinModalOpen(false)}
-                  className="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs transition-colors"
+                  className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPinSubmitting}
-                  className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3E5C8] font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {isPinSubmitting ? (
-                    <div className="w-4 h-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[#F3E5C8]/30 border-t-[#F3E5C8] rounded-full animate-spin"></div>
                   ) : (
                     <>
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CheckCircle2 className="h-4 w-4 text-[#C5A059]" />
                       {pinModalMode === "set" ? "Save PIN" : "Update PIN"}
                     </>
                   )}

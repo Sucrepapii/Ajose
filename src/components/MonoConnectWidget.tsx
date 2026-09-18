@@ -56,7 +56,7 @@ export function MonoConnectWidget({
         const monoInstance = new (window as any).Connect({
           key: monoPublicKey,
           onSuccess: async ({ code }: { code: string }) => {
-            toast.loading("Linking bank account via Mono...", { id: "mono-linking" });
+            toast.loading("Verifying bank credentials with Mono...", { id: "mono-linking" });
             try {
               const res = await fetch("/api/mono/exchange-token", {
                 method: "POST",
@@ -65,7 +65,7 @@ export function MonoConnectWidget({
               });
               const data = await res.json();
               if (res.ok) {
-                toast.success(`Connected ${data.bankName || "Bank"} successfully via Mono!`, { id: "mono-linking" });
+                toast.success(`Connected ${data.bankName || "Bank"} successfully via Mono! Settlement account updated.`, { id: "mono-linking" });
                 router.refresh();
               } else {
                 throw new Error(data.error || "Failed to link account");
@@ -129,7 +129,7 @@ export function MonoConnectWidget({
       if (error) throw error;
       
       setStep("success");
-      toast.success("Bank linked successfully via Mono!");
+      toast.success("Bank re-verified successfully! Settlement account updated.");
       
       setTimeout(() => {
         setIsOpen(false);
@@ -145,130 +145,140 @@ export function MonoConnectWidget({
   return (
     <>
       {isVerified ? (
-        /* Unified Verified State Card: Mono Banking & Mandate Status + Re-link */
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 sm:p-7 space-y-6 shadow-xl animate-in fade-in">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
+        /* Unified Verified State Card: Mono Banking & Mandate Status */
+        <div className="bg-white border border-gray-200/90 rounded-2xl p-6 sm:p-7 space-y-6 shadow-sm animate-in fade-in text-[#1F2937]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
                 <Landmark className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Mono Banking &amp; Mandate Status</h3>
-                <p className="text-xs text-zinc-400">Verified commercial bank account and automated rotational direct debit mandate.</p>
+                <h3 className="text-xl font-bold text-[#0B3022]">Verified Settlement Bank &amp; Mandate</h3>
+                <p className="text-xs text-gray-600 font-medium">Your verified commercial bank account and active rotational direct debit mandate.</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5 whitespace-nowrap">
-                <ShieldCheck className="h-4 w-4" /> Mandate Active
+              <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 whitespace-nowrap">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" /> Mandate Active
               </span>
-              <span className="text-[10px] font-mono font-bold text-zinc-400 bg-zinc-800/80 px-2.5 py-1 rounded-full border border-zinc-700">
+              <span className="text-[10px] font-mono font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full border border-gray-200">
                 MONO SECURED
               </span>
             </div>
           </div>
 
           {/* Account Details Grid */}
-          <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800/90 space-y-3.5 text-xs">
+          <div className="bg-[#F9F7F2] p-5 rounded-xl border border-gray-200/80 space-y-3.5 text-xs text-[#1F2937]">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span className="text-zinc-500">Verified Bank Institution</span>
-              <span className="font-bold text-white text-sm">{profile?.bank_name || "Commercial Bank"}</span>
+              <span className="text-gray-600 font-semibold uppercase tracking-wider text-[11px]">Verified Bank Institution</span>
+              <span className="font-bold text-[#0B3022] text-sm">{profile?.bank_name || "Commercial Bank"}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span className="text-zinc-500">10-Digit NUBAN Account</span>
-              <span className="font-mono font-bold text-emerald-400 text-sm tracking-wider">
+              <span className="text-gray-600 font-semibold uppercase tracking-wider text-[11px]">10-Digit NUBAN Account</span>
+              <span className="font-mono font-bold text-emerald-700 text-sm tracking-wider">
                 {profile?.account_number || "••••••••••"}
               </span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span className="text-zinc-500">Verified Account Name</span>
-              <span className="font-bold text-white">
+              <span className="text-gray-600 font-semibold uppercase tracking-wider text-[11px]">Verified Account Name</span>
+              <span className="font-bold text-[#1F2937]">
                 {profile?.account_name || `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || "Verified Saver"}
               </span>
             </div>
 
-            <div className="flex justify-between items-center pt-3 border-t border-zinc-800/80">
-              <span className="text-zinc-500">Identity &amp; BVN Verification</span>
-              <span className="text-emerald-400 font-bold flex items-center gap-1">
-                <CheckCircle2 className="h-3.5 w-3.5" /> Verified via Mono Open-Banking
+            <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+              <span className="text-gray-600 font-medium">Identity &amp; BVN Verification</span>
+              <span className="text-emerald-700 font-bold flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Verified via Mono Open-Banking
               </span>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-zinc-500">DirectPay Auto-Debit Status</span>
-              <span className="text-emerald-400 font-bold flex items-center gap-1">
-                <Activity className="h-3.5 w-3.5" /> Active for Scheduled Deductions
+              <span className="text-gray-600 font-medium">DirectPay Auto-Debit Status</span>
+              <span className="text-emerald-700 font-bold flex items-center gap-1">
+                <Activity className="h-3.5 w-3.5 text-emerald-600" /> Active for Scheduled Deductions
               </span>
             </div>
           </div>
 
           {/* Actions & Re-linking */}
+          <div className="p-4 bg-emerald-50/60 rounded-xl border border-emerald-100 flex items-start gap-3 text-xs text-gray-700">
+            <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-[#0B3022]">Settlement Account Policy:</p>
+              <p className="text-gray-600 mt-0.5">
+                This verified bank account is strictly used as your settlement account. When changing this account, you must re-verify your identity with your new commercial bank below.
+              </p>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-            <p className="text-xs text-zinc-400 max-w-md">
-              Need to switch accounts? Re-linking securely verifies your new commercial bank with Mono and updates your settlement payout destination.
+            <p className="text-xs text-gray-500 font-medium max-w-md">
+              Want to switch to a different bank? Re-verify with Mono below to link your new institution and update your settlement destination.
             </p>
 
             <button 
               onClick={handleConnectWithMono}
-              className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 hover:text-emerald-300 font-bold rounded-xl text-xs transition-all border border-zinc-700 flex items-center justify-center gap-2 cursor-pointer shrink-0 shadow-sm"
+              className="px-5 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3E5C8] font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 shadow-sm"
             >
-              <RefreshCw className="h-3.5 w-3.5 text-emerald-400" />
-              Change / Re-link Bank Account
+              <RefreshCw className="h-3.5 w-3.5 text-[#C5A059]" />
+              Re-verify with Different Bank
             </button>
           </div>
         </div>
       ) : (
         /* Unified Pending State Card: Link Bank Account & Verify Identity */
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 sm:p-7 space-y-6 shadow-xl animate-in fade-in">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
+        <div className="bg-white border border-gray-200/90 rounded-2xl p-6 sm:p-7 space-y-6 shadow-sm animate-in fade-in text-[#1F2937]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 bg-amber-500/10 rounded-xl border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="w-12 h-12 bg-amber-50 rounded-xl border border-amber-100 flex items-center justify-center text-amber-700 shrink-0">
                 <Landmark className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Link Bank Account &amp; Verify Identity</h3>
-                <p className="text-xs text-zinc-400">Establish your verified settlement account and direct debit mandate via Mono Open-Banking.</p>
+                <h3 className="text-xl font-bold text-[#0B3022]">Link Bank Account &amp; Verify Identity</h3>
+                <p className="text-xs text-gray-600 font-medium">Establish your official settlement account and direct debit mandate via Mono Open-Banking.</p>
               </div>
             </div>
 
             <div>
-              <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30 flex items-center gap-1.5 whitespace-nowrap">
-                <AlertCircle className="h-4 w-4" /> Pending Connection
+              <span className="text-xs font-bold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 flex items-center gap-1.5 whitespace-nowrap">
+                <AlertCircle className="h-4 w-4 text-amber-600" /> Pending Verification
               </span>
             </div>
           </div>
 
-          <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 text-xs text-zinc-300 space-y-3">
-            <p className="font-semibold text-white">Why connecting your bank is required:</p>
-            <ul className="space-y-2 text-zinc-400">
+          <div className="bg-[#F9F7F2] p-5 rounded-xl border border-gray-200 text-xs text-gray-700 space-y-3">
+            <p className="font-bold text-[#0B3022]">Why connecting your bank is required:</p>
+            <ul className="space-y-2 text-gray-600 font-medium">
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                <span>Instant BVN verification and identity matching without paperwork.</span>
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>Instant BVN verification and identity matching without manual paperwork.</span>
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                <span>Automated direct debit sweeps ensure you never miss your rotational turn.</span>
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>Automated direct debit sweeps ensure you never miss your contribution turn.</span>
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                <span>Your lump-sum payout is credited directly to this verified settlement account.</span>
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>This verified bank account becomes your official payout settlement destination.</span>
               </li>
             </ul>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-            <div className="flex items-center gap-2 text-xs text-zinc-400">
-              <Lock className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+              <Lock className="h-3.5 w-3.5 text-emerald-700 shrink-0" />
               <span>Protected by bank-level 256-bit encryption. Credentials are never stored.</span>
             </div>
 
             <button 
               onClick={handleConnectWithMono}
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 cursor-pointer shrink-0 text-xs"
+              className="px-6 py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3E5C8] font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0 text-xs"
             >
-              <Lock className="h-3.5 w-3.5" />
+              <Lock className="h-3.5 w-3.5 text-[#C5A059]" />
               Connect with Mono
             </button>
           </div>
@@ -277,19 +287,19 @@ export function MonoConnectWidget({
 
       {/* Simulated Mono Bank Connector Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] text-[#1F2937]">
             
             {/* Header */}
-            <div className="p-5 border-b border-zinc-800 flex items-center justify-between shrink-0 bg-zinc-950">
-              <div className="flex items-center gap-2 text-white font-bold text-sm">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between shrink-0 bg-[#FDFBF7]">
+              <div className="flex items-center gap-2 text-[#0B3022] font-bold text-sm">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
                 Mono Secure Open-Banking
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
                 disabled={step === "loading"}
-                className="text-zinc-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-gray-700 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
               </button>
@@ -301,23 +311,23 @@ export function MonoConnectWidget({
               {step === "select" && (
                 <div className="space-y-4 animate-in slide-in-from-right-4">
                   <div className="text-center mb-6">
-                    <h3 className="text-lg font-bold text-white mb-1">Select your Bank</h3>
-                    <p className="text-xs text-zinc-400">Choose your primary commercial bank to verify your identity and mandate.</p>
+                    <h3 className="text-lg font-bold text-[#0B3022] mb-1">Select your Bank</h3>
+                    <p className="text-xs text-gray-500 font-medium">Choose your primary commercial bank to verify your identity and settlement account.</p>
                   </div>
                   <div className="space-y-2">
                     {BANKS.map(bank => (
                       <button 
                         key={bank.id}
                         onClick={() => handleSelectBank(bank)}
-                        className="w-full p-3.5 border border-zinc-800 rounded-xl flex items-center justify-between hover:border-emerald-500/50 hover:bg-zinc-850 transition-all group bg-zinc-950"
+                        className="w-full p-3.5 border border-gray-200 rounded-xl flex items-center justify-between hover:border-[#0B3022] hover:bg-[#FDFBF7] transition-all group bg-white"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-lg bg-zinc-900 flex items-center justify-center" style={{ color: bank.color }}>
+                          <div className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100" style={{ color: bank.color }}>
                             <Building className="h-4 w-4" />
                           </div>
-                          <span className="font-bold text-white text-xs">{bank.name}</span>
+                          <span className="font-bold text-[#1F2937] text-xs">{bank.name}</span>
                         </div>
-                        <ArrowRight className="h-4 w-4 text-zinc-600 group-hover:text-emerald-400 transition-colors" />
+                        <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#0B3022] transition-colors" />
                       </button>
                     ))}
                   </div>
@@ -327,40 +337,40 @@ export function MonoConnectWidget({
               {step === "login" && selectedBank && (
                 <div className="space-y-4 animate-in slide-in-from-right-4">
                   <div className="flex items-center gap-2 mb-4">
-                    <button onClick={() => setStep("select")} className="text-xs text-emerald-400 font-bold hover:underline">← Back to Banks</button>
+                    <button onClick={() => setStep("select")} className="text-xs text-[#0B3022] font-bold hover:underline">← Back to Banks</button>
                   </div>
                   <div className="text-center mb-6">
-                    <div className="mx-auto w-14 h-14 rounded-2xl bg-zinc-950 flex items-center justify-center mb-3 border border-zinc-800" style={{ color: selectedBank.color }}>
+                    <div className="mx-auto w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mb-3 border border-gray-200" style={{ color: selectedBank.color }}>
                       <Building className="h-7 w-7" />
                     </div>
-                    <h3 className="text-base font-bold text-white mb-1">Log in to {selectedBank.name}</h3>
-                    <p className="text-[11px] text-zinc-400 bg-zinc-950 p-2 rounded-lg border border-zinc-800 flex items-center justify-center gap-1">
-                      <Lock className="h-3 w-3 text-emerald-400" /> 256-Bit Encrypted &amp; Secured by Mono
+                    <h3 className="text-base font-bold text-[#0B3022] mb-1">Log in to {selectedBank.name}</h3>
+                    <p className="text-[11px] text-gray-500 bg-gray-50 p-2 rounded-lg border border-gray-100 flex items-center justify-center gap-1 font-medium">
+                      <Lock className="h-3 w-3 text-emerald-600" /> 256-Bit Encrypted &amp; Secured by Mono
                     </p>
                   </div>
                   
                   <form onSubmit={handleSimulateLogin} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-medium text-zinc-400 mb-1.5">Internet Banking ID / Account Number</label>
+                      <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-1.5">Internet Banking ID / Account Number</label>
                       <input 
                         type="text" 
                         required
-                        className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-emerald-500 transition-all text-white text-xs"
+                        className="w-full px-3.5 py-2.5 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-all text-[#1F2937] text-xs font-medium"
                         placeholder="e.g. 0123456789"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-zinc-400 mb-1.5">Password / Mobile PIN</label>
+                      <label className="block text-xs font-bold text-[#1F2937] uppercase tracking-wider mb-1.5">Password / Mobile PIN</label>
                       <input 
                         type="password" 
                         required
-                        className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-emerald-500 transition-all text-white text-xs"
+                        className="w-full px-3.5 py-2.5 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B3022]/10 focus:border-[#0B3022] transition-all text-[#1F2937] text-xs font-medium"
                         placeholder="••••••••"
                       />
                     </div>
                     <button 
                       type="submit"
-                      className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl transition-all shadow-md mt-2 text-xs"
+                      className="w-full py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3E5C8] font-bold rounded-xl transition-all shadow-md mt-2 text-xs cursor-pointer"
                     >
                       Authenticate &amp; Verify
                     </button>
@@ -371,27 +381,27 @@ export function MonoConnectWidget({
               {step === "loading" && (
                 <div className="py-12 flex flex-col items-center justify-center text-center animate-in zoom-in duration-300 space-y-5">
                   <div className="relative w-16 h-16">
-                    <div className="absolute inset-0 border-4 border-zinc-800 rounded-full"></div>
-                    <div className="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-[#0B3022] border-t-transparent rounded-full animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <ShieldCheck className="h-6 w-6 text-emerald-400" />
+                      <ShieldCheck className="h-6 w-6 text-[#C5A059]" />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white mb-1">Establishing Connection...</h3>
-                    <p className="text-xs text-zinc-400">Verifying BVN identity and setting up mandate via Mono.</p>
+                    <h3 className="text-base font-bold text-[#0B3022] mb-1">Establishing Connection...</h3>
+                    <p className="text-xs text-gray-500 font-medium">Verifying BVN identity and updating settlement account via Mono.</p>
                   </div>
                 </div>
               )}
 
               {step === "success" && (
                 <div className="py-12 flex flex-col items-center justify-center text-center animate-in zoom-in duration-300 space-y-4">
-                  <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/30 text-emerald-400">
+                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center border border-green-200 text-green-600">
                     <CheckCircle2 className="h-8 w-8" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white mb-1">Bank Linked Successfully!</h3>
-                    <p className="text-xs text-zinc-400">Your BVN is verified and your mandate is active.</p>
+                    <h3 className="text-base font-bold text-[#0B3022] mb-1">Bank Linked Successfully!</h3>
+                    <p className="text-xs text-gray-500 font-medium">Your BVN is verified and your settlement account has been updated.</p>
                   </div>
                 </div>
               )}
@@ -399,9 +409,9 @@ export function MonoConnectWidget({
             </div>
             
             {/* Footer */}
-            <div className="p-3.5 bg-zinc-950 border-t border-zinc-800 text-center shrink-0">
-              <p className="text-[11px] text-zinc-500 font-medium flex items-center justify-center gap-1">
-                <Lock className="h-3 w-3 text-emerald-400" /> Protected by bank-level 256-bit encryption.
+            <div className="p-3.5 bg-gray-50 border-t border-gray-100 text-center shrink-0">
+              <p className="text-[11px] text-gray-500 font-medium flex items-center justify-center gap-1">
+                <Lock className="h-3 w-3 text-emerald-600" /> Protected by bank-level 256-bit encryption.
               </p>
             </div>
           </div>
