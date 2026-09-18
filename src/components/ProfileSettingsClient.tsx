@@ -351,14 +351,14 @@ export function ProfileSettingsClient({
               <div className="flex items-center gap-2 pt-2 text-xs text-zinc-400">
                 <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
                 <span>
-                  Your rotational payout disbursements and auto-debit sweeps are strictly routed to this verified identity account.
+                  Your settlement account is strictly locked to your verified identity bank. Rotational payout disbursements and auto-debit sweeps are routed only to this account.
                 </span>
               </div>
 
               <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-zinc-800/80">
                 <div className="flex items-center gap-2 text-xs text-zinc-500">
                   <Lock className="h-3.5 w-3.5 text-zinc-400" />
-                  <span>Changing settlement account requires 4-digit PIN verification.</span>
+                  <span>Changing settlement bank requires 4-digit PIN authorization &amp; re-verification.</span>
                 </div>
 
                 <button
@@ -367,7 +367,7 @@ export function ProfileSettingsClient({
                   className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 hover:text-emerald-300 font-bold rounded-xl text-xs border border-zinc-700 transition-all flex items-center justify-center gap-1.5"
                 >
                   <KeyRound className="h-3.5 w-3.5" />
-                  Change / Re-link Bank Account
+                  Re-verify &amp; Change Bank
                 </button>
               </div>
             </div>
