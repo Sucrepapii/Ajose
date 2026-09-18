@@ -318,7 +318,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                 </span>
               </div>
               <p className="text-[#1F2937]/70 text-xs leading-relaxed font-medium max-w-2xl">
-                Àjọṣe is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn's recipient (minus {group.admin_commission_pct}% admin cut and 2% platform fee).
+                Àjọṣe is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn's recipient (minus {group.admin_commission_pct}% admin cut and 2% platform fee capped at ₦15,000).
               </p>
               
               <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">

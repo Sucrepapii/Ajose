@@ -188,7 +188,7 @@ export default function CreateGroupPage() {
   const cont = parseInt(formData.contributionAmount) || 0;
   const mems = parseInt(formData.maxMembers) || 0;
   const totalPool = cont * mems;
-  const platformFee = totalPool * 0.02; // 2%
+  const platformFee = Math.min(15000, Math.round(totalPool * 0.02)); // 2% capped at ₦15,000
   const commPctNumber = parseFloat(formData.adminCommission) || 0;
   const adminFee = totalPool * (commPctNumber / 100);
   const collectorReceives = Math.max(0, totalPool - platformFee - adminFee);
@@ -507,7 +507,7 @@ export default function CreateGroupPage() {
                     <span className="text-[#0B3022] font-bold">₦{totalPool.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between border-t border-gray-200 pt-3 mt-3 font-medium">
-                    <span className="text-[#1F2937]/70">Platform Fee (2%)</span>
+                    <span className="text-[#1F2937]/70">Platform Fee (2% capped at ₦15,000)</span>
                     <span className="text-red-600">-₦{platformFee.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between font-medium">

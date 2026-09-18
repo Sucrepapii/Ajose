@@ -18,7 +18,7 @@ export default function PricingPage() {
             Simple, Transparent <span className="text-[#C5A059]">Pricing</span>
           </h1>
           <p className="text-xl text-[#1F2937]/80 leading-relaxed max-w-2xl mx-auto font-medium">
-            Àjọṣe is completely free for group members. We only charge a small flat fee to the group administrator upon successful payouts.
+            Àjọṣe is completely free for group members. For admins, we charge a low 2% platform fee capped at ₦15,000 upon successful payouts.
           </p>
         </div>
 
@@ -48,13 +48,22 @@ export default function PricingPage() {
           {/* Admin Plan */}
           <div className="bg-[#0B3022] p-8 md:p-12 rounded-3xl shadow-2xl flex flex-col relative overflow-hidden hover:shadow-[0_20px_50px_rgba(11,48,34,0.3)] transition-shadow">
             <div className="absolute -top-10 -right-10 w-64 h-64 bg-[#C5A059]/20 rounded-full blur-[50px]" />
-            <h3 className="text-2xl font-black text-white mb-2 relative z-10">Group Admins</h3>
-            <div className="text-5xl font-black text-[#C5A059] mb-6 relative z-10">2% <span className="text-xl text-white/50 font-medium">/ payout</span></div>
+            <h3 className="text-2xl font-black text-white mb-2 relative z-10">Standard Plan</h3>
+            <div className="text-5xl font-black text-[#C5A059] mb-2 relative z-10">2% <span className="text-xl text-white/50 font-medium">/ payout</span></div>
+            <div className="inline-block bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/40 text-xs font-bold px-3 py-1 rounded-full mb-6 relative z-10 self-start">
+              Capped at ₦15,000 maximum per payout
+            </div>
             <p className="text-white/80 mb-8 flex-1 relative z-10 font-medium">
-              Create and manage rotational contribution groups with institutional-grade tools and zero manual tracking.
+              Create and manage rotational contribution groups with institutional-grade tools and zero manual tracking. Platform fee is deducted only on successful payouts.
             </p>
             <ul className="space-y-5 mb-10 relative z-10">
-              {['Automated turn scheduling', 'Default risk management', 'One-click payouts', 'Group performance analytics'].map((feature, i) => (
+              {[
+                'Free to create an account',
+                'Free to create or join groups',
+                'Automated turn management & scheduling',
+                'Ajo Credit Score protection & reporting',
+                'Immutable transaction ledger'
+              ].map((feature, i) => (
                 <li key={i} className="flex items-center gap-4">
                   <div className="bg-[#C5A059]/20 rounded-full p-1">
                     <CheckCircle2 className="w-5 h-5 text-[#C5A059]" />

@@ -36,11 +36,11 @@ export function ProcessPayoutClient({
     return `User-${receivingMember.user_id.substring(0, 4)}`;
   };
 
-  // Financial calculations
+  // Financial calculations (Standard Plan: 2% platform fee capped at ₦15,000 max)
   const totalPool = group.contribution_amount * group.max_members;
   const adminCommissionPct = group.admin_commission_pct || 0;
   const adminFee = (adminCommissionPct / 100) * totalPool;
-  const platformFee = (2 / 100) * totalPool;
+  const platformFee = Math.min(15000, Math.round((2 / 100) * totalPool));
   const payoutAmount = Math.max(0, totalPool - adminFee - platformFee);
 
   // 1. Successful Auto-Payout execution via Mono Payout API
@@ -171,7 +171,7 @@ export function ProcessPayoutClient({
                   <span className="font-bold text-green-700">+₦{adminFee.toLocaleString()} (Retained in your account)</span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-gray-500">Platform Escrow Fee (2%)</span>
+                  <span className="text-gray-500">Platform Fee (2% capped at ₦15,000)</span>
                   <span className="font-bold text-red-600">-₦{platformFee.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-xs border-t border-gray-200 pt-2 font-bold">

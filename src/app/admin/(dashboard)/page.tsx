@@ -280,11 +280,11 @@ export default async function AdminCommandCenterPage() {
 
             <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-zinc-800 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-white">2% Payout Platform Fee</span>
+                <span className="font-bold text-white">2% Payout Platform Fee (Capped at ₦15,000)</span>
                 <span className="text-[10px] font-mono text-[#C5A059] bg-[#C5A059]/10 px-1.5 py-0.5 rounded">AUTOMATED</span>
               </div>
               <p className="text-zinc-400 text-[11px]">
-                Deducted during rotational disbursement for software maintenance &amp; CDL reserve pool backing.
+                Deducted during rotational disbursement (maximum ₦15,000 per turn) for software maintenance &amp; CDL reserve pool backing.
               </p>
             </div>
           </div>

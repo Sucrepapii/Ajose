@@ -80,7 +80,7 @@ export function RulesModal() {
                 <p>Before disbursement, the pooled funds account for:</p>
                 <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1 mt-1">
                   <li><strong>Admin Commission:</strong> The customized percentage determined by the Admin upon group creation.</li>
-                  <li><strong>Platform Fee:</strong> 2% for open-banking infrastructure and ledger maintenance.</li>
+                  <li><strong>Platform Fee:</strong> 2% (capped at ₦15,000 maximum) for open-banking infrastructure and ledger maintenance.</li>
                 </ul>
               </div>
 

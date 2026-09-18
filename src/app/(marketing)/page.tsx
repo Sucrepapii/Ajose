@@ -418,11 +418,16 @@ export default function Home() {
                 <div className="bg-[#0B3022] p-6 text-center text-white relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-full bg-[#C5A059]/10"></div>
                   <h3 className="text-2xl font-bold relative z-10">Standard Plan</h3>
-                  <div className="mt-4 mb-2 flex items-center justify-center gap-1 relative z-10">
-                    <span className="text-5xl font-bold">2</span>
+                  <div className="mt-3 mb-2 flex items-center justify-center gap-1 relative z-10">
+                    <span className="text-5xl font-extrabold text-white">2</span>
                     <Percent className="w-8 h-8 text-[#C5A059]" />
                   </div>
-                  <p className="text-gray-300 relative z-10">flat platform fee on payouts</p>
+                  <div className="flex justify-center relative z-10 mb-2">
+                    <span className="inline-flex items-center gap-1.5 bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/40 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider">
+                      Capped at ₦15,000 Max per Payout
+                    </span>
+                  </div>
+                  <p className="text-gray-300 text-xs relative z-10 font-medium">Flat platform fee deducted only on successful payouts</p>
                 </div>
                 <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
                   <ul className="space-y-4 mb-8">
@@ -678,7 +683,7 @@ export default function Home() {
               { q: "What happens if someone refuses to pay?", a: "Ajo is built on trust. As an Admin, you should only invite people you trust. If someone misses a payment, the Admin can manually mark them as defaulted on the platform, freezing their payouts and warning the group. Defaulting also incurs a -50 point penalty to their global Ajo Credit Score." },
               { q: "Can I leave a group before the cycle ends?", a: "Once a group cycle is marked as 'Active' by the Admin, the roster is locked. This ensures that people who have already collected their payout cannot abandon the group before paying back into the pool." },
               { q: "What is the Ajo Credit Score?", a: "Your Ajo Credit Score is a global metric that tracks your reliability across all groups. You gain points for successful contributions and lose 50 points immediately if you default. A low score will automatically restrict you from joining high-value groups." },
-              { q: "Are there any fees?", a: "Àjọṣe charges a flat 2% platform fee per payout to maintain our secure infrastructure. Group Admins may also choose to set their own customized management commission percentage, which is clearly displayed before you join." },
+              { q: "Are there any fees?", a: "Àjọṣe charges a 2% platform fee per payout (strictly capped at ₦15,000 max) to maintain our automated Open-Banking infrastructure and ledger. Group Admins may also choose to set their own customized management commission percentage, which is clearly displayed before you join." },
               { q: "Is my personal data secure?", a: "Yes. All data, including verification details and ledger history, is secured with AES-256 bank-grade encryption and protected by strict security policies." }
             ].map((faq, i) => (
               <motion.div 

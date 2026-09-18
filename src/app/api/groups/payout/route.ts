@@ -62,11 +62,11 @@ export async function POST(req: Request) {
     const receiverUser = receivingMembership.users;
     const receiverName = `${receiverUser.first_name || ""} ${receiverUser.last_name || ""}`.trim() || receiverUser.nickname || `Member #${turn}`;
 
-    // 5. Calculate payout amounts
+    // 5. Calculate payout amounts (Standard Plan: 2% platform fee capped at ₦15,000 max)
     const totalPool = (group.contribution_amount || 50000) * (group.max_members || 1);
     const adminCommissionPct = group.admin_commission_pct || 0;
     const adminFee = Math.round((adminCommissionPct / 100) * totalPool);
-    const platformFee = Math.round((2 / 100) * totalPool);
+    const platformFee = Math.min(15000, Math.round((2 / 100) * totalPool));
     const netPayoutAmount = Math.max(0, totalPool - adminFee - platformFee);
 
     // 6. Execute disbursement via Mono Payout API
