@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { 
@@ -26,6 +27,9 @@ import { FlagMemberClient } from "@/components/FlagMemberClient";
 import { SendRemindersClient } from "@/components/SendRemindersClient";
 import { ConfirmTransferClient } from "@/components/ConfirmTransferClient";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function GroupDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const groupId = params.id;
@@ -37,8 +41,10 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     redirect("/signup");
   }
 
-  // Fetch the group details
-  const { data: group, error: groupError } = await supabase
+  const adminClient = createAdminClient();
+
+  // Fetch the group details using adminClient to ensure complete data
+  const { data: group, error: groupError } = await adminClient
     .from('groups')
     .select('*')
     .eq('id', groupId)
@@ -57,7 +63,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
   }
 
   // Fetch the members of the group with user details including bank credentials for pass-through transparency
-  const { data: members, error: membersError } = await supabase
+  const { data: members, error: membersError } = await adminClient
     .from('memberships')
     .select(`
       *,
@@ -82,7 +88,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
   const currentTurn = group.current_turn || 1; 
 
   // Fetch group transactions to track payments and any auto-debit failures (Req 7: members should see if failed too)
-  const { data: groupTransactions } = await supabase
+  const { data: groupTransactions } = await adminClient
     .from('transactions')
     .select('*')
     .eq('group_id', groupId)

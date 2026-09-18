@@ -18,8 +18,11 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/ajose || (mkdir -p /opt/ajose && cd /opt/ajose)
-            git pull origin master || (git clone https://github.com/Sucrepapii/ajocore.git . && git checkout master)
+            set -e
+            cd /opt/ajose || (mkdir -p /opt/ajose && cd /opt/ajose && git clone https://github.com/Sucrepapii/ajocore.git .)
+            git fetch origin master
+            git checkout -f master
+            git reset --hard origin/master
             npm install --production=false
             npm run build
             pm2 restart ajose || pm2 start npm --name "ajose" -- run start

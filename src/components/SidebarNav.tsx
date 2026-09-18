@@ -18,7 +18,7 @@ export function SidebarNav() {
     { href: "/dashboard/groups", label: "My Groups", icon: Users },
     { href: "/dashboard/transactions", label: "Transactions", icon: ArrowRightLeft },
     { href: "/dashboard/verify", label: "Verify Identity", icon: ShieldCheck },
-    { href: "/dashboard/settings", label: "Settings", icon: Settings },
+    { href: "/dashboard/settings", label: "Profile & Bank", icon: Settings },
   ];
 
   return (

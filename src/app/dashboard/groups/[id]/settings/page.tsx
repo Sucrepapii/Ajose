@@ -1,8 +1,12 @@
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, Settings2 } from "lucide-react";
 import { GroupSettingsClient } from "@/components/GroupSettingsClient";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function GroupSettingsPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -15,8 +19,10 @@ export default async function GroupSettingsPage(props: { params: Promise<{ id: s
     redirect("/signup");
   }
 
+  const adminClient = createAdminClient();
+
   // Fetch the group
-  const { data: group, error: groupError } = await supabase
+  const { data: group, error: groupError } = await adminClient
     .from('groups')
     .select('*')
     .eq('id', groupId)
@@ -27,7 +33,7 @@ export default async function GroupSettingsPage(props: { params: Promise<{ id: s
   }
 
   // Fetch memberships
-  const { data: members, error: membersError } = await supabase
+  const { data: members, error: membersError } = await adminClient
     .from('memberships')
     .select(`
       *,
