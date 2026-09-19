@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/utils/supabase/admin";
+import { getSuperAdminSession } from "@/utils/adminAuth";
 import { AdminUsersClient } from "@/components/admin/AdminUsersClient";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +10,7 @@ export const metadata = {
 };
 
 export default async function AdminUsersPage() {
+  const session = await getSuperAdminSession();
   const supabase = createAdminClient();
 
   // 1. Query Supabase users table
@@ -36,13 +38,20 @@ export default async function AdminUsersPage() {
     console.warn("Users query warning:", error.message);
   }
 
-  // 2. Fetch Auth metadata for Next of Kin, Guarantor, and PIN statuses
+  // 2. Fetch Auth metadata for Next of Kin, Guarantor, PIN statuses, and ban/suspension status
   const authUsersMap = new Map<string, any>();
   try {
     const { data: authData } = await supabase.auth.admin.listUsers();
     if (authData?.users) {
       for (const u of authData.users) {
-        authUsersMap.set(u.id, u.user_metadata || {});
+        const isBanned = Boolean(u.banned_until && new Date(u.banned_until) > new Date());
+        authUsersMap.set(u.id, {
+          meta: u.user_metadata || {},
+          isSuspended: isBanned || Boolean(u.user_metadata?.is_suspended),
+          suspendedReason: u.user_metadata?.suspended_reason || null,
+          suspendedAt: u.user_metadata?.suspended_at || null,
+          bannedUntil: u.banned_until || null
+        });
       }
     }
   } catch (err) {
@@ -50,7 +59,8 @@ export default async function AdminUsersPage() {
   }
 
   const enrichedUsers = (users || []).map((u: any) => {
-    const meta = authUsersMap.get(u.id) || {};
+    const authInfo = authUsersMap.get(u.id) || {};
+    const meta = authInfo.meta || {};
     return {
       ...u,
       next_of_kin_name: u.next_of_kin_name || meta.next_of_kin_name || null,
@@ -61,7 +71,10 @@ export default async function AdminUsersPage() {
       guarantor_name: u.guarantor_name || meta.guarantor_name || null,
       guarantor_phone: u.guarantor_phone || meta.guarantor_phone || null,
       guarantor_relationship: u.guarantor_relationship || meta.guarantor_relationship || null,
-      has_pin: Boolean(u.has_pin || meta.has_pin || meta.pin_hash)
+      has_pin: Boolean(u.has_pin || meta.has_pin || meta.pin_hash),
+      is_suspended: Boolean(u.status === "suspended" || authInfo.isSuspended),
+      suspended_reason: authInfo.suspendedReason || null,
+      suspended_at: authInfo.suspendedAt || null
     };
   });
 
@@ -85,7 +98,7 @@ export default async function AdminUsersPage() {
         </div>
       </div>
 
-      <AdminUsersClient users={enrichedUsers} />
+      <AdminUsersClient users={enrichedUsers} isSuperAdmin={session.isSuperAdmin} />
     </div>
   );
 }

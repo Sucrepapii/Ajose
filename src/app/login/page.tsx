@@ -99,7 +99,20 @@ export default function LoginPage() {
         if (error.message?.includes("Email not confirmed")) {
           throw new Error("Your email address has not been confirmed yet. Please check your inbox for the verification link.");
         }
+        if (error.message?.toLowerCase().includes("banned") || error.message?.toLowerCase().includes("suspended")) {
+          throw new Error("Your account has been suspended by compliance administration. Please contact support@ajose.ng for assistance.");
+        }
         throw error;
+      }
+
+      // Check if user account is suspended or banned
+      const isSuspended = Boolean(
+        data.user?.banned_until && new Date(data.user.banned_until) > new Date()
+      ) || Boolean(data.user?.user_metadata?.is_suspended);
+
+      if (isSuspended) {
+        await supabase.auth.signOut();
+        throw new Error("Your account has been suspended by compliance administration. Please contact support@ajose.ng for review.");
       }
 
       // 3. Check if user has is_super_admin flag in their Supabase profile
@@ -108,6 +121,11 @@ export default function LoginPage() {
         .select("*")
         .eq("id", data.user.id)
         .maybeSingle();
+
+      if (profile?.status === "suspended") {
+        await supabase.auth.signOut();
+        throw new Error("Your account has been suspended by compliance administration. Please contact support@ajose.ng for review.");
+      }
 
       const urlParams = new URLSearchParams(window.location.search);
       const nextUrl = urlParams.get("next");

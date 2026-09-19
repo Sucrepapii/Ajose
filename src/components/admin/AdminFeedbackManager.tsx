@@ -29,16 +29,16 @@ import Link from "next/link";
 import { CountryFlag } from "@/components/CountryFlag";
 
 const PRESET_COUNTRIES = [
-  { code: "NG", name: "Nigeria", label: "Nigeria" },
-  { code: "GB", name: "United Kingdom", label: "UK" },
-  { code: "US", name: "United States", label: "USA" },
-  { code: "CA", name: "Canada", label: "Canada" },
-  { code: "GH", name: "Ghana", label: "Ghana" },
-  { code: "KE", name: "Kenya", label: "Kenya" },
-  { code: "ZA", name: "South Africa", label: "South Africa" },
-  { code: "JM", name: "Jamaica", label: "Jamaica" },
-  { code: "CM", name: "Cameroon", label: "Cameroon" },
-  { code: "TT", name: "Trinidad & Tobago", label: "Trinidad" },
+  { code: "NG", name: "Nigeria", label: "Nigeria", defaultLocation: "Lagos, Nigeria" },
+  { code: "GB", name: "United Kingdom", label: "UK", defaultLocation: "London, UK" },
+  { code: "US", name: "United States", label: "USA", defaultLocation: "Atlanta, USA" },
+  { code: "CA", name: "Canada", label: "Canada", defaultLocation: "Toronto, Canada" },
+  { code: "GH", name: "Ghana", label: "Ghana", defaultLocation: "Accra, Ghana" },
+  { code: "KE", name: "Kenya", label: "Kenya", defaultLocation: "Nairobi, Kenya" },
+  { code: "ZA", name: "South Africa", label: "South Africa", defaultLocation: "Johannesburg, South Africa" },
+  { code: "JM", name: "Jamaica", label: "Jamaica", defaultLocation: "Kingston, Jamaica" },
+  { code: "CM", name: "Cameroon", label: "Cameroon", defaultLocation: "Douala, Cameroon" },
+  { code: "TT", name: "Trinidad & Tobago", label: "Trinidad", defaultLocation: "Port of Spain, Trinidad" },
 ];
 
 export function AdminFeedbackManager({
@@ -57,7 +57,7 @@ export function AdminFeedbackManager({
   const [editAuthor, setEditAuthor] = useState("");
   const [editRole, setEditRole] = useState("Group Admin");
   const [editCountryCode, setEditCountryCode] = useState("NG");
-  const [editLocation, setEditLocation] = useState("Nigeria");
+  const [editLocation, setEditLocation] = useState("Lagos, Nigeria");
   const [isSaving, setIsSaving] = useState(false);
 
   // Modal for Manual New Testimonial creation
@@ -67,7 +67,7 @@ export function AdminFeedbackManager({
   const [newQuote, setNewQuote] = useState("");
   const [newRating, setNewRating] = useState(5);
   const [newCountryCode, setNewCountryCode] = useState("NG");
-  const [newLocation, setNewLocation] = useState("Nigeria");
+  const [newLocation, setNewLocation] = useState("Lagos, Nigeria");
   const [isCreating, setIsCreating] = useState(false);
 
   // Metrics
@@ -614,9 +614,7 @@ export function AdminFeedbackManager({
                       type="button"
                       onClick={() => {
                         setEditCountryCode(c.code);
-                        if (!editLocation || editLocation === "Nigeria" || PRESET_COUNTRIES.some((pc) => pc.name === editLocation)) {
-                          setEditLocation(c.name);
-                        }
+                        setEditLocation(c.defaultLocation || c.name);
                       }}
                       className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                         editCountryCode === c.code
@@ -785,9 +783,7 @@ export function AdminFeedbackManager({
                       type="button"
                       onClick={() => {
                         setNewCountryCode(c.code);
-                        if (!newLocation || newLocation === "Nigeria" || PRESET_COUNTRIES.some((pc) => pc.name === newLocation)) {
-                          setNewLocation(c.name);
-                        }
+                        setNewLocation(c.defaultLocation || c.name);
                       }}
                       className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                         newCountryCode === c.code

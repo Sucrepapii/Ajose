@@ -1,29 +1,51 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { 
   Users, 
   Search, 
   ShieldCheck, 
   AlertCircle, 
   Landmark, 
-  Lock,
-  HeartHandshake,
-  KeyRound,
-  Eye,
-  X,
-  Phone,
-  Mail,
-  MapPin,
-  CheckCircle2
+  HeartHandshake, 
+  KeyRound, 
+  Eye, 
+  X, 
+  CheckCircle2,
+  Trash2,
+  Ban,
+  AlertTriangle,
+  Loader2
 } from "lucide-react";
 
-export function AdminUsersClient({ users }: { users: any[] }) {
+interface AdminUsersClientProps {
+  users: any[];
+  isSuperAdmin?: boolean;
+}
+
+export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClientProps) {
+  const [userList, setUserList] = useState<any[]>(users);
   const [searchTerm, setSearchTerm] = useState("");
   const [kycFilter, setKycFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
 
-  const filteredUsers = users.filter((u) => {
+  // Suspension Modal State
+  const [userToSuspend, setUserToSuspend] = useState<any | null>(null);
+  const [suspensionReason, setSuspensionReason] = useState("");
+  const [isSuspending, setIsSuspending] = useState(false);
+
+  // Unsuspend State
+  const [reactivatingUserId, setReactivatingUserId] = useState<string | null>(null);
+
+  // Deletion Modal State
+  const [userToDelete, setUserToDelete] = useState<any | null>(null);
+  const [deleteConfirmChecked, setDeleteConfirmChecked] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Filter users
+  const filteredUsers = userList.filter((u) => {
     const fullName = `${u.first_name || ""} ${u.last_name || ""}`.trim();
     const matchesSearch = 
       fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -42,15 +64,128 @@ export function AdminUsersClient({ users }: { users: any[] }) {
       (kycFilter === "nin_only" && u.nin_verified) || 
       (kycFilter === "unverified" && !u.bvn_verified && !u.nin_verified);
 
-    return matchesSearch && matchesKyc;
+    const matchesStatus = 
+      statusFilter === "all" ||
+      (statusFilter === "active" && !u.is_suspended) ||
+      (statusFilter === "suspended" && u.is_suspended);
+
+    return matchesSearch && matchesKyc && matchesStatus;
   });
+
+  // Action: Suspend User
+  const handleSuspendUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userToSuspend) return;
+
+    setIsSuspending(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userToSuspend.id,
+          action: "suspend",
+          reason: suspensionReason.trim() || "Compliance & KYC Review",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to suspend user.");
+      }
+
+      toast.success(data.message || "Member account suspended.");
+      setUserList((prev) =>
+        prev.map((u) =>
+          u.id === userToSuspend.id
+            ? {
+                ...u,
+                is_suspended: true,
+                suspended_reason: data.suspendedReason || suspensionReason.trim(),
+                suspended_at: data.suspendedAt,
+              }
+            : u
+        )
+      );
+      setUserToSuspend(null);
+      setSuspensionReason("");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to suspend member.");
+    } finally {
+      setIsSuspending(false);
+    }
+  };
+
+  // Action: Reactivate / Unsuspend User
+  const handleUnsuspendUser = async (user: any) => {
+    setReactivatingUserId(user.id);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          action: "unsuspend",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to restore user access.");
+      }
+
+      toast.success(data.message || "Member access restored.");
+      setUserList((prev) =>
+        prev.map((u) =>
+          u.id === user.id
+            ? {
+                ...u,
+                is_suspended: false,
+                suspended_reason: null,
+                suspended_at: null,
+              }
+            : u
+        )
+      );
+    } catch (err: any) {
+      toast.error(err.message || "Failed to restore access.");
+    } finally {
+      setReactivatingUserId(null);
+    }
+  };
+
+  // Action: Permanently Delete User
+  const handleDeleteUser = async () => {
+    if (!userToDelete || !deleteConfirmChecked) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/users?id=${userToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete user.");
+      }
+
+      toast.success(data.message || "Member deleted permanently.");
+      setUserList((prev) => prev.filter((u) => u.id !== userToDelete.id));
+      setUserToDelete(null);
+      setDeleteConfirmChecked(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete member.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
       
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#0C120E] p-4 rounded-2xl border border-zinc-800/90">
-        <div className="relative w-full sm:w-80">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-[#0C120E] p-4 rounded-2xl border border-zinc-800/90">
+        <div className="relative w-full md:w-80">
           <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
           <input
             type="text"
@@ -61,7 +196,19 @@ export function AdminUsersClient({ users }: { users: any[] }) {
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          {/* Status Filter */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500 cursor-pointer"
+          >
+            <option value="all">All Account Statuses</option>
+            <option value="active">Active Members Only</option>
+            <option value="suspended">Suspended Members Only</option>
+          </select>
+
+          {/* KYC Verification Filter */}
           <select
             value={kycFilter}
             onChange={(e) => setKycFilter(e.target.value)}
@@ -80,7 +227,7 @@ export function AdminUsersClient({ users }: { users: any[] }) {
 
       {/* Users Table */}
       <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl overflow-hidden shadow-sm">
-        {users.length === 0 ? (
+        {userList.length === 0 ? (
           <div className="p-16 text-center space-y-3">
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
               <Users className="h-6 w-6" />
@@ -94,7 +241,7 @@ export function AdminUsersClient({ users }: { users: any[] }) {
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="p-16 text-center text-zinc-500 text-xs">
-            No registered users matching the selected search or KYC verification filter.
+            No registered users matching the selected search or filter criteria.
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -106,6 +253,7 @@ export function AdminUsersClient({ users }: { users: any[] }) {
                   <th className="px-5 py-4">Identity KYC</th>
                   <th className="px-5 py-4">Next of Kin &amp; Social</th>
                   <th className="px-5 py-4">PIN Security</th>
+                  <th className="px-5 py-4">Account Status</th>
                   <th className="px-5 py-4">Linked Bank Account</th>
                   <th className="px-5 py-4 text-right">Actions</th>
                 </tr>
@@ -117,6 +265,7 @@ export function AdminUsersClient({ users }: { users: any[] }) {
 
                   return (
                     <tr key={u.id} className="hover:bg-zinc-900/40 transition-colors">
+                      {/* User Details */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase">
@@ -133,11 +282,13 @@ export function AdminUsersClient({ users }: { users: any[] }) {
                         </div>
                       </td>
 
+                      {/* Contact */}
                       <td className="px-5 py-4">
                         <p className="text-zinc-300 font-medium">{u.email || "No email"}</p>
                         <p className="text-[11px] font-mono text-zinc-500 mt-0.5">{u.phone || "No phone"}</p>
                       </td>
 
+                      {/* Identity KYC */}
                       <td className="px-5 py-4">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-1.5">
@@ -164,6 +315,7 @@ export function AdminUsersClient({ users }: { users: any[] }) {
                         </div>
                       </td>
 
+                      {/* Next of Kin */}
                       <td className="px-5 py-4">
                         {u.next_of_kin_name ? (
                           <div className="space-y-0.5">
@@ -180,6 +332,7 @@ export function AdminUsersClient({ users }: { users: any[] }) {
                         )}
                       </td>
 
+                      {/* PIN Security */}
                       <td className="px-5 py-4">
                         {u.has_pin ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -192,6 +345,27 @@ export function AdminUsersClient({ users }: { users: any[] }) {
                         )}
                       </td>
 
+                      {/* Account Standing / Status */}
+                      <td className="px-5 py-4">
+                        {u.is_suspended ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                              <Ban className="h-3 w-3" /> Suspended
+                            </span>
+                            {u.suspended_reason && (
+                              <p className="text-[10px] text-zinc-400 truncate max-w-[130px]" title={u.suspended_reason}>
+                                {u.suspended_reason}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <CheckCircle2 className="h-3 w-3" /> Active
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Linked Bank Account */}
                       <td className="px-5 py-4">
                         {u.bank_name || u.account_number ? (
                           <div>
@@ -203,15 +377,65 @@ export function AdminUsersClient({ users }: { users: any[] }) {
                         )}
                       </td>
 
+                      {/* Actions */}
                       <td className="px-5 py-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedUser(u)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white rounded-lg text-xs font-bold transition-colors border border-zinc-700"
-                        >
-                          <Eye className="h-3.5 w-3.5 text-emerald-400" />
-                          Dossier
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedUser(u)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white rounded-lg text-xs font-bold transition-colors border border-zinc-700"
+                            title="View Full KYC Dossier"
+                          >
+                            <Eye className="h-3.5 w-3.5 text-emerald-400" />
+                            <span>Dossier</span>
+                          </button>
+
+                          {isSuperAdmin && (
+                            <>
+                              {u.is_suspended ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleUnsuspendUser(u)}
+                                  disabled={reactivatingUserId === u.id}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+                                  title="Reactivate Member Access"
+                                >
+                                  {reactivatingUserId === u.id ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <ShieldCheck className="h-3.5 w-3.5" />
+                                  )}
+                                  <span className="hidden sm:inline">Reactivate</span>
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setUserToSuspend(u);
+                                    setSuspensionReason("");
+                                  }}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                                  title="Suspend Member Account"
+                                >
+                                  <Ban className="h-3.5 w-3.5" />
+                                  <span className="hidden sm:inline">Suspend</span>
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setUserToDelete(u);
+                                  setDeleteConfirmChecked(false);
+                                }}
+                                className="inline-flex items-center gap-1 px-2 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                                title="Delete Member Permanently"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -222,6 +446,174 @@ export function AdminUsersClient({ users }: { users: any[] }) {
         )}
       </div>
 
+      {/* Suspend Member Modal */}
+      {userToSuspend && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0C120E] border border-amber-500/30 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => setUserToSuspend(null)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+                <Ban className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Suspend Member Access</h3>
+                <p className="text-xs text-zinc-400">
+                  {userToSuspend.first_name} {userToSuspend.last_name} ({userToSuspend.email || "No email"})
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-300/90 leading-relaxed">
+              Suspending this member invalidates active sessions, prevents subsequent logins, and halts rotational participation until compliance review is completed.
+            </div>
+
+            <form onSubmit={handleSuspendUser} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  Suspension Reason / Compliance Flag
+                </label>
+                <input
+                  type="text"
+                  value={suspensionReason}
+                  onChange={(e) => setSuspensionReason(e.target.value)}
+                  placeholder="e.g. KYC Discrepancy, Disputed Transaction, Suspicious Activity"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
+                />
+                {/* Quick presets */}
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {["KYC Discrepancy", "Default Risk", "Suspicious Activity", "Disputed Transaction"].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setSuspensionReason(preset)}
+                      className="px-2 py-0.5 bg-zinc-900 hover:bg-zinc-800 text-[10px] text-zinc-400 hover:text-white rounded-md border border-zinc-800 transition-colors cursor-pointer"
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setUserToSuspend(null)}
+                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSuspending}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold text-xs shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  {isSuspending ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Suspending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Ban className="h-3.5 w-3.5" />
+                      <span>Confirm Suspension</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Member Modal (Double Opt-In) */}
+      {userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0C120E] border border-red-500/30 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => {
+                setUserToDelete(null);
+                setDeleteConfirmChecked(false);
+              }}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Permanently Delete Member</h3>
+                <p className="text-xs text-zinc-400">
+                  {userToDelete.first_name} {userToDelete.last_name} ({userToDelete.email || "No email"})
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-red-950/20 border border-red-500/20 rounded-xl p-3 text-xs text-red-300/90 leading-relaxed space-y-1.5">
+              <p className="font-bold">⚠️ Warning: This action cannot be undone.</p>
+              <p className="text-[11px] text-zinc-400">
+                Permanently deletes the user authentication record, identity profile, notifications, and group associations. Active circle trustees cannot be deleted until the circle is resolved or reassigned.
+              </p>
+            </div>
+
+            <div className="pt-1">
+              <label className="flex items-start gap-2.5 p-3 rounded-xl bg-zinc-950 border border-zinc-800 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={deleteConfirmChecked}
+                  onChange={(e) => setDeleteConfirmChecked(e.target.checked)}
+                  className="mt-0.5 rounded border-zinc-700 text-red-500 focus:ring-red-500 cursor-pointer"
+                />
+                <span className="text-xs text-zinc-300">
+                  I understand this deletion is <strong className="text-white">permanent and irreversible</strong>.
+                </span>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+              <button
+                type="button"
+                onClick={() => {
+                  setUserToDelete(null);
+                  setDeleteConfirmChecked(false);
+                }}
+                className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteUser}
+                disabled={!deleteConfirmChecked || isDeleting}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Delete Permanently</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Member Full KYC & Social Dossier Modal */}
       {selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
@@ -229,7 +621,7 @@ export function AdminUsersClient({ users }: { users: any[] }) {
             <button
               type="button"
               onClick={() => setSelectedUser(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -250,29 +642,52 @@ export function AdminUsersClient({ users }: { users: any[] }) {
             </div>
 
             {/* Identity & KYC Badges */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2.5">
               <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-1">
-                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">BVN &amp; NIN Status</span>
+                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">BVN &amp; NIN</span>
                 <p className="text-xs font-bold text-white flex items-center gap-1">
                   {selectedUser.bvn_verified ? (
-                    <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Fully Verified</span>
+                    <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Verified</span>
                   ) : (
-                    <span className="text-amber-400">Pending Verification</span>
+                    <span className="text-amber-400">Pending</span>
                   )}
                 </p>
               </div>
 
               <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-1">
-                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">PIN Security Status</span>
+                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">PIN Security</span>
                 <p className="text-xs font-bold text-white flex items-center gap-1">
                   {selectedUser.has_pin ? (
-                    <span className="text-emerald-400 flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5" /> 4-Digit PIN Active</span>
+                    <span className="text-emerald-400 flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5" /> Active</span>
                   ) : (
-                    <span className="text-amber-400 flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> No PIN Set</span>
+                    <span className="text-amber-400 flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> None</span>
+                  )}
+                </p>
+              </div>
+
+              <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-1">
+                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Standing</span>
+                <p className="text-xs font-bold text-white flex items-center gap-1">
+                  {selectedUser.is_suspended ? (
+                    <span className="text-red-400 flex items-center gap-1"><Ban className="h-3.5 w-3.5" /> Suspended</span>
+                  ) : (
+                    <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Active</span>
                   )}
                 </p>
               </div>
             </div>
+
+            {selectedUser.is_suspended && selectedUser.suspended_reason && (
+              <div className="p-3 rounded-xl bg-red-950/20 border border-red-500/20 text-xs">
+                <span className="text-[10px] font-mono font-bold text-red-400 uppercase">Suspension Reason:</span>
+                <p className="text-zinc-200 mt-0.5">{selectedUser.suspended_reason}</p>
+                {selectedUser.suspended_at && (
+                  <p className="text-[10px] text-zinc-500 mt-1">
+                    Flagged on: {new Date(selectedUser.suspended_at).toLocaleString()}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Next of Kin Section */}
             <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
@@ -360,7 +775,7 @@ export function AdminUsersClient({ users }: { users: any[] }) {
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
-                className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition-colors"
+                className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
               >
                 Close Dossier
               </button>
