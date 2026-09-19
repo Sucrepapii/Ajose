@@ -86,16 +86,30 @@ export default async function TransactionsPage() {
       : 'Member';
 
     let displayDesc = '';
+    const isFailed = tx.status === 'failed';
+
     if (tx.type === 'payout') {
-      displayDesc = isSelf 
-        ? `Turn ${tx.cycle_turn} Lump-Sum Rotational Payout received`
-        : `Turn ${tx.cycle_turn} Payout disbursed to ${memberName}`;
+      if (isFailed) {
+        displayDesc = isSelf 
+          ? `Turn ${tx.cycle_turn} Lump-Sum Payout Disbursement Failed` 
+          : `Turn ${tx.cycle_turn} Payout to ${memberName} Failed`;
+      } else {
+        displayDesc = isSelf 
+          ? `Turn ${tx.cycle_turn} Lump-Sum Rotational Payout received`
+          : `Turn ${tx.cycle_turn} Payout disbursed to ${memberName}`;
+      }
     } else if (tx.type === 'contribution') {
-      displayDesc = isSelf 
-        ? `Turn ${tx.cycle_turn} Rotational Savings Contribution`
-        : `Turn ${tx.cycle_turn} Contribution from ${memberName}`;
+      if (isFailed) {
+        displayDesc = isSelf 
+          ? `Turn ${tx.cycle_turn} Auto-Debit Contribution Failed (Declined)`
+          : `Turn ${tx.cycle_turn} Auto-Debit Contribution failed for ${memberName}`;
+      } else {
+        displayDesc = isSelf 
+          ? `Turn ${tx.cycle_turn} Rotational Savings Contribution`
+          : `Turn ${tx.cycle_turn} Contribution from ${memberName}`;
+      }
     } else {
-      displayDesc = `Turn ${tx.cycle_turn || 1} ${tx.type}`;
+      displayDesc = isFailed ? `Turn ${tx.cycle_turn || 1} ${tx.type} (Failed)` : `Turn ${tx.cycle_turn || 1} ${tx.type}`;
     }
 
     return {
@@ -107,7 +121,15 @@ export default async function TransactionsPage() {
     };
   });
 
-  const getIcon = (type: string) => {
+  const getIcon = (type: string, status?: string) => {
+    if (status === 'failed') {
+      return (
+        <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-200 flex items-center justify-center shrink-0">
+          <AlertTriangle className="h-5 w-5 text-red-600" />
+        </div>
+      );
+    }
+
     switch (type) {
       case 'payout':
         return <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0"><ArrowDownRight className="h-5 w-5 text-emerald-600" /></div>;
@@ -152,6 +174,15 @@ export default async function TransactionsPage() {
   };
 
   const getAmountDisplay = (tx: any) => {
+    if (tx.status === 'failed') {
+      return (
+        <div>
+          <span className="font-bold text-base sm:text-lg text-red-600">₦{Number(tx.amount).toLocaleString()}</span>
+          <p className="text-[10px] text-red-500 font-semibold uppercase tracking-wider">Uncollected</p>
+        </div>
+      );
+    }
+
     if (tx.type === 'payout') {
       if (tx.isSelf) {
         return <span className="font-bold text-base sm:text-lg text-emerald-600">+₦{Number(tx.amount).toLocaleString()}</span>;
@@ -198,9 +229,16 @@ export default async function TransactionsPage() {
                 <tr key={tx.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
-                      {getIcon(tx.type)}
+                      {getIcon(tx.type, tx.status)}
                       <div>
-                        <p className="font-bold text-[#0B3022] capitalize">{tx.type}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-[#0B3022] capitalize">{tx.type}</p>
+                          {tx.status === 'failed' && (
+                            <span className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded">
+                              Auto-Debit Declined
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-[#1F2937]/60 font-medium">{tx.displayDesc}</p>
                       </div>
                     </div>
