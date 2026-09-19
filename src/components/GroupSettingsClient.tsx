@@ -18,7 +18,8 @@ import {
   UserPlus, 
   DollarSign, 
   X,
-  Coins
+  Coins,
+  ArrowLeftRight
 } from "lucide-react";
 
 type Group = any;
@@ -58,6 +59,15 @@ export function GroupSettingsClient({
   const [commissionPct, setCommissionPct] = useState(group.admin_commission_pct?.toString() || "5");
   const [isSavingCommission, setIsSavingCommission] = useState(false);
 
+  // Member Slot Change / Swap State
+  const [editingSlotMember, setEditingSlotMember] = useState<Member | null>(null);
+  const [targetSlot, setTargetSlot] = useState<string>("");
+  const [isUpdatingSlot, setIsUpdatingSlot] = useState(false);
+
+  // Circle Capacity State
+  const [maxMembersInput, setMaxMembersInput] = useState<string>(group.max_members?.toString() || "5");
+  const [isUpdatingCapacity, setIsUpdatingCapacity] = useState(false);
+
   // Strict Admin Verification
   const isAdmin = members.some(m => m.user_id === currentUserId && m.role === 'admin') || group.admin_id === currentUserId;
 
@@ -66,7 +76,7 @@ export function GroupSettingsClient({
   const adminProfile = adminMember?.users;
 
   // Contributing members & open turn slots
-  const contributingMembers = members.filter(m => m.role !== 'admin');
+  const contributingMembers = members.filter(m => m.payout_turn !== null);
   const occupiedTurns = new Set(contributingMembers.map(m => m.payout_turn));
   const openTurns: number[] = [];
   for (let i = 1; i <= group.max_members; i++) {
@@ -82,6 +92,87 @@ export function GroupSettingsClient({
     if (p?.first_name || p?.last_name) return `${p.first_name || ''} ${p.last_name || ''}`.trim();
     if (p?.phone) return p.phone;
     return `User-${m.user_id.substring(0, 4)}`;
+  };
+
+  const handleChangeSlot = async () => {
+    if (!editingSlotMember || !targetSlot) return;
+    setIsUpdatingSlot(true);
+    try {
+      const res = await fetch("/api/groups/members/slot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "change_member_slot",
+          groupId: group.id,
+          membershipId: editingSlotMember.id,
+          newTurn: parseInt(targetSlot)
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update slot.");
+
+      toast.success(data.message || "Member slot updated successfully!");
+      setEditingSlotMember(null);
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update member slot.");
+    } finally {
+      setIsUpdatingSlot(false);
+    }
+  };
+
+  const handleToggleAdminSlot = async (slotNumber: number | null) => {
+    setIsUpdatingSlot(true);
+    try {
+      const res = await fetch("/api/groups/members/slot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "toggle_admin_slot",
+          groupId: group.id,
+          newTurn: slotNumber
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update admin participation.");
+
+      toast.success(data.message || "Admin participation updated.");
+      setEditingSlotMember(null);
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update admin participation.");
+    } finally {
+      setIsUpdatingSlot(false);
+    }
+  };
+
+  const handleUpdateCapacity = async () => {
+    const val = parseInt(maxMembersInput);
+    if (isNaN(val) || val < members.length || val > 100) {
+      toast.error(`Please enter a valid capacity between ${members.length} and 100.`);
+      return;
+    }
+    setIsUpdatingCapacity(true);
+    try {
+      const res = await fetch("/api/groups/members/slot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update_max_members",
+          groupId: group.id,
+          maxMembers: val
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update circle capacity.");
+
+      toast.success(data.message || "Circle capacity updated.");
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update circle capacity.");
+    } finally {
+      setIsUpdatingCapacity(false);
+    }
   };
 
   const handleSaveCommission = async () => {
@@ -239,6 +330,54 @@ export function GroupSettingsClient({
         </div>
       )}
 
+      {/* Circle Total Member Slots Capacity Settings */}
+      {!isLocked && (
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-gray-100 flex items-center gap-3 bg-[#FDFBF7]">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <Users className="h-5 w-5 text-emerald-700" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[#0B3022]">Circle Total Member Slots</h2>
+              <p className="text-[#1F2937]/70 text-sm">Define the maximum number of participant slots in this circle before the cycle starts</p>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-bold text-[#0B3022] mb-1">Max Circle Capacity</p>
+                <p className="text-xs text-[#1F2937]/60">
+                  Currently {members.length} members joined. You can expand or adjust total slots before starting the cycle.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="relative w-28">
+                  <input 
+                    type="number"
+                    min={members.length}
+                    max={100}
+                    value={maxMembersInput}
+                    onChange={(e) => setMaxMembersInput(e.target.value)}
+                    className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-3 pr-8 py-2 text-sm font-bold text-[#0B3022] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50"
+                  />
+                  <span className="absolute right-3 top-2 text-xs font-bold text-gray-400">Slots</span>
+                </div>
+
+                <button 
+                  onClick={handleUpdateCapacity}
+                  disabled={isUpdatingCapacity || maxMembersInput === group.max_members?.toString()}
+                  className="px-4 py-2 bg-[#0B3022] hover:bg-[#0B3022]/90 disabled:opacity-40 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer"
+                >
+                  {isUpdatingCapacity ? "Saving..." : "Update Slots"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Admin Commission Settings */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-6 border-b border-gray-100 flex items-center gap-3 bg-[#FDFBF7]">
@@ -383,13 +522,51 @@ export function GroupSettingsClient({
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-bold text-[#0B3022] text-sm">{getDisplayName(m)}</p>
                       {isTurnAdmin ? (
-                        <span className="text-[10px] font-bold bg-[#0B3022] text-white px-2 py-0.5 rounded-full">
-                          Admin Trustee
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[10px] font-bold bg-[#0B3022] text-white px-2 py-0.5 rounded-full">
+                            Admin Trustee
+                          </span>
+                          {m.payout_turn ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingSlotMember(m);
+                                setTargetSlot(m.payout_turn?.toString() || "");
+                              }}
+                              className="text-[10px] font-bold bg-[#C5A059]/20 text-[#0B3022] border border-[#C5A059]/40 hover:bg-[#C5A059]/30 px-2.5 py-0.5 rounded-full flex items-center gap-1 cursor-pointer transition-colors"
+                              title="Click to edit or unassign Admin turn slot"
+                            >
+                              <span>Turn {m.payout_turn} (Contributing)</span>
+                              <Edit3 className="h-2.5 w-2.5 text-[#C5A059]" />
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingSlotMember(m);
+                                setTargetSlot(openTurns[0]?.toString() || "1");
+                              }}
+                              className="text-[10px] font-bold text-gray-500 hover:text-[#0B3022] hover:bg-gray-100 border border-dashed border-gray-300 px-2.5 py-0.5 rounded-full flex items-center gap-1 cursor-pointer transition-colors"
+                              title="Click to assign a payout slot to Admin"
+                            >
+                              <span>+ Claim Slot</span>
+                              <Edit3 className="h-2.5 w-2.5" />
+                            </button>
+                          )}
+                        </div>
                       ) : (
-                        <span className="text-[10px] font-bold bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
-                          Turn {memberTurn}
-                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingSlotMember(m);
+                            setTargetSlot(m.payout_turn?.toString() || "");
+                          }}
+                          className="text-[10px] font-bold bg-gray-100 hover:bg-[#C5A059]/15 hover:border-[#C5A059]/40 border border-gray-200 text-gray-700 px-2.5 py-0.5 rounded-full flex items-center gap-1 cursor-pointer transition-all"
+                          title="Click to change or swap payout slot"
+                        >
+                          <span>Turn {memberTurn}</span>
+                          <Edit3 className="h-2.5 w-2.5 text-[#C5A059]" />
+                        </button>
                       )}
 
                       {isLocked && !isTurnAdmin && (
@@ -761,6 +938,120 @@ export function GroupSettingsClient({
                 {isDeletingGroup ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : 'Delete Group'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Change Member Slot / Swap Turn Modal */}
+      {editingSlotMember && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col">
+            
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center">
+                  <ArrowLeftRight className="h-5 w-5 text-[#C5A059]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#0B3022]">Change Member Slot</h3>
+                  <p className="text-xs text-[#1F2937]/70 font-medium">
+                    {getDisplayName(editingSlotMember)} • {editingSlotMember.role === 'admin' ? 'Admin Trustee' : `Currently Turn ${editingSlotMember.payout_turn || 'None'}`}
+                  </p>
+                </div>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setEditingSlotMember(null)}
+                className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 text-xs">
+              <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 text-[#0B3022]">
+                <p className="font-semibold mb-1 flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-amber-700" />
+                  Turn Slot Management
+                </p>
+                <p className="text-gray-600 leading-relaxed text-[11px]">
+                  Selecting an open slot moves the member directly. Selecting a slot occupied by another member will automatically <strong>swap</strong> their payout turns cleanly.
+                </p>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#0B3022] mb-1.5">
+                  Select Destination Payout Slot:
+                </label>
+                <select
+                  value={targetSlot}
+                  onChange={(e) => setTargetSlot(e.target.value)}
+                  className="w-full bg-[#FDFBF7] border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-[#0B3022] focus:ring-2 focus:ring-[#C5A059]/50"
+                >
+                  <option value="" disabled>-- Select a slot --</option>
+                  {Array.from({ length: group.max_members }, (_, i) => i + 1).map(turnNum => {
+                    const occupant = members.find(m => m.payout_turn === turnNum);
+                    const isCurrent = editingSlotMember.payout_turn === turnNum;
+                    const isOccupiedByOther = occupant && occupant.id !== editingSlotMember.id;
+                    const alreadyPaid = isLocked && occupant && turnNum < (group.current_turn || 1);
+
+                    return (
+                      <option 
+                        key={turnNum} 
+                        value={turnNum}
+                        disabled={alreadyPaid}
+                      >
+                        Turn {turnNum} {isCurrent ? '(Current Slot)' : isOccupiedByOther ? `(Swap with ${getDisplayName(occupant)}${alreadyPaid ? ' - Already Paid' : ''})` : '(Open Slot)'}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {editingSlotMember.role === 'admin' && (
+                <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-[#0B3022]">Admin Participation</p>
+                    <p className="text-[11px] text-gray-500">Optionally set Admin to Non-Contributing Trustee (no payout turn)</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleAdminSlot(null)}
+                    disabled={isUpdatingSlot || editingSlotMember.payout_turn === null}
+                    className="px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 rounded-lg font-bold text-[11px] transition-colors cursor-pointer"
+                  >
+                    Remove Turn
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 bg-gray-50 flex gap-3 border-t border-gray-100">
+              <button 
+                type="button"
+                onClick={() => setEditingSlotMember(null)}
+                disabled={isUpdatingSlot}
+                className="flex-1 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-100 text-[#1F2937] font-bold rounded-xl transition-colors text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={handleChangeSlot}
+                disabled={isUpdatingSlot || !targetSlot || targetSlot === editingSlotMember.payout_turn?.toString()}
+                className="flex-1 px-4 py-2.5 bg-[#0B3022] hover:bg-[#072418] text-[#C5A059] font-bold rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
+              >
+                {isUpdatingSlot ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <ArrowLeftRight className="h-4 w-4" />
+                    <span>Confirm & Swap Slot</span>
+                  </>
+                )}
+              </button>
+            </div>
+
           </div>
         </div>
       )}
