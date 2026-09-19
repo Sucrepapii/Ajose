@@ -26,6 +26,7 @@ export default function FeedbackPage() {
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [location, setLocation] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -50,6 +51,7 @@ export default function FeedbackPage() {
           message: message.trim(),
           name: name.trim() || undefined,
           email: email.trim() || undefined,
+          location: location.trim() || undefined,
           url: "/feedback",
         }),
       });
@@ -302,6 +304,20 @@ export default function FeedbackPage() {
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#FDFBF7] border border-gray-200 text-gray-900 text-xs placeholder-gray-400 focus:outline-none focus:border-[#0B3022] focus:ring-1 focus:ring-[#0B3022] transition-all"
                     />
                   </div>
+                </div>
+
+                {/* Optional City / Country Location Field */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Your City / Country <span className="text-gray-400 font-normal text-[11px]">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="e.g., Lagos, Nigeria • London, UK • Atlanta, USA"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FDFBF7] border border-gray-200 text-gray-900 text-xs placeholder-gray-400 focus:outline-none focus:border-[#0B3022] focus:ring-1 focus:ring-[#0B3022] transition-all"
+                  />
                 </div>
 
                 {/* Submit Button */}

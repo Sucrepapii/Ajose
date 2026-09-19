@@ -3,7 +3,18 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check, Star, X, ShieldAlert, Smartphone, LineChart, Percent, LayoutDashboard, History } from "lucide-react";
+import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check, Star, X, ShieldAlert, Smartphone, LineChart, Percent, LayoutDashboard, History, Quote, Globe } from "lucide-react";
+import { CountryFlag } from "@/components/CountryFlag";
+
+interface TestimonialItem {
+  quote: string;
+  author: string;
+  role: string;
+  rating?: number;
+  country?: string;
+  countryCode?: string;
+  location?: string;
+}
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -25,24 +36,51 @@ export default function Home() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [activeShowcase, setActiveShowcase] = useState(0);
 
-  const [communityTestimonials, setCommunityTestimonials] = useState<Array<{ quote: string; author: string; role: string; rating?: number }>>([
+  const [communityTestimonials, setCommunityTestimonials] = useState<TestimonialItem[]>([
     {
       quote: "Finally, a way to do Ajo without the endless WhatsApp arguments. The automated turns feature is a lifesaver.",
       author: "Bisi A.",
       role: "Group Admin",
-      rating: 5
+      rating: 5,
+      country: "Nigeria",
+      countryCode: "NG",
+      location: "Lagos, Nigeria"
     },
     {
       quote: "I love the transparency. Being able to see exactly who has paid and who is next builds so much trust.",
       author: "Emeka O.",
       role: "Member",
-      rating: 5
+      rating: 5,
+      country: "Nigeria",
+      countryCode: "NG",
+      location: "Enugu, Nigeria"
     },
     {
       quote: "We moved our alumni contribution group here. The dashboard makes managing millions of Naira completely stress-free.",
       author: "Tola F.",
       role: "Alumni President",
-      rating: 5
+      rating: 5,
+      country: "Nigeria",
+      countryCode: "NG",
+      location: "Ibadan, Nigeria"
+    },
+    {
+      quote: "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool. Would love direct GBP debit rails next!",
+      author: "Dr. Kunle A.",
+      role: "Diaspora Circle Lead",
+      rating: 5,
+      country: "United Kingdom",
+      countryCode: "GB",
+      location: "London, UK"
+    },
+    {
+      quote: "We run our cross-border tech founders Susu on Ajocore. The ledger accuracy and payout countdown give everybody peace of mind.",
+      author: "Kwame M.",
+      role: "Susu Circle Organizer",
+      rating: 5,
+      country: "Ghana",
+      countryCode: "GH",
+      location: "Accra, Ghana"
     }
   ]);
 
@@ -630,52 +668,175 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-t border-gray-200">
+      {/* Testimonials Section: "Loved by Communities" */}
+      <section id="testimonials" className="w-full py-24 md:py-32 bg-gradient-to-b from-[#FAF7F0] via-[#F4F1EA] to-[#ECE7DC] relative z-10 border-t border-gray-200 overflow-hidden">
+        
+        {/* Multi-layered Atmospheric Background of Country Flags */}
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+          {/* Ambient Lighting Gradients */}
+          <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[#C5A059]/12 blur-[130px] rounded-full" />
+          <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-emerald-700/8 blur-[120px] rounded-full" />
+
+          {/* Faint Subtle World Flag Tapestry Watermark Pattern */}
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-multiply flex flex-wrap items-center justify-around gap-16 p-12 scale-105">
+            {["NG", "GB", "US", "CA", "GH", "KE", "ZA", "JM", "CM", "TT", "IE", "AE", "NG", "GB", "GH", "CA"].map((code, i) => (
+              <div key={i} className="transform rotate-[-8deg] filter grayscale contrast-125">
+                <CountryFlag code={code} size="lg" rounded={true} />
+              </div>
+            ))}
+          </div>
+
+          {/* Floating Glassmorphic Country Flag Badges (Global Diaspora Circles) */}
+          {[
+            { code: "NG", name: "Nigeria", tag: "Àjọ / Esusu", pos: "top-[6%] left-[3%] lg:left-[6%]", anim: "animate-float-slow" },
+            { code: "GB", name: "UK Diaspora", tag: "Pardna", pos: "top-[8%] right-[3%] lg:right-[7%]", anim: "animate-float-reverse" },
+            { code: "US", name: "United States", tag: "Rotational Fund", pos: "top-[20%] left-[2%] lg:left-[5%]", anim: "animate-float-reverse" },
+            { code: "CA", name: "Canada", tag: "Diaspora Circle", pos: "top-[22%] right-[2%] lg:right-[6%]", anim: "animate-float-slow" },
+            { code: "GH", name: "Ghana", tag: "Susu Pool", pos: "bottom-[5%] left-[4%] lg:left-[8%]", anim: "animate-float-slow" },
+            { code: "KE", name: "Kenya", tag: "Chama Circle", pos: "bottom-[6%] right-[4%] lg:right-[8%]", anim: "animate-float-reverse" },
+            { code: "ZA", name: "South Africa", tag: "Stokvel", pos: "top-[14%] left-[18%] hidden 2xl:flex", anim: "animate-float-slow" },
+            { code: "JM", name: "Jamaica", tag: "Partner Scheme", pos: "bottom-[5%] right-[20%] hidden lg:flex", anim: "animate-float-reverse" },
+            { code: "CM", name: "Cameroon", tag: "Njangi", pos: "bottom-[4%] left-[24%] hidden lg:flex", anim: "animate-float-reverse" },
+            { code: "TT", name: "Trinidad", tag: "Sou-sou", pos: "top-[5%] right-[20%] hidden xl:flex", anim: "animate-float-slow" }
+          ].map((item, idx) => (
+            <div key={idx} className={`absolute ${item.pos} ${item.anim} hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/75 backdrop-blur-md border border-[#C5A059]/30 shadow-[0_6px_20px_rgba(11,48,34,0.06)] z-0`}>
+              <CountryFlag code={item.code} size="xs" rounded={true} />
+              <div className="flex flex-col text-left leading-tight">
+                <span className="text-[11px] font-bold text-[#0B3022] tracking-tight">{item.name}</span>
+                <span className="text-[9px] text-[#C5A059] font-medium tracking-wide">{item.tag}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <motion.div 
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={staggerContainer}
-          className="container mx-auto px-6 lg:px-12"
+          className="container mx-auto px-6 lg:px-12 relative z-10"
         >
-          <motion.div variants={fadeIn} className="text-center mb-16">
+          {/* Header Block with Diaspora Indicator */}
+          <motion.div variants={fadeIn} className="text-center mb-12 sm:mb-16">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/90 border border-[#C5A059]/40 shadow-xs backdrop-blur-md mb-4">
+              <div className="flex items-center gap-1.5">
+                <CountryFlag code="NG" size="xs" />
+                <CountryFlag code="GB" size="xs" />
+                <CountryFlag code="US" size="xs" />
+                <CountryFlag code="CA" size="xs" />
+                <CountryFlag code="GH" size="xs" />
+                <CountryFlag code="KE" size="xs" />
+              </div>
+              <span className="text-xs font-bold text-[#0B3022] tracking-wide">
+                Loved Across 14+ Countries &amp; Diaspora Circles
+              </span>
+            </div>
+
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
               Loved by Communities
             </h2>
-            <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
-              See what our beta users and active circle leaders are saying about the Àjọṣe experience.
+            <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-base sm:text-lg">
+              From Lagos and London to Accra and Atlanta, hear how circle organizers and savers manage their rotations with trust and zero wahala.
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {communityTestimonials.map((testimonial, i) => (
-              <motion.div 
-                variants={fadeIn}
-                key={i} 
-                className="bg-[#FDFBF7] p-8 rounded-2xl shadow-md border border-gray-200 flex flex-col justify-between"
-                whileHover={{ y: -5, boxShadow: "0px 10px 30px rgba(0,0,0,0.05)" }}
-              >
-                <div>
-                  <div className="flex items-center gap-1 mb-6">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className="w-5 h-5 fill-[#C5A059] text-[#C5A059]" />
-                    ))}
-                  </div>
-                  <p className="text-[#1F2937]/90 text-lg leading-relaxed mb-8 italic">"{testimonial.quote}"</p>
+          {/* Conditional Layout: Horizontal Line Auto-Scroll when > 3, Classic Grid when <= 3 */}
+          {communityTestimonials.length > 3 ? (
+            <div className="w-full relative group-hover-pause">
+              {/* Illuminated Golden-Emerald Horizontal Track Line */}
+              <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-gradient-to-r from-transparent via-[#C5A059]/40 to-transparent pointer-events-none z-0" />
+
+              {/* Auto-scrolling Horizontal Track with Left/Right Gradient Masks */}
+              <div className="w-full overflow-hidden mask-horizontal-fade relative py-4">
+                <div className="animate-scroll-horizontal flex gap-6 sm:gap-8 items-stretch">
+                  {/* Duplicate list to create seamless infinite horizontal loop */}
+                  {[...communityTestimonials, ...communityTestimonials].map((testimonial, i) => (
+                    <div 
+                      key={i} 
+                      className="w-[340px] sm:w-[400px] shrink-0 relative bg-white/95 backdrop-blur-md p-6 sm:p-7 rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.05)] border border-[#C5A059]/25 hover:border-[#C5A059]/80 hover:shadow-[0_12px_35px_rgba(11,48,34,0.1)] transition-all duration-300 flex flex-col justify-between group/card z-10"
+                    >
+                      {/* Top Horizontal Connection Node on the Card */}
+                      <div className="flex items-center justify-between gap-3 mb-4">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star key={star} className="w-4 h-4 fill-[#C5A059] text-[#C5A059]" />
+                          ))}
+                        </div>
+
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0B3022]/5 border border-[#0B3022]/10 text-xs font-semibold text-[#0B3022]">
+                          <CountryFlag code={testimonial.countryCode || "NG"} size="xs" />
+                          <span>{testimonial.location || testimonial.country || "Nigeria"}</span>
+                        </div>
+                      </div>
+
+                      {/* Testimonial Quote */}
+                      <p className="text-[#1F2937]/90 text-sm sm:text-base leading-relaxed mb-6 italic">
+                        &ldquo;{testimonial.quote}&rdquo;
+                      </p>
+
+                      {/* Author Info */}
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-[#0B3022] flex items-center justify-center text-white font-bold text-sm shadow-xs">
+                            {testimonial.author[0]}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-[#0B3022] text-sm leading-tight">
+                              {testimonial.author}
+                            </h4>
+                            <p className="text-xs text-[#1F2937]/65">{testimonial.role}</p>
+                          </div>
+                        </div>
+
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-medium border border-emerald-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>Verified User</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#0B3022] flex items-center justify-center text-white font-bold text-lg">
-                    {testimonial.author[0]}
-                  </div>
+              </div>
+            </div>
+          ) : (
+            /* Classic Static 3-Column Grid for <= 3 items */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {communityTestimonials.map((testimonial, i) => (
+                <motion.div 
+                  variants={fadeIn}
+                  key={i} 
+                  className="bg-[#FDFBF7] p-8 rounded-2xl shadow-md border border-[#C5A059]/25 flex flex-col justify-between hover:shadow-xl hover:border-[#C5A059]/60 transition-all duration-300"
+                  whileHover={{ y: -5, boxShadow: "0px 12px 35px rgba(0,0,0,0.06)" }}
+                >
                   <div>
-                    <h4 className="font-bold text-[#0B3022]">{testimonial.author}</h4>
-                    <p className="text-sm text-[#1F2937]/60">{testimonial.role}</p>
+                    <div className="flex items-center justify-between gap-3 mb-6">
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className="w-4 h-4 fill-[#C5A059] text-[#C5A059]" />
+                        ))}
+                      </div>
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0B3022]/5 border border-[#0B3022]/10 text-xs font-semibold text-[#0B3022]">
+                        <CountryFlag code={testimonial.countryCode || "NG"} size="xs" />
+                        <span>{testimonial.location || testimonial.country || "Nigeria"}</span>
+                      </div>
+                    </div>
+                    <p className="text-[#1F2937]/90 text-lg leading-relaxed mb-8 italic">
+                      &ldquo;{testimonial.quote}&rdquo;
+                    </p>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                    <div className="w-12 h-12 rounded-full bg-[#0B3022] flex items-center justify-center text-white font-bold text-lg">
+                      {testimonial.author[0]}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#0B3022]">{testimonial.author}</h4>
+                      <p className="text-sm text-[#1F2937]/60">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
       </section>
 

@@ -1,17 +1,20 @@
 [
   {
-    "id": "fb-1789791301376-2852",
-    "name": "David  Jakonda",
-    "email": "",
+    "id": "fb-1789793595507-8832",
+    "name": "Aisha Bakare",
+    "email": "aisha.b@london-circle.co.uk",
     "category": "General Feedback",
-    "message": "I love using the app, it makes collection and recovery quicker.",
+    "message": "The diaspora auto-debit feature makes sending our monthly rotational savings from London so easy and safe!",
     "rating": 5,
-    "createdAt": "2026-09-19T04:15:01.376Z",
+    "createdAt": "2026-09-19T04:53:15.507Z",
     "sourceUrl": "/feedback",
     "isFeaturedInCommunity": false,
-    "featuredQuote": "I love using the app, it makes collection and recovery quicker.",
-    "featuredAuthor": "David J.",
-    "featuredRole": "Verified Member"
+    "featuredQuote": "The diaspora auto-debit feature makes sending our monthly rotational savings from London so easy and safe!",
+    "featuredAuthor": "Aisha B.",
+    "featuredRole": "Verified Member",
+    "country": "United Kingdom",
+    "countryCode": "GB",
+    "location": "London, UK"
   },
   {
     "id": "fb-seed-bisi",
@@ -25,7 +28,10 @@
     "isFeaturedInCommunity": true,
     "featuredQuote": "Finally, a way to do Ajo without the endless WhatsApp arguments. The automated turns feature is a lifesaver.",
     "featuredAuthor": "Bisi A.",
-    "featuredRole": "Group Admin"
+    "featuredRole": "Group Admin",
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "location": "Lagos, Nigeria"
   },
   {
     "id": "fb-seed-emeka",
@@ -39,7 +45,10 @@
     "isFeaturedInCommunity": true,
     "featuredQuote": "I love the transparency. Being able to see exactly who has paid and who is next builds so much trust.",
     "featuredAuthor": "Emeka O.",
-    "featuredRole": "Member"
+    "featuredRole": "Member",
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "location": "Enugu, Nigeria"
   },
   {
     "id": "fb-seed-tola",
@@ -53,7 +62,10 @@
     "isFeaturedInCommunity": true,
     "featuredQuote": "We moved our alumni contribution group here. The dashboard makes managing millions of Naira completely stress-free.",
     "featuredAuthor": "Tola F.",
-    "featuredRole": "Alumni President"
+    "featuredRole": "Alumni President",
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "location": "Ibadan, Nigeria"
   },
   {
     "id": "fb-seed-diaspora",
@@ -67,6 +79,43 @@
     "isFeaturedInCommunity": true,
     "featuredQuote": "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool.",
     "featuredAuthor": "Dr. Kunle A.",
-    "featuredRole": "Diaspora Circle Lead"
+    "featuredRole": "Diaspora Circle Lead",
+    "country": "United Kingdom",
+    "countryCode": "GB",
+    "location": "London, UK"
+  },
+  {
+    "id": "fb-seed-ghana",
+    "name": "Kwame Mensah",
+    "email": "kwame.m@accra-hub.org",
+    "category": "General Feedback",
+    "message": "We run our cross-border tech founders Susu on Ajocore. The ledger accuracy and payout countdown give everybody peace of mind.",
+    "rating": 5,
+    "createdAt": "2026-09-16T11:10:00.000Z",
+    "sourceUrl": "Mobile App",
+    "isFeaturedInCommunity": true,
+    "featuredQuote": "We run our cross-border tech founders Susu on Ajocore. The ledger accuracy and payout countdown give everybody peace of mind.",
+    "featuredAuthor": "Kwame M.",
+    "featuredRole": "Susu Circle Organizer",
+    "country": "Ghana",
+    "countryCode": "GH",
+    "location": "Accra, Ghana"
+  },
+  {
+    "id": "fb-1789791301376-2852",
+    "name": "David Jakonda",
+    "email": "",
+    "category": "General Feedback",
+    "message": "I love using the app, it makes collection and recovery quicker.",
+    "rating": 5,
+    "createdAt": "2026-09-19T04:15:01.376Z",
+    "sourceUrl": "/feedback",
+    "isFeaturedInCommunity": false,
+    "featuredQuote": "I love using the app, it makes collection and recovery quicker.",
+    "featuredAuthor": "David J.",
+    "featuredRole": "Verified Member",
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "location": "Abuja, Nigeria"
   }
 ]

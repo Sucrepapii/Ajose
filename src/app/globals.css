@@ -45,3 +45,84 @@ body {
   animation-duration: 5s;
 }
 
+/* Horizontal Auto-Scroll for Feedback along horizontal line */
+@keyframes scroll-horizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-horizontal {
+  display: flex;
+  width: max-content;
+  animation: scroll-horizontal 35s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-horizontal:hover,
+.group-hover-pause:hover .animate-scroll-horizontal {
+  animation-play-state: paused !important;
+}
+
+/* Vertical Auto-Scroll for Feedback (legacy/fallback) */
+@keyframes scroll-vertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-scroll-vertical {
+  animation: scroll-vertical 32s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-vertical:hover,
+.group-hover-pause:hover .animate-scroll-vertical {
+  animation-play-state: paused !important;
+}
+
+/* Atmospheric Ambient Floating animations for Country Flags Background */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(1.5deg);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(14px) rotate(-1.5deg);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 10s ease-in-out infinite;
+}
+
+/* Vertical timeline mask */
+.mask-vertical-fade {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+}
+
+/* Horizontal timeline mask */
+.mask-horizontal-fade {
+  mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+}
+

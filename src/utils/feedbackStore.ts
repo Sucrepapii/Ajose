@@ -14,6 +14,9 @@ export interface FeedbackItem {
   featuredQuote?: string;
   featuredAuthor?: string;
   featuredRole?: string;
+  country?: string;
+  countryCode?: string;
+  location?: string;
 }
 
 const DATA_DIR = path.join(process.cwd(), "src", "data");
@@ -34,6 +37,9 @@ const SEED_FEEDBACK: FeedbackItem[] = [
     featuredQuote: "Finally, a way to do Ajo without the endless WhatsApp arguments. The automated turns feature is a lifesaver.",
     featuredAuthor: "Bisi A.",
     featuredRole: "Group Admin",
+    country: "Nigeria",
+    countryCode: "NG",
+    location: "Lagos, Nigeria",
   },
   {
     id: "fb-seed-emeka",
@@ -48,6 +54,9 @@ const SEED_FEEDBACK: FeedbackItem[] = [
     featuredQuote: "I love the transparency. Being able to see exactly who has paid and who is next builds so much trust.",
     featuredAuthor: "Emeka O.",
     featuredRole: "Member",
+    country: "Nigeria",
+    countryCode: "NG",
+    location: "Enugu, Nigeria",
   },
   {
     id: "fb-seed-tola",
@@ -62,6 +71,9 @@ const SEED_FEEDBACK: FeedbackItem[] = [
     featuredQuote: "We moved our alumni contribution group here. The dashboard makes managing millions of Naira completely stress-free.",
     featuredAuthor: "Tola F.",
     featuredRole: "Alumni President",
+    country: "Nigeria",
+    countryCode: "NG",
+    location: "Ibadan, Nigeria",
   },
   {
     id: "fb-seed-diaspora",
@@ -72,10 +84,30 @@ const SEED_FEEDBACK: FeedbackItem[] = [
     rating: 5,
     createdAt: "2026-09-15T09:20:00.000Z",
     sourceUrl: "Footer Widget",
-    isFeaturedInCommunity: false,
+    isFeaturedInCommunity: true,
     featuredQuote: "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool.",
     featuredAuthor: "Dr. Kunle A.",
     featuredRole: "Diaspora Circle Lead",
+    country: "United Kingdom",
+    countryCode: "GB",
+    location: "London, UK",
+  },
+  {
+    id: "fb-seed-ghana",
+    name: "Kwame Mensah",
+    email: "kwame.m@accra-hub.org",
+    category: "General Feedback",
+    message: "We run our cross-border tech founders Susu on Ajocore. The ledger accuracy and payout countdown give everybody peace of mind.",
+    rating: 5,
+    createdAt: "2026-09-16T11:10:00.000Z",
+    sourceUrl: "Mobile App",
+    isFeaturedInCommunity: true,
+    featuredQuote: "We run our cross-border tech founders Susu on Ajocore. The ledger accuracy and payout countdown give everybody peace of mind.",
+    featuredAuthor: "Kwame M.",
+    featuredRole: "Susu Circle Organizer",
+    country: "Ghana",
+    countryCode: "GH",
+    location: "Accra, Ghana",
   },
 ];
 
@@ -116,6 +148,9 @@ export async function addFeedback(input: {
   message: string;
   rating?: number;
   sourceUrl?: string;
+  country?: string;
+  countryCode?: string;
+  location?: string;
 }): Promise<FeedbackItem> {
   const items = await getAllFeedback();
 
@@ -137,6 +172,9 @@ export async function addFeedback(input: {
     featuredQuote: input.message.trim(),
     featuredAuthor: defaultAuthor,
     featuredRole: "Verified Member",
+    country: input.country || "Nigeria",
+    countryCode: input.countryCode || "NG",
+    location: input.location || input.country || "Nigeria",
   };
 
   items.unshift(newItem);
@@ -158,6 +196,9 @@ export async function toggleFeatureInCommunity(
     featuredQuote?: string;
     featuredAuthor?: string;
     featuredRole?: string;
+    country?: string;
+    countryCode?: string;
+    location?: string;
   }
 ): Promise<FeedbackItem | null> {
   const items = await getAllFeedback();
@@ -175,6 +216,9 @@ export async function toggleFeatureInCommunity(
     featuredQuote: updates?.featuredQuote?.trim() || item.featuredQuote || item.message,
     featuredAuthor: updates?.featuredAuthor?.trim() || item.featuredAuthor || item.name,
     featuredRole: updates?.featuredRole?.trim() || item.featuredRole || "Verified Member",
+    country: updates?.country !== undefined ? updates.country : item.country,
+    countryCode: updates?.countryCode !== undefined ? updates.countryCode : item.countryCode,
+    location: updates?.location !== undefined ? updates.location : item.location,
   };
 
   items[index] = updated;
@@ -204,7 +248,15 @@ export async function deleteFeedback(id: string): Promise<boolean> {
 }
 
 export async function getFeaturedCommunityTestimonials(): Promise<
-  Array<{ quote: string; author: string; role: string; rating: number }>
+  Array<{
+    quote: string;
+    author: string;
+    role: string;
+    rating: number;
+    country?: string;
+    countryCode?: string;
+    location?: string;
+  }>
 > {
   const all = await getAllFeedback();
   const featured = all.filter((f) => f.isFeaturedInCommunity);
@@ -216,6 +268,9 @@ export async function getFeaturedCommunityTestimonials(): Promise<
       author: f.featuredAuthor || f.name,
       role: f.featuredRole || "Member",
       rating: f.rating || 5,
+      country: f.country || "Nigeria",
+      countryCode: f.countryCode || "NG",
+      location: f.location || "Nigeria",
     }));
   }
 
@@ -224,5 +279,8 @@ export async function getFeaturedCommunityTestimonials(): Promise<
     author: f.featuredAuthor || f.name,
     role: f.featuredRole || "Verified Member",
     rating: f.rating || 5,
+    country: f.country || (f.name.includes("UK") || (f.email && f.email.includes("uk")) ? "United Kingdom" : "Nigeria"),
+    countryCode: f.countryCode || (f.name.includes("UK") || (f.email && f.email.includes("uk")) ? "GB" : "NG"),
+    location: f.location || (f.countryCode === "GB" ? "London, UK" : "Nigeria"),
   }));
 }

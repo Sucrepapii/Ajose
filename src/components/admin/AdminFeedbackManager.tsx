@@ -26,6 +26,20 @@ import {
 import { toast } from "sonner";
 import { FeedbackItem } from "@/utils/feedbackStore";
 import Link from "next/link";
+import { CountryFlag } from "@/components/CountryFlag";
+
+const PRESET_COUNTRIES = [
+  { code: "NG", name: "Nigeria", label: "Nigeria" },
+  { code: "GB", name: "United Kingdom", label: "UK" },
+  { code: "US", name: "United States", label: "USA" },
+  { code: "CA", name: "Canada", label: "Canada" },
+  { code: "GH", name: "Ghana", label: "Ghana" },
+  { code: "KE", name: "Kenya", label: "Kenya" },
+  { code: "ZA", name: "South Africa", label: "South Africa" },
+  { code: "JM", name: "Jamaica", label: "Jamaica" },
+  { code: "CM", name: "Cameroon", label: "Cameroon" },
+  { code: "TT", name: "Trinidad & Tobago", label: "Trinidad" },
+];
 
 export function AdminFeedbackManager({
   initialFeedback = [],
@@ -42,6 +56,8 @@ export function AdminFeedbackManager({
   const [editQuote, setEditQuote] = useState("");
   const [editAuthor, setEditAuthor] = useState("");
   const [editRole, setEditRole] = useState("Group Admin");
+  const [editCountryCode, setEditCountryCode] = useState("NG");
+  const [editLocation, setEditLocation] = useState("Nigeria");
   const [isSaving, setIsSaving] = useState(false);
 
   // Modal for Manual New Testimonial creation
@@ -50,6 +66,8 @@ export function AdminFeedbackManager({
   const [newRole, setNewRole] = useState("Group Admin");
   const [newQuote, setNewQuote] = useState("");
   const [newRating, setNewRating] = useState(5);
+  const [newCountryCode, setNewCountryCode] = useState("NG");
+  const [newLocation, setNewLocation] = useState("Nigeria");
   const [isCreating, setIsCreating] = useState(false);
 
   // Metrics
@@ -87,6 +105,8 @@ export function AdminFeedbackManager({
     setEditQuote(item.featuredQuote || item.message);
     setEditAuthor(item.featuredAuthor || item.name);
     setEditRole(item.featuredRole || "Group Admin");
+    setEditCountryCode(item.countryCode || "NG");
+    setEditLocation(item.location || item.country || "Nigeria");
   };
 
   // Submit Feature or Edit to API
@@ -96,6 +116,7 @@ export function AdminFeedbackManager({
 
     setIsSaving(true);
     try {
+      const selectedCountryObj = PRESET_COUNTRIES.find((c) => c.code === editCountryCode);
       const res = await fetch("/api/feedback", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -105,6 +126,9 @@ export function AdminFeedbackManager({
           featuredQuote: editQuote.trim(),
           featuredAuthor: editAuthor.trim(),
           featuredRole: editRole.trim(),
+          countryCode: editCountryCode,
+          country: selectedCountryObj?.name || "Nigeria",
+          location: editLocation.trim() || "Nigeria",
         }),
       });
 
@@ -187,6 +211,7 @@ export function AdminFeedbackManager({
 
     setIsCreating(true);
     try {
+      const selectedCountryObj = PRESET_COUNTRIES.find((c) => c.code === newCountryCode);
       const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -195,6 +220,9 @@ export function AdminFeedbackManager({
           category: "General Feedback",
           message: newQuote.trim(),
           rating: newRating,
+          location: newLocation.trim() || "Nigeria",
+          countryCode: newCountryCode,
+          country: selectedCountryObj?.name || "Nigeria",
           url: "Admin Desk",
         }),
       });
@@ -211,6 +239,9 @@ export function AdminFeedbackManager({
             featuredQuote: newQuote.trim(),
             featuredAuthor: newName.trim(),
             featuredRole: newRole.trim(),
+            countryCode: newCountryCode,
+            country: selectedCountryObj?.name || "Nigeria",
+            location: newLocation.trim() || "Nigeria",
           }),
         });
         const patchData = await patchRes.json();
@@ -387,6 +418,12 @@ export function AdminFeedbackManager({
                         <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-medium border border-zinc-700">
                           {item.category}
                         </span>
+                        {(item.location || item.countryCode) && (
+                          <span className="inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-300 font-medium border border-zinc-700">
+                            <CountryFlag code={item.countryCode || "NG"} size="xs" />
+                            <span>{item.location || item.country || "Nigeria"}</span>
+                          </span>
+                        )}
                       </div>
                       
                       {/* Star Rating Display */}
@@ -562,12 +599,65 @@ export function AdminFeedbackManager({
                 </div>
               </div>
 
+              {/* Country Selection Pills (1-Click) */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center justify-between">
+                  <span>Country Flag (1-Click Preset)</span>
+                  <span className="text-[11px] text-[#C5A059] font-normal">
+                    Selected: {PRESET_COUNTRIES.find((c) => c.code === editCountryCode)?.name}
+                  </span>
+                </label>
+                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-950 border border-zinc-800 rounded-xl">
+                  {PRESET_COUNTRIES.map((c) => (
+                    <button
+                      key={c.code}
+                      type="button"
+                      onClick={() => {
+                        setEditCountryCode(c.code);
+                        if (!editLocation || editLocation === "Nigeria" || PRESET_COUNTRIES.some((pc) => pc.name === editLocation)) {
+                          setEditLocation(c.name);
+                        }
+                      }}
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        editCountryCode === c.code
+                          ? "bg-[#C5A059] text-zinc-950 font-bold shadow-xs scale-105"
+                          : "bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                      }`}
+                    >
+                      <CountryFlag code={c.code} size="xs" />
+                      <span>{c.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* City / Location Input */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  City / Location Tag
+                </label>
+                <input
+                  type="text"
+                  value={editLocation}
+                  onChange={(e) => setEditLocation(e.target.value)}
+                  required
+                  placeholder="e.g., Lagos, Nigeria • London, UK • Atlanta, USA"
+                  className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
+                />
+              </div>
+
               {/* Live Preview Card */}
               <div className="bg-[#FDFBF7] p-4 rounded-xl border border-gray-200 mt-2 text-zinc-900">
-                <div className="flex items-center gap-1 mb-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="w-3.5 h-3.5 fill-[#C5A059] text-[#C5A059]" />
-                  ))}
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} className="w-3.5 h-3.5 fill-[#C5A059] text-[#C5A059]" />
+                    ))}
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#0B3022]/5 border border-[#0B3022]/15 text-[11px] font-semibold text-[#0B3022]">
+                    <CountryFlag code={editCountryCode} size="xs" />
+                    <span>{editLocation || "Nigeria"}</span>
+                  </div>
                 </div>
                 <p className="text-xs italic text-gray-800 mb-2">
                   "{editQuote || "Your testimonial quote will appear here..."}"
@@ -678,6 +768,53 @@ export function AdminFeedbackManager({
                     className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
                   />
                 </div>
+              </div>
+
+              {/* Country Selection Pills (1-Click) */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center justify-between">
+                  <span>Country Flag (1-Click Preset)</span>
+                  <span className="text-[11px] text-[#C5A059] font-normal">
+                    Selected: {PRESET_COUNTRIES.find((c) => c.code === newCountryCode)?.name}
+                  </span>
+                </label>
+                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-950 border border-zinc-800 rounded-xl">
+                  {PRESET_COUNTRIES.map((c) => (
+                    <button
+                      key={c.code}
+                      type="button"
+                      onClick={() => {
+                        setNewCountryCode(c.code);
+                        if (!newLocation || newLocation === "Nigeria" || PRESET_COUNTRIES.some((pc) => pc.name === newLocation)) {
+                          setNewLocation(c.name);
+                        }
+                      }}
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        newCountryCode === c.code
+                          ? "bg-[#C5A059] text-zinc-950 font-bold shadow-xs scale-105"
+                          : "bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                      }`}
+                    >
+                      <CountryFlag code={c.code} size="xs" />
+                      <span>{c.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* City / Location Input */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  City / Location Tag
+                </label>
+                <input
+                  type="text"
+                  value={newLocation}
+                  onChange={(e) => setNewLocation(e.target.value)}
+                  required
+                  placeholder="e.g., Lagos, Nigeria • London, UK • Atlanta, USA"
+                  className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
+                />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">

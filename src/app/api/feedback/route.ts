@@ -38,6 +38,127 @@ export async function GET(req: NextRequest) {
   }
 }
 
+const COUNTRY_MAP: Record<string, string> = {
+  NG: "Nigeria",
+  GB: "United Kingdom",
+  US: "United States",
+  CA: "Canada",
+  GH: "Ghana",
+  KE: "Kenya",
+  ZA: "South Africa",
+  JM: "Jamaica",
+  CM: "Cameroon",
+  TT: "Trinidad & Tobago",
+  IE: "Ireland",
+  AE: "United Arab Emirates",
+};
+
+async function resolveLocation(req: NextRequest, manualLocation?: string): Promise<{
+  location: string;
+  country: string;
+  countryCode: string;
+}> {
+  // 1. Manual Input: If provided by the user in /feedback
+  if (manualLocation && manualLocation.trim().length > 0) {
+    const loc = manualLocation.trim();
+    const upper = loc.toUpperCase();
+    let code = "NG";
+    let country = "Nigeria";
+
+    for (const [cCode, cName] of Object.entries(COUNTRY_MAP)) {
+      if (upper.includes(cCode) || upper.includes(cName.toUpperCase())) {
+        code = cCode;
+        country = cName;
+        break;
+      }
+    }
+
+    if (upper.includes("UK") || upper.includes("LONDON") || upper.includes("MANCHESTER") || upper.includes("BIRMINGHAM")) {
+      code = "GB";
+      country = "United Kingdom";
+    } else if (upper.includes("USA") || upper.includes("AMERICA") || upper.includes("NEW YORK") || upper.includes("TEXAS") || upper.includes("ATLANTA") || upper.includes("CALIFORNIA") || upper.includes("MARYLAND")) {
+      code = "US";
+      country = "United States";
+    } else if (upper.includes("TORONTO") || upper.includes("ONTARIO") || upper.includes("CALGARY")) {
+      code = "CA";
+      country = "Canada";
+    } else if (upper.includes("ACCRA") || upper.includes("KUMASI")) {
+      code = "GH";
+      country = "Ghana";
+    } else if (upper.includes("NAIROBI") || upper.includes("MOMBASA")) {
+      code = "KE";
+      country = "Kenya";
+    } else if (upper.includes("LAGOS") || upper.includes("ABUJA") || upper.includes("IBADAN") || upper.includes("ENUGU") || upper.includes("PORT HARCOURT") || upper.includes("BENIN") || upper.includes("KANO")) {
+      code = "NG";
+      country = "Nigeria";
+    }
+
+    return {
+      location: loc,
+      country,
+      countryCode: code,
+    };
+  }
+
+  // 2. IP Auto-Fallback: Read cloud edge headers (Vercel, Cloudflare, etc.)
+  const headerCountry = req.headers.get("x-vercel-ip-country") || req.headers.get("cf-ipcountry");
+  const headerCity = req.headers.get("x-vercel-ip-city");
+
+  if (headerCountry) {
+    const code = headerCountry.toUpperCase();
+    const country = COUNTRY_MAP[code] || code;
+    const city = headerCity ? decodeURIComponent(headerCity) : "";
+    const location = city ? `${city}, ${country}` : country;
+    return {
+      location,
+      country,
+      countryCode: code,
+    };
+  }
+
+  // 3. Fallback: Query IP Geolocation API if external IP detected
+  try {
+    const forwarded = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip");
+    const clientIp = forwarded ? forwarded.split(",")[0].trim() : null;
+
+    if (
+      clientIp &&
+      clientIp !== "127.0.0.1" &&
+      clientIp !== "::1" &&
+      !clientIp.startsWith("192.168.") &&
+      !clientIp.startsWith("10.") &&
+      !clientIp.startsWith("172.")
+    ) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(`https://ipapi.co/${clientIp}/json/`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.country_code) {
+          const code = data.country_code.toUpperCase();
+          const country = data.country_name || COUNTRY_MAP[code] || "Nigeria";
+          const city = data.city || "";
+          const location = city ? `${city}, ${country}` : country;
+          return {
+            location,
+            country,
+            countryCode: code,
+          };
+        }
+      }
+    }
+  } catch {
+    // Silently fallback
+  }
+
+  return {
+    location: "Nigeria",
+    country: "Nigeria",
+    countryCode: "NG",
+  };
+}
+
 /**
  * POST /api/feedback
  * Submits new user feedback from the footer or app
@@ -51,6 +172,7 @@ export async function POST(req: NextRequest) {
       rating = 5, 
       name = "Anonymous Contributor", 
       email = "",
+      location: manualLocation,
       url = "Footer Widget" 
     } = body;
 
@@ -67,6 +189,9 @@ export async function POST(req: NextRequest) {
       timeStyle: "short",
     });
 
+    // Resolve location (Manual Input or IP Auto-Fallback)
+    const resolvedGeo = await resolveLocation(req, manualLocation);
+
     // 1. Persist to unified feedbackStore
     const savedItem = await addFeedback({
       name,
@@ -75,6 +200,9 @@ export async function POST(req: NextRequest) {
       message,
       rating: Number(rating),
       sourceUrl: url,
+      location: resolvedGeo.location,
+      country: resolvedGeo.country,
+      countryCode: resolvedGeo.countryCode,
     });
 
     // 2. Try to record in Supabase feedback table if available
@@ -96,7 +224,8 @@ export async function POST(req: NextRequest) {
       console.warn("Supabase feedback insert skipped:", dbErr);
     }
 
-    // 3. Dispatch instant email notification to akinboroo@gmail.com
+    /*
+    // 3. Dispatch instant email notification to akinboroo@gmail.com (Will activate once we launch)
     const emailSubject = `💬 Àjọṣe Feedback [${category}] from ${name || "User"}`;
     const starsHtml = "★".repeat(Math.max(1, Math.min(5, Number(rating)))) + 
                       "☆".repeat(Math.max(0, 5 - Math.max(1, Math.min(5, Number(rating)))));
@@ -153,6 +282,7 @@ export async function POST(req: NextRequest) {
       subject: emailSubject,
       html: emailHtml,
     });
+    */
 
     return NextResponse.json({
       success: true,
@@ -176,7 +306,16 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, isFeaturedInCommunity, featuredQuote, featuredAuthor, featuredRole } = body;
+    const { 
+      id, 
+      isFeaturedInCommunity, 
+      featuredQuote, 
+      featuredAuthor, 
+      featuredRole,
+      country,
+      countryCode,
+      location 
+    } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Feedback id is required" }, { status: 400 });
@@ -187,6 +326,9 @@ export async function PATCH(req: NextRequest) {
       featuredQuote,
       featuredAuthor,
       featuredRole,
+      country,
+      countryCode,
+      location,
     });
 
     if (!updated) {
