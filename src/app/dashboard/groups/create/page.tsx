@@ -301,8 +301,9 @@ export default function CreateGroupPage() {
                       name="frequency"
                       value={formData.frequency}
                       onChange={handleChange}
-                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium"
+                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium cursor-pointer"
                     >
+                      <option value="daily">Daily (Every Day)</option>
                       <option value="weekly">Weekly</option>
                       <option value="biweekly">Bi-weekly (Every 2 weeks)</option>
                       <option value="monthly">Monthly</option>

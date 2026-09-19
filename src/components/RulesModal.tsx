@@ -57,9 +57,10 @@ export function RulesModal() {
                   To ensure predictable liquidity and smooth banking settlements, all contribution cycles feature structured grace periods before automated debits and rotational payouts execute:
                 </p>
                 <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1 mt-1">
-                  <li><strong>Monthly Groups:</strong> 5-day grace period (opens 1st, final collection & payout cutoff on the <strong>5th of the new month</strong>).</li>
-                  <li><strong>Weekly Groups:</strong> 2-day grace period (opens Monday, final collection & payout cutoff on <strong>Tuesday</strong>).</li>
-                  <li><strong>Bi-Weekly Groups:</strong> 3-day grace period (opens Monday, final collection & payout cutoff on <strong>Wednesday</strong>).</li>
+                  <li><strong>Daily Groups:</strong> 24-hour collection cadence (opens morning, collection &amp; payout cutoff same day).</li>
+                  <li><strong>Weekly Groups:</strong> 2-day grace period (opens Monday, final collection &amp; payout cutoff on <strong>Tuesday</strong>).</li>
+                  <li><strong>Bi-Weekly Groups:</strong> 3-day grace period (opens Monday, final collection &amp; payout cutoff on <strong>Wednesday</strong>).</li>
+                  <li><strong>Monthly Groups:</strong> 5-day grace period (opens 1st, final collection &amp; payout cutoff on the <strong>5th of the new month</strong>).</li>
                 </ul>
               </div>
 
