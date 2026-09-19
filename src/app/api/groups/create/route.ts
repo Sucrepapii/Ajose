@@ -114,7 +114,8 @@ export async function POST(req: Request) {
         max_members: parsedMembers,
         frequency: frequency || "monthly",
         status: "pending",
-        admin_id: userId
+        admin_id: userId,
+        description: `Rotational contribution group managed on Ajose (${name.trim()}).`
       };
 
       const { data: data2, error: err2 } = await dbClient
@@ -148,42 +149,11 @@ export async function POST(req: Request) {
         if (!err3) {
           insertedGroup = data3 || payload3;
         } else {
-          console.error("Group insert attempt 3 failed:", err3);
-
-          // Attempt 4: Seamless fallback for 'daily' frequency if database enum has not been migrated yet
-          if (frequency === "daily" && (err3.message?.includes("frequency_type") || err3.code === "22P02")) {
-            console.warn("Retrying daily group insert using fallback cadence with monthly storage...");
-            const payload4 = {
-              id: groupId,
-              name: name.trim(),
-              contribution_amount: parsedContrib,
-              max_members: parsedMembers,
-              frequency: "monthly",
-              status: "pending",
-              admin_id: userId
-            };
-
-            const { data: data4, error: err4 } = await dbClient
-              .from("groups")
-              .insert(payload4)
-              .select()
-              .maybeSingle();
-
-            if (!err4) {
-              insertedGroup = { ...(data4 || payload4), frequency: "daily" };
-            } else {
-              console.error("Daily fallback attempt 4 failed:", err4);
-              return NextResponse.json(
-                { error: err4.message || "Failed to create group in database.", details: err4 },
-                { status: 500 }
-              );
-            }
-          } else {
-            return NextResponse.json(
-              { error: err3.message || "Failed to create group in database.", details: err3 },
-              { status: 500 }
-            );
-          }
+          console.error("All group insert attempts failed:", err3);
+          return NextResponse.json(
+            { error: err3.message || "Failed to create group in database.", details: err3 },
+            { status: 500 }
+          );
         }
       }
     }

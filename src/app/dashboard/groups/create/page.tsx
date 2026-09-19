@@ -185,11 +185,9 @@ export default function CreateGroupPage() {
   };
 
   // Calculations for summary
-  const isDaily = formData.frequency === "daily";
   const cont = parseInt(formData.contributionAmount) || 0;
   const mems = parseInt(formData.maxMembers) || 0;
-  const monthlyMemberDeposit = isDaily ? cont * 30 : cont;
-  const totalPool = isDaily ? (cont * 30) * mems : cont * mems;
+  const totalPool = cont * mems;
   const platformFee = Math.min(15000, Math.round(totalPool * 0.02)); // 2% capped at ₦15,000
   const commPctNumber = parseFloat(formData.adminCommission) || 0;
   const adminFee = totalPool * (commPctNumber / 100);
@@ -243,9 +241,7 @@ export default function CreateGroupPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-[#0B3022]">
-                      {isDaily ? "Daily Contribution per Member (₦/day)" : "Contribution Amount (₦)"}
-                    </label>
+                    <label className="text-sm font-bold text-[#0B3022]">Contribution Amount (₦)</label>
                     <div className="relative">
                       <Wallet className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
                       <input 
@@ -253,23 +249,16 @@ export default function CreateGroupPage() {
                         value={formData.contributionAmount}
                         onChange={handleChange}
                         type="number" 
-                        placeholder={isDaily ? "1000" : "50000"} 
+                        placeholder="50000" 
                         className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium" 
                       />
                     </div>
-                    {isDaily && (
-                      <p className="text-[11px] text-[#0B3022] font-semibold">
-                        💡 ₦{cont.toLocaleString()}/day = <strong>₦{(cont * 30).toLocaleString()}</strong> monthly deposit per member (30 days).
-                      </p>
-                    )}
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-bold text-[#0B3022]">
-                        {isDaily ? "Total Members (Cycle Duration in Months)" : "Total Members (Including You)"}
-                      </label>
+                      <label className="text-sm font-bold text-[#0B3022]">Total Members (Including You)</label>
                       <span className="text-xs font-bold text-[#0B3022] bg-[#C5A059]/20 px-2 py-0.5 rounded-full">
-                        {isDaily ? `${formData.maxMembers || "0"} Members (${formData.maxMembers || "0"} Months)` : `${formData.maxMembers || "0"} Members`}
+                        {formData.maxMembers || "0"} Members
                       </span>
                     </div>
                     <div className="relative">
@@ -280,7 +269,7 @@ export default function CreateGroupPage() {
                         onChange={handleChange}
                         type="number"
                         min="2"
-                        placeholder="Enter member count (e.g. 5, 10, 12)" 
+                        placeholder="Enter any member count (e.g. 15, 50)" 
                         className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium"
                       />
                     </div>
@@ -312,59 +301,14 @@ export default function CreateGroupPage() {
                       name="frequency"
                       value={formData.frequency}
                       onChange={handleChange}
-                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium cursor-pointer"
+                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium"
                     >
-                      <option value="daily">Daily (Every Day)</option>
                       <option value="weekly">Weekly</option>
                       <option value="biweekly">Bi-weekly (Every 2 weeks)</option>
                       <option value="monthly">Monthly</option>
                     </select>
                   </div>
                 </div>
-
-                {/* Daily Ajo Cycle Duration & Mechanics Guidance */}
-                {isDaily && (
-                  <div className="bg-[#C5A059]/10 border border-[#C5A059]/30 rounded-xl p-4 space-y-2.5 text-xs animate-in fade-in duration-200">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                      <span className="font-bold text-[#0B3022] flex items-center gap-1.5">
-                        <span>⚡ Daily Savings • Monthly Rotational Payout:</span>
-                        <span className="bg-[#0B3022] text-[#C5A059] px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold">
-                          {formData.maxMembers || 0} Months Duration
-                        </span>
-                      </span>
-                      <span className="text-[11px] text-[#0B3022]/80 font-bold">
-                        1 Member Payout Disbursed Each Month
-                      </span>
-                    </div>
-
-                    <p className="text-[#1F2937]/80 leading-relaxed">
-                      Members save micro-amounts of <strong>₦{cont.toLocaleString()} every day</strong> (totaling <strong>₦{(cont * 30).toLocaleString()}/month</strong> per person). At the end of each 30-day month, one member collects the full accumulated monthly pool of <strong>₦{totalPool.toLocaleString()}</strong> on their rotational turn until all {mems} members have collected over <strong>{mems} months</strong>.
-                    </p>
-
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-[#C5A059]/20">
-                      <span className="text-[10px] uppercase font-bold text-gray-500 font-mono">Suggested Cycle Durations:</span>
-                      {[
-                        { count: 3, label: "3 Members (3 Months)" },
-                        { count: 6, label: "6 Members (6 Months)" },
-                        { count: 10, label: "10 Members (10 Months)" },
-                        { count: 12, label: "12 Members (1 Full Year)" }
-                      ].map((preset) => (
-                        <button
-                          key={preset.count}
-                          type="button"
-                          onClick={() => setFormData(prev => ({ ...prev, maxMembers: preset.count.toString() }))}
-                          className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                            Number(formData.maxMembers) === preset.count
-                              ? "bg-[#0B3022] text-[#C5A059] shadow-xs"
-                              : "bg-white border border-[#C5A059]/40 text-[#0B3022] hover:bg-[#C5A059]/20"
-                          }`}
-                        >
-                          {preset.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
               
               <div className="pt-4 flex justify-end">
@@ -551,27 +495,15 @@ export default function CreateGroupPage() {
                 <h4 className="text-sm font-bold text-[#0B3022] mb-4 uppercase tracking-wider relative z-10">Institutional Breakdown</h4>
                 <div className="space-y-3 text-sm relative z-10">
                   <div className="flex justify-between font-medium">
-                    <span className="text-[#1F2937]/70">
-                      {isDaily ? "Daily Contribution (Per Member)" : "Contribution per Member"}
-                    </span>
-                    <span className="text-[#0B3022]">
-                      {isDaily ? (
-                        <>₦{cont.toLocaleString()}/day <span className="text-xs text-gray-500 font-normal">(₦{monthlyMemberDeposit.toLocaleString()}/mo)</span></>
-                      ) : (
-                        <>₦{cont.toLocaleString()} / <span className="capitalize">{formData.frequency}</span></>
-                      )}
-                    </span>
+                    <span className="text-[#1F2937]/70">Contribution per Member</span>
+                    <span className="text-[#0B3022]">₦{cont.toLocaleString()} / <span className="capitalize">{formData.frequency}</span></span>
                   </div>
                   <div className="flex justify-between font-medium">
-                    <span className="text-[#1F2937]/70">Total Members &amp; Duration</span>
-                    <span className="text-[#0B3022]">
-                      {mems} Members {isDaily ? `(${mems} Monthly Turns / ${mems} Months Total)` : `(${mems} Turns)`}
-                    </span>
+                    <span className="text-[#1F2937]/70">Total Members</span>
+                    <span className="text-[#0B3022]">{mems}</span>
                   </div>
                   <div className="flex justify-between font-medium">
-                    <span className="text-[#1F2937]/70">
-                      {isDaily ? "Total Monthly Pool Disbursed" : "Total Pool per Cycle"}
-                    </span>
+                    <span className="text-[#1F2937]/70">Total Pool per Cycle</span>
                     <span className="text-[#0B3022] font-bold">₦{totalPool.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between border-t border-gray-200 pt-3 mt-3 font-medium">

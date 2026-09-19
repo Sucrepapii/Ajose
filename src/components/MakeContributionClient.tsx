@@ -368,10 +368,9 @@ export function MakeContributionClient({
                 <p className="text-[10px] text-[#1F2937]/60 font-bold uppercase tracking-wider mb-0.5">Amount Due</p>
                 <p className="text-2xl font-black text-[#0B3022] tracking-tight">₦{amount.toLocaleString()}</p>
                 <p className="text-[10px] text-[#0B3022]/70 font-semibold mt-1 bg-amber-50 border border-amber-200 py-1 px-2.5 rounded-full inline-flex items-center gap-1">
-                  {frequency === "daily" && "⚡ Daily Micro-Savings • Collected Daily Towards Monthly Turn Payout"}
                   {frequency === "weekly" && "⏳ 2-Day Grace Period • Opens Mon, Cutoff Tue"}
                   {frequency === "biweekly" && "⏳ 3-Day Grace Period • Opens Mon, Cutoff Wed"}
-                  {frequency !== "daily" && frequency !== "weekly" && frequency !== "biweekly" && "⏳ 5-Day Grace Period • Collection & Cutoff on the 5th"}
+                  {frequency !== "weekly" && frequency !== "biweekly" && "⏳ 5-Day Grace Period • Collection & Cutoff on the 5th"}
                 </p>
                 <p className="text-[10px] text-gray-500 mt-1">Direct to Admin's Settlement Account</p>
               </div>
