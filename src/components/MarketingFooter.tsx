@@ -1,12 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FooterFeedback } from "@/components/FooterFeedback";
 
 export function MarketingFooter() {
   return (
     <footer className="pt-20 pb-10 border-t border-[#C5A059]/20 bg-[#082319] text-sm">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           
           {/* Column 1 */}
           <div className="col-span-1 lg:col-span-2">
@@ -46,10 +45,9 @@ export function MarketingFooter() {
               <li><Link href="/about" className="text-gray-400 hover:text-[#C5A059] transition-colors">About Us</Link></li>
               <li><Link href="/contact" className="text-gray-400 hover:text-[#C5A059] transition-colors">Contact</Link></li>
               <li>
-                <a href="#footer-feedback" className="text-[#C5A059] hover:text-[#D4AF37] font-semibold transition-colors inline-flex items-center gap-1.5">
+                <Link href="/feedback" className="text-gray-400 hover:text-[#C5A059] transition-colors inline-flex items-center gap-1.5">
                   <span>Share Feedback</span>
-                  <span className="text-[10px] bg-[#C5A059]/20 px-1.5 py-0.5 rounded text-[#C5A059]">New</span>
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -66,16 +64,27 @@ export function MarketingFooter() {
           
         </div>
 
-        {/* Interactive Feedback Section */}
-        <FooterFeedback />
+        {/* Clean Feedback Callout Text & Link in Footer */}
+        <div className="pt-6 pb-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
+          <p className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse" />
+            <span>Have an idea or feedback on your circle experience?</span>
+          </p>
+          <Link 
+            href="/feedback" 
+            className="text-[#C5A059] hover:text-[#D4AF37] font-semibold hover:underline transition-colors inline-flex items-center gap-1"
+          >
+            <span>Share your feedback &rarr;</span>
+          </Link>
+        </div>
         
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-400 text-xs font-medium">© {new Date().getFullYear()} Àjọṣe Technologies Ltd. All rights reserved. &bull; Turn by turn, no wahala.</p>
           <div className="flex items-center gap-6 text-xs text-gray-400">
             <Link href="/privacy" className="hover:text-[#C5A059] transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-[#C5A059] transition-colors">Terms</Link>
-            <a href="#footer-feedback" className="hover:text-[#C5A059] transition-colors">Feedback</a>
+            <Link href="/feedback" className="hover:text-[#C5A059] transition-colors">Feedback</Link>
           </div>
         </div>
       </div>

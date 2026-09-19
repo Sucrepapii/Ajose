@@ -1,5 +1,19 @@
 [
   {
+    "id": "fb-1789791301376-2852",
+    "name": "David  Jakonda",
+    "email": "",
+    "category": "General Feedback",
+    "message": "I love using the app, it makes collection and recovery quicker.",
+    "rating": 5,
+    "createdAt": "2026-09-19T04:15:01.376Z",
+    "sourceUrl": "/feedback",
+    "isFeaturedInCommunity": false,
+    "featuredQuote": "I love using the app, it makes collection and recovery quicker.",
+    "featuredAuthor": "David J.",
+    "featuredRole": "Verified Member"
+  },
+  {
     "id": "fb-seed-bisi",
     "name": "Bisi A.",
     "email": "bisi.a@example.com",
@@ -50,7 +64,7 @@
     "rating": 5,
     "createdAt": "2026-09-15T09:20:00.000Z",
     "sourceUrl": "Footer Widget",
-    "isFeaturedInCommunity": false,
+    "isFeaturedInCommunity": true,
     "featuredQuote": "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool.",
     "featuredAuthor": "Dr. Kunle A.",
     "featuredRole": "Diaspora Circle Lead"
