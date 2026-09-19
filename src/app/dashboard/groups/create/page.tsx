@@ -310,6 +310,52 @@ export default function CreateGroupPage() {
                     </select>
                   </div>
                 </div>
+
+                {/* Daily Ajo Cycle Duration & Mechanics Guidance */}
+                {formData.frequency === "daily" && (
+                  <div className="bg-[#C5A059]/10 border border-[#C5A059]/30 rounded-xl p-4 space-y-2.5 text-xs animate-in fade-in duration-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                      <span className="font-bold text-[#0B3022] flex items-center gap-1.5">
+                        <span>⚡ Daily Ajo Mechanics:</span>
+                        <span className="bg-[#0B3022] text-[#C5A059] px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold">
+                          {formData.maxMembers || 0} Days Total Cycle
+                        </span>
+                      </span>
+                      <span className="text-[11px] text-[#0B3022]/80 font-bold">
+                        {Number(formData.maxMembers) === 30 ? "Standard 1-Month Cycle" : 
+                         Number(formData.maxMembers) === 60 ? "2-Month Cycle" : 
+                         Number(formData.maxMembers) === 90 ? "3-Month Quarter Cycle" : 
+                         `${formData.maxMembers || 0} Days (≈${(Number(formData.maxMembers || 0) / 30).toFixed(1)} Months)`}
+                      </span>
+                    </div>
+
+                    <p className="text-[#1F2937]/80 leading-relaxed">
+                      In a rotational Daily Ajo, each member contributes <strong>₦{Number(formData.contributionAmount || 0).toLocaleString()} every day</strong>. The full cycle runs for <strong>{formData.maxMembers || 0} days</strong> ({formData.maxMembers || 0} members). Each day, one member collects the full daily pool of <strong>₦{(Number(formData.contributionAmount || 0) * Number(formData.maxMembers || 0)).toLocaleString()}</strong> on their designated turn until the cycle finishes.
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-[#C5A059]/20">
+                      <span className="text-[10px] uppercase font-bold text-gray-500 font-mono">Suggested Cycle Endings:</span>
+                      {[
+                        { days: 30, label: "30 Days (1 Month)" },
+                        { days: 60, label: "60 Days (2 Months)" },
+                        { days: 90, label: "90 Days (3 Months)" }
+                      ].map((preset) => (
+                        <button
+                          key={preset.days}
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, maxMembers: preset.days.toString() }))}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                            Number(formData.maxMembers) === preset.days
+                              ? "bg-[#0B3022] text-[#C5A059] shadow-xs"
+                              : "bg-white border border-[#C5A059]/40 text-[#0B3022] hover:bg-[#C5A059]/20"
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               <div className="pt-4 flex justify-end">

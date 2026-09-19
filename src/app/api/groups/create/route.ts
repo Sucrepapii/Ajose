@@ -150,6 +150,18 @@ export async function POST(req: Request) {
           insertedGroup = data3 || payload3;
         } else {
           console.error("All group insert attempts failed:", err3);
+
+          if (err3.message?.includes("frequency_type") || err3.code === "22P02") {
+            return NextResponse.json(
+              {
+                error: "Database configuration required: The 'daily' contribution frequency requires adding 'daily' to the frequency_type enum in Supabase. Please run: ALTER TYPE frequency_type ADD VALUE IF NOT EXISTS 'daily'; in the Supabase SQL editor.",
+                code: err3.code,
+                details: err3.message
+              },
+              { status: 500 }
+            );
+          }
+
           return NextResponse.json(
             { error: err3.message || "Failed to create group in database.", details: err3 },
             { status: 500 }
