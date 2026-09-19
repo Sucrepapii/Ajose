@@ -79,124 +79,30 @@ export function MakeContributionClient({
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     try {
+      const res = await fetch("/api/groups/contribute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId,
+          userId,
+          amount,
+          currentTurn,
+          method: "auto_debit",
+          simulateFailure
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Auto-debit failed.");
+      }
+
       if (simulateFailure) {
-        // Log failed contribution transaction
-        await supabase
-          .from('transactions')
-          .insert({
-            group_id: groupId,
-            user_id: userId,
-            amount: amount,
-            type: 'contribution',
-            status: 'failed',
-            description: `Auto-debit sweep failed: Insufficient balance in member bank account for Turn ${currentTurn}`,
-            cycle_turn: currentTurn
-          });
-
-        // Penalize credit score by 10
-        const { data: profile } = await supabase
-          .from('users')
-          .select('credit_score')
-          .eq('id', userId)
-          .single();
-
-        if (profile) {
-          await supabase
-            .from('users')
-            .update({ credit_score: Math.max(0, (profile.credit_score ?? 50) - 10) })
-            .eq('id', userId);
-        }
-
-        // Notify admin of failed member auto-debit
-        const { data: adminMembership } = await supabase
-          .from('memberships')
-          .select('user_id')
-          .eq('group_id', groupId)
-          .eq('role', 'admin')
-          .single();
-
-        if (adminMembership) {
-          await supabase.from('notifications').insert({
-            user_id: adminMembership.user_id,
-            title: "Member Auto-Debit Failed",
-            message: `A member's automated debit sweep of ₦${amount.toLocaleString()} failed for Turn ${currentTurn}. The member has been redirected to transfer directly to your settlement account.`,
-            type: "error"
-          });
-        }
-
         setAutoDebitFailed(true);
         setMethod("transfer");
         toast.error("Auto-debit sweep was declined. Please make a direct transfer to the Admin's settlement account below.");
         router.refresh();
         return;
-      }
-
-      // Successful auto-debit sweep
-      const { error } = await supabase
-        .from('transactions')
-        .insert({
-          group_id: groupId,
-          user_id: userId,
-          amount: amount,
-          type: 'contribution',
-          status: 'completed',
-          description: `Auto-debit sweep via Mono direct debit mandate for Turn ${currentTurn}`,
-          cycle_turn: currentTurn
-        });
-
-      if (error) throw error;
-
-      // Increment credit score by 5 for successful payment
-      const { data: profile } = await supabase
-        .from('users')
-        .select('credit_score')
-        .eq('id', userId)
-        .single();
-        
-      if (profile) {
-        await supabase
-          .from('users')
-          .update({ credit_score: (profile.credit_score ?? 50) + 5 })
-          .eq('id', userId);
-      }
-
-      // Fetch user profile to get email for receipt
-      const { data: userProfile } = await supabase
-        .from('users')
-        .select('first_name, last_name, email')
-        .eq('id', userId)
-        .single();
-
-      if (userProfile?.email) {
-        fetch('/api/groups/contribution-receipt', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: userProfile.email,
-            userName: userProfile.first_name || 'Member',
-            groupName: 'Àjọ Circle',
-            amount: amount,
-            reference: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
-            date: new Date().toLocaleString(),
-          })
-        }).catch((err) => console.error("Contribution receipt email error:", err));
-      }
-
-      // Find the admin of this group
-      const { data: adminMembership } = await supabase
-        .from('memberships')
-        .select('user_id')
-        .eq('group_id', groupId)
-        .eq('role', 'admin')
-        .single();
-
-      if (adminMembership) {
-        await supabase.from('notifications').insert({
-          user_id: adminMembership.user_id,
-          title: "New Contribution Received",
-          message: `Auto-debit sweep succeeded: ₦${amount.toLocaleString()} deposited into your settlement account for Turn ${currentTurn}.`,
-          type: "success"
-        });
       }
 
       setIsSuccess(true);
@@ -222,36 +128,24 @@ export function MakeContributionClient({
     setIsProcessing(true);
 
     try {
-      // 1. Record pending transaction in Supabase
-      const { error } = await supabase
-        .from('transactions')
-        .insert({
-          group_id: groupId,
-          user_id: userId,
-          amount: amount,
-          type: 'contribution',
-          status: 'pending_confirmation',
-          description: `Manual Transfer | Narration: ${narrationCode} | From: ${senderName || 'Member'} (${senderBank})`,
-          cycle_turn: currentTurn
-        });
+      const res = await fetch("/api/groups/contribute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId,
+          userId,
+          amount,
+          currentTurn,
+          method: "transfer",
+          senderBank,
+          senderName,
+          narrationCode
+        })
+      });
 
-      if (error) throw error;
-
-      // 2. Notify the Group Admin
-      const { data: adminMembership } = await supabase
-        .from('memberships')
-        .select('user_id')
-        .eq('group_id', groupId)
-        .eq('role', 'admin')
-        .single();
-
-      if (adminMembership) {
-        await supabase.from('notifications').insert({
-          user_id: adminMembership.user_id,
-          title: "Manual Transfer Submitted",
-          message: `A member reported a manual bank transfer of ₦${amount.toLocaleString()} with narration ${narrationCode}. Mono-assisted verification is ready for review.`,
-          type: "info"
-        });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to submit transfer record.");
       }
 
       toast.success("Transfer submitted! Mono is cross-referencing your deposit with the Admin's bank statement.");

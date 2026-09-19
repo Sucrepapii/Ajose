@@ -45,9 +45,31 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Only the group Admin trustee can disburse payouts." }, { status: 403 });
     }
 
-    const turn = currentTurn || group.current_turn || 1;
+    // 4. Determine the actual next unpaid turn based on recorded transactions
+    const { data: groupMembers } = await supabaseAdmin
+      .from("memberships")
+      .select("id, payout_turn")
+      .eq("group_id", groupId);
 
-    // 4. Find the turn collector
+    const memberIds = (groupMembers || []).map((m: any) => m.id);
+    const { data: existingPayouts } = memberIds.length > 0
+      ? await supabaseAdmin
+          .from("transactions")
+          .select("cycle_turn")
+          .in("membership_id", memberIds)
+          .eq("type", "payout")
+          .eq("status", "successful")
+      : { data: [] };
+
+    const paidTurns = new Set((existingPayouts || []).map((t: any) => t.cycle_turn));
+    const highestPaidTurn = paidTurns.size > 0 ? Math.max(...Array.from(paidTurns)) : 0;
+
+    // The turn to disburse MUST be the next unpaid turn
+    const turn = currentTurn && currentTurn > highestPaidTurn 
+      ? currentTurn 
+      : (highestPaidTurn + 1);
+
+    // 5. Find the turn collector
     const { data: receivingMembership } = await supabaseAdmin
       .from("memberships")
       .select("*, users(*)")

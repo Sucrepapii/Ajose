@@ -12,11 +12,13 @@ type Group = any;
 export function ProcessPayoutClient({ 
   group, 
   receivingMember, 
-  isAdmin 
+  isAdmin,
+  currentTurn: passedTurn
 }: { 
   group: Group, 
   receivingMember: Member | null, 
-  isAdmin: boolean 
+  isAdmin: boolean,
+  currentTurn?: number
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -26,8 +28,8 @@ export function ProcessPayoutClient({
 
   if (!isAdmin || !receivingMember) return null;
 
+  const currentTurn = passedTurn || receivingMember?.payout_turn || group.current_turn || 1;
   const receivingUser = receivingMember.users;
-  const currentTurn = group.current_turn || 1;
 
   const getDisplayName = () => {
     if (receivingUser?.nickname) return receivingUser.nickname;

@@ -451,6 +451,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                                   group={group} 
                                   receivingMember={receivingMember} 
                                   isAdmin={isAdmin} 
+                                  currentTurn={currentTurn}
                                 />
                               )}
                             </div>

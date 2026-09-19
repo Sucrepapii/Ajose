@@ -93,54 +93,31 @@ export function ConfirmTransferClient({
     runMonoVerification();
   };
 
-  // 1. Confirm Receipt: Updates status to completed, restores credit score, clears failed debit
+  // 1. Confirm Receipt: Updates status to successful, restores credit score, clears failed debit
   const handleConfirmReceipt = async () => {
     setIsConfirming(true);
 
     try {
-      // 1. Update this transaction to 'completed'
-      const { error: txUpdateError } = await supabase
-        .from('transactions')
-        .update({
-          status: 'completed',
-          description: `${transaction.description || 'Manual transfer'} | Confirmed by Admin (Mono Verified)`
+      const res = await fetch("/api/groups/confirm-transfer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transactionId: transaction.id,
+          action: "confirm",
+          groupId,
+          currentTurn,
+          memberUserId: transaction.user_id,
+          amount: transaction.amount,
+          memberName
         })
-        .eq('id', transaction.id);
-
-      if (txUpdateError) throw txUpdateError;
-
-      // 2. Clear any prior failed debit transaction for this turn so the warning clears
-      await supabase
-        .from('transactions')
-        .delete()
-        .eq('group_id', groupId)
-        .eq('user_id', transaction.user_id)
-        .eq('cycle_turn', currentTurn)
-        .eq('status', 'failed');
-
-      // 3. Restore the 10-point credit score penalty
-      const { data: profile } = await supabase
-        .from('users')
-        .select('credit_score')
-        .eq('id', transaction.user_id)
-        .single();
-
-      if (profile) {
-        await supabase
-          .from('users')
-          .update({ credit_score: (profile.credit_score ?? 50) + 10 })
-          .eq('id', transaction.user_id);
-      }
-
-      // 4. Notify the member of successful confirmation
-      await supabase.from('notifications').insert({
-        user_id: transaction.user_id,
-        title: "Manual Transfer Confirmed!",
-        message: `Your manual contribution of ₦${transaction.amount.toLocaleString()} for Turn ${currentTurn} was verified and confirmed by the Admin. Credit score penalty restored!`,
-        type: "success"
       });
 
-      toast.success(`Contribution confirmed for ${memberName}! Turn ledger updated.`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to confirm payment.");
+      }
+
+      toast.success(data.message || `Contribution confirmed for ${memberName}!`);
       setIsOpen(false);
       router.refresh();
 
@@ -156,22 +133,24 @@ export function ConfirmTransferClient({
     setIsRejecting(true);
 
     try {
-      const { error } = await supabase
-        .from('transactions')
-        .update({
-          status: 'failed',
-          description: `${transaction.description || 'Manual transfer'} | Rejected by Admin (Deposit not seen)`
+      const res = await fetch("/api/groups/confirm-transfer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transactionId: transaction.id,
+          action: "reject",
+          groupId,
+          currentTurn,
+          memberUserId: transaction.user_id,
+          amount: transaction.amount,
+          memberName
         })
-        .eq('id', transaction.id);
-
-      if (error) throw error;
-
-      await supabase.from('notifications').insert({
-        user_id: transaction.user_id,
-        title: "Transfer Not Received",
-        message: `The Group Admin could not verify your transfer of ₦${transaction.amount.toLocaleString()} for Turn ${currentTurn}. Please verify with your bank and retry.`,
-        type: "error"
       });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to reject transfer.");
+      }
 
       toast.error(`Transfer rejected. ${memberName} was notified to verify with their bank.`);
       setIsOpen(false);
