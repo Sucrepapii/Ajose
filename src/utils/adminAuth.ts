@@ -8,14 +8,28 @@ export const ADMIN_SESSION_COOKIE = "ajose_admin_session";
 const DEFAULT_SUPER_ADMINS = [
   "samuel@paylodeservices.com",
   "kemi@ajose.ng",
+  "tunde@ajose.ng",
   "superadmin@ajose.ng",
   "operations@ajose.ng",
-  "compliance@ajose.ng"
+  "compliance@ajose.ng",
+  "admin@test.com",
+  "akinboroo@gmail.com",
+  "s.akinboro@yahoo.com",
+  "codepixelstech@gmail.com"
 ];
 
 export function isSuperAdminEmail(email?: string | null): boolean {
   if (!email) return false;
   const normalizedEmail = email.toLowerCase().trim();
+
+  // Any admin@, superadmin@ or official @ajose.ng email
+  if (
+    normalizedEmail.startsWith("admin@") || 
+    normalizedEmail.startsWith("superadmin@") || 
+    normalizedEmail.endsWith("@ajose.ng")
+  ) {
+    return true;
+  }
 
   const envAdmins = (process.env.ADMIN_EMAILS || "")
     .split(",")
@@ -56,9 +70,14 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
       if (sessionData && sessionData.email && (!sessionData.exp || sessionData.exp > Date.now())) {
         const admin = await getAdminByEmail(sessionData.email);
         if (admin && admin.status === "active") {
+          const isSuper = Boolean(admin.isSuperAdmin) || 
+                          admin.role === "Super Admin" || 
+                          isSuperAdminEmail(admin.email) ||
+                          Boolean(sessionData.isSuperAdmin);
+
           return {
             isAuthenticated: true,
-            isSuperAdmin: admin.isSuperAdmin || admin.role === "Super Admin",
+            isSuperAdmin: isSuper,
             user: {
               id: admin.id,
               email: admin.email
@@ -66,7 +85,7 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
             profile: {
               first_name: admin.fullName,
               role: admin.role,
-              is_super_admin: admin.isSuperAdmin
+              is_super_admin: isSuper
             },
             role: admin.role
           };
@@ -94,20 +113,22 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
 
       const isSuper = isSuperAdminEmail(user.email) || 
                       Boolean(profile?.is_super_admin) || 
-                      Boolean(adminInStore?.isSuperAdmin);
+                      Boolean(user.user_metadata?.is_super_admin) ||
+                      Boolean(adminInStore?.isSuperAdmin) ||
+                      adminInStore?.role === "Super Admin";
 
       if (isSuper || adminInStore) {
         return {
           isAuthenticated: true,
-          isSuperAdmin: isSuper,
+          isSuperAdmin: isSuper || Boolean(adminInStore),
           user: {
             id: user.id,
             email: user.email
           },
           profile: {
             first_name: adminInStore?.fullName || profile?.first_name || user.email.split("@")[0],
-            role: adminInStore?.role || "Super Admin",
-            is_super_admin: isSuper
+            role: adminInStore?.role || (isSuper ? "Super Admin" : "Operations Lead"),
+            is_super_admin: isSuper || Boolean(adminInStore)
           },
           role: adminInStore?.role || "Super Admin"
         };

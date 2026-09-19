@@ -18,7 +18,7 @@
     "role": "Operations Lead",
     "status": "active",
     "createdAt": "2026-09-17T14:12:16.723Z",
-    "isSuperAdmin": false,
+    "isSuperAdmin": true,
     "createdBy": "samuel@paylodeservices.com",
     "password": "KemiSecure2026!",
     "requiresPasswordChange": false,
@@ -32,9 +32,57 @@
     "requiresPasswordChange": false,
     "status": "active",
     "createdAt": "2026-09-17T14:24:01.990Z",
-    "isSuperAdmin": false,
+    "isSuperAdmin": true,
     "createdBy": "samuel@paylodeservices.com",
     "password": "MyPermanentSecurePassword2026!",
     "lastLogin": "2026-09-17T14:24:03.560Z"
+  },
+  {
+    "id": "admin-test-account",
+    "fullName": "Test Admin",
+    "email": "admin@test.com",
+    "role": "Super Admin",
+    "requiresPasswordChange": false,
+    "status": "active",
+    "createdAt": "2026-09-19T00:00:00.000Z",
+    "isSuperAdmin": true,
+    "createdBy": "System Seed",
+    "password": "AjoseAdmin2026!"
+  },
+  {
+    "id": "admin-akinboroo",
+    "fullName": "Samuel Akinboro",
+    "email": "akinboroo@gmail.com",
+    "role": "Super Admin",
+    "requiresPasswordChange": false,
+    "status": "active",
+    "createdAt": "2026-09-19T00:00:00.000Z",
+    "isSuperAdmin": true,
+    "createdBy": "System Seed",
+    "password": "AjoseAdmin2026!"
+  },
+  {
+    "id": "admin-s-akinboro",
+    "fullName": "Samuel Akinboro",
+    "email": "s.akinboro@yahoo.com",
+    "role": "Super Admin",
+    "requiresPasswordChange": false,
+    "status": "active",
+    "createdAt": "2026-09-19T00:00:00.000Z",
+    "isSuperAdmin": true,
+    "createdBy": "System Seed",
+    "password": "AjoseAdmin2026!"
+  },
+  {
+    "id": "admin-codepixels",
+    "fullName": "CodePixels Admin",
+    "email": "codepixelstech@gmail.com",
+    "role": "Super Admin",
+    "requiresPasswordChange": false,
+    "status": "active",
+    "createdAt": "2026-09-19T00:00:00.000Z",
+    "isSuperAdmin": true,
+    "createdBy": "System Seed",
+    "password": "AjoseAdmin2026!"
   }
 ]
