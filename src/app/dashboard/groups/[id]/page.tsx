@@ -85,27 +85,46 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     .order('joined_at', { ascending: true });
 
   const membersList = members || [];
-  const currentTurn = group.current_turn || 1; 
 
-  // Fetch group transactions to track payments and any auto-debit failures (Req 7: members should see if failed too)
-  const { data: groupTransactions } = await adminClient
-    .from('transactions')
-    .select('*')
-    .eq('group_id', groupId)
-    .order('created_at', { ascending: false });
+  // Map memberships to user IDs
+  const membershipIds = membersList.map(m => m.id);
+  const membershipToUser = new Map(membersList.map(m => [m.id, m.user_id]));
 
-  const txList = groupTransactions || [];
+  // Fetch group transactions using membership_id foreign keys
+  const { data: groupTransactions } = membershipIds.length > 0
+    ? await adminClient
+        .from('transactions')
+        .select('*')
+        .in('membership_id', membershipIds)
+        .order('created_at', { ascending: false })
+    : { data: [] };
+
+  const txList = (groupTransactions || []).map((tx: any) => ({
+    ...tx,
+    user_id: tx.user_id || membershipToUser.get(tx.membership_id),
+  }));
+
+  // Completed payouts for this group
+  const paidPayoutTurns = new Set(
+    txList
+      .filter(tx => tx.type === 'payout' && (tx.status === 'successful' || tx.status === 'completed'))
+      .map(tx => tx.cycle_turn)
+  );
+
+  // Derive current turn from completed payout transactions or group.current_turn
+  const maxPaidTurn = paidPayoutTurns.size > 0 ? Math.max(...Array.from(paidPayoutTurns)) : 0;
+  const currentTurn = group.current_turn || (maxPaidTurn + 1);
 
   // Completed contributions for this turn
   const paidUserIds = new Set(
     txList
-      .filter(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'completed')
+      .filter(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && (tx.status === 'successful' || tx.status === 'completed'))
       .map(tx => tx.user_id)
   );
 
   // Pending manual bank transfers awaiting admin confirmation
   const pendingTransactions = txList.filter(
-    tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'pending_confirmation'
+    tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && (tx.status === 'pending' || tx.status === 'pending_confirmation')
   );
   const pendingUserIds = new Set(pendingTransactions.map(tx => tx.user_id));
 

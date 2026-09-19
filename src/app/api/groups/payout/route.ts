@@ -83,31 +83,41 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: `Mono Payout failed: ${monoResult.message}` }, { status: 502 });
     }
 
-    // 7. Advance group turn
+    // 7. Advance group turn in DB if column exists
     const nextTurn = turn + 1;
-    await supabaseAdmin
-      .from("groups")
-      .update({ current_turn: nextTurn })
-      .eq("id", groupId);
+    const isCompleted = nextTurn > (group.max_members || 1);
+    try {
+      await supabaseAdmin
+        .from("groups")
+        .update({
+          current_turn: nextTurn,
+          ...(isCompleted ? { status: "completed" } : {})
+        })
+        .eq("id", groupId);
+    } catch (_) {}
 
     // 8. Delete prior failed transactions for this turn
-    await supabaseAdmin
-      .from("transactions")
-      .delete()
-      .eq("group_id", groupId)
-      .eq("cycle_turn", turn)
-      .eq("status", "failed");
+    try {
+      await supabaseAdmin
+        .from("transactions")
+        .delete()
+        .eq("membership_id", receivingMembership.id)
+        .eq("cycle_turn", turn)
+        .eq("status", "failed");
+    } catch (_) {}
 
-    // 9. Record Payout transaction in ledger
-    await supabaseAdmin.from("transactions").insert({
-      group_id: groupId,
-      user_id: receiverUser.id,
+    // 9. Record Payout transaction in ledger (valid schema: membership_id, amount, type, status, cycle_turn)
+    const { error: txInsertErr } = await supabaseAdmin.from("transactions").insert({
+      membership_id: receivingMembership.id,
       amount: netPayoutAmount,
       type: "payout",
-      status: "completed",
-      description: `Turn ${turn} payout of ₦${netPayoutAmount.toLocaleString()} disbursed via Mono Payout to ${receiverName} (${receiverUser.bank_name || "Bank"} - ${receiverUser.account_number || "Default"}) - Ref: ${monoResult.reference}`,
+      status: "successful",
       cycle_turn: turn
     });
+
+    if (txInsertErr) {
+      console.warn("Could not insert payout transaction:", txInsertErr);
+    }
 
     // 10. Notify receiving member (in-app)
     await supabaseAdmin.from("notifications").insert({

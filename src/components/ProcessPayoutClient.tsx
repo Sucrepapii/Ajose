@@ -84,16 +84,14 @@ export function ProcessPayoutClient({
       const { error: txError } = await supabase
         .from('transactions')
         .insert({
-          group_id: group.id,
-          user_id: receivingMember.user_id,
+          membership_id: receivingMember.id,
           amount: payoutAmount,
-          type: 'admin_payout_debit',
+          type: 'payout',
           status: 'failed',
-          description: `Admin auto-debit payout failed: Insufficient funds in Admin settlement account (₦${payoutAmount.toLocaleString()} required)`,
           cycle_turn: currentTurn
         });
 
-      if (txError) console.error("Failed to log failed transaction:", txError);
+      if (txError) console.warn("Notice logging failed transaction:", txError);
 
       // Fetch all memberships to notify every member
       const { data: allMembers } = await supabase
