@@ -8,28 +8,14 @@ export const ADMIN_SESSION_COOKIE = "ajose_admin_session";
 const DEFAULT_SUPER_ADMINS = [
   "samuel@paylodeservices.com",
   "kemi@ajose.ng",
-  "tunde@ajose.ng",
   "superadmin@ajose.ng",
   "operations@ajose.ng",
-  "compliance@ajose.ng",
-  "admin@test.com",
-  "akinboroo@gmail.com",
-  "s.akinboro@yahoo.com",
-  "codepixelstech@gmail.com"
+  "compliance@ajose.ng"
 ];
 
 export function isSuperAdminEmail(email?: string | null): boolean {
   if (!email) return false;
   const normalizedEmail = email.toLowerCase().trim();
-
-  // Any admin@, superadmin@ or official @ajose.ng email
-  if (
-    normalizedEmail.startsWith("admin@") || 
-    normalizedEmail.startsWith("superadmin@") || 
-    normalizedEmail.endsWith("@ajose.ng")
-  ) {
-    return true;
-  }
 
   const envAdmins = (process.env.ADMIN_EMAILS || "")
     .split(",")
@@ -69,25 +55,22 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
 
       if (sessionData && sessionData.email && (!sessionData.exp || sessionData.exp > Date.now())) {
         const admin = await getAdminByEmail(sessionData.email);
-        const isSuper = Boolean(admin?.isSuperAdmin) || 
-                        admin?.role === "Super Admin" || 
-                        isSuperAdminEmail(sessionData.email) ||
-                        Boolean(sessionData.isSuperAdmin);
-
-        return {
-          isAuthenticated: true,
-          isSuperAdmin: isSuper,
-          user: {
-            id: admin?.id || sessionData.id || "admin-root",
-            email: sessionData.email
-          },
-          profile: {
-            first_name: admin?.fullName || sessionData.fullName || sessionData.email.split("@")[0],
-            role: admin?.role || sessionData.role || "Super Admin",
-            is_super_admin: isSuper
-          },
-          role: admin?.role || sessionData.role || "Super Admin"
-        };
+        if (admin && admin.status === "active") {
+          return {
+            isAuthenticated: true,
+            isSuperAdmin: admin.isSuperAdmin || admin.role === "Super Admin",
+            user: {
+              id: admin.id,
+              email: admin.email
+            },
+            profile: {
+              first_name: admin.fullName,
+              role: admin.role,
+              is_super_admin: admin.isSuperAdmin
+            },
+            role: admin.role
+          };
+        }
       }
     } catch (err) {
       console.warn("Failed to parse admin session cookie:", err);
@@ -111,22 +94,20 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
 
       const isSuper = isSuperAdminEmail(user.email) || 
                       Boolean(profile?.is_super_admin) || 
-                      Boolean(user.user_metadata?.is_super_admin) ||
-                      Boolean(adminInStore?.isSuperAdmin) ||
-                      adminInStore?.role === "Super Admin";
+                      Boolean(adminInStore?.isSuperAdmin);
 
       if (isSuper || adminInStore) {
         return {
           isAuthenticated: true,
-          isSuperAdmin: isSuper || Boolean(adminInStore),
+          isSuperAdmin: isSuper,
           user: {
             id: user.id,
             email: user.email
           },
           profile: {
             first_name: adminInStore?.fullName || profile?.first_name || user.email.split("@")[0],
-            role: adminInStore?.role || (isSuper ? "Super Admin" : "Operations Lead"),
-            is_super_admin: isSuper || Boolean(adminInStore)
+            role: adminInStore?.role || "Super Admin",
+            is_super_admin: isSuper
           },
           role: adminInStore?.role || "Super Admin"
         };

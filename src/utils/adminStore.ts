@@ -252,8 +252,6 @@ export async function validateAdminCredentials(
   if (
     admin.email.toLowerCase() === "samuel@paylodeservices.com" &&
     (inputPassword === "AjoseAdmin2026!" ||
-      inputPassword === "MyPermanentSecurePassword2026!" ||
-      inputPassword === "KemiSecure2026!" ||
       (process.env.ADMIN_PASSWORD && inputPassword === process.env.ADMIN_PASSWORD.trim()))
   ) {
     return admin;

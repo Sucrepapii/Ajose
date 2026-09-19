@@ -1,23 +1,11 @@
 import { NextResponse } from "next/server";
-import { getSuperAdminSession, isSuperAdminEmail } from "@/utils/adminAuth";
+import { getSuperAdminSession } from "@/utils/adminAuth";
 import { createAdminClient } from "@/utils/supabase/admin";
 
 export async function PATCH(req: Request) {
   try {
     const session = await getSuperAdminSession();
-    if (!session.isAuthenticated) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized. Please log in to the administrator portal first." },
-        { status: 401 }
-      );
-    }
-
-    const isAuthorized = session.isSuperAdmin || 
-                         session.role === "Super Admin" || 
-                         isSuperAdminEmail(session.user?.email) || 
-                         Boolean(session.role);
-
-    if (!isAuthorized) {
+    if (!session.isAuthenticated || !session.isSuperAdmin) {
       return NextResponse.json(
         { success: false, message: "Forbidden. Only Super Administrators can modify member status." },
         { status: 403 }
@@ -124,19 +112,7 @@ export async function PATCH(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const session = await getSuperAdminSession();
-    if (!session.isAuthenticated) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized. Please log in to the administrator portal first." },
-        { status: 401 }
-      );
-    }
-
-    const isAuthorized = session.isSuperAdmin || 
-                         session.role === "Super Admin" || 
-                         isSuperAdminEmail(session.user?.email) || 
-                         Boolean(session.role);
-
-    if (!isAuthorized) {
+    if (!session.isAuthenticated || !session.isSuperAdmin) {
       return NextResponse.json(
         { success: false, message: "Forbidden. Only Super Administrators can delete members." },
         { status: 403 }
