@@ -147,13 +147,13 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
   // Admin Profile & Settlement Bank Account Details
   const adminMembership = membersList.find(m => m.role === 'admin');
   const adminUser = adminMembership?.users;
-  const adminBankName = adminUser?.bank_name || 'Zenith Bank (Settlement)';
-  const adminRawAcct = adminUser?.account_number || '0248194821';
-  const adminMaskedAccount = adminRawAcct.length >= 6 
+  const adminBankName = adminUser?.bank_name || (adminUser?.account_number ? 'Settlement Bank' : 'Pending Admin Setup');
+  const adminRawAcct = adminUser?.account_number || '';
+  const adminMaskedAccount = adminRawAcct && adminRawAcct.length >= 6 
     ? `${adminRawAcct.substring(0, 3)}****${adminRawAcct.substring(adminRawAcct.length - 3)}`
-    : adminRawAcct;
+    : (adminRawAcct || 'Not Connected');
   const adminAccountHolder = adminUser?.account_name || (
-    adminUser?.first_name ? `${adminUser.first_name} ${adminUser.last_name || ''}`.trim() : 'Group Admin'
+    adminUser?.first_name ? `${adminUser.first_name} ${adminUser.last_name || ''}`.trim() : (adminRawAcct ? 'Group Admin' : 'Pending Admin Setup')
   );
   
   // Turn beneficiary

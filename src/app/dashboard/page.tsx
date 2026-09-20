@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { 
   CreditCard, 
   Wallet, 
@@ -28,8 +29,8 @@ export default async function DashboardOverview() {
     .eq('id', user.id)
     .single();
 
-  const dbScore = profile?.credit_score ?? 50;
-  const creditScore = dbScore === 0 ? 50 : dbScore;
+  const dbScore = profile?.credit_score;
+  const creditScore = (dbScore === null || dbScore === undefined || dbScore === 0) ? 85 : dbScore;
   const isAutoSweep = profile?.auto_sweep_enabled || false;
 
   // Fetch the user's active memberships with the related group data
@@ -51,20 +52,42 @@ export default async function DashboardOverview() {
     .eq('user_id', user.id)
     .order('joined_at', { ascending: false });
 
-  // Calculate total saved (mock calculation based on contribution * turn for now, 
-  // since we don't have real historical transactions set up yet)
-  let totalSaved = 0;
+  const adminClient = createAdminClient();
   const activeGroups = memberships || [];
-  
-  if (activeGroups.length > 0) {
-    totalSaved = activeGroups.reduce((acc, curr) => {
-      // Assuming they've paid for previous turns. 
-      // If payout_turn is 3, they've saved 2 months worth (mock logic)
-      const monthsSaved = curr.payout_turn > 1 ? curr.payout_turn - 1 : 0;
-      const amount = curr.groups?.contribution_amount || 0;
-      return acc + (monthsSaved * amount);
-    }, 0);
+  const userMembershipIds = activeGroups.map(m => m.id);
+
+  // Calculate real total saved from successful contribution transactions in the database
+  let totalSaved = 0;
+  if (userMembershipIds.length > 0) {
+    const { data: userContributions } = await adminClient
+      .from('transactions')
+      .select('amount')
+      .in('membership_id', userMembershipIds)
+      .eq('type', 'contribution')
+      .eq('status', 'successful');
+
+    totalSaved = (userContributions || []).reduce((acc: number, tx: any) => acc + (Number(tx.amount) || 0), 0);
   }
+
+  // Fetch real recent activity from transactions ledger
+  const { data: recentTxs } = userMembershipIds.length > 0
+    ? await adminClient
+        .from('transactions')
+        .select(`
+          id,
+          amount,
+          type,
+          status,
+          created_at,
+          cycle_turn,
+          memberships (
+            groups ( name )
+          )
+        `)
+        .in('membership_id', userMembershipIds)
+        .order('created_at', { ascending: false })
+        .limit(4)
+    : { data: [] };
 
   // Calculate projected admin earnings
   let totalAdminEarnings = 0;
@@ -123,9 +146,10 @@ export default async function DashboardOverview() {
               <TrendingUp className="h-5 w-5 text-[#0B3022]" />
             </div>
           </div>
-          <div className="flex items-end gap-3 relative z-10">
+          <div className="flex items-end gap-2 relative z-10">
             <span className="text-4xl font-bold text-[#0B3022]">{creditScore}</span>
-            <span className="text-green-600 font-bold mb-1">
+            <span className="text-[#1F2937]/50 font-semibold mb-1">/ 100</span>
+            <span className="text-green-600 font-bold mb-1 ml-1">
               {creditScore >= 80 ? 'Excellent' : creditScore >= 60 ? 'Good' : 'Fair'}
             </span>
           </div>
@@ -275,16 +299,66 @@ export default async function DashboardOverview() {
           </div>
 
           <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6">
-            <h3 className="text-base font-bold text-[#0B3022] mb-4">Recent Activity</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-[#0B3022]">Recent Activity</h3>
+              <Link href="/dashboard/transactions" className="text-xs font-semibold text-[#C5A059] hover:underline">
+                See all
+              </Link>
+            </div>
+            
             <div className="space-y-4">
-              <div className="flex gap-3">
-                <div className="w-2 h-2 rounded-full bg-green-500 mt-2 shrink-0"></div>
-                <div>
-                  <p className="text-sm font-bold text-[#1F2937]">Identity Verified</p>
-                  <p className="text-xs text-[#1F2937]/60 font-medium">Recently</p>
-                </div>
-              </div>
-              {/* Could fetch from transactions table here later */}
+              {recentTxs && recentTxs.length > 0 ? (
+                recentTxs.map((tx: any) => {
+                  const groupName = (tx.memberships as any)?.groups?.name || "Ajo Circle";
+                  const isSuccess = tx.status === 'successful' || tx.status === 'completed';
+                  const isFailed = tx.status === 'failed';
+                  const isPayout = tx.type === 'payout';
+
+                  const dotColor = isFailed ? 'bg-red-500' : isSuccess ? (isPayout ? 'bg-emerald-500' : 'bg-green-500') : 'bg-amber-500';
+                  const title = isPayout
+                    ? `Turn ${tx.cycle_turn} Lump-Sum Payout`
+                    : `Turn ${tx.cycle_turn} Contribution`;
+                  const amountStr = `₦${Number(tx.amount).toLocaleString()}`;
+                  const dateStr = new Date(tx.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+                  return (
+                    <div key={tx.id} className="flex items-start justify-between gap-3 text-left">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <div className={`w-2 h-2 rounded-full ${dotColor} mt-1.5 shrink-0`}></div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-[#1F2937] truncate">{title}</p>
+                          <p className="text-xs text-[#1F2937]/60 font-medium truncate">{groupName} • {dateStr}</p>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className={`text-xs font-bold ${isFailed ? 'text-red-600' : isPayout ? 'text-emerald-700' : 'text-[#0B3022]'}`}>
+                          {isPayout ? `+${amountStr}` : amountStr}
+                        </span>
+                        {isFailed && <p className="text-[10px] font-bold text-red-500">Failed</p>}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <>
+                  <div className="flex gap-3">
+                    <div className="w-2 h-2 rounded-full bg-green-500 mt-2 shrink-0"></div>
+                    <div>
+                      <p className="text-sm font-bold text-[#1F2937]">Identity Verified</p>
+                      <p className="text-xs text-[#1F2937]/60 font-medium">Bank BVN connected</p>
+                    </div>
+                  </div>
+                  {activeGroups.length > 0 && (
+                    <div className="flex gap-3">
+                      <div className="w-2 h-2 rounded-full bg-[#C5A059] mt-2 shrink-0"></div>
+                      <div>
+                        <p className="text-sm font-bold text-[#1F2937]">Joined {activeGroups[0].groups?.name}</p>
+                        <p className="text-xs text-[#1F2937]/60 font-medium">Active Member</p>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

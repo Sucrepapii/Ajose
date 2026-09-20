@@ -10,6 +10,9 @@ export default async function SettingsPage() {
 
   let currentUserId = user?.id;
   let currentProfile: any = null;
+  let onTimeRate = 100;
+  let defaultRate = 0;
+  let groupsCompleted = 0;
 
   if (!user) {
     if (process.env.NODE_ENV === 'development') {
@@ -19,7 +22,7 @@ export default async function SettingsPage() {
         last_name: 'Adeyemi',
         nickname: 'GoldenSaver',
         phone: '+2348012345678',
-        credit_score: 820,
+        credit_score: 85,
         bvn_verified: true,
         bank_name: 'Access Bank',
         account_number: '0123456789',
@@ -55,6 +58,32 @@ export default async function SettingsPage() {
       bvn_verified: Boolean(profile?.bvn_verified),
       has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash)
     };
+
+    // Query user's actual group memberships to compute real trust statistics
+    const { data: userMemberships } = await supabase
+      .from('memberships')
+      .select('id, status, role, group_id, groups(id, status)')
+      .eq('user_id', user.id);
+
+    const mList = userMemberships || [];
+    groupsCompleted = mList.filter((m: any) => m.groups?.status === 'completed').length;
+    const defaultedCount = mList.filter((m: any) => m.status === 'defaulted').length;
+    defaultRate = mList.length > 0 ? Math.round((defaultedCount / mList.length) * 100) : 0;
+
+    const mIds = mList.map((m: any) => m.id);
+    if (mIds.length > 0) {
+      const { data: userContributions } = await supabase
+        .from('transactions')
+        .select('status')
+        .in('membership_id', mIds)
+        .eq('type', 'contribution');
+
+      const contribs = userContributions || [];
+      if (contribs.length > 0) {
+        const successful = contribs.filter((t: any) => t.status === 'successful' || t.status === 'completed').length;
+        onTimeRate = Math.round((successful / contribs.length) * 100);
+      }
+    }
   }
 
   return (
@@ -115,33 +144,59 @@ export default async function SettingsPage() {
               Àjọṣe Credit Score
             </h3>
             
-            <div className="flex items-end gap-2 mb-6">
-              <span className="text-5xl font-black text-white">{currentProfile?.credit_score || 850}</span>
-              <span className="text-zinc-500 mb-1 font-medium">/ 1000</span>
-            </div>
+            {(() => {
+              const rawScore = currentProfile?.credit_score;
+              const creditScore = (rawScore === null || rawScore === undefined || rawScore === 0) ? 85 : rawScore;
+              const rating = creditScore >= 80 ? 'Excellent' : creditScore >= 60 ? 'Good' : 'Fair';
+              const badgeStyle = creditScore >= 80 
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                : creditScore >= 60 
+                ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' 
+                : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
 
-            <div className="space-y-4">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-zinc-400">On-Time Payments</span>
-                <span className="text-emerald-400 font-bold">100%</span>
-              </div>
-              <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 w-full"></div>
-              </div>
-              
-              <div className="flex justify-between items-center text-sm pt-2">
-                <span className="text-zinc-400">Default Rate</span>
-                <span className="text-zinc-300 font-bold">0%</span>
-              </div>
-              <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                <div className="h-full bg-zinc-600 w-[0%]"></div>
-              </div>
+              return (
+                <>
+                  <div className="flex items-end gap-2 mb-6">
+                    <span className="text-5xl font-black text-white">{creditScore}</span>
+                    <span className="text-zinc-500 mb-1 font-medium">/ 100</span>
+                    <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full border ${badgeStyle}`}>
+                      {rating}
+                    </span>
+                  </div>
 
-              <div className="flex justify-between items-center text-sm pt-2">
-                <span className="text-zinc-400">Groups Completed</span>
-                <span className="text-zinc-300 font-bold">0</span>
-              </div>
-            </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-zinc-400">Trust Rating</span>
+                      <span className="text-emerald-400 font-bold">{creditScore >= 80 ? 'Tier 1 (High Trust)' : creditScore >= 60 ? 'Tier 2 (Moderate)' : 'Tier 3 (Emerging)'}</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.max(5, creditScore))}%` }}></div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center text-sm pt-2">
+                      <span className="text-zinc-400">On-Time Payment History</span>
+                      <span className={`font-bold ${onTimeRate >= 80 ? 'text-emerald-400' : onTimeRate >= 60 ? 'text-amber-400' : 'text-red-400'}`}>{onTimeRate}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className={`h-full ${onTimeRate >= 80 ? 'bg-emerald-500' : onTimeRate >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${Math.min(100, Math.max(0, onTimeRate))}%` }}></div>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm pt-2">
+                      <span className="text-zinc-400">Default Rate</span>
+                      <span className={`font-bold ${defaultRate === 0 ? 'text-zinc-300' : 'text-red-400'}`}>{defaultRate}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-red-500 transition-all duration-500" style={{ width: `${Math.min(100, Math.max(0, defaultRate))}%` }}></div>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm pt-2">
+                      <span className="text-zinc-400">Groups Completed</span>
+                      <span className="text-zinc-300 font-bold">{groupsCompleted}</span>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
             
             <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
               <p className="text-xs text-blue-200 leading-relaxed">

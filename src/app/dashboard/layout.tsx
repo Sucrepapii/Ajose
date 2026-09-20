@@ -35,14 +35,14 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single();
 
-  const email = user.email || "user@example.com";
+  const email = user.email || "";
   const firstName = profile?.first_name || "";
   const lastName = profile?.last_name || "";
   
-  const displayName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : email;
+  const displayName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (email || "Member");
   const initials = (firstName && lastName) 
     ? `${firstName[0]}${lastName[0]}`.toUpperCase() 
-    : email.substring(0, 2).toUpperCase();
+    : (email ? email.substring(0, 2).toUpperCase() : "ME");
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] flex flex-col md:flex-row font-sans text-[#1F2937]">

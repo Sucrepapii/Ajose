@@ -184,23 +184,37 @@ export function ProcessPayoutClient({
               <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-2">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Recipient Destination Bank</h3>
-                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                    <ShieldCheck className="h-3 w-3 text-emerald-600" /> Mono Verified
-                  </span>
+                  {receivingUser?.account_number ? (
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3 text-emerald-600" /> Mono Verified
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3 text-amber-600" /> Bank Not Connected
+                    </span>
+                  )}
                 </div>
                 
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-500">Bank Name</span>
-                  <span className="font-bold text-[#0B3022]">{receivingUser?.bank_name || 'Zenith Bank'}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-500">Account Number</span>
-                  <span className="font-mono font-bold text-[#0B3022] bg-gray-100 px-2 py-0.5 rounded">{receivingUser?.account_number || '0248194821'}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-500">Account Name</span>
-                  <span className="font-bold text-[#0B3022]">{receivingUser?.account_name || getDisplayName()}</span>
-                </div>
+                {receivingUser?.account_number ? (
+                  <>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-500">Bank Name</span>
+                      <span className="font-bold text-[#0B3022]">{receivingUser?.bank_name || 'Verified Bank'}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-500">Account Number</span>
+                      <span className="font-mono font-bold text-[#0B3022] bg-gray-100 px-2 py-0.5 rounded">{receivingUser.account_number}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-500">Account Name</span>
+                      <span className="font-bold text-[#0B3022]">{receivingUser?.account_name || getDisplayName()}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-2.5 text-xs text-amber-800 bg-amber-50 rounded-lg border border-amber-200 leading-relaxed">
+                    <strong>Action Needed:</strong> {getDisplayName()} has not yet connected a verified settlement bank account. The member must link their account in their settings before payout disbursement can be executed.
+                  </div>
+                )}
               </div>
 
               {/* Transparency Notice for Failures */}
@@ -238,7 +252,7 @@ export function ProcessPayoutClient({
               {/* Primary Execute Auto-Payout Button */}
               <button 
                 onClick={handleProcessAutoPayout}
-                disabled={isProcessing || isSimulatingFailure}
+                disabled={isProcessing || isSimulatingFailure || !receivingUser?.account_number}
                 className="flex-1 px-4 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {isProcessing ? (

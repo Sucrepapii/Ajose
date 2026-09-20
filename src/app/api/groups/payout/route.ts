@@ -91,10 +91,16 @@ export async function POST(req: Request) {
     const platformFee = Math.min(15000, Math.round((2 / 100) * totalPool));
     const netPayoutAmount = Math.max(0, totalPool - adminFee - platformFee);
 
+    if (!receiverUser.account_number) {
+      return NextResponse.json({ 
+        error: `Turn recipient (${receiverName}) has not connected a verified bank account. Payout cannot be disbursed until they link their account.` 
+      }, { status: 400 });
+    }
+
     // 6. Execute disbursement via Mono Payout API
     const payoutRef = `ajose_payout_${groupId}_turn${turn}_${receiverUser.id}_${Date.now()}`;
     const monoResult = await initiatePayoutWithMono({
-      recipientAccountNumber: receiverUser.account_number || "0123456789",
+      recipientAccountNumber: receiverUser.account_number,
       recipientBankCode: getBankCode(receiverUser.bank_name),
       amount: netPayoutAmount,
       narration: `Àjọṣe Turn ${turn} Payout (${group.name})`,

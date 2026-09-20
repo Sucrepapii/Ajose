@@ -56,9 +56,10 @@ export function MakeContributionClient({
   const [senderName, setSenderName] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  const adminBankName = adminBankDetails?.bankName || "Zenith Bank (Settlement)";
-  const adminAccountNum = adminBankDetails?.accountNumber || "0248194821";
-  const adminAccountName = adminBankDetails?.accountHolder || "Group Admin";
+  const hasAdminBank = Boolean(adminBankDetails?.accountNumber);
+  const adminBankName = adminBankDetails?.bankName || (hasAdminBank ? "Settlement Bank" : "Bank Not Set");
+  const adminAccountNum = adminBankDetails?.accountNumber || "";
+  const adminAccountName = adminBankDetails?.accountHolder || (hasAdminBank ? "Group Admin" : "Pending Setup");
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -329,35 +330,45 @@ export function MakeContributionClient({
                       <div className="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2">
                         <div className="flex justify-between items-center text-[11px] text-gray-500 font-bold uppercase tracking-wider">
                           <span>Destination Account</span>
-                          <span className="text-emerald-700 bg-emerald-100/70 px-1.5 py-0.5 rounded text-[10px]">Admin Settlement</span>
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${hasAdminBank ? 'text-emerald-700 bg-emerald-100/70' : 'text-amber-700 bg-amber-100'}`}>
+                            {hasAdminBank ? 'Admin Settlement' : 'Setup Pending'}
+                          </span>
                         </div>
 
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">Bank</span>
-                          <span className="font-bold text-[#0B3022]">{adminBankName}</span>
-                        </div>
+                        {hasAdminBank ? (
+                          <>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 font-medium">Bank</span>
+                              <span className="font-bold text-[#0B3022]">{adminBankName}</span>
+                            </div>
 
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">Account Number</span>
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono font-bold text-sm text-[#0B3022] bg-white px-2 py-0.5 rounded border border-gray-200">
-                              {adminAccountNum}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => copyToClipboard(adminAccountNum, "Account Number")}
-                              className="p-1 hover:bg-gray-200 rounded text-gray-600 transition-colors"
-                              title="Copy Account Number"
-                            >
-                              {copiedField === "Account Number" ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
-                            </button>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 font-medium">Account Number</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono font-bold text-sm text-[#0B3022] bg-white px-2 py-0.5 rounded border border-gray-200">
+                                  {adminAccountNum}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => copyToClipboard(adminAccountNum, "Account Number")}
+                                  className="p-1 hover:bg-gray-200 rounded text-gray-600 transition-colors"
+                                  title="Copy Account Number"
+                                >
+                                  {copiedField === "Account Number" ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 font-medium">Account Name</span>
+                              <span className="font-bold text-[#0B3022]">{adminAccountName}</span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="p-2.5 text-xs text-amber-800 bg-amber-50 rounded-lg border border-amber-200 leading-relaxed">
+                            The Group Admin has not yet linked a settlement bank account. Please notify the Admin to connect their account before submitting manual transfer payments.
                           </div>
-                        </div>
-
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">Account Name</span>
-                          <span className="font-bold text-[#0B3022]">{adminAccountName}</span>
-                        </div>
+                        )}
                       </div>
 
                       {/* Narration Reference Box */}
@@ -420,7 +431,7 @@ export function MakeContributionClient({
                       {/* Submit Button */}
                       <button 
                         type="submit"
-                        disabled={isProcessing}
+                        disabled={isProcessing || !hasAdminBank}
                         className="w-full py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-2"
                       >
                         {isProcessing ? (

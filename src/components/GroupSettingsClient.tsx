@@ -19,7 +19,8 @@ import {
   DollarSign, 
   X,
   Coins,
-  ArrowLeftRight
+  ArrowLeftRight,
+  AlertCircle
 } from "lucide-react";
 
 type Group = any;
@@ -445,11 +446,17 @@ export function GroupSettingsClient({
               href="/dashboard/settings"
               className="text-xs font-bold text-[#0B3022] bg-white border border-gray-200 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 shadow-sm"
             >
-              <Edit3 className="h-3.5 w-3.5 text-[#C5A059]" /> Change Bank Account
+              <Edit3 className="h-3.5 w-3.5 text-[#C5A059]" /> {adminProfile?.account_number ? "Change Bank Account" : "Link Bank Account"}
             </Link>
-            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-full">
-              MANDATE ACTIVE
-            </span>
+            {adminProfile?.account_number ? (
+              <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-full">
+                MANDATE ACTIVE
+              </span>
+            ) : (
+              <span className="text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-full">
+                MANDATE PENDING SETUP
+              </span>
+            )}
           </div>
         </div>
 
@@ -457,17 +464,26 @@ export function GroupSettingsClient({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div className="bg-[#FDFBF7] p-3.5 rounded-xl border border-gray-200">
               <p className="text-gray-400 font-medium mb-0.5 uppercase tracking-wider text-[10px]">Bank Name</p>
-              <p className="font-bold text-[#0B3022] text-sm">{adminProfile?.bank_name || "Zenith Bank (Default Settlement)"}</p>
+              <p className="font-bold text-[#0B3022] text-sm">{adminProfile?.bank_name || "Not Connected"}</p>
             </div>
             <div className="bg-[#FDFBF7] p-3.5 rounded-xl border border-gray-200">
               <p className="text-gray-400 font-medium mb-0.5 uppercase tracking-wider text-[10px]">Account Number</p>
-              <p className="font-mono font-bold text-[#0B3022] text-sm">{adminProfile?.account_number || "0248194821"}</p>
+              <p className="font-mono font-bold text-[#0B3022] text-sm">{adminProfile?.account_number || "Not Connected"}</p>
             </div>
             <div className="bg-[#FDFBF7] p-3.5 rounded-xl border border-gray-200">
               <p className="text-gray-400 font-medium mb-0.5 uppercase tracking-wider text-[10px]">Account Name</p>
-              <p className="font-bold text-[#0B3022] text-sm truncate">{adminProfile?.account_name || "Group Admin Settlement"}</p>
+              <p className="font-bold text-[#0B3022] text-sm truncate">{adminProfile?.account_name || (adminProfile?.first_name ? `${adminProfile.first_name} ${adminProfile.last_name || ''}`.trim() : "Not Connected")}</p>
             </div>
           </div>
+
+          {!adminProfile?.account_number && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
+              <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <strong>Settlement Mandate Required:</strong> As Group Admin, you have not linked your settlement bank account. Members cannot make direct transfer payments or receive automated rotational payouts until your account is configured. <Link href="/dashboard/settings" className="font-bold underline text-amber-950">Link account in Settings &rarr;</Link>
+              </div>
+            </div>
+          )}
 
           <p className="text-[11px] text-[#1F2937]/70 leading-relaxed font-medium pt-1">
             Contributions from group members are paid directly into this tendered account. Payouts to turn recipients are automatically debited from this account. If an auto-debit fails, all members will be notified transparently.
