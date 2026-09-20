@@ -65,29 +65,26 @@ export function MarketingFooter() {
         </div>
 
 
-        {/* Regulatory & Infrastructure Compliance Disclaimer */}
-        <div className="pt-6 pb-6 border-t border-white/10 text-xs text-gray-400 space-y-3">
-          <p className="leading-relaxed">
-            <strong className="text-white font-semibold">Regulatory Disclosure:</strong> Àjọṣe is a financial technology platform, not a bank. Payment processing, fund settlement, and transactional switching infrastructure are powered by <span className="text-white font-medium">Paylode Services Limited</span>, licensed and regulated by the Central Bank of Nigeria (CBN) as a Payment Solution Service Provider (PSSP). Automated direct-debits and banking connectivity are powered by <span className="text-white font-medium">Mono Open Banking</span>. All member contributions are held directly within authorized commercial bank accounts.
-          </p>
-          <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-300 pt-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              Powered by Paylode (CBN Licensed PSSP)
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              Direct Debits via Mono Open Banking
-            </span>
+        {/* Bottom Bar with Concise Partner Trust Badges */}
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-xs text-gray-400">
+            <p>© {new Date().getFullYear()} Àjọṣe Technologies Ltd. All rights reserved.</p>
+            <span className="hidden sm:inline text-white/20">•</span>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                Paylode (CBN PSSP)
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono text-[11px] font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                Mono Direct Debit
+              </span>
+            </div>
           </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-400 text-xs font-medium">© {new Date().getFullYear()} Àjọṣe Technologies Ltd. All rights reserved. &bull; Turn by turn, no wahala.</p>
           <div className="flex items-center gap-6 text-xs text-gray-400">
             <Link href="/privacy" className="hover:text-[#C5A059] transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-[#C5A059] transition-colors">Terms</Link>
+            <Link href="/security" className="hover:text-[#C5A059] transition-colors">Security</Link>
             <Link href="/feedback" className="hover:text-[#C5A059] transition-colors">Feedback</Link>
           </div>
         </div>

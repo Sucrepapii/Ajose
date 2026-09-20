@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check, Star, X, ShieldAlert, Smartphone, LineChart, Percent, LayoutDashboard, History, Quote, Globe } from "lucide-react";
 import { CountryFlag } from "@/components/CountryFlag";
+import { CommunityTestimonialsCarousel } from "@/components/CommunityTestimonialsCarousel";
 
 interface TestimonialItem {
   quote: string;
@@ -740,67 +741,12 @@ export default function Home() {
             </p>
           </motion.div>
           
-          {/* Conditional Layout: Horizontal Line Auto-Scroll when > 3, Classic Grid when <= 3 */}
-          {communityTestimonials.length > 3 ? (
-            <div className="w-full relative group-hover-pause">
-              {/* Illuminated Golden-Emerald Horizontal Track Line */}
-              <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-gradient-to-r from-transparent via-[#C5A059]/40 to-transparent pointer-events-none z-0" />
-
-              {/* Auto-scrolling Horizontal Track with Left/Right Gradient Masks */}
-              <div className="w-full overflow-hidden mask-horizontal-fade relative py-4">
-                <div className="animate-scroll-horizontal flex gap-6 sm:gap-8 items-stretch">
-                  {/* Duplicate list to create seamless infinite horizontal loop */}
-                  {[...communityTestimonials, ...communityTestimonials].map((testimonial, i) => (
-                    <div 
-                      key={i} 
-                      className="w-[340px] sm:w-[400px] shrink-0 relative bg-white/95 backdrop-blur-md p-6 sm:p-7 rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.05)] border border-[#C5A059]/25 hover:border-[#C5A059]/80 hover:shadow-[0_12px_35px_rgba(11,48,34,0.1)] transition-all duration-300 flex flex-col justify-between group/card z-10"
-                    >
-                      {/* Top Horizontal Connection Node on the Card */}
-                      <div className="flex items-center justify-between gap-3 mb-4">
-                        <div className="flex items-center gap-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star key={star} className="w-4 h-4 fill-[#C5A059] text-[#C5A059]" />
-                          ))}
-                        </div>
-
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0B3022]/5 border border-[#0B3022]/10 text-xs font-semibold text-[#0B3022]">
-                          <CountryFlag code={testimonial.countryCode || "NG"} size="xs" />
-                          <span>{testimonial.location || testimonial.country || "Nigeria"}</span>
-                        </div>
-                      </div>
-
-                      {/* Testimonial Quote */}
-                      <p className="text-[#1F2937]/90 text-sm sm:text-base leading-relaxed mb-6 italic">
-                        &ldquo;{testimonial.quote}&rdquo;
-                      </p>
-
-                      {/* Author Info */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-[#0B3022] flex items-center justify-center text-white font-bold text-sm shadow-xs">
-                            {testimonial.author[0]}
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-[#0B3022] text-sm leading-tight">
-                              {testimonial.author}
-                            </h4>
-                            <p className="text-xs text-[#1F2937]/65">{testimonial.role}</p>
-                          </div>
-                        </div>
-
-                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-medium border border-emerald-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          <span>Verified User</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {/* Interactive Community Testimonials Carousel: Pause on Hover (Desktop), Pause on Tap, Native Touch Swipe/Scroll (Mobile) */}
+          {communityTestimonials.length > 2 ? (
+            <CommunityTestimonialsCarousel testimonials={communityTestimonials} />
           ) : (
-            /* Classic Static 3-Column Grid for <= 3 items */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            /* Classic Static Grid for <= 2 items */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {communityTestimonials.map((testimonial, i) => (
                 <motion.div 
                   variants={fadeIn}
@@ -826,7 +772,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
                     <div className="w-12 h-12 rounded-full bg-[#0B3022] flex items-center justify-center text-white font-bold text-lg">
-                      {testimonial.author[0]}
+                      {testimonial.author ? testimonial.author[0] : "A"}
                     </div>
                     <div>
                       <h4 className="font-bold text-[#0B3022]">{testimonial.author}</h4>

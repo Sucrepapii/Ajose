@@ -1,4 +1,4 @@
-import { ShieldCheck, Lock, Eye, FileText, AlertTriangle } from "lucide-react";
+import { ShieldCheck, Lock, Eye, FileText, AlertTriangle, Landmark } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -73,6 +73,40 @@ export default function SecurityPage() {
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* Regulatory & Licensing Framework Card */}
+        <div className="mt-12 bg-white p-8 md:p-12 rounded-3xl border border-gray-100 shadow-xl relative overflow-hidden">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-[#0B3022] flex items-center justify-center text-[#C5A059] shadow-md shrink-0">
+              <Landmark className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#C5A059]">
+                Regulatory Disclosure &amp; Operational Licensing
+              </span>
+              <h3 className="text-2xl font-black text-[#0B3022]">Payment Infrastructure &amp; Open Banking Rails</h3>
+            </div>
+          </div>
+
+          <p className="text-[#1F2937]/90 leading-relaxed font-medium text-base mb-6">
+            <strong>Regulatory Disclosure:</strong> Àjọṣe is a financial technology platform, not a bank. Payment processing, fund settlement, and transactional switching infrastructure are powered by <strong>Paylode Services Limited</strong>, licensed and regulated by the Central Bank of Nigeria (CBN) as a Payment Solution Service Provider (PSSP). Automated direct-debits and banking connectivity are powered by <strong>Mono Open Banking</strong>. All member contributions are held directly within authorized commercial bank accounts.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-gray-100 text-xs font-mono">
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Paylode (CBN Licensed PSSP)
+            </span>
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-medium">
+              <span className="w-2 h-2 rounded-full bg-blue-500" />
+              Mono Direct Debit
+            </span>
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 font-medium">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              Non-Custodial Architecture
+            </span>
           </div>
         </div>
 
