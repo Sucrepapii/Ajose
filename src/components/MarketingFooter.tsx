@@ -64,20 +64,24 @@ export function MarketingFooter() {
           
         </div>
 
-        {/* Clean Feedback Callout Text & Link in Footer */}
-        <div className="pt-6 pb-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-          <p className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse" />
-            <span>Have an idea or feedback on your circle experience?</span>
+
+        {/* Regulatory & Infrastructure Compliance Disclaimer */}
+        <div className="pt-6 pb-6 border-t border-white/10 text-xs text-gray-400 space-y-3">
+          <p className="leading-relaxed">
+            <strong className="text-white font-semibold">Regulatory Disclosure:</strong> Àjọṣe is a financial technology platform, not a bank. Payment processing, fund settlement, and transactional switching infrastructure are powered by <span className="text-white font-medium">Paylode Services Limited</span>, licensed and regulated by the Central Bank of Nigeria (CBN) as a Payment Solution Service Provider (PSSP). Automated direct-debits and banking connectivity are powered by <span className="text-white font-medium">Mono Open Banking</span>. All member contributions are held directly within authorized commercial bank accounts.
           </p>
-          <Link 
-            href="/feedback" 
-            className="text-[#C5A059] hover:text-[#D4AF37] font-semibold hover:underline transition-colors inline-flex items-center gap-1"
-          >
-            <span>Share your feedback &rarr;</span>
-          </Link>
+          <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-300 pt-1">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              Powered by Paylode (CBN Licensed PSSP)
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+              Direct Debits via Mono Open Banking
+            </span>
+          </div>
         </div>
-        
+
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-400 text-xs font-medium">© {new Date().getFullYear()} Àjọṣe Technologies Ltd. All rights reserved. &bull; Turn by turn, no wahala.</p>

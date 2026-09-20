@@ -16,16 +16,17 @@ export default function TermsOfServicePage() {
           <ul className="list-disc pl-6 space-y-2">
             <li><strong>"Ajo Pot"</strong> means the collective funds contributed by a group of Users for cyclical disbursement.</li>
             <li><strong>"CBN"</strong> means the Central Bank of Nigeria.</li>
+            <li><strong>"Paylode"</strong> refers to Paylode Services Limited, the licensed Payment Solution Service Provider (PSSP) powering payment gateways, card debits, switching, and settlement infrastructure for the Platform.</li>
             <li><strong>"Mono"</strong> refers to our integrated open-banking and direct debit infrastructure partner.</li>
-            <li><strong>"PSSP"</strong> means Payment Solution Service Provider.</li>
+            <li><strong>"PSSP"</strong> means Payment Solution Service Provider licensed and regulated by the Central Bank of Nigeria (CBN).</li>
           </ul>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">2. Licensing Framework and Operational Capacity</h2>
           <p>
-            2.1. <strong>Not a Bank:</strong> We operate strictly under a Payment Solution Service Provider (PSSP) license issued and regulated by the Central Bank of Nigeria (CBN). We are explicitly a licensed payment processor and payment solution developer. We are <strong>not</strong> a licensed commercial bank, nor are we a deposit-taking Mobile Money Operator (MMO).
+            2.1. <strong>Payment Infrastructure &amp; Licensing:</strong> Payment processing, debit switching, card transactions, and automated settlement infrastructure on Àjọṣe are powered by <strong>Paylode Services Limited</strong>, operating under a Payment Solution Service Provider (PSSP) license issued and regulated by the Central Bank of Nigeria (CBN). Àjọṣe Technologies Ltd. provides non-custodial rotating credit software. We are <strong>not</strong> a licensed commercial bank, nor are we a deposit-taking Mobile Money Operator (MMO).
           </p>
           <p>
-            2.2. <strong>Fund Escrow:</strong> We do not hold, absorb, or leverage User deposits. All customer funds ("Ajo Pots") are securely routed and escrowed exclusively via our regulated partner commercial or microfinance banks in strict compliance with CBN client-fund segregation guidelines.
+            2.2. <strong>Fund Escrow:</strong> We do not hold, absorb, or leverage User deposits. All customer funds ("Ajo Pots") are securely routed, settled, and escrowed exclusively via regulated commercial partner banks in strict compliance with CBN client-fund segregation guidelines.
           </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">3. Mono Direct Debit and Mandate Authorization</h2>

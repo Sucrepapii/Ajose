@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">2. NDPA Data Minimization vs. CBN Regulatory Retention</h2>
           <p>
-            2.1. <strong>Statutory Conflict Resolution:</strong> The NDPA 2023 mandates the principle of data minimization and the prompt deletion of personal data when the original purpose of collection has been extinguished. However, as a CBN-licensed Payment Solution Service Provider (PSSP), we are concurrently bound by the Central Bank of Nigeria Anti-Money Laundering and Combating the Financing of Terrorism (AML/CFT) Regulations.
+            2.1. <strong>Statutory Conflict Resolution:</strong> The NDPA 2023 mandates the principle of data minimization and the prompt deletion of personal data when the original purpose of collection has been extinguished. However, operating with our CBN-licensed Payment Solution Service Provider (PSSP) infrastructure partner <strong>Paylode Services Limited</strong>, we are concurrently bound by the Central Bank of Nigeria Anti-Money Laundering and Combating the Financing of Terrorism (AML/CFT) Regulations.
           </p>
           <p>
             2.2. <strong>Retention Period:</strong> In resolving this statutory overlap, we rely on the legal obligation basis for processing under the NDPA. Consequently, regardless of account closure or withdrawal of consent, all financial transaction data, identity verification records (BVN/NIN), and mandate logs shall be securely retained in our encrypted archives for a mandatory, non-negotiable period of <strong>five (5) years</strong> post-transaction, in strict accordance with CBN directives.
