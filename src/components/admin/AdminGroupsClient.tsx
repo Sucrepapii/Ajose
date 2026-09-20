@@ -15,7 +15,8 @@ import {
   X,
   Copy,
   Check,
-  Trash2
+  Trash2,
+  MoreVertical
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,6 +34,16 @@ export function AdminGroupsClient({
   const [deletingGroup, setDeletingGroup] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [openMenuGroupId, setOpenMenuGroupId] = useState<string | null>(null);
+
+  const copyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    setCopiedId(id);
+    toast.success("Circle ID copied to clipboard!");
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const handleDeleteCircle = async () => {
     if (!deletingGroup) return;
@@ -109,7 +120,7 @@ export function AdminGroupsClient({
             No contribution circles matching the current criteria.
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto min-h-[360px] pb-24">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-zinc-900/60 text-zinc-400 font-mono uppercase tracking-wider border-b border-zinc-800 text-[10px]">
@@ -184,27 +195,101 @@ export function AdminGroupsClient({
                         </span>
                       </td>
 
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      {/* Actions */}
+                      <td className="px-5 py-4 text-right relative">
+                        <div className="flex items-center justify-end">
                           <button
                             type="button"
-                            onClick={() => setInspectingGroup(group)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 text-xs font-semibold transition-colors cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMenuGroupId(openMenuGroupId === group.id ? null : group.id);
+                            }}
+                            className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
+                              openMenuGroupId === group.id
+                                ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
+                                : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
+                            }`}
+                            title="Circle Actions"
                           >
-                            <ShieldCheck className="h-3 w-3 text-emerald-400" />
-                            <span>Inspect Circle</span>
+                            <MoreVertical className="h-4 w-4" />
                           </button>
 
-                          {isSuperAdmin && (
-                            <button
-                              type="button"
-                              onClick={() => setDeletingGroup(group)}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold transition-colors cursor-pointer"
-                              title="Delete Circle Permanently"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                              <span className="hidden sm:inline">Delete</span>
-                            </button>
+                          {openMenuGroupId === group.id && (
+                            <>
+                              {/* Invisible backdrop to dismiss menu */}
+                              <div
+                                className="fixed inset-0 z-30"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenMenuGroupId(null);
+                                }}
+                              />
+
+                              {/* Mini Dropdown Menu */}
+                              <div className="absolute right-4 top-12 z-40 w-52 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl">
+                                <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
+                                  <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Circle Actions</p>
+                                  <p className="text-xs font-bold text-white truncate">{group.name}</p>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setOpenMenuGroupId(null);
+                                    setInspectingGroup(group);
+                                  }}
+                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                >
+                                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                                  <span>Inspect Circle</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setOpenMenuGroupId(null);
+                                    copyId(group.id);
+                                  }}
+                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                >
+                                  {copiedId === group.id ? (
+                                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                                  ) : (
+                                    <Copy className="h-3.5 w-3.5 text-zinc-400" />
+                                  )}
+                                  <span>Copy Circle ID</span>
+                                </button>
+
+                                <a
+                                  href={`/invite/${group.id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() => setOpenMenuGroupId(null)}
+                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors"
+                                >
+                                  <ExternalLink className="h-3.5 w-3.5 text-blue-400" />
+                                  <span>Public Invite Link</span>
+                                </a>
+
+                                {isSuperAdmin && (
+                                  <>
+                                    <div className="my-1 border-t border-zinc-800/80" />
+
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setOpenMenuGroupId(null);
+                                        setDeletingGroup(group);
+                                      }}
+                                      className="w-full px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                      <span>Delete Circle</span>
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </>
                           )}
                         </div>
                       </td>

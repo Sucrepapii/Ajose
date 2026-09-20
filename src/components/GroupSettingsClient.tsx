@@ -20,7 +20,8 @@ import {
   X,
   Coins,
   ArrowLeftRight,
-  AlertCircle
+  AlertCircle,
+  MoreVertical
 } from "lucide-react";
 
 type Group = any;
@@ -68,6 +69,7 @@ export function GroupSettingsClient({
   // Circle Capacity State
   const [maxMembersInput, setMaxMembersInput] = useState<string>(group.max_members?.toString() || "5");
   const [isUpdatingCapacity, setIsUpdatingCapacity] = useState(false);
+  const [openMenuMemberId, setOpenMenuMemberId] = useState<string | null>(null);
 
   // Strict Admin Verification
   const isAdmin = members.some(m => m.user_id === currentUserId && m.role === 'admin') || group.admin_id === currentUserId;
@@ -603,18 +605,74 @@ export function GroupSettingsClient({
                   </div>
                 </div>
                 
-                {!isTurnAdmin && m.user_id !== currentUserId && (
-                  <button 
-                    onClick={() => {
-                      setMemberToRemove(m);
-                      setFineAmount(defaultFine.toString());
+                {/* 3-Dots Action Menu */}
+                <div className="relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenuMemberId(openMenuMemberId === m.id ? null : m.id);
                     }}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
-                    title={isLocked ? "Remove Member & Levy Fine" : "Remove Member"}
+                    className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
+                      openMenuMemberId === m.id
+                        ? "bg-gray-200 text-[#0B3022] border-gray-300 shadow-sm"
+                        : "text-gray-400 hover:text-[#0B3022] hover:bg-gray-100 border-transparent hover:border-gray-200"
+                    }`}
+                    title="Member Actions"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <MoreVertical className="h-4 w-4" />
                   </button>
-                )}
+
+                  {openMenuMemberId === m.id && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-30"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuMemberId(null);
+                        }}
+                      />
+
+                      <div className="absolute right-0 top-9 z-40 w-48 bg-white border border-gray-200 rounded-xl shadow-xl py-1 text-left animate-in fade-in zoom-in-95 duration-100">
+                        <div className="px-3 py-1.5 border-b border-gray-100 mb-1">
+                          <p className="text-[10px] font-mono uppercase tracking-wider text-gray-400">Member</p>
+                          <p className="text-xs font-bold text-[#0B3022] truncate">{getDisplayName(m)}</p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOpenMenuMemberId(null);
+                            setEditingSlotMember(m);
+                            setTargetSlot(m.payout_turn?.toString() || openTurns[0]?.toString() || "1");
+                          }}
+                          className="w-full px-3 py-2 text-xs font-semibold text-gray-700 hover:text-[#0B3022] hover:bg-gray-50 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <Edit3 className="h-3.5 w-3.5 text-[#C5A059]" />
+                          <span>{m.payout_turn ? "Change Payout Slot" : "Assign Payout Slot"}</span>
+                        </button>
+
+                        {!isTurnAdmin && m.user_id !== currentUserId && (
+                          <>
+                            <div className="my-1 border-t border-gray-100" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuMemberId(null);
+                                setMemberToRemove(m);
+                                setFineAmount(defaultFine.toString());
+                              }}
+                              className="w-full px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              <span>{isLocked ? "Remove & Levy Fine" : "Remove from Group"}</span>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}

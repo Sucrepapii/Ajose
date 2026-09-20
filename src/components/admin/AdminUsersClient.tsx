@@ -16,7 +16,8 @@ import {
   Trash2,
   Ban,
   AlertTriangle,
-  Loader2
+  Loader2,
+  MoreVertical
 } from "lucide-react";
 
 interface AdminUsersClientProps {
@@ -43,6 +44,9 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
   const [userToDelete, setUserToDelete] = useState<any | null>(null);
   const [deleteConfirmChecked, setDeleteConfirmChecked] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Mini Dropdown State
+  const [openMenuUserId, setOpenMenuUserId] = useState<string | null>(null);
 
   // Filter users
   const filteredUsers = userList.filter((u) => {
@@ -244,7 +248,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
             No registered users matching the selected search or filter criteria.
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto min-h-[360px] pb-24">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-zinc-900/60 text-zinc-400 font-mono uppercase tracking-wider border-b border-zinc-800 text-[10px]">
@@ -252,8 +256,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                   <th className="px-5 py-4">Contact</th>
                   <th className="px-5 py-4">Identity KYC</th>
                   <th className="px-5 py-4">Next of Kin &amp; Social</th>
-                  <th className="px-5 py-4">PIN Security</th>
-                  <th className="px-5 py-4">Account Status</th>
+                  <th className="px-5 py-4">Status &amp; Security</th>
                   <th className="px-5 py-4">Linked Bank Account</th>
                   <th className="px-5 py-4 text-right">Actions</th>
                 </tr>
@@ -332,37 +335,42 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                         )}
                       </td>
 
-                      {/* PIN Security */}
+                      {/* Status & Security */}
                       <td className="px-5 py-4">
-                        {u.has_pin ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            <KeyRound className="h-3 w-3" /> 4-Digit PIN Active
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            <AlertCircle className="h-3 w-3" /> No PIN
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Account Standing / Status */}
-                      <td className="px-5 py-4">
-                        {u.is_suspended ? (
-                          <div className="space-y-1">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/20">
-                              <Ban className="h-3 w-3" /> Suspended
-                            </span>
-                            {u.suspended_reason && (
-                              <p className="text-[10px] text-zinc-400 truncate max-w-[130px]" title={u.suspended_reason}>
-                                {u.suspended_reason}
-                              </p>
+                        <div className="space-y-1.5">
+                          {/* Account Standing */}
+                          <div>
+                            {u.is_suspended ? (
+                              <div className="space-y-0.5">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                                  <Ban className="h-3 w-3" /> Suspended
+                                </span>
+                                {u.suspended_reason && (
+                                  <p className="text-[10px] text-zinc-400 truncate max-w-[130px]" title={u.suspended_reason}>
+                                    {u.suspended_reason}
+                                  </p>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                <CheckCircle2 className="h-3 w-3" /> Active
+                              </span>
                             )}
                           </div>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            <CheckCircle2 className="h-3 w-3" /> Active
-                          </span>
-                        )}
+
+                          {/* PIN Security */}
+                          <div>
+                            {u.has_pin ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                <KeyRound className="h-3 w-3" /> PIN Active
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                <AlertCircle className="h-3 w-3" /> No PIN
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </td>
 
                       {/* Linked Bank Account */}
@@ -378,61 +386,107 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                       </td>
 
                       {/* Actions */}
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <td className="px-5 py-4 text-right relative">
+                        <div className="flex items-center justify-end">
                           <button
                             type="button"
-                            onClick={() => setSelectedUser(u)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white rounded-lg text-xs font-bold transition-colors border border-zinc-700"
-                            title="View Full KYC Dossier"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMenuUserId(openMenuUserId === u.id ? null : u.id);
+                            }}
+                            className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
+                              openMenuUserId === u.id
+                                ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
+                                : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
+                            }`}
+                            title="Actions Menu"
                           >
-                            <Eye className="h-3.5 w-3.5 text-emerald-400" />
-                            <span>Dossier</span>
+                            <MoreVertical className="h-4 w-4" />
                           </button>
 
-                          {isSuperAdmin && (
+                          {openMenuUserId === u.id && (
                             <>
-                              {u.is_suspended ? (
-                                <button
-                                  type="button"
-                                  onClick={() => handleUnsuspendUser(u)}
-                                  disabled={reactivatingUserId === u.id}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
-                                  title="Reactivate Member Access"
-                                >
-                                  {reactivatingUserId === u.id ? (
-                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                  ) : (
-                                    <ShieldCheck className="h-3.5 w-3.5" />
-                                  )}
-                                  <span className="hidden sm:inline">Reactivate</span>
-                                </button>
-                              ) : (
+                              {/* Invisible backdrop to dismiss menu */}
+                              <div
+                                className="fixed inset-0 z-30"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenMenuUserId(null);
+                                }}
+                              />
+
+                              {/* Mini Dropdown Menu */}
+                              <div className="absolute right-4 top-12 z-40 w-48 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl">
+                                <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
+                                  <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Actions</p>
+                                  <p className="text-xs font-bold text-white truncate">{u.first_name ? `${u.first_name} ${u.last_name || ''}`.trim() : u.email}</p>
+                                </div>
+
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    setUserToSuspend(u);
-                                    setSuspensionReason("");
+                                    setOpenMenuUserId(null);
+                                    setSelectedUser(u);
                                   }}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                                  title="Suspend Member Account"
+                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors cursor-pointer"
                                 >
-                                  <Ban className="h-3.5 w-3.5" />
-                                  <span className="hidden sm:inline">Suspend</span>
+                                  <Eye className="h-3.5 w-3.5 text-emerald-400" />
+                                  <span>View KYC Dossier</span>
                                 </button>
-                              )}
 
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setUserToDelete(u);
-                                  setDeleteConfirmChecked(false);
-                                }}
-                                className="inline-flex items-center gap-1 px-2 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                                title="Delete Member Permanently"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
+                                {isSuperAdmin && (
+                                  <>
+                                    <div className="my-1 border-t border-zinc-800/80" />
+
+                                    {u.is_suspended ? (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setOpenMenuUserId(null);
+                                          handleUnsuspendUser(u);
+                                        }}
+                                        disabled={reactivatingUserId === u.id}
+                                        className="w-full px-3 py-2 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/10 flex items-center gap-2.5 transition-colors cursor-pointer disabled:opacity-50"
+                                      >
+                                        {reactivatingUserId === u.id ? (
+                                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                        ) : (
+                                          <ShieldCheck className="h-3.5 w-3.5" />
+                                        )}
+                                        <span>Restore Access</span>
+                                      </button>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setOpenMenuUserId(null);
+                                          setUserToSuspend(u);
+                                          setSuspensionReason("");
+                                        }}
+                                        className="w-full px-3 py-2 text-xs font-semibold text-amber-400 hover:bg-amber-500/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                      >
+                                        <Ban className="h-3.5 w-3.5" />
+                                        <span>Suspend Member</span>
+                                      </button>
+                                    )}
+
+                                    <div className="my-1 border-t border-zinc-800/80" />
+
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setOpenMenuUserId(null);
+                                        setUserToDelete(u);
+                                        setDeleteConfirmChecked(false);
+                                      }}
+                                      className="w-full px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                      <span>Delete Member</span>
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                             </>
                           )}
                         </div>
@@ -642,7 +696,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
             </div>
 
             {/* Identity & KYC Badges */}
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-2 gap-2.5">
               <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-1">
                 <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">BVN &amp; NIN</span>
                 <p className="text-xs font-bold text-white flex items-center gap-1">
@@ -655,25 +709,20 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
               </div>
 
               <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-1">
-                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">PIN Security</span>
-                <p className="text-xs font-bold text-white flex items-center gap-1">
-                  {selectedUser.has_pin ? (
-                    <span className="text-emerald-400 flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5" /> Active</span>
-                  ) : (
-                    <span className="text-amber-400 flex items-center gap-1"><AlertCircle className="h-3.5 w-3.5" /> None</span>
-                  )}
-                </p>
-              </div>
-
-              <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-1">
-                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Standing</span>
-                <p className="text-xs font-bold text-white flex items-center gap-1">
+                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Status &amp; Security</span>
+                <div className="flex items-center gap-2 flex-wrap">
                   {selectedUser.is_suspended ? (
-                    <span className="text-red-400 flex items-center gap-1"><Ban className="h-3.5 w-3.5" /> Suspended</span>
+                    <span className="text-red-400 flex items-center gap-1 text-xs font-bold"><Ban className="h-3.5 w-3.5" /> Suspended</span>
                   ) : (
-                    <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Active</span>
+                    <span className="text-emerald-400 flex items-center gap-1 text-xs font-bold"><CheckCircle2 className="h-3.5 w-3.5" /> Active</span>
                   )}
-                </p>
+                  <span className="text-zinc-600 font-mono">•</span>
+                  {selectedUser.has_pin ? (
+                    <span className="text-emerald-400 flex items-center gap-1 text-xs font-bold"><ShieldCheck className="h-3.5 w-3.5" /> PIN Active</span>
+                  ) : (
+                    <span className="text-amber-400 flex items-center gap-1 text-xs font-bold"><AlertCircle className="h-3.5 w-3.5" /> No PIN</span>
+                  )}
+                </div>
               </div>
             </div>
 
