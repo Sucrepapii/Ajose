@@ -8,24 +8,31 @@ workflows:
     integrations:
       app_store_connect: Ajose ASC Key
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: ng.ajose.app
       vars:
         APP_STORE_APPLE_ID: 6806719980
+        BUNDLE_ID: ng.ajose.app
       node: 20.20.2
     scripts:
       - name: Install deps
         script: npm ci
       - name: Sync Capacitor
         script: npx cap sync ios
-      - name: Set bundle ID
+      - name: Set marketing version
         script: |
           cd ios/App
           xcrun agvtool new-marketing-version 1.0
+      - name: Set up code signing
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files \
+            --bundle-identifier "$BUNDLE_ID" \
+            --platform IOS \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
+          xcode-project use-profiles
       - name: Build & sign IPA
         script: |
-          xcode-project use-profiles
           cd ios/App
           xcodebuild \
             -workspace App.xcworkspace \
