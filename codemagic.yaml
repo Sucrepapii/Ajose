@@ -25,8 +25,7 @@ workflows:
         script: |
           set -e
           keychain initialize
-          app-store-connect fetch-signing-files \
-            --bundle-id "$BUNDLE_ID" \
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --platform IOS \
             --type IOS_APP_STORE \
             --create
