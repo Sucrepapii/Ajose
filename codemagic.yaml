@@ -33,11 +33,13 @@ workflows:
           xcode-project use-profiles
       - name: Build & sign IPA
         script: |
+          set -e
           cd ios/App
           xcodebuild \
             -project App.xcodeproj \
             -scheme App \
             -configuration Release \
+            -destination 'generic/platform=iOS' \
             -archivePath $CM_BUILD_DIR/App.xcarchive \
             archive | xcpretty
           xcodebuild \
