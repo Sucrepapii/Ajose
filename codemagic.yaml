@@ -12,7 +12,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: ng.ajose.app
       vars:
-        APP_STORE_APPLE_ID: 1234567890   # replace with actual Apple ID once created in App Store Connect
+        APP_STORE_APPLE_ID: 6806719980
       node: 20.20.2
     scripts:
       - name: Install deps
