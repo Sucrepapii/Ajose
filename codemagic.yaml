@@ -4,7 +4,7 @@ workflows:
   ajose-ios:
     name: Ajose iOS
     max_build_duration: 60
-    instance_type: mac_mini_m2
+    instance_type: mac_mini_m1
     integrations:
       app_store_connect: Ajose ASC Key
     environment:
@@ -51,7 +51,7 @@ workflows:
   ajose-android:
     name: Ajose Android
     max_build_duration: 60
-    instance_type: linux_x2
+    instance_type: linux_x1
     environment:
       android_signing:
         - ajose_keystore
