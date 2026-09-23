@@ -8,6 +8,8 @@ workflows:
     integrations:
       app_store_connect: Ajose ASC Key
     environment:
+      groups:
+        - ios-signing
       vars:
         APP_STORE_APPLE_ID: 6806719980
         BUNDLE_ID: ng.ajose.app
