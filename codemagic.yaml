@@ -62,6 +62,14 @@ workflows:
         script: npm ci
       - name: Sync Capacitor
         script: npx cap sync android
+      - name: Write key.properties
+        script: |
+          cat > "$CM_BUILD_DIR/android/key.properties" <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=$CM_KEYSTORE
+          EOF
       - name: Build release AAB
         script: |
           cd android
