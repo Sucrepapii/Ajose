@@ -73,7 +73,9 @@ workflows:
       - name: Install deps
         script: npm ci
       - name: Sync Capacitor
-        script: npx cap sync android
+        script: |
+          mkdir -p android/app/src/main/assets
+          npx cap sync android
       - name: Decode keystore
         script: |
           echo "$CM_KEYSTORE_B64" | base64 --decode > /tmp/ajose-release.jks
