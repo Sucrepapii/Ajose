@@ -89,6 +89,7 @@ workflows:
           EOF
       - name: Build release AAB
         script: |
+          chmod +x android/gradlew
           cd android
           ./gradlew bundleRelease
     artifacts:
