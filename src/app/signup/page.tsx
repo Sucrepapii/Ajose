@@ -304,46 +304,62 @@ export default function SignupPage() {
       </div>
 
       {/* Right Pane - Form */}
-      <div className="w-full lg:w-[55%] flex flex-col pt-10 pb-16 px-8 sm:px-16 md:px-24 overflow-y-auto">
+      <div className="w-full lg:w-[55%] flex flex-col pt-6 sm:pt-10 pb-16 px-5 sm:px-12 md:px-20 overflow-y-auto min-h-screen">
         
-        {/* Back button and Mobile Header */}
-        <div className="absolute top-8 left-8 flex items-center gap-4 z-10">
-          <Link href="/" className="hidden lg:flex items-center gap-2 text-[#1F2937]/50 hover:text-[#0B402B] transition-colors font-medium text-sm">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
-
-          <Link href="/" className="lg:hidden flex items-center gap-2 group hover:opacity-90 transition-opacity">
+        {/* Mobile Top Navigation Header (In-flow so it never clashes with Step indicator) */}
+        <div className="lg:hidden flex items-center justify-between w-full mb-6 pt-1">
+          <Link href="/" className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
             <Image 
               src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
-              width={28} 
-              height={28} 
-              className="object-contain w-auto h-7 drop-shadow-sm"
+              width={32} 
+              height={32} 
+              className="object-contain w-auto h-8 drop-shadow-sm"
             />
-            <span className="text-[#0B402B] font-bold text-xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
+            <span className="text-[#0B402B] font-bold text-xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4AF37]">ṣe</span>
+            </span>
+          </Link>
+
+          <Link 
+            href="/" 
+            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-[#0B402B] bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-xs transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Home
           </Link>
         </div>
 
-        <div className="hidden lg:flex items-center justify-between mb-12 relative z-10 mt-8">
-          <Link href="/" className="inline-flex items-center gap-4 group hover:opacity-90 transition-opacity">
+        {/* Desktop Top Navigation Header */}
+        <div className="hidden lg:flex items-center justify-between mb-10 pt-2">
+          <Link href="/" className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity">
             <Image 
               src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
-              width={64} 
-              height={64} 
-              className="object-contain w-auto h-16 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+              width={56} 
+              height={56} 
+              className="object-contain w-auto h-14 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             />
-            <span className="text-[#0B402B] font-bold text-3xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
+            <span className="text-[#0B402B] font-bold text-3xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4AF37]">ṣe</span>
+            </span>
+          </Link>
+
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-[#1F2937]/60 hover:text-[#0B402B] transition-colors font-medium text-sm bg-white/80 hover:bg-white px-3.5 py-1.5 rounded-full border border-gray-200 shadow-xs"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
           </Link>
         </div>
 
         <div className="w-full max-w-xl mx-auto flex-1">
           
           {step < 3 && (
-            <div className="mb-8 flex justify-center">
-              <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white shadow-sm border border-gray-100">
-                <span className="text-sm font-semibold text-[#D4AF37]">
+            <div className="mb-6 sm:mb-8 flex justify-center">
+              <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white shadow-xs border border-gray-200">
+                <span className="text-xs sm:text-sm font-semibold text-[#D4AF37]">
                   Step {step} of 2: {step === 1 ? "Profile Setup" : "Security & Identity"}
                 </span>
               </div>

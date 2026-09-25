@@ -236,24 +236,32 @@ export default function LoginPage() {
       </div>
 
       {/* Right Pane - Dynamic Form with Auto Role-Switching */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 md:px-24 xl:px-32 relative">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-16 md:px-24 xl:px-32 py-10 lg:py-0 relative min-h-screen">
         
-        {/* Back button and Mobile Header */}
-        <div className="absolute top-8 left-8 flex items-center gap-4 z-10">
-          <Link href="/" className="hidden lg:flex items-center gap-2 text-[#1F2937]/50 hover:text-[#0B3022] transition-colors font-medium text-sm">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
-
-          <Link href="/" className="lg:hidden flex items-center gap-2 group hover:opacity-90 transition-opacity">
+        {/* Mobile Top Navigation Header */}
+        <div className="lg:hidden flex items-center justify-between w-full mb-8 pt-2">
+          <Link href="/" className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
             <Image 
               src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
-              width={28} 
-              height={28} 
-              className="object-contain w-auto h-7 drop-shadow-sm"
+              width={32} 
+              height={32} 
+              className="object-contain w-auto h-8 drop-shadow-sm"
             />
             <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
+          </Link>
+
+          <Link href="/" className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-[#0B3022] bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-xs transition-colors">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Home
+          </Link>
+        </div>
+
+        {/* Desktop Back button */}
+        <div className="hidden lg:flex absolute top-8 left-8 items-center gap-4 z-10">
+          <Link href="/" className="flex items-center gap-2 text-[#1F2937]/60 hover:text-[#0B3022] transition-colors font-medium text-sm bg-white/80 hover:bg-white px-3.5 py-1.5 rounded-full border border-gray-200 shadow-xs">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
           </Link>
         </div>
 
