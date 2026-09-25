@@ -4,33 +4,45 @@ workflows:
   ajose-ios:
     name: Ajose iOS
     max_build_duration: 60
-    instance_type: mac_mini_m2
+    instance_type: mac_mini_m1
     integrations:
       app_store_connect: Ajose ASC Key
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: ng.ajose.app
+      groups:
+        - ios-signing
       vars:
-        APP_STORE_APPLE_ID: 1234567890   # replace with actual Apple ID once created in App Store Connect
-      node: 20.20.2
+        APP_STORE_APPLE_ID: 6815151482
+        BUNDLE_ID: ng.ajose.app
+      node: 22.9.0
     scripts:
       - name: Install deps
         script: npm ci
       - name: Sync Capacitor
         script: npx cap sync ios
-      - name: Set bundle ID
+      - name: Set marketing version
         script: |
           cd ios/App
           xcrun agvtool new-marketing-version 1.0
+      - name: Set up code signing
+        script: |
+          set -e
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --platform IOS \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
+          xcode-project use-profiles
       - name: Build & sign IPA
         script: |
-          xcode-project use-profiles
+          set -eo pipefail
           cd ios/App
           xcodebuild \
-            -workspace App.xcworkspace \
+            -project App.xcodeproj \
             -scheme App \
+            -sdk iphoneos \
             -configuration Release \
+            -destination 'generic/platform=iOS' \
             -archivePath $CM_BUILD_DIR/App.xcarchive \
             archive | xcpretty
           xcodebuild \
@@ -51,25 +63,34 @@ workflows:
   ajose-android:
     name: Ajose Android
     max_build_duration: 60
-    instance_type: linux_x2
+    instance_type: mac_mini_m1
     environment:
-      android_signing:
-        - ajose_keystore
-      node: 20.20.2
-      java: 17
+      groups:
+        - android-signing
+      node: 22.9.0
+      java: 21
     scripts:
       - name: Install deps
         script: npm ci
       - name: Sync Capacitor
-        script: npx cap sync android
+        script: |
+          mkdir -p android/app/src/main/assets
+          npx cap sync android
+      - name: Decode keystore
+        script: |
+          echo "$CM_KEYSTORE_B64" | base64 --decode > /tmp/ajose-release.jks
+      - name: Write key.properties
+        script: |
+          cat > android/key.properties <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=/tmp/ajose-release.jks
+          EOF
       - name: Build release AAB
         script: |
+          chmod +x android/gradlew
           cd android
           ./gradlew bundleRelease
     artifacts:
       - android/app/build/outputs/bundle/release/app-release.aab
-    publishing:
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
-        submit_as_draft: true
