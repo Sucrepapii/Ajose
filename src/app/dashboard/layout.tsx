@@ -13,6 +13,7 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { SidebarNav } from "@/components/SidebarNav";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileDashboardHeader } from "@/components/MobileDashboardHeader";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { AutoLogout } from "@/components/AutoLogout";
 import Image from "next/image";
 
@@ -45,7 +46,7 @@ export default async function DashboardLayout({
     : (email ? email.substring(0, 2).toUpperCase() : "ME");
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] flex flex-col md:flex-row font-sans text-[#1F2937]">
+    <div className="min-h-screen bg-[#FDFBF7] flex flex-col md:flex-row font-sans text-[#1F2937] relative">
       <AutoLogout />
       {/* Sidebar for Desktop */}
       <aside className="w-64 bg-[#0B3022] border-r border-[#0B3022]/10 hidden md:flex flex-col shadow-xl z-20">
@@ -53,11 +54,11 @@ export default async function DashboardLayout({
           <div className="relative">
             <Link className="flex items-center gap-3 group relative hover:opacity-90 transition-opacity py-1" href="/">
               <Image 
-                src="/ajose-rings-logo.png" 
+                src="/ajose-brand-pot.png" 
                 alt="Àjọṣe Logo" 
                 width={32} 
                 height={32} 
-                className="object-contain w-auto h-8 drop-shadow-sm animate-spin-slow"
+                className="object-contain w-auto h-8 drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
               />
               <span className="font-bold text-xl text-white font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
 
@@ -108,11 +109,14 @@ export default async function DashboardLayout({
           </div>
         </div>
         
-        {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+        {/* Page Content with Mobile Bottom Nav Clearance */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-28 md:pb-8 overscroll-contain">
           {children}
         </div>
       </main>
+
+      {/* Native-style Mobile Bottom Navigation Tab Bar */}
+      <MobileBottomNav />
     </div>
   );
 }

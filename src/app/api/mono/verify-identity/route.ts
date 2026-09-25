@@ -5,9 +5,9 @@ export async function POST(req: Request) {
   try {
     const { bvn, nin, firstName, lastName, phone } = await req.json();
 
-    if (!bvn || !nin) {
+    if (!bvn) {
       return NextResponse.json(
-        { error: "BVN and NIN are required for identity verification." },
+        { error: "BVN is required for identity verification." },
         { status: 400 }
       );
     }

@@ -261,15 +261,15 @@ export async function verifyIdentityWithMono({
   const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
 
   const isBvnValid = Boolean(bvn && /^\d{11}$/.test(bvn));
-  const isNinValid = Boolean(nin && /^\d{11}$/.test(nin));
+  const isNinValid = Boolean(!nin || /^\d{11}$/.test(nin));
 
-  if (!isBvnValid || !isNinValid) {
+  if (!isBvnValid) {
     return {
       verified: false,
-      bvnValid: isBvnValid,
+      bvnValid: false,
       ninValid: isNinValid,
       nameMatch: false,
-      message: "Both BVN and NIN must be exactly 11 numeric digits.",
+      message: "BVN must be exactly 11 numeric digits.",
     };
   }
 

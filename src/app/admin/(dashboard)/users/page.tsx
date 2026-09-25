@@ -38,7 +38,22 @@ export default async function AdminUsersPage() {
     console.warn("Users query warning:", error.message);
   }
 
-  // 2. Fetch Auth metadata for Next of Kin, Guarantor, PIN statuses, and ban/suspension status
+  // 2. Fetch all groups to count circles managed per admin
+  const adminGroupCounts = new Map<string, number>();
+  try {
+    const { data: allGroups } = await supabase.from("groups").select("id, admin_id");
+    if (allGroups) {
+      for (const g of allGroups) {
+        if (g.admin_id) {
+          adminGroupCounts.set(g.admin_id, (adminGroupCounts.get(g.admin_id) || 0) + 1);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Could not query groups for admin circle counts:", err);
+  }
+
+  // 3. Fetch Auth metadata for Next of Kin, Guarantor, PIN statuses, ban status, and fee overrides
   const authUsersMap = new Map<string, any>();
   try {
     const { data: authData } = await supabase.auth.admin.listUsers();
@@ -61,6 +76,7 @@ export default async function AdminUsersPage() {
   const enrichedUsers = (users || []).map((u: any) => {
     const authInfo = authUsersMap.get(u.id) || {};
     const meta = authInfo.meta || {};
+    const customFee = typeof meta.custom_platform_fee_pct === "number" ? meta.custom_platform_fee_pct : null;
     return {
       ...u,
       next_of_kin_name: u.next_of_kin_name || meta.next_of_kin_name || null,
@@ -74,7 +90,12 @@ export default async function AdminUsersPage() {
       has_pin: Boolean(u.has_pin || meta.has_pin || meta.pin_hash),
       is_suspended: Boolean(u.status === "suspended" || authInfo.isSuspended),
       suspended_reason: authInfo.suspendedReason || null,
-      suspended_at: authInfo.suspendedAt || null
+      suspended_at: authInfo.suspendedAt || null,
+      managed_groups_count: adminGroupCounts.get(u.id) || 0,
+      custom_platform_fee_pct: customFee,
+      custom_fee_note: meta.custom_fee_note || null,
+      custom_fee_updated_at: meta.custom_fee_updated_at || null,
+      custom_fee_updated_by: meta.custom_fee_updated_by || null
     };
   });
 

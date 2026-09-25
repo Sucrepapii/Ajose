@@ -9,12 +9,14 @@ export function SendRemindersClient({
   unpaidUserIds, 
   groupName, 
   currentTurn,
-  amount
+  amount,
+  groupId,
 }: { 
   unpaidUserIds: string[];
   groupName: string;
   currentTurn: number;
   amount: number;
+  groupId?: string;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const supabase = createClient();
@@ -28,6 +30,7 @@ export function SendRemindersClient({
     setIsProcessing(true);
 
     try {
+      // 1. In-app notifications
       const notifications = unpaidUserIds.map(userId => ({
         user_id: userId,
         title: "Urgent: Payment Reminder",
@@ -41,7 +44,14 @@ export function SendRemindersClient({
 
       if (error) throw error;
 
-      toast.success(`Reminders sent to ${unpaidUserIds.length} members.`);
+      // 2. Trigger pre-debit reminder emails if groupId is available
+      if (groupId) {
+        try {
+          await fetch(`/api/cron/reminders?groupId=${groupId}`, { method: "POST" });
+        } catch (_) {}
+      }
+
+      toast.success(`Pre-debit notifications & emails sent to ${unpaidUserIds.length} members.`);
     } catch (err: any) {
       toast.error(err.message || "Failed to send reminders.");
     } finally {
@@ -53,15 +63,15 @@ export function SendRemindersClient({
     <button 
       onClick={handleSendReminders}
       disabled={isProcessing || unpaidUserIds.length === 0}
-      className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:text-amber-400 hover:bg-amber-500/20 transition-colors hidden md:flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      title="Send Reminders to Unpaid Members"
+      className="p-2 sm:px-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 hover:text-amber-700 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-bold shadow-xs shrink-0 cursor-pointer"
+      title="Send 24h Pre-Debit Reminders to Unpaid Members"
     >
       {isProcessing ? (
-        <div className="w-5 h-5 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin"></div>
+        <div className="w-4 h-4 border-2 border-amber-600/30 border-t-amber-600 rounded-full animate-spin"></div>
       ) : (
         <>
-          <BellRing className="h-4 w-4" />
-          <span className="text-sm font-bold">Remind Unpaid ({unpaidUserIds.length})</span>
+          <BellRing className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600" />
+          <span>Remind ({unpaidUserIds.length})</span>
         </>
       )}
     </button>

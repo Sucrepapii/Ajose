@@ -433,11 +433,11 @@ export default function InvitePage(props: {
 
           <Link href="/" className="inline-flex items-center gap-3 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/ajose-rings-logo.png" 
+              src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
               width={40} 
               height={40} 
-              className="object-contain w-auto h-10 drop-shadow-sm animate-spin-slow"
+              className="object-contain w-auto h-10 drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
             />
             <span className="text-[#0B402B] font-bold text-2xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
           </Link>

@@ -67,11 +67,11 @@ export function MobileDashboardHeader({
           onClick={() => setIsOpen(false)}
         >
           <Image 
-            src="/ajose-rings-logo.png" 
+            src="/ajose-brand-pot.png" 
             alt="Àjọṣe Logo" 
             width={28} 
             height={28} 
-            className="object-contain w-auto h-7 drop-shadow-sm animate-spin-slow"
+            className="object-contain w-auto h-7 drop-shadow-sm"
           />
           <span className="font-bold text-lg text-white font-serif tracking-tight">
             Àjọ<span className="text-[#C5A059]">ṣe</span>
@@ -106,7 +106,7 @@ export function MobileDashboardHeader({
             <div className="h-16 px-5 border-b border-white/10 flex items-center justify-between bg-[#072418]">
               <div className="flex items-center gap-2.5">
                 <Image 
-                  src="/ajose-rings-logo.png" 
+                  src="/ajose-brand-pot.png" 
                   alt="Àjọṣe Logo" 
                   width={24} 
                   height={24} 

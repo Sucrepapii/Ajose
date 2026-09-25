@@ -182,6 +182,11 @@ async function handleSweep(req: NextRequest) {
           continue;
         }
 
+        const isDaily = group.frequency === "daily";
+        const isWeekly = group.frequency === "weekly";
+        const automationFee = isDaily ? 100 : isWeekly ? 300 : 0;
+        const totalDebitAmount = (group.contribution_amount || 0) + automationFee;
+
         const reference = `ajose_sweep_${group.id}_turn${currentTurn}_${member.user_id}_${Date.now()}`;
         let debitSuccess = false;
         let debitMessage = "";
@@ -200,7 +205,7 @@ async function handleSweep(req: NextRequest) {
                   "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                  amount: group.contribution_amount * 100, // kobo
+                  amount: totalDebitAmount * 100, // kobo
                   description: `Àjọṣe Contribution: ${group.name} (Round ${currentTurn})`,
                   reference
                 })
@@ -233,7 +238,7 @@ async function handleSweep(req: NextRequest) {
           await supabase.from("transactions").insert({
             group_id: group.id,
             user_id: member.user_id,
-            amount: group.contribution_amount,
+            amount: totalDebitAmount,
             type: "contribution",
             status: isSandbox ? "completed" : "pending",
             description: `Auto-debit sweep via Mono for Turn ${currentTurn} (${reference})`,
@@ -243,7 +248,7 @@ async function handleSweep(req: NextRequest) {
           // Send in-app notification
           await supabase.from("notifications").insert({
             user_id: member.user_id,
-            title: `Contribution Debited ₦${group.contribution_amount.toLocaleString()}`,
+            title: `Contribution Debited ₦${totalDebitAmount.toLocaleString()}`,
             message: `Your scheduled Ajo contribution for Turn ${currentTurn} in ${group.name} was successfully debited.`,
             type: "info"
           });
@@ -261,7 +266,7 @@ async function handleSweep(req: NextRequest) {
           await supabase.from("transactions").insert({
             group_id: group.id,
             user_id: member.user_id,
-            amount: group.contribution_amount,
+            amount: totalDebitAmount,
             type: "contribution",
             status: "failed",
             description: `Auto-debit failed for Turn ${currentTurn}: ${debitMessage}`,
@@ -272,7 +277,7 @@ async function handleSweep(req: NextRequest) {
           await supabase.from("notifications").insert({
             user_id: member.user_id,
             title: `⚠️ Auto-Debit Failed for ${group.name}`,
-            message: `Your contribution of ₦${group.contribution_amount.toLocaleString()} failed: ${debitMessage}. Please transfer directly to the Admin's Settlement Account using your circle narration code to avoid default penalties.`,
+            message: `Your contribution of ₦${totalDebitAmount.toLocaleString()} failed: ${debitMessage}. Please transfer directly to the Admin's Settlement Account using your circle narration code to avoid default penalties.`,
             type: "warning"
           });
 

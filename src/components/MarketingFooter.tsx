@@ -11,11 +11,11 @@ export function MarketingFooter() {
           <div className="col-span-1 lg:col-span-2">
             <Link className="flex items-center gap-3 mb-3 group hover:opacity-90 transition-opacity" href="/">
               <Image 
-                src="/ajose-rings-logo.png" 
+                src="/ajose-brand-pot.png" 
                 alt="Àjọṣe Logo" 
                 width={48} 
                 height={48} 
-                className="object-contain w-auto h-11 drop-shadow-md animate-spin-slow"
+                className="object-contain w-auto h-11 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
               />
               <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
             </Link>

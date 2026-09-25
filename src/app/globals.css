@@ -136,3 +136,34 @@ body {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Mobile Application Native Look & Feel */
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  /* Native app inertia momentum scroll */
+  .overscroll-contain {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Safe Area Utilities for notch & bottom home indicators */
+  .safe-area-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+  .safe-area-top {
+    padding-top: max(env(safe-area-inset-top), 1rem);
+  }
+}
+

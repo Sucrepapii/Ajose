@@ -178,6 +178,24 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     .filter(m => !paidUserIds.has(m.user_id) && m.status === 'active')
     .map(m => m.user_id);
 
+  // Admin active circles count for volume fee tier calculations
+  const { count: adminGroupCount } = await adminClient
+    .from('groups')
+    .select('id', { count: 'exact', head: true })
+    .eq('admin_id', group.admin_id);
+
+  // Check for SuperAdmin VIP custom rate override on the group admin
+  let customPlatformFeePct: number | null = null;
+  try {
+    const { data: adminAuthData } = await adminClient.auth.admin.getUserById(group.admin_id);
+    const metaFee = adminAuthData?.user?.user_metadata?.custom_platform_fee_pct;
+    if (typeof metaFee === "number" && metaFee >= 0) {
+      customPlatformFeePct = metaFee;
+    }
+  } catch (err) {
+    console.warn("Could not check admin auth for custom fee override:", err);
+  }
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-20 max-w-5xl mx-auto">
       
@@ -223,6 +241,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
               groupName={group.name} 
               currentTurn={currentTurn}
               amount={group.contribution_amount} 
+              groupId={groupId}
             />
           )}
           {/* Group Settings Button for tablet and desktop screens (Admin Only) */}
@@ -337,7 +356,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                 </span>
               </div>
               <p className="text-[#1F2937]/70 text-xs leading-relaxed font-medium max-w-2xl">
-                Àjọṣe is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn's recipient (minus {group.admin_commission_pct}% admin cut and 2% platform fee capped at ₦15,000).
+                Àjọṣe is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn's recipient (minus {group.admin_commission_pct}% admin cut and 2% platform fee capped at ₦10,000).
               </p>
               
               <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">
@@ -452,6 +471,8 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                                   receivingMember={receivingMember} 
                                   isAdmin={isAdmin} 
                                   currentTurn={currentTurn}
+                                  adminGroupCount={adminGroupCount || 1}
+                                  customPlatformFeePct={customPlatformFeePct}
                                 />
                               )}
                             </div>

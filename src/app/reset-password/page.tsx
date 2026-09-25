@@ -108,11 +108,11 @@ export default function ResetPasswordPage() {
         <div className="flex items-center justify-end mb-12 relative z-10 mt-4">
           <Link href="/" className="inline-flex items-center gap-3 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/ajose-rings-logo.png" 
+              src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
               width={40} 
               height={40} 
-              className="object-contain w-auto h-10 drop-shadow-md animate-spin-slow"
+              className="object-contain w-auto h-10 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             />
             <span className="text-[#0B402B] font-bold text-2xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
           </Link>

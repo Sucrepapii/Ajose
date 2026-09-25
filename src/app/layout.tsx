@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -12,10 +12,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#0B3022",
+};
+
 export const metadata: Metadata = {
   title: "Ajose — Turn by turn, no wahala.",
   description: "Ajose is the digital platform that runs your Ajo group — collecting contributions, tracking every round, and making sure everyone gets their turn.",
   keywords: ["Ajo", "Esusu", "Osusu", "Rotational Contribution", "Nigeria Fintech", "Group Contribution", "Ajose"],
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Àjọṣe",
+  },
   openGraph: {
     title: "Ajose — Turn by turn, no wahala.",
     description: "Run your Ajo. Track every round. Trust every naira.",

@@ -57,9 +57,10 @@ export function RulesModal() {
                   To ensure predictable liquidity and smooth banking settlements, all contribution cycles feature structured grace periods before automated debits and rotational payouts execute:
                 </p>
                 <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1 mt-1">
-                  <li><strong>Monthly Groups:</strong> 5-day grace period (opens 1st, final collection & payout cutoff on the <strong>5th of the new month</strong>).</li>
+                  <li><strong>Daily Groups:</strong> Automated daily direct-debit collection sweep with real-time turn payout.</li>
                   <li><strong>Weekly Groups:</strong> 2-day grace period (opens Monday, final collection & payout cutoff on <strong>Tuesday</strong>).</li>
                   <li><strong>Bi-Weekly Groups:</strong> 3-day grace period (opens Monday, final collection & payout cutoff on <strong>Wednesday</strong>).</li>
+                  <li><strong>Monthly Groups:</strong> 5-day grace period (opens 1st, final collection & payout cutoff on the <strong>5th of the new month</strong>).</li>
                 </ul>
               </div>
 
@@ -75,12 +76,14 @@ export function RulesModal() {
 
               <div className="space-y-1.5 pt-4">
                 <h3 className="font-bold text-[#0B3022] text-sm">
-                  4. Fee Distribution
+                  4. Commercial Fee Distribution
                 </h3>
-                <p>Before disbursement, the pooled funds account for:</p>
-                <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1 mt-1">
-                  <li><strong>Admin Commission:</strong> The customized percentage determined by the Admin upon group creation.</li>
-                  <li><strong>Platform Fee:</strong> 2% (capped at ₦15,000 maximum) for open-banking infrastructure and ledger maintenance.</li>
+                <p>Transparent fee rules depending on your chosen group schedule:</p>
+                <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1.5 mt-1">
+                  <li><strong>Monthly Groups:</strong> 2% platform fee (strictly capped at ₦10,000 maximum) deducted only on successful payouts. ₦0 per-transaction fee.</li>
+                  <li><strong>Weekly Groups:</strong> 0% payout fee! Flat ₦300 automated processing fee per transaction to secure and auto-verify contributions via Mono open banking.</li>
+                  <li><strong>Daily Groups:</strong> 0% payout fee! Flat ₦100 automated processing fee per transaction.</li>
+                  <li><strong>Admin Commission:</strong> The customized percentage determined by the Admin upon group creation to compensate for management and trust.</li>
                 </ul>
               </div>
 

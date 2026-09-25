@@ -481,45 +481,78 @@ export default function Home() {
                   Simple, Transparent Pricing
                 </h2>
                 <p className="text-[#1F2937]/80 text-lg">
-                  No hidden fees, no subscriptions. You only pay a tiny fraction when the group succeeds.
+                  No hidden fees, no subscriptions. Select the schedule that works best for your circle.
                 </p>
               </motion.div>
 
-              <motion.div variants={fadeIn} className="flex-1 bg-white rounded-3xl shadow-xl border-2 border-[#C5A059] overflow-hidden flex flex-col transform hover:scale-[1.02] transition-transform duration-300">
+              <motion.div variants={fadeIn} className="flex-1 bg-white rounded-3xl shadow-xl border-2 border-[#C5A059] overflow-hidden flex flex-col transform hover:scale-[1.01] transition-transform duration-300">
                 <div className="bg-[#0B3022] p-6 text-center text-white relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-full bg-[#C5A059]/10"></div>
-                  <h3 className="text-2xl font-bold relative z-10">Standard Plan</h3>
-                  <div className="mt-3 mb-2 flex items-center justify-center gap-1 relative z-10">
-                    <span className="text-5xl font-extrabold text-white">2</span>
-                    <Percent className="w-8 h-8 text-[#C5A059]" />
-                  </div>
-                  <div className="flex justify-center relative z-10 mb-2">
-                    <span className="inline-flex items-center gap-1.5 bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/40 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider">
-                      Capped at ₦15,000 Max per Payout
-                    </span>
-                  </div>
-                  <p className="text-gray-300 text-xs relative z-10 font-medium">Flat platform fee deducted only on successful payouts</p>
+                  <h3 className="text-2xl font-bold relative z-10">Flexible Circle Plans</h3>
+                  <p className="text-[#C5A059] text-xs font-bold uppercase tracking-wider mt-1 relative z-10">
+                    Zero Hidden Fees • Guaranteed Rotations
+                  </p>
                 </div>
-                <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
-                  <ul className="space-y-4 mb-8">
-                    {[
-                      "Free to create an account",
-                      "Free to create or join groups",
-                      "Automated turn management",
-                      "Ajo Credit Score protection",
-                      "Immutable transaction ledger"
-                    ].map((perk, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                        <span className="text-[#1F2937] font-medium text-sm md:text-base">{perk}</span>
-                      </li>
-                    ))}
-                  </ul>
+                
+                {/* 3 Schedule Options Breakdown */}
+                <div className="p-6 divide-y divide-gray-100 flex-1 flex flex-col justify-between">
+                  <div className="space-y-4 mb-6">
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#FDFBF7] border border-gray-200">
+                      <div>
+                        <span className="text-xs font-bold text-[#0B3022] flex items-center gap-1.5">
+                          📅 Monthly Groups
+                        </span>
+                        <p className="text-[11px] text-gray-500 mt-0.5">Deducted only on successful payouts</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-base font-black text-[#0B3022]">2%</span>
+                        <span className="text-[10px] text-gray-400 block font-semibold">Capped at ₦10k</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200">
+                      <div>
+                        <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                          🗓 Weekly Groups
+                        </span>
+                        <p className="text-[11px] text-emerald-800 mt-0.5">0% payout fees! Auto-debit via Mono</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-base font-black text-[#0B3022]">₦300</span>
+                        <span className="text-[10px] text-emerald-700 block font-bold">/ transaction</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-amber-50/60 border border-amber-200">
+                      <div>
+                        <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                          📌 Daily Groups
+                        </span>
+                        <p className="text-[11px] text-amber-800 mt-0.5">0% payout fees! Daily thrift micro-debit</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-base font-black text-[#0B3022]">₦100</span>
+                        <span className="text-[10px] text-amber-700 block font-bold">/ transaction</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 space-y-2.5 text-xs text-[#1F2937]/80 font-medium">
+                    <div className="flex items-center gap-2 text-emerald-800">
+                      <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Free to create an account &amp; join unlimited circles</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-emerald-800">
+                      <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Direct pass-through bank settlement &amp; immutable ledger</span>
+                    </div>
+                  </div>
+
                   <Link
                     href="/signup"
-                    className="w-full inline-flex h-14 items-center justify-center rounded-xl bg-[#0B3022] px-8 text-base font-bold text-white shadow-lg hover:bg-[#154634] transition-all mt-auto"
+                    className="w-full inline-flex h-12 items-center justify-center rounded-xl bg-[#0B3022] hover:bg-[#154634] text-sm font-bold text-white shadow-md transition-all mt-6"
                   >
-                    Get Started Now
+                    Create a Group Free
                   </Link>
                 </div>
               </motion.div>
@@ -802,11 +835,11 @@ export default function Home() {
           <div className="space-y-4">
             {[
               { q: "Where does the money go?", a: "The money is collected by the Group Admin. Members pay their contributions directly to the Admin's bank account, and the Admin is responsible for transferring the final pool to the receiver. Àjọṣe simply provides the software to track these payments and turns." },
-              { q: "When are monthly contributions and payouts collected?", a: "Contributions open on the 1st of every month with a 5-day grace period. Final collection cutoff and automated rotational payouts occur on the 5th of the new month to align seamlessly with monthly salary cycles." },
+              { q: "When are contributions and payouts collected?", a: "Collection schedules are tailored by frequency to align with Nigerian cashflows: Daily groups sweep every morning with 24-hr turn payouts; Weekly groups feature a 2-day grace period (opens Monday, cutoff Tuesday); and Monthly groups feature a 5-day grace period (opens 1st, cutoff and payouts on the 5th) to match monthly salary cycles." },
               { q: "What happens if someone refuses to pay?", a: "Ajo is built on trust. As an Admin, you should only invite people you trust. If someone misses a payment, the Admin can manually mark them as defaulted on the platform, freezing their payouts and warning the group. Defaulting also incurs a -50 point penalty to their global Ajo Credit Score." },
               { q: "Can I leave a group before the cycle ends?", a: "Once a group cycle is marked as 'Active' by the Admin, the roster is locked. This ensures that people who have already collected their payout cannot abandon the group before paying back into the pool." },
               { q: "What is the Ajo Credit Score?", a: "Your Ajo Credit Score is a global metric that tracks your reliability across all groups. You gain points for successful contributions and lose 50 points immediately if you default. A low score will automatically restrict you from joining high-value groups." },
-              { q: "Are there any fees?", a: "Àjọṣe charges a 2% platform fee per payout (strictly capped at ₦15,000 max) to maintain our automated Open-Banking infrastructure and ledger. Group Admins may also choose to set their own customized management commission percentage, which is clearly displayed before you join." },
+              { q: "Are there any fees?", a: "Simple, transparent pricing with no hidden fees or subscriptions! Our commercial fees depend on your circle schedule: 📅 Monthly Groups: 2% flat fee deducted only on successful payouts (strictly capped at ₦10,000 max, ₦0 per-transaction fee); 🗓 Weekly Groups: 0% payout fees! Just a flat ₦300 automated processing fee per transaction; 📌 Daily Groups: 0% payout fees! Just a flat ₦100 automated processing fee per transaction. Group Admins may also set an optional management commission percentage, clearly displayed before you join." },
               { q: "Is my personal data secure?", a: "Yes. All data, including verification details and ledger history, is secured with AES-256 bank-grade encryption and protected by strict security policies." }
             ].map((faq, i) => (
               <motion.div 

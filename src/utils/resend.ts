@@ -132,4 +132,36 @@ export async function sendAdminInvitationEmail({
   });
 }
 
+/**
+ * 24-Hour Pre-Debit Auto-Debit Reminder Email
+ */
+export async function sendPreDebitReminderEmail({
+  to,
+  userName,
+  groupName,
+  amount,
+  dueDate,
+  frequency,
+}: {
+  to: string;
+  userName: string;
+  groupName: string;
+  amount: number;
+  dueDate: string;
+  frequency?: string;
+}) {
+  const { getPreDebitReminderEmailTemplate } = await import("@/utils/emailTemplates");
+  return sendEmail({
+    to,
+    subject: `⏰ Auto-Debit Tomorrow: ₦${amount.toLocaleString()} for ${groupName}`,
+    html: getPreDebitReminderEmailTemplate({
+      userName,
+      groupName,
+      amount,
+      dueDate,
+      frequency,
+    }),
+  });
+}
+
 

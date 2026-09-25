@@ -12,16 +12,60 @@ export async function PATCH(req: Request) {
       );
     }
 
-    const { userId, action, reason } = await req.json();
+    const { userId, action, reason, customFeePct, note } = await req.json();
 
-    if (!userId || !["suspend", "unsuspend"].includes(action)) {
+    if (!userId || !["suspend", "unsuspend", "set_fee_rate"].includes(action)) {
       return NextResponse.json(
-        { success: false, message: "Valid userId and action ('suspend' | 'unsuspend') are required." },
+        { success: false, message: "Valid userId and action ('suspend' | 'unsuspend' | 'set_fee_rate') are required." },
         { status: 400 }
       );
     }
 
     const supabase = createAdminClient();
+
+    if (action === "set_fee_rate") {
+      const feeNumber = customFeePct === null || customFeePct === "" || customFeePct === undefined
+        ? null
+        : Math.max(0, Math.min(10, parseFloat(customFeePct)));
+
+      const { error: authErr } = await supabase.auth.admin.updateUserById(userId, {
+        user_metadata: {
+          custom_platform_fee_pct: feeNumber,
+          custom_fee_note: note?.trim() || null,
+          custom_fee_updated_at: new Date().toISOString(),
+          custom_fee_updated_by: session.user?.email || "SuperAdmin"
+        }
+      });
+
+      if (authErr) {
+        console.error("Supabase auth fee update error:", authErr);
+        return NextResponse.json(
+          { success: false, message: authErr.message || "Failed to update platform fee rate." },
+          { status: 500 }
+        );
+      }
+
+      try {
+        await supabase
+          .from("users")
+          .update({ 
+            custom_platform_fee_pct: feeNumber,
+            custom_fee_note: note?.trim() || null 
+          })
+          .eq("id", userId);
+      } catch (err) {
+        console.warn("public.users custom fee update notice:", err);
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: feeNumber !== null 
+          ? `Custom platform fee rate set to ${feeNumber.toFixed(1)}% for this Admin.`
+          : "Custom fee override removed. Default automatic volume tier restored.",
+        customFeePct: feeNumber,
+        note: note?.trim() || null
+      });
+    }
 
     if (action === "suspend") {
       const suspensionReason = reason?.trim() || "Compliance & KYC Review";

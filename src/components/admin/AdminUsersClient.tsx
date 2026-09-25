@@ -17,7 +17,10 @@ import {
   Ban,
   AlertTriangle,
   Loader2,
-  MoreVertical
+  MoreVertical,
+  Percent,
+  Sparkles,
+  SlidersHorizontal
 } from "lucide-react";
 
 interface AdminUsersClientProps {
@@ -44,6 +47,12 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
   const [userToDelete, setUserToDelete] = useState<any | null>(null);
   const [deleteConfirmChecked, setDeleteConfirmChecked] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Custom Platform Fee Rate Modal State (SuperAdmin)
+  const [userToSetFee, setUserToSetFee] = useState<any | null>(null);
+  const [feeRateInput, setFeeRateInput] = useState("");
+  const [feeNoteInput, setFeeNoteInput] = useState("");
+  const [isSavingFee, setIsSavingFee] = useState(false);
 
   // Mini Dropdown State
   const [openMenuUserId, setOpenMenuUserId] = useState<string | null>(null);
@@ -181,6 +190,56 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
       toast.error(err.message || "Failed to delete member.");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Action: Set / Override Custom Platform Fee Rate (SuperAdmin)
+  const handleSaveFeeRate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userToSetFee) return;
+
+    setIsSavingFee(true);
+    try {
+      const trimmedFee = feeRateInput.trim();
+      const parsedFee = trimmedFee === "" ? null : parseFloat(trimmedFee);
+
+      if (parsedFee !== null && (isNaN(parsedFee) || parsedFee < 0 || parsedFee > 10)) {
+        throw new Error("Fee percentage must be a valid number between 0% and 10%.");
+      }
+
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userToSetFee.id,
+          action: "set_fee_rate",
+          customFeePct: parsedFee,
+          note: feeNoteInput.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to update platform fee rate.");
+      }
+
+      toast.success(data.message || "Custom platform fee rate updated.");
+      setUserList((prev) =>
+        prev.map((u) =>
+          u.id === userToSetFee.id
+            ? {
+                ...u,
+                custom_platform_fee_pct: parsedFee,
+                custom_fee_note: feeNoteInput.trim() || null,
+              }
+            : u
+        )
+      );
+      setUserToSetFee(null);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update fee rate.");
+    } finally {
+      setIsSavingFee(false);
     }
   };
 
@@ -370,6 +429,34 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                               </span>
                             )}
                           </div>
+
+                          {/* Fee Rate & Circles Managed */}
+                          <div>
+                            {u.custom_platform_fee_pct !== null && u.custom_platform_fee_pct !== undefined ? (
+                              <div className="space-y-0.5">
+                                <span 
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#C5A059]/15 text-[#C5A059] border border-[#C5A059]/30"
+                                  title={u.custom_fee_note ? `VIP Note: ${u.custom_fee_note}` : "SuperAdmin Custom VIP Fee"}
+                                >
+                                  <Sparkles className="h-2.5 w-2.5 text-[#C5A059]" /> VIP: {u.custom_platform_fee_pct.toFixed(1)}%
+                                </span>
+                                {(u.managed_groups_count || 0) > 0 && (
+                                  <p className="text-[9px] text-zinc-500 font-mono">
+                                    {u.managed_groups_count} {u.managed_groups_count === 1 ? 'circle' : 'circles'}
+                                  </p>
+                                )}
+                              </div>
+                            ) : (u.managed_groups_count || 0) > 0 ? (
+                              <div className="space-y-0.5">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
+                                  <Landmark className="h-2.5 w-2.5 text-emerald-400" />
+                                  {u.managed_groups_count} {u.managed_groups_count === 1 ? 'Circle' : 'Circles'} ({u.managed_groups_count > 10 ? '1.0%' : u.managed_groups_count >= 6 ? '1.5%' : '2.0%'})
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] text-zinc-500 font-mono">Member (2.0%)</span>
+                            )}
+                          </div>
                         </div>
                       </td>
 
@@ -416,7 +503,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                               />
 
                               {/* Mini Dropdown Menu */}
-                              <div className="absolute right-4 top-12 z-40 w-48 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl">
+                              <div className="absolute right-4 top-12 z-40 w-52 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl">
                                 <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
                                   <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Actions</p>
                                   <p className="text-xs font-bold text-white truncate">{u.first_name ? `${u.first_name} ${u.last_name || ''}`.trim() : u.email}</p>
@@ -436,6 +523,27 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
 
                                 {isSuperAdmin && (
                                   <>
+                                    <div className="my-1 border-t border-zinc-800/80" />
+
+                                    {/* Configure Platform Fee Rate */}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setOpenMenuUserId(null);
+                                        setUserToSetFee(u);
+                                        setFeeRateInput(
+                                          u.custom_platform_fee_pct !== null && u.custom_platform_fee_pct !== undefined
+                                            ? String(u.custom_platform_fee_pct)
+                                            : ""
+                                        );
+                                        setFeeNoteInput(u.custom_fee_note || "");
+                                      }}
+                                      className="w-full px-3 py-2 text-xs font-semibold text-[#C5A059] hover:bg-[#C5A059]/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                    >
+                                      <Percent className="h-3.5 w-3.5 text-[#C5A059]" />
+                                      <span>Configure Fee Rate</span>
+                                    </button>
+
                                     <div className="my-1 border-t border-zinc-800/80" />
 
                                     {u.is_suspended ? (
@@ -668,6 +776,162 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
         </div>
       )}
 
+      {/* Configure Platform Fee Rate Modal (SuperAdmin VIP Custom Override) */}
+      {userToSetFee && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0C120E] border border-[#C5A059]/40 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => setUserToSetFee(null)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#C5A059]/10 border border-[#C5A059]/30 text-[#C5A059] flex items-center justify-center">
+                <Percent className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Configure Platform Fee Rate</h3>
+                <p className="text-xs text-zinc-400">
+                  {userToSetFee.first_name || ""} {userToSetFee.last_name || ""} ({userToSetFee.email || "No email"}) •{" "}
+                  <span className="text-[#C5A059] font-semibold">
+                    {userToSetFee.managed_groups_count || 0} {userToSetFee.managed_groups_count === 1 ? "Circle" : "Circles"} Managed
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-xl p-3 text-xs text-[#E6C687] leading-relaxed">
+              <strong>SuperAdmin Fee Override:</strong> Monthly circles have a default 2.0% platform fee (dropping automatically to 1.5% for 6–10 circles and 1.0% for &gt;10 circles), capped at ₦10,000 max. Set a negotiated custom rate here for high-volume partners or strategic organizers. Daily and Weekly circles remain 0% payout fee.
+            </div>
+
+            <form onSubmit={handleSaveFeeRate} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-300 mb-1.5">
+                  Platform Fee Percentage (%)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="10"
+                    value={feeRateInput}
+                    onChange={(e) => setFeeRateInput(e.target.value)}
+                    placeholder="e.g. 1.0 (Leave empty to reset to automatic volume tier)"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 pr-8 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C5A059]"
+                  />
+                  <span className="absolute right-3 top-2.5 text-xs text-zinc-500 font-mono font-bold">%</span>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="mt-2.5">
+                  <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1.5">Quick Presets:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setFeeRateInput("1.0")}
+                      className="px-2.5 py-1 bg-zinc-900 hover:bg-[#C5A059]/20 text-[10px] font-semibold text-zinc-300 hover:text-[#C5A059] rounded-lg border border-zinc-800 hover:border-[#C5A059]/40 transition-colors cursor-pointer"
+                    >
+                      ⭐ 1.0% (VIP High Volume)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFeeRateInput("1.5")}
+                      className="px-2.5 py-1 bg-zinc-900 hover:bg-emerald-500/20 text-[10px] font-semibold text-zinc-300 hover:text-emerald-400 rounded-lg border border-zinc-800 hover:border-emerald-500/40 transition-colors cursor-pointer"
+                    >
+                      🤝 1.5% (Partner Rate)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFeeRateInput("0.5")}
+                      className="px-2.5 py-1 bg-zinc-900 hover:bg-blue-500/20 text-[10px] font-semibold text-zinc-300 hover:text-blue-400 rounded-lg border border-zinc-800 hover:border-blue-500/40 transition-colors cursor-pointer"
+                    >
+                      🏛️ 0.5% (Institutional)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFeeRateInput("0.0")}
+                      className="px-2.5 py-1 bg-zinc-900 hover:bg-purple-500/20 text-[10px] font-semibold text-zinc-300 hover:text-purple-400 rounded-lg border border-zinc-800 hover:border-purple-500/40 transition-colors cursor-pointer"
+                    >
+                      🎁 0.0% (Zero Fee Promo)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFeeRateInput("");
+                        setFeeNoteInput("");
+                      }}
+                      className="px-2.5 py-1 bg-zinc-900 hover:bg-red-500/20 text-[10px] font-semibold text-zinc-400 hover:text-red-400 rounded-lg border border-zinc-800 hover:border-red-500/40 transition-colors cursor-pointer"
+                    >
+                      ↺ Reset to Auto Tier
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-300 mb-1.5">
+                  Administrative Reason / Partnership Note
+                </label>
+                <input
+                  type="text"
+                  value={feeNoteInput}
+                  onChange={(e) => setFeeNoteInput(e.target.value)}
+                  placeholder="e.g. VIP partner agreement signed; managing 12 diaspora circles"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C5A059]"
+                />
+              </div>
+
+              {/* Status Preview */}
+              <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-xl p-3 text-xs space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-500">Selected Rate:</span>
+                  <span className="font-bold text-white">
+                    {feeRateInput.trim() === ""
+                      ? `Automatic Volume Tier (${(userToSetFee.managed_groups_count || 0) > 10 ? "1.0%" : (userToSetFee.managed_groups_count || 0) >= 6 ? "1.5%" : "2.0%"})`
+                      : `${parseFloat(feeRateInput || "0").toFixed(1)}% Platform Fee`}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-zinc-500">Max Cap per Payout:</span>
+                  <span className="text-[#C5A059] font-mono font-bold">₦10,000 maximum</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setUserToSetFee(null)}
+                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingFee}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#C5A059] hover:bg-[#b08e4a] text-zinc-950 font-bold text-xs shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  {isSavingFee ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span>Save Rate Override</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Member Full KYC & Social Dossier Modal */}
       {selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
@@ -694,6 +958,49 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                 </p>
               </div>
             </div>
+
+            {/* Circle Management & Platform Fee Tier Card */}
+            {((selectedUser.managed_groups_count || 0) > 0 || (selectedUser.custom_platform_fee_pct !== null && selectedUser.custom_platform_fee_pct !== undefined)) && (
+              <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-2 text-xs">
+                <div className="flex items-center justify-between text-[#C5A059] font-bold">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    <span>Circle Management &amp; Fee Tier</span>
+                  </div>
+                  {selectedUser.custom_platform_fee_pct !== null && selectedUser.custom_platform_fee_pct !== undefined ? (
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/40 font-mono">
+                      VIP Override: {selectedUser.custom_platform_fee_pct.toFixed(1)}%
+                    </span>
+                  ) : (
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono">
+                      Auto Volume Tier
+                    </span>
+                  )}
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Circles Managed:</span>
+                  <span className="font-bold text-white">{selectedUser.managed_groups_count || 0} Circles</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Effective Monthly Fee:</span>
+                  <span className="font-bold text-emerald-400">
+                    {selectedUser.custom_platform_fee_pct !== null && selectedUser.custom_platform_fee_pct !== undefined
+                      ? `${selectedUser.custom_platform_fee_pct.toFixed(1)}% (SuperAdmin VIP Custom Rate)` 
+                      : (selectedUser.managed_groups_count || 0) > 10 
+                      ? '1.0% (Power Tier >10 Circles)' 
+                      : (selectedUser.managed_groups_count || 0) >= 6 
+                      ? '1.5% (Pro Tier 6-10 Circles)' 
+                      : '2.0% (Standard Tier)'}
+                  </span>
+                </div>
+                {selectedUser.custom_fee_note && (
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">Admin Note:</span>
+                    <span className="text-zinc-300 text-right max-w-[220px] truncate">{selectedUser.custom_fee_note}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Identity & KYC Badges */}
             <div className="grid grid-cols-2 gap-2.5">

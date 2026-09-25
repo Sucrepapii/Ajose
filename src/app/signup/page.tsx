@@ -137,13 +137,13 @@ export default function SignupPage() {
         setIsSubmitting(false);
       }
     } else if (step === 2) {
-      if (!formData.password || !formData.bvn || !formData.nin) {
-        toast.error("Password, BVN, and NIN are required.");
+      if (!formData.password || !formData.bvn) {
+        toast.error("Password and BVN are required.");
         return;
       }
 
-      if (formData.bvn.length !== 11 || formData.nin.length !== 11) {
-        toast.error("BVN and NIN must each be exactly 11 digits.");
+      if (formData.bvn.length !== 11) {
+        toast.error("BVN must be exactly 11 numeric digits.");
         return;
       }
       
@@ -151,7 +151,7 @@ export default function SignupPage() {
       const monoToastId = toast.loading("Checking identity uniqueness...");
 
       try {
-        // 1. Pre-flight duplicate check for Phone, Email, BVN, and NIN
+        // 1. Pre-flight duplicate check for Phone, Email, and BVN
         const dupRes = await fetch("/api/auth/check-duplicates", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -159,7 +159,7 @@ export default function SignupPage() {
             email: formData.email,
             phone: formData.phone,
             bvn: formData.bvn,
-            nin: formData.nin
+            ...(formData.nin ? { nin: formData.nin } : {})
           })
         });
 
@@ -170,15 +170,15 @@ export default function SignupPage() {
           return;
         }
 
-        toast.loading("Verifying BVN & NIN via Mono Identity API...", { id: monoToastId });
+        toast.loading("Verifying BVN via Mono Identity API...", { id: monoToastId });
 
-        // 2. Verify BVN & NIN with Mono API
+        // 2. Verify BVN with Mono API
         const verifyRes = await fetch("/api/mono/verify-identity", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             bvn: formData.bvn,
-            nin: formData.nin,
+            ...(formData.nin ? { nin: formData.nin } : {}),
             firstName: formData.firstName,
             lastName: formData.lastName,
             phone: formData.phone
@@ -315,11 +315,11 @@ export default function SignupPage() {
 
           <Link href="/" className="lg:hidden flex items-center gap-2 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/ajose-rings-logo.png" 
+              src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
               width={28} 
               height={28} 
-              className="object-contain w-auto h-7 drop-shadow-sm animate-spin-slow"
+              className="object-contain w-auto h-7 drop-shadow-sm"
             />
             <span className="text-[#0B402B] font-bold text-xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
           </Link>
@@ -328,11 +328,11 @@ export default function SignupPage() {
         <div className="hidden lg:flex items-center justify-between mb-12 relative z-10 mt-8">
           <Link href="/" className="inline-flex items-center gap-4 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/ajose-rings-logo.png" 
+              src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
               width={64} 
               height={64} 
-              className="object-contain w-auto h-16 drop-shadow-md animate-spin-slow"
+              className="object-contain w-auto h-16 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             />
             <span className="text-[#0B402B] font-bold text-3xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
           </Link>
@@ -443,10 +443,10 @@ export default function SignupPage() {
                   <div className="text-left flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-xs font-bold text-[#0B402B] uppercase tracking-wider">Mono Identity Check</span>
-                      <span className="px-2 py-0.5 text-[10px] font-extrabold bg-[#D4AF37] text-[#0B402B] rounded-full">ACTIVE API</span>
+                      <span className="px-2 py-0.5 text-[10px] font-extrabold bg-[#D4AF37] text-[#0B402B] rounded-full">BVN VERIFIED</span>
                     </div>
                     <p className="text-xs text-gray-600 leading-snug">
-                      Your 11-digit BVN & NIN are checked instantly via Mono Open-Banking Identity API.
+                      Your 11-digit Bank Verification Number (BVN) is checked instantly via Mono Open-Banking Identity API.
                     </p>
                   </div>
                 </div>
@@ -470,37 +470,23 @@ export default function SignupPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                      <div className="flex justify-between items-center mb-1.5">
-                        <label className="block text-sm font-medium text-gray-700">BVN (11 digits)</label>
-                        {formData.bvn.length === 11 && (
-                          <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> Ready
-                          </span>
-                        )}
-                      </div>
-                      <input 
-                        name="bvn" value={formData.bvn} onChange={handleChange} 
-                        type="text" placeholder="Bank Verification No." maxLength={11}
-                        className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.bvn.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
-                      />
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <label className="block text-sm font-bold text-gray-700">Bank Verification Number (BVN)</label>
+                      {formData.bvn.length === 11 && (
+                        <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> 11 Digits Ready
+                        </span>
+                      )}
                     </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-1.5">
-                        <label className="block text-sm font-medium text-gray-700">NIN (11 digits)</label>
-                        {formData.nin.length === 11 && (
-                          <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> Ready
-                          </span>
-                        )}
-                      </div>
-                      <input 
-                        name="nin" value={formData.nin} onChange={handleChange} 
-                        type="text" placeholder="National Identity No." maxLength={11}
-                        className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.nin.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
-                      />
-                    </div>
+                    <input 
+                      name="bvn" value={formData.bvn} onChange={handleChange} 
+                      type="text" placeholder="Enter your 11-digit BVN" maxLength={11}
+                      className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.bvn.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
+                    />
+                    <p className="text-xs text-gray-500 mt-1.5">
+                      💡 Don&apos;t know your BVN? Dial <strong className="text-[#0B402B] font-mono">*565*0#</strong> on your registered bank phone line.
+                    </p>
                   </div>
                 </form>
 

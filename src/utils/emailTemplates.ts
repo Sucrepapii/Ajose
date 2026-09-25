@@ -295,3 +295,47 @@ export function getAdminInvitationEmailTemplate({
   `;
 }
 
+/**
+ * 7. 24-Hour Pre-Debit Auto-Debit Reminder Template (Sent 1 day before auto debit)
+ */
+export function getPreDebitReminderEmailTemplate({
+  userName,
+  groupName,
+  amount,
+  dueDate,
+  frequency = "monthly",
+}: {
+  userName: string;
+  groupName: string;
+  amount: number;
+  dueDate: string;
+  frequency?: string;
+}) {
+  return `
+  ${getEmailHeader("Auto-Debit Reminder: 24 Hours Remaining")}
+    <h1 class="title">⏰ Auto-Debit Tomorrow</h1>
+    <p class="text">Hello <strong>${userName}</strong>,</p>
+    <p class="text">This is an automated 24-hour reminder that your rotational thrift contribution for <strong style="color: #0B402B;">${groupName}</strong> will be swept tomorrow, <strong>${dueDate}</strong>.</p>
+
+    <div class="card" style="text-align: center; border-left: 4px solid #D4AF37;">
+      <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b;">Scheduled Auto-Debit Amount</span>
+      <div class="amount">₦${amount.toLocaleString()}</div>
+      <p style="font-size: 12px; color: #059669; font-weight: 600; margin-top: 4px;">
+        Direct Debit Mandate Active • Frequency: ${frequency.toUpperCase()}
+      </p>
+    </div>
+
+    <div style="background-color: #fefce8; border: 1px solid #fef08a; border-radius: 8px; padding: 14px; margin: 16px 0; color: #854d0e; font-size: 13px; line-height: 1.5;">
+      <strong>⚠️ Action Required:</strong><br/>
+      Please ensure your linked settlement account has sufficient balance (at least <strong>₦${amount.toLocaleString()}</strong>) before midnight to allow seamless automated clearance without bounce fees and protect your Àjọṣe Credit Score.
+    </div>
+
+    <p class="text">If your account is already funded, no further action is needed — your contribution will process automatically.</p>
+
+    <div style="text-align: center; margin-top: 28px;">
+      <a href="https://ajose.ng/dashboard" class="btn">View Circle & Mandate Status</a>
+    </div>
+  ${getEmailFooter()}
+  `;
+}
+

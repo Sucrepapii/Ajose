@@ -50,6 +50,15 @@ export function MakeContributionClient({
   const [isSuccess, setIsSuccess] = useState(false);
   const [autoDebitFailed, setAutoDebitFailed] = useState(false);
 
+  // Pricing Model Fee Breakdown:
+  // - Daily: ₦100 automation fee
+  // - Weekly: ₦300 automation fee
+  // - Monthly: ₦0 per-tx fee (2% at payout)
+  const isDaily = frequency === "daily";
+  const isWeekly = frequency === "weekly";
+  const automationFee = isDaily ? 100 : isWeekly ? 300 : 0;
+  const totalAmountDue = amount + automationFee;
+
   // Manual Transfer Form State
   const narrationCode = generateNarrationCode(groupId, currentTurn, userId);
   const [senderBank, setSenderBank] = useState("GTBank");
@@ -86,7 +95,9 @@ export function MakeContributionClient({
         body: JSON.stringify({
           groupId,
           userId,
-          amount,
+          amount: totalAmountDue,
+          baseAmount: amount,
+          automationFee,
           currentTurn,
           method: "auto_debit",
           simulateFailure
@@ -135,7 +146,9 @@ export function MakeContributionClient({
         body: JSON.stringify({
           groupId,
           userId,
-          amount,
+          amount: totalAmountDue,
+          baseAmount: amount,
+          automationFee,
           currentTurn,
           method: "transfer",
           senderBank,
@@ -190,7 +203,7 @@ export function MakeContributionClient({
                     Mono Intelligent Verification Active
                   </div>
                   <p className="text-[11px] text-emerald-800 leading-relaxed">
-                    You have reported a manual bank transfer of <strong>₦{amount.toLocaleString()}</strong>. Mono is syncing the Admin's bank statement to cross-verify the deposit narration.
+                    You have reported a manual bank transfer of <strong>₦{totalAmountDue.toLocaleString()}</strong>. Mono is syncing the Admin's bank statement to cross-verify the deposit narration.
                   </p>
                 </div>
 
@@ -205,7 +218,7 @@ export function MakeContributionClient({
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-500">Amount</span>
-                    <span className="font-bold text-[#0B3022]">₦{amount.toLocaleString()}</span>
+                    <span className="font-bold text-[#0B3022]">₦{totalAmountDue.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between border-t border-gray-200 pt-2">
                     <span className="text-gray-500">Current Status</span>
@@ -238,7 +251,7 @@ export function MakeContributionClient({
         className="px-3 py-1.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-white text-xs font-bold rounded-lg transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
       >
         <Zap className="h-3.5 w-3.5 text-[#C5A059]" />
-        Pay ₦{amount.toLocaleString()}
+        Pay ₦{totalAmountDue.toLocaleString()}
       </button>
 
       {isOpen && (
@@ -261,11 +274,17 @@ export function MakeContributionClient({
               {/* Amount Due Card */}
               <div className="bg-[#FDFBF7] border border-gray-200 rounded-2xl p-4 text-center shadow-inner">
                 <p className="text-[10px] text-[#1F2937]/60 font-bold uppercase tracking-wider mb-0.5">Amount Due</p>
-                <p className="text-2xl font-black text-[#0B3022] tracking-tight">₦{amount.toLocaleString()}</p>
+                <p className="text-2xl font-black text-[#0B3022] tracking-tight">₦{totalAmountDue.toLocaleString()}</p>
+                {automationFee > 0 && (
+                  <p className="text-[11px] text-amber-900 font-semibold mt-0.5">
+                    (₦{amount.toLocaleString()} contribution + ₦{automationFee} open-banking automation fee)
+                  </p>
+                )}
                 <p className="text-[10px] text-[#0B3022]/70 font-semibold mt-1 bg-amber-50 border border-amber-200 py-1 px-2.5 rounded-full inline-flex items-center gap-1">
+                  {frequency === "daily" && "⏳ Daily Collection • Automated 24-hr cycle"}
                   {frequency === "weekly" && "⏳ 2-Day Grace Period • Opens Mon, Cutoff Tue"}
                   {frequency === "biweekly" && "⏳ 3-Day Grace Period • Opens Mon, Cutoff Wed"}
-                  {frequency !== "weekly" && frequency !== "biweekly" && "⏳ 5-Day Grace Period • Collection & Cutoff on the 5th"}
+                  {frequency !== "daily" && frequency !== "weekly" && frequency !== "biweekly" && "⏳ 5-Day Grace Period • Collection & Cutoff on the 5th"}
                 </p>
                 <p className="text-[10px] text-gray-500 mt-1">Direct to Admin's Settlement Account</p>
               </div>
@@ -442,7 +461,7 @@ export function MakeContributionClient({
                         ) : (
                           <>
                             <CheckCircle2 className="h-4 w-4" />
-                            I Have Sent ₦{amount.toLocaleString()}
+                            I Have Sent ₦{totalAmountDue.toLocaleString()}
                           </>
                         )}
                       </button>

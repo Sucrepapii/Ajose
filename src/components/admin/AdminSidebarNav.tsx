@@ -82,7 +82,7 @@ export function AdminSidebarNav({
       <header className="lg:hidden h-16 bg-[#080B09] border-b border-zinc-800/80 px-4 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
           <Image 
-            src="/ajose-rings-logo.png" 
+            src="/ajose-brand-pot.png" 
             alt="Àjọṣe Logo" 
             width={26} 
             height={26} 
@@ -144,11 +144,11 @@ export function AdminSidebarNav({
           {/* Logo & Super Admin Badge */}
           <div className="flex items-center gap-3 px-2 py-1">
             <Image 
-              src="/ajose-rings-logo.png" 
+              src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
               width={28} 
               height={28} 
-              className="object-contain w-auto h-7 drop-shadow-md animate-spin-slow"
+              className="object-contain w-auto h-7 drop-shadow-md"
             />
             <div>
               <div className="flex items-center gap-2">

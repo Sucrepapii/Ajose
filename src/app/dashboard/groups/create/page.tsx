@@ -12,7 +12,8 @@ import {
   ShieldCheck, 
   AlertTriangle, 
   X,
-  Landmark
+  Landmark,
+  Sparkles
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -188,7 +189,16 @@ export default function CreateGroupPage() {
   const cont = parseInt(formData.contributionAmount) || 0;
   const mems = parseInt(formData.maxMembers) || 0;
   const totalPool = cont * mems;
-  const platformFee = Math.min(15000, Math.round(totalPool * 0.02)); // 2% capped at ₦15,000
+  const isDaily = formData.frequency === "daily";
+  const isWeekly = formData.frequency === "weekly";
+  const isMonthly = formData.frequency === "monthly" || formData.frequency === "biweekly";
+
+  // Commercial Pricing Model:
+  // - Monthly Groups: 2% flat fee deducted only on successful payouts (Capped at ₦10,000 max). ₦0 per-tx fee.
+  // - Weekly Groups: 0% payout fees! Flat ₦300 automated processing fee per transaction.
+  // - Daily Groups: 0% payout fees! Flat ₦100 automated processing fee per transaction.
+  const platformFee = isMonthly ? Math.min(10000, Math.round(totalPool * 0.02)) : 0;
+  const automationFeePerTx = isDaily ? 100 : isWeekly ? 300 : 0;
   const commPctNumber = parseFloat(formData.adminCommission) || 0;
   const adminFee = totalPool * (commPctNumber / 100);
   const collectorReceives = Math.max(0, totalPool - platformFee - adminFee);
@@ -303,11 +313,43 @@ export default function CreateGroupPage() {
                       onChange={handleChange}
                       className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium"
                     >
+                      <option value="daily">Daily</option>
                       <option value="weekly">Weekly</option>
                       <option value="biweekly">Bi-weekly (Every 2 weeks)</option>
                       <option value="monthly">Monthly</option>
                     </select>
                   </div>
+
+                  {/* Dynamic Pricing Rule Guidance */}
+                  {formData.frequency === "daily" && (
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2.5 text-xs text-amber-900 animate-in fade-in">
+                      <Sparkles className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-[#0B3022]">Daily Group: Admin-Directed Payout Transfer</span>
+                        A flat <strong>₦100 automation fee</strong> applies to each daily debit (<strong>0% payout fees!</strong>). For turn payouts, <strong>you (the Admin) choose the exact day to transfer</strong> the accumulated pool to the turn collector instead of mandatory immediate auto-credit.
+                      </div>
+                    </div>
+                  )}
+
+                  {formData.frequency === "weekly" && (
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2.5 text-xs text-amber-900 animate-in fade-in">
+                      <Sparkles className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-[#0B3022]">Weekly Group Pricing Rule:</span>
+                        A flat <strong>₦300 automation fee</strong> applies to each weekly debit to secure and auto-verify your contributions via open banking. <span className="font-bold text-emerald-800">0% payout fees!</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {(formData.frequency === "monthly" || formData.frequency === "biweekly") && (
+                    <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-2.5 text-xs text-emerald-900 animate-in fade-in">
+                      <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-[#0B3022]">Monthly Group Pricing Rule:</span>
+                        A <strong>2% flat fee</strong> is deducted only upon successful payouts (strictly capped at ₦10,000 max). <strong>₦0 per-transaction fee</strong> on contributions.
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -498,6 +540,12 @@ export default function CreateGroupPage() {
                     <span className="text-[#1F2937]/70">Contribution per Member</span>
                     <span className="text-[#0B3022]">₦{cont.toLocaleString()} / <span className="capitalize">{formData.frequency}</span></span>
                   </div>
+                  {automationFeePerTx > 0 && (
+                    <div className="flex justify-between font-medium text-xs bg-amber-500/10 p-2.5 rounded-lg text-amber-900 border border-amber-500/20">
+                      <span>Open-Banking Automation Fee</span>
+                      <span className="font-bold">₦{automationFeePerTx} / transaction (0% at payout)</span>
+                    </div>
+                  )}
                   <div className="flex justify-between font-medium">
                     <span className="text-[#1F2937]/70">Total Members</span>
                     <span className="text-[#0B3022]">{mems}</span>
@@ -507,8 +555,12 @@ export default function CreateGroupPage() {
                     <span className="text-[#0B3022] font-bold">₦{totalPool.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between border-t border-gray-200 pt-3 mt-3 font-medium">
-                    <span className="text-[#1F2937]/70">Platform Fee (2% capped at ₦15,000)</span>
-                    <span className="text-red-600">-₦{platformFee.toLocaleString()}</span>
+                    <span className="text-[#1F2937]/70">
+                      {isMonthly ? "Platform Fee (2% capped at ₦10,000)" : "Platform Payout Fee"}
+                    </span>
+                    <span className={isMonthly ? "text-red-600 font-bold" : "text-emerald-700 font-bold"}>
+                      {isMonthly ? `-₦${platformFee.toLocaleString()}` : "₦0 (0% Payout Fee)"}
+                    </span>
                   </div>
                   <div className="flex justify-between font-medium">
                     <span className="text-[#1F2937]/70">Your Admin Cut ({commPctNumber}%)</span>
@@ -624,6 +676,12 @@ export default function CreateGroupPage() {
                 <div className="flex justify-between font-medium">
                   <span className="text-[#1F2937]/60">Admin Commission</span>
                   <span className="text-emerald-700 font-bold">{commPctNumber}% (+₦{adminFee.toLocaleString()})</span>
+                </div>
+                <div className="flex justify-between font-medium">
+                  <span className="text-[#1F2937]/60">Pricing Plan</span>
+                  <span className="text-[#0B3022] font-bold capitalize">
+                    {formData.frequency} ({isDaily ? "₦100/tx • 0% payout" : isWeekly ? "₦300/tx • 0% payout" : "2% capped at ₦10k"})
+                  </span>
                 </div>
                 <div className="flex justify-between font-medium border-t border-gray-100 pt-2">
                   <span className="text-[#1F2937]/60">Tendered Bank</span>

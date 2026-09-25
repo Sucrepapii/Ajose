@@ -12,11 +12,11 @@ export async function MarketingHeader() {
       <div className="relative">
         <Link className="flex items-center justify-center gap-3 group relative py-1" href="/">
           <Image 
-            src="/ajose-rings-logo.png" 
+            src="/ajose-brand-pot.png" 
             alt="Àjọṣe Logo" 
             width={48} 
             height={48} 
-            className="object-contain w-auto h-11 drop-shadow-md animate-spin-slow"
+            className="object-contain w-auto h-11 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             priority
           />
           <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Àjọ<span className="text-[#C5A059]">ṣe</span></span>

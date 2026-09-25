@@ -220,11 +220,11 @@ export default function LoginPage() {
         <div className="relative z-10 max-w-lg px-12">
           <Link href="/" className="inline-flex items-center gap-4 mb-16 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/ajose-rings-logo.png" 
+              src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
               width={64} 
               height={64} 
-              className="object-contain w-auto h-16 drop-shadow-md animate-spin-slow"
+              className="object-contain w-auto h-16 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             />
             <span className="text-white font-bold text-3xl font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
           </Link>
@@ -247,11 +247,11 @@ export default function LoginPage() {
 
           <Link href="/" className="lg:hidden flex items-center gap-2 group hover:opacity-90 transition-opacity">
             <Image 
-              src="/ajose-rings-logo.png" 
+              src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
               width={28} 
               height={28} 
-              className="object-contain w-auto h-7 drop-shadow-sm animate-spin-slow"
+              className="object-contain w-auto h-7 drop-shadow-sm"
             />
             <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
           </Link>
