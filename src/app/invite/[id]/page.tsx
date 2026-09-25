@@ -228,8 +228,8 @@ export default function InvitePage(props: {
   const handleStartJoinModal = () => {
     setShowUnderwritingModal(true);
     setModalStep(1);
-    if (!underwritingData) {
-      runPreJoinUnderwriting();
+    if (!customAlias) {
+      setCustomAlias(`Saver #${(group?.max_members || 4) - 1}`);
     }
   };
 
@@ -529,12 +529,12 @@ export default function InvitePage(props: {
                           <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-[#0B402B]">Mono Financial Check Active</p>
-                          <p className="text-[11px] text-gray-500">Statement review &amp; standing mandate verified</p>
+                          <p className="text-xs font-bold text-[#0B402B]">Open-Banking Mandate Ready</p>
+                          <p className="text-[11px] text-gray-500">Automated direct debit rotational sweep via Mono</p>
                         </div>
                       </div>
                       <span className="text-[11px] font-extrabold text-[#0B402B] bg-[#D4AF37]/20 px-2.5 py-1 rounded-full border border-[#D4AF37]/30">
-                        VERIFIED
+                        READY
                       </span>
                     </div>
 
@@ -604,21 +604,20 @@ export default function InvitePage(props: {
             <div className="p-6 border-b border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold uppercase text-emerald-400 tracking-wider">Step {modalStep} of 3</span>
+                  <span className="text-xs font-mono font-bold uppercase text-emerald-400 tracking-wider">Step {modalStep} of 2</span>
                   <span className="text-zinc-600">•</span>
                   <span className="text-xs text-zinc-400">
-                    {modalStep === 1 ? "Underwriting & Credit Check" : modalStep === 2 ? "Circle Anonymity & Privacy" : "Standing Debit Mandate"}
+                    {modalStep === 1 ? "Circle Anonymity & Privacy" : "Standing Debit Mandate"}
                   </span>
                 </div>
                 <h2 className="text-xl font-bold text-white mt-1">
-                  {modalStep === 1 && "Live Pre-Join Financial Underwriting"}
-                  {modalStep === 2 && "Privacy & Anonymity Preferences"}
-                  {modalStep === 3 && "Standing Direct Debit Mandate"}
+                  {modalStep === 1 && "Privacy & Anonymity Preferences"}
+                  {modalStep === 2 && "Standing Direct Debit Mandate"}
                 </h2>
               </div>
               <button 
                 onClick={() => setShowUnderwritingModal(false)}
-                className="text-zinc-500 hover:text-white transition-colors p-2 rounded-lg hover:bg-zinc-900"
+                className="text-zinc-500 hover:text-white transition-colors p-2 rounded-lg hover:bg-zinc-900 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -627,111 +626,17 @@ export default function InvitePage(props: {
             {/* Modal Content Body */}
             <div className="p-6 overflow-y-auto space-y-6 text-sm text-zinc-300">
 
-              {/* STEP 1: LIVE UNDERWRITING & PRE-JOIN CHECK */}
+              {/* STEP 1: ANONYMITY & CIRCLE PRIVACY */}
               {modalStep === 1 && (
-                <div className="space-y-5">
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    Under Àjọṣe underwriting rules, financial checks run dynamically prior to entering any rotational circle to verify verified monthly inflows and ensure no active external defaults have occurred.
-                  </p>
-
-                  {isVerifyingUnderwriting ? (
-                    <div className="py-12 flex flex-col items-center justify-center space-y-4 text-center">
-                      <div className="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                      <div>
-                        <p className="font-bold text-white text-sm">Consulting Financial Registries...</p>
-                        <p className="text-xs text-zinc-500 mt-1">Cross-referencing YouVerify BVN, Mono Statement, &amp; Credit Bureau via Mono</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {/* YouVerify Box */}
-                      <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                            <span className="font-bold text-white text-xs">Identity &amp; Account Discovery</span>
-                          </div>
-                          <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                            BVN + NIN Verified
-                          </span>
-                        </div>
-                        <div className="text-xs text-zinc-400">
-                          Discovered <strong className="text-white">3 bank accounts</strong> linked to BVN for automated mandate routing:
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-[11px]">
-                          <div className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/80">
-                            <p className="text-zinc-500">Primary</p>
-                            <p className="font-bold text-white truncate">Access Bank</p>
-                          </div>
-                          <div className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/80">
-                            <p className="text-zinc-500">Secondary</p>
-                            <p className="font-bold text-white truncate">Zenith Bank</p>
-                          </div>
-                          <div className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/80">
-                            <p className="text-zinc-500">Secondary</p>
-                            <p className="font-bold text-white truncate">Kuda MFB</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Mono Statement Box */}
-                      <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
-                            <span className="font-bold text-white text-xs">Mono Statement Analysis</span>
-                          </div>
-                          <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                            6-Month Inflows Verified
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 text-xs">
-                          <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800/80">
-                            <p className="text-zinc-500 text-[11px]">Average Monthly Inflow</p>
-                            <p className="font-bold text-white text-sm">₦{underwritingData?.statement?.averageMonthlyInflow?.toLocaleString() || "420,000"}</p>
-                            <p className="text-[10px] text-emerald-400 mt-0.5">Proof of Employment Verified</p>
-                          </div>
-                          <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800/80">
-                            <p className="text-zinc-500 text-[11px]">Monthly Recurring Commitments</p>
-                            <p className="font-bold text-white text-sm">₦{underwritingData?.statement?.monthlyLoanObligation?.toLocaleString() || "35,000"}/mo</p>
-                            <p className="text-[10px] text-zinc-400 mt-0.5">DTI: {underwritingData?.statement?.debtToIncomeRatioPct || "8"}% (Healthy)</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Credit Bureau Status Box (powered by Mono) */}
-                      <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4 text-emerald-400" />
-                            <span className="font-bold text-white text-xs">Credit Bureau Status (via Mono)</span>
-                          </div>
-                          <p className="text-xs text-zinc-400">
-                            {underwritingData?.bureau?.summaryNarrative || "No active defaults or blacklists across commercial banks."}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-zinc-500">Score</p>
-                          <p className="text-lg font-black text-emerald-400">{underwritingData?.bureau?.bureauScore || "745"}</p>
-                        </div>
-                      </div>
-
-                      {/* Overall Clearance Banner */}
-                      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-emerald-400 font-bold uppercase tracking-wider">Dynamic Score Result</p>
-                          <p className="text-base font-black text-white">{effectiveCreditScore} Points (Eligibility: Cleared)</p>
-                        </div>
-                        <CheckCircle2 className="h-6 w-6 text-emerald-400" />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* STEP 2: ANONYMITY & CIRCLE PRIVACY */}
-              {modalStep === 2 && (
                 <div className="space-y-6">
+                  {/* Phase 1 Notice */}
+                  <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-2xl p-4 text-xs text-emerald-300/90 leading-relaxed flex items-start gap-2.5">
+                    <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-white">Streamlined Membership Activation:</strong> Your BVN identity is verified. In-depth 6-month bank statement cashflow underwriting is deferred to Phase 2 (reserved for emergency loans and advance liquidity).
+                    </div>
+                  </div>
+
                   <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-5 space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1">
@@ -778,14 +683,14 @@ export default function InvitePage(props: {
                       Compliance Notice on Anonymity:
                     </p>
                     <p>
-                      Anonymity applies exclusively to peer members. The Group Administrator and Àjọṣe compliance maintain verified records via Mono Open-Banking and Bureau verification to guarantee legal accountability.
+                      Anonymity applies exclusively to peer members. The Group Administrator and Àjọṣe compliance maintain verified records via Mono Open-Banking to guarantee circle integrity.
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* STEP 3: STANDING DIRECT DEBIT MANDATE */}
-              {modalStep === 3 && (
+              {/* STEP 2: STANDING DIRECT DEBIT MANDATE */}
+              {modalStep === 2 && (
                 <div className="space-y-5">
                   <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-5 space-y-3">
                     <div className="flex items-center gap-2 font-bold text-white text-base">
@@ -845,7 +750,7 @@ export default function InvitePage(props: {
               {modalStep > 1 ? (
                 <button
                   type="button"
-                  onClick={() => setModalStep((modalStep - 1) as any)}
+                  onClick={() => setModalStep(1)}
                   className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -864,27 +769,15 @@ export default function InvitePage(props: {
               {modalStep === 1 && (
                 <button
                   type="button"
-                  disabled={isVerifyingUnderwriting || isScoreTooLow}
                   onClick={() => setModalStep(2)}
-                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer ml-auto"
+                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer ml-auto"
                 >
-                  Next: Privacy & Anonymity
+                  Next: Mandate &amp; Consent
                   <ArrowRight className="h-4 w-4" />
                 </button>
               )}
 
               {modalStep === 2 && (
-                <button
-                  type="button"
-                  onClick={() => setModalStep(3)}
-                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer ml-auto"
-                >
-                  Next: Mandate & Consent
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              )}
-
-              {modalStep === 3 && (
                 <button
                   type="button"
                   disabled={!mandateAgreed || isJoining}
@@ -899,7 +792,7 @@ export default function InvitePage(props: {
                   ) : (
                     <>
                       <Check className="h-4 w-4" />
-                      Authorize Mandate & Join Group
+                      Authorize Mandate &amp; Join Group
                     </>
                   )}
                 </button>

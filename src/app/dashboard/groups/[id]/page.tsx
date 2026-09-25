@@ -25,6 +25,7 @@ import { StartCycleClient } from "@/components/StartCycleClient";
 import { MakeContributionClient } from "@/components/MakeContributionClient";
 import { FlagMemberClient } from "@/components/FlagMemberClient";
 import { SendRemindersClient } from "@/components/SendRemindersClient";
+import { TriggerSweepClient } from "@/components/TriggerSweepClient";
 import { ConfirmTransferClient } from "@/components/ConfirmTransferClient";
 
 export const dynamic = "force-dynamic";
@@ -236,13 +237,23 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         
         <div className="flex items-center gap-2 sm:gap-3 justify-end">
           {isAdmin && group.status === 'active' && (
-            <SendRemindersClient 
-              unpaidUserIds={unpaidUserIds} 
-              groupName={group.name} 
-              currentTurn={currentTurn}
-              amount={group.contribution_amount} 
-              groupId={groupId}
-            />
+            <>
+              <TriggerSweepClient 
+                groupId={groupId}
+                groupName={group.name}
+                currentTurn={currentTurn}
+                pendingCount={unpaidUserIds.length}
+                amount={group.contribution_amount}
+                frequency={group.frequency}
+              />
+              <SendRemindersClient 
+                unpaidUserIds={unpaidUserIds} 
+                groupName={group.name} 
+                currentTurn={currentTurn}
+                amount={group.contribution_amount} 
+                groupId={groupId}
+              />
+            </>
           )}
           {/* Group Settings Button for tablet and desktop screens (Admin Only) */}
           {isAdmin && (

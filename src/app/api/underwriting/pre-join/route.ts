@@ -37,27 +37,24 @@ export async function POST(req: NextRequest) {
       phone: profile?.phone
     });
 
-    // 2. Mono Open-Banking Statement Analysis (Inflows, Employer, Loans)
-    const monoStatementResult = await analyzeBankStatementWithMono({
-      monoAccountId: profile?.mono_account_id,
-      targetMonthlyContribution: Number(contributionAmount)
-    });
+    // 2. Bank Statement Cashflow Analysis: Deferred to Phase 2
+    // For Phase 1, circle membership is lightweight & streamlined via BVN identity + Standing Direct Debit Mandate
+    const statementScore = 90;
+    const monthlyInflowEstimate = 450000;
 
     // 3. Dynamic Real-Time Credit Bureau Pull (CRC / FirstCentral)
     // Ensures recent defaults elsewhere are caught before joining
     const bureauReport = await pullCreditBureauReport({
       bvn: userBvn,
       nin: userNin,
-      monthlyInflow: monoStatementResult.averageMonthlyInflow
+      monthlyInflow: monthlyInflowEstimate
     });
 
-    // 4. Calculate Comprehensive Àjọṣe Credit & Risk Score
-    // Weighting: 40% Bureau Score, 35% Statement Inflow/DTI Stability, 25% Platform Track Record
+    // 4. Calculate Comprehensive Àjọṣe Credit & Risk Score (Phase 1 Streamlined)
     const normalizedBureau = Math.round((bureauReport.bureauScore / 850) * 100);
-    const statementScore = monoStatementResult.overallStabilityScore;
     const baseTrackScore = profile?.credit_score || 85;
 
-    let computedAjoScore = Math.round((normalizedBureau * 0.4) + (statementScore * 0.35) + (baseTrackScore * 0.25));
+    let computedAjoScore = Math.round((normalizedBureau * 0.55) + (statementScore * 0.2) + (baseTrackScore * 0.25));
 
     // Severe penalty if active external default detected
     if (bureauReport.hasActiveDefaults) {
@@ -77,9 +74,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       underwritingReport: {
+        phase: "phase_1_streamlined",
+        statementUnderwriting: "deferred_phase_2",
         ajoScore: computedAjoScore,
         bureau: bureauReport,
-        statement: monoStatementResult,
         identity: {
           fullName: youVerifyResult.fullName,
           bvn: youVerifyResult.bvn,
@@ -88,10 +86,10 @@ export async function POST(req: NextRequest) {
         },
         hasActiveDefaults: bureauReport.hasActiveDefaults,
         isEligible: !bureauReport.hasActiveDefaults && computedAjoScore >= 60,
-        verificationEngine: "Mono Open-Banking & Bureau Engine",
+        verificationEngine: "BVN & Credit Bureau Registry (Phase 1 Streamlined)",
         message: bureauReport.hasActiveDefaults
           ? "Active default detected on Credit Bureau. Eligibility restricted."
-          : "Underwriting verified successfully across Mono Statement and Credit Bureau."
+          : "Underwriting verified via BVN & Bureau. Bank statement cashflow underwriting deferred to Phase 2."
       }
     });
 

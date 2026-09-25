@@ -37,24 +37,59 @@ export async function POST(req: NextRequest) {
 
 async function handleSweep(req: NextRequest) {
   try {
-    // 1. Authorization check: Bearer token or CRON_SECRET header
+    // 1. Authorization check:
+    // a) Bearer token or CRON_SECRET header / query param
+    // b) Authenticated SuperAdmin session
+    // c) Authenticated Group Admin of specificGroupId
     const authHeader = req.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
     const urlSecret = req.nextUrl.searchParams.get("secret");
+    const specificGroupId = req.nextUrl.searchParams.get("groupId");
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}` && urlSecret !== cronSecret) {
-      // In development or sandbox, allow if no secret configured
-      if (process.env.NODE_ENV === "production") {
-        return NextResponse.json({ error: "Unauthorized cron trigger" }, { status: 401 });
+    let isAuthorized = false;
+    if (cronSecret && (authHeader === `Bearer ${cronSecret}` || urlSecret === cronSecret)) {
+      isAuthorized = true;
+    } else if (!cronSecret && process.env.NODE_ENV !== "production") {
+      isAuthorized = true;
+    } else {
+      // Check for authenticated SuperAdmin
+      try {
+        const { getSuperAdminSession } = await import("@/utils/adminAuth");
+        const adminSession = await getSuperAdminSession();
+        if (adminSession.isAuthenticated && adminSession.isSuperAdmin) {
+          isAuthorized = true;
+        }
+      } catch (_) {}
+
+      // Check if caller is the authenticated Admin of this specific circle
+      if (!isAuthorized && specificGroupId) {
+        try {
+          const { createClient } = await import("@/utils/supabase/server");
+          const supabaseUser = await createClient();
+          const { data: { user } } = await supabaseUser.auth.getUser();
+          if (user) {
+            const adminSupabase = createAdminClient();
+            const { data: grp } = await adminSupabase
+              .from("groups")
+              .select("admin_id")
+              .eq("id", specificGroupId)
+              .maybeSingle();
+
+            if (grp && grp.admin_id === user.id) {
+              isAuthorized = true;
+            }
+          }
+        } catch (_) {}
       }
+    }
+
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Unauthorized. Valid cron secret or group admin session required." }, { status: 401 });
     }
 
     const supabase = createAdminClient();
     const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
     const isSandbox = !process.env.MONO_SECRET_KEY || monoSecretKey.startsWith("test_");
-
-    // Optional filter by specific groupId (for testing or on-demand sweep)
-    const specificGroupId = req.nextUrl.searchParams.get("groupId");
 
     // 2. Fetch active groups
     let query = supabase
