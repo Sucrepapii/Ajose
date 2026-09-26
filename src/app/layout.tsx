@@ -22,7 +22,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Ajose — Turn by turn, no wahala.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'https://ajose.ng')
+  ),
+  title: "Àjọṣe — Turn by turn, no wahala.",
   description: "Ajose is the digital platform that runs your Ajo group — collecting contributions, tracking every round, and making sure everyone gets their turn.",
   keywords: ["Ajo", "Esusu", "Osusu", "Rotational Contribution", "Nigeria Fintech", "Group Contribution", "Ajose"],
   manifest: "/manifest.webmanifest",
@@ -32,16 +36,26 @@ export const metadata: Metadata = {
     title: "Àjọṣe",
   },
   openGraph: {
-    title: "Ajose — Turn by turn, no wahala.",
-    description: "Run your Ajo. Track every round. Trust every naira.",
-    siteName: "Ajose",
+    title: "Àjọṣe — Turn by turn, no wahala.",
+    description: "Run your Ajo. Track every round. Trust every naira. Automated rotational thrift platform.",
+    url: "https://ajose.ng",
+    siteName: "Àjọṣe",
     locale: "en_NG",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Àjọṣe — Rotational Thrift Platform",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ajose — Turn by turn, no wahala.",
+    title: "Àjọṣe — Turn by turn, no wahala.",
     description: "The modern digital platform for managing Ajo & Esusu contribution schemes in Nigeria.",
+    images: ["/og-image.png"],
   },
 };
 
