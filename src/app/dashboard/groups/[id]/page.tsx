@@ -172,9 +172,10 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     } else if (userProfile.phone) {
       receivingMemberProfileName = userProfile.phone;
     } else {
-      receivingMemberProfileName = `User-${receivingMember.user_id.substring(0, 4)}`;
+      receivingMemberProfileName = `User-${String(receivingMember?.user_id || "0000").substring(0, 4)}`;
     }
   }
+
 
   // Users who haven't paid yet
   const unpaidUserIds = contributingMembers
@@ -481,8 +482,9 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
               {membersList.map((m) => {
                 const userProfile = m.users;
                 
-                const realName = `${userProfile?.first_name || ''} ${userProfile?.last_name || ''}`.trim() || `User-${m.user_id.substring(0, 4)}`;
+                const realName = `${userProfile?.first_name || ''} ${userProfile?.last_name || ''}`.trim() || `User-${String(m?.user_id || "0000").substring(0, 4)}`;
                 const hasAlias = Boolean(userProfile?.nickname);
+
                 const isSelf = m.user_id === user.id;
 
                 let displayName = realName;

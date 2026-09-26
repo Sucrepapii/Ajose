@@ -85,7 +85,7 @@ export function NotificationBell({ userId }: { userId: string }) {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-50" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 rounded-full bg-white text-[#1F2937]/70 hover:text-[#0B3022] border border-gray-200 shadow-sm relative transition-colors"
@@ -97,7 +97,7 @@ export function NotificationBell({ userId }: { userId: string }) {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-3 w-80 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full right-0 mt-3 w-80 max-w-[calc(100vw-2rem)] bg-white border border-gray-200 rounded-2xl shadow-2xl z-[100] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           
           <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
             <h3 className="font-bold text-[#0B3022]">Notifications</h3>

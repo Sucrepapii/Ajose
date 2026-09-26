@@ -71,10 +71,10 @@ export default async function GroupsPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center text-blue-400 font-bold text-xl uppercase">
-                      {group.name.substring(0, 1)}
+                      {(group?.name || "A").substring(0, 1)}
                     </div>
                     <div>
-                      <h4 className="text-lg font-bold text-white">{group.name}</h4>
+                      <h4 className="text-lg font-bold text-white">{group?.name || "Ajo Circle"}</h4>
                       <p className="text-sm text-zinc-400">{group.max_members} Members • {group.frequency}</p>
                     </div>
                   </div>

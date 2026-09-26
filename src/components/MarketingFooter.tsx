@@ -35,6 +35,9 @@ export function MarketingFooter() {
               <li><Link href="/#how-it-works" className="text-gray-400 hover:text-[#C5A059] transition-colors">How it Works</Link></li>
               <li><Link href="/security" className="text-gray-400 hover:text-[#C5A059] transition-colors">Security</Link></li>
               <li><Link href="/pricing" className="text-gray-400 hover:text-[#C5A059] transition-colors">Pricing</Link></li>
+              {/* DIASPORA PORTAL (Commented out until international payment rail is connected)
+              <li><Link href="/diaspora" className="text-gray-400 hover:text-[#C5A059] transition-colors">Diaspora Circles</Link></li>
+              */}
             </ul>
           </div>
 

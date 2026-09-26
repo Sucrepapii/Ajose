@@ -65,8 +65,9 @@ export default async function AdminCommandCenterPage() {
   const txList = (rawTransactions || []).map((t: any) => ({
     ...t,
     groups: t.memberships?.groups || null,
-    reference: `TX-${t.id.slice(0, 8).toUpperCase()}`
+    reference: t.id ? `TX-${String(t.id).slice(0, 8).toUpperCase()}` : "TX-REF"
   }));
+
 
   const completedTxs = txList.filter(t => t.status === "successful" || t.status === "completed");
   const failedTxs = txList.filter(t => t.status === "failed");

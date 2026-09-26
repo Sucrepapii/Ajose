@@ -47,8 +47,9 @@ export default async function AdminTransactionsPage() {
     ...t,
     groups: t.memberships?.groups || null,
     user: t.memberships?.users || null,
-    reference: t.reference || `TX-${t.id.slice(0, 8).toUpperCase()}`
+    reference: t.reference || (t.id ? `TX-${String(t.id).slice(0, 8).toUpperCase()}` : "TX-REF")
   }));
+
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">

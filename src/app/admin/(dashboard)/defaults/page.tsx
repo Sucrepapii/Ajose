@@ -136,9 +136,10 @@ export default async function AdminDefaultsPage() {
       bankName: user.bank_name || "Linked Account",
       accountNumber: user.account_number || "••••••••••",
       timestamp: f.created_at,
-      reference: `DEF-${f.id.slice(0, 8).toUpperCase()}`
+      reference: f.id ? `DEF-${String(f.id).slice(0, 8).toUpperCase()}` : "DEF-REF"
     };
   });
+
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">

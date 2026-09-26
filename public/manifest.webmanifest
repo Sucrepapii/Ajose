@@ -1,6 +1,12 @@
 {
-  "background_color": "FFFFFF",
+  "name": "Àjọṣe",
+  "short_name": "Àjọṣe",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0B3022",
   "icons": [
+
     {
       "src": "../icons/icon-48.webp",
       "type": "image/png",

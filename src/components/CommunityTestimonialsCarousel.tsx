@@ -38,18 +38,25 @@ export function CommunityTestimonialsCarousel({ testimonials }: CommunityTestimo
   const [isPaused, setIsPaused] = useState(false);
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
 
-  // Prepare infinite repeated list (at least 12 items, then tripled for seamless 3-set wrap)
+  // Prepare clean unique list for seamless infinite wrap
   const baseItems = useMemo(() => {
     if (!testimonials || testimonials.length === 0) return [];
-    let list: TestimonialItem[] = [];
-    while (list.length < 9) {
-      list = [...list, ...testimonials];
+    // Deduplicate strictly by author + quote
+    const seen = new Set<string>();
+    const unique: TestimonialItem[] = [];
+    for (const item of testimonials) {
+      const key = `${item.author}::${item.quote.slice(0, 30)}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(item);
+      }
     }
-    return list;
+    return unique;
   }, [testimonials]);
 
-  // Triple set for infinite loop (Set 1 | Set 2 [Initial Focus] | Set 3)
+  // Triple set for seamless continuous marquee loop (Set 1 | Set 2 [Initial View] | Set 3)
   const allItems = useMemo(() => {
+    if (baseItems.length === 0) return [];
     return [...baseItems, ...baseItems, ...baseItems];
   }, [baseItems]);
 

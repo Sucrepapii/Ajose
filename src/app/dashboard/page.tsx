@@ -13,7 +13,6 @@ import {
   Users,
   Coins
 } from "lucide-react";
-import { OrganizerEarningsCalculator } from "@/components/OrganizerEarningsCalculator";
 import { OrganizerShareKitModal } from "@/components/OrganizerShareKitModal";
 
 export default async function DashboardOverview() {
@@ -208,12 +207,6 @@ export default async function DashboardOverview() {
 
       </div>
 
-      {/* B2B Organizer Engine: Revenue Calculator & Tier Moat */}
-      <OrganizerEarningsCalculator 
-        currentAdminCircles={adminGroupCount} 
-        currentProjectedEarnings={totalAdminEarnings} 
-      />
-
       {/* Active Groups & Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
@@ -249,11 +242,11 @@ export default async function DashboardOverview() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-[#0B3022] rounded-xl flex items-center justify-center text-[#C5A059] font-bold text-xl uppercase shadow-inner group-hover:bg-[#C5A059] group-hover:text-[#0B3022] transition-colors">
-                          {group.name.substring(0, 1)}
+                          {(group?.name || "A").substring(0, 1)}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-lg font-bold text-[#0B3022]">{group.name}</h4>
+                            <h4 className="text-lg font-bold text-[#0B3022]">{group?.name || "Ajo Circle"}</h4>
                             {isAdmin && (
                               <span className="text-[10px] font-black uppercase tracking-wider bg-[#C5A059]/20 text-[#0B3022] border border-[#C5A059]/40 px-2 py-0.5 rounded-full">
                                 Admin
@@ -269,7 +262,7 @@ export default async function DashboardOverview() {
                           <p className="text-xs text-[#1F2937]/70 font-medium">Pool: <span className="font-bold text-[#0B3022]">₦{totalPool.toLocaleString()}</span></p>
                         </div>
                         {isAdmin && (
-                          <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                          <div>
                             <OrganizerShareKitModal
                               groupId={group.id}
                               groupName={group.name}

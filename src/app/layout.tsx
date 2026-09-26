@@ -59,7 +59,16 @@ export default function RootLayout({
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-zinc-950 text-zinc-50">
         {children}
-        <Toaster theme="dark" position="bottom-right" />
+        <Toaster 
+          theme="dark" 
+          position="top-right" 
+          richColors 
+          toastOptions={{
+            style: {
+              zIndex: 99999,
+            },
+          }}
+        />
       </body>
     </html>
   );

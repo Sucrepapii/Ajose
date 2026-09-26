@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowRight, Home, HelpCircle, Sparkles, Shield, User } from "lucide-react";
+import { Menu, X, ArrowRight, Home, HelpCircle, Sparkles, Shield, User, Globe } from "lucide-react";
+
 
 interface MarketingNavClientProps {
   isLoggedIn: boolean;
@@ -47,6 +48,12 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
         <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white" href="/about">
           About
         </Link>
+        {/* DIASPORA PORTAL (Commented out until international payment rail is connected)
+        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white" href="/diaspora">
+          Diaspora
+        </Link>
+        */}
+
         
         {isLoggedIn ? (
           <Link
@@ -160,7 +167,18 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
                 <Shield className="h-5 w-5 text-[#C5A059]" />
                 <span>About Àjọṣe</span>
               </Link>
+              {/* DIASPORA PORTAL (Commented out until international payment rail is connected)
+              <Link
+                href="/diaspora"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/90 hover:bg-white/10 hover:text-[#C5A059] font-medium transition-colors"
+              >
+                <Globe className="h-5 w-5 text-[#C5A059]" />
+                <span>Diaspora Circles</span>
+              </Link>
+              */}
             </div>
+
 
             {/* Bottom Actions */}
             <div className="p-6 border-t border-white/10 bg-[#072418] space-y-3">

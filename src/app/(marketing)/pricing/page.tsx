@@ -1,10 +1,12 @@
-import { CheckCircle2, Sparkles } from "lucide-react";
+import { CheckCircle2, Sparkles, Calculator, Briefcase } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { InteractiveRevenueCalculator } from "@/components/InteractiveRevenueCalculator";
+import { MemberFeeCalculator } from "@/components/MemberFeeCalculator";
 
 export const metadata: Metadata = {
   title: "Simple, Transparent Pricing | Àjọṣe",
-  description: "No hidden fees, no subscriptions. Select the schedule that works best for your circle: Monthly at 2%, Weekly at ₦300/tx, and Daily at ₦100/tx.",
+  description: "No hidden fees, no subscriptions. Select the schedule that works best for your circle: Monthly at 2% (capped at ₦10k), Weekly at ₦300/tx, and Daily at ₦100/tx.",
 };
 
 export default function PricingPage() {
@@ -187,7 +189,18 @@ export default function PricingPage() {
 
         </div>
 
+        {/* Member Fee & Net Payout Calculator */}
+        <div className="mb-20">
+          <MemberFeeCalculator />
+        </div>
+
+        {/* B2B Organizer Revenue Simulator */}
+        <div className="mt-12 mb-8">
+          <InteractiveRevenueCalculator showTitle={true} />
+        </div>
+
       </div>
     </main>
   );
 }
+

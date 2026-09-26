@@ -6,6 +6,7 @@ import { motion, AnimatePresence, Variants } from "framer-motion";
 import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check, Star, X, ShieldAlert, Smartphone, LineChart, Percent, LayoutDashboard, History, Quote, Globe } from "lucide-react";
 import { CountryFlag } from "@/components/CountryFlag";
 import { CommunityTestimonialsCarousel } from "@/components/CommunityTestimonialsCarousel";
+import { InteractiveRevenueCalculator } from "@/components/InteractiveRevenueCalculator";
 
 interface TestimonialItem {
   quote: string;
@@ -66,7 +67,7 @@ export default function Home() {
       location: "Ibadan, Nigeria"
     },
     {
-      quote: "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool. Would love direct GBP debit rails next!",
+      quote: "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool. Payouts arrive directly without delay.",
       author: "Dr. Kunle A.",
       role: "Diaspora Circle Lead",
       rating: 5,
@@ -75,13 +76,40 @@ export default function Home() {
       location: "London, UK"
     },
     {
-      quote: "We run our cross-border tech founders Susu on Ajocore. The ledger accuracy and payout countdown give everybody peace of mind.",
+      quote: "We run our cross-border tech founders Susu on Àjọṣe. The ledger accuracy and payout countdown give everybody peace of mind.",
       author: "Kwame M.",
       role: "Susu Circle Organizer",
       rating: 5,
       country: "Ghana",
       countryCode: "GH",
       location: "Accra, Ghana"
+    },
+    {
+      quote: "Our Nigerian-American family pool has 12 members across 4 states. Everyone knows their turn date and nobody has to chase cousin payments.",
+      author: "Chinwe & Chidi N.",
+      role: "Family Circle Admins",
+      rating: 5,
+      country: "United States",
+      countryCode: "US",
+      location: "Atlanta, GA"
+    },
+    {
+      quote: "Running our civil service thrift pool used to take hours of manual bank confirmation. Àjọṣe automated the entire verification cycle.",
+      author: "Fatima Y.",
+      role: "Cooperative Lead",
+      rating: 5,
+      country: "Nigeria",
+      countryCode: "NG",
+      location: "Abuja, Nigeria"
+    },
+    {
+      quote: "We organize our quarterly business expansion circle from Ontario. The non-custodial structure is exactly what we needed to trust the platform.",
+      author: "David O.",
+      role: "Business Circle Member",
+      rating: 5,
+      country: "Canada",
+      countryCode: "CA",
+      location: "Toronto, Canada"
     }
   ]);
 
@@ -169,6 +197,27 @@ export default function Home() {
                   See how it works
                 </Link>
               </motion.div>
+
+              {/* Above-The-Fold Regulatory & Compliance Trust Bar */}
+              <motion.div 
+                variants={fadeIn}
+                className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-4 text-xs text-white/80"
+              >
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#C5A059] shrink-0" />
+                  <span><strong>CBN-Regulated Settlement</strong> via Paylode PSSP</span>
+                </div>
+                <span className="hidden sm:inline text-white/30">•</span>
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-[#C5A059] shrink-0" />
+                  <span><strong>Mono Open Banking</strong> (NDPR Compliant)</span>
+                </div>
+                <span className="hidden sm:inline text-white/30">•</span>
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-[#C5A059] shrink-0" />
+                  <span><strong>100% Non-Custodial</strong> Direct Pass-Through</span>
+                </div>
+              </motion.div>
             </motion.div>
 
             {/* Hero Dashboard Interactive Mockup */}
@@ -240,6 +289,45 @@ export default function Home() {
             </motion.div>
 
           </div>
+
+          {/* Architecture & Capability Truth Strip */}
+          <motion.div 
+            variants={fadeIn}
+            className="mt-16 pt-10 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center text-white relative z-20"
+          >
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm flex flex-col justify-center">
+              <span className="block text-lg sm:text-xl font-black text-[#C5A059] font-mono mb-1.5">
+                ₦10,000 to ₦10,000,000+
+              </span>
+              <span className="text-xs text-gray-300 font-medium leading-relaxed">
+                Built for circles of any size from micro-thrift to major capital pools.
+              </span>
+            </div>
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm flex flex-col justify-center">
+              <span className="block text-lg sm:text-xl font-black text-emerald-400 font-serif mb-1.5">
+                Automated Enforcement
+              </span>
+              <span className="text-xs text-gray-300 font-medium leading-relaxed">
+                No more chasing defaulters or sending awkward WhatsApp reminders.
+              </span>
+            </div>
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm flex flex-col justify-center">
+              <span className="block text-lg sm:text-xl font-black text-white font-serif mb-1.5">
+                Direct Bank-to-Bank
+              </span>
+              <span className="text-xs text-gray-300 font-medium leading-relaxed">
+                Àjọṣe never holds your money, funds settle directly to each recipient.
+              </span>
+            </div>
+            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm flex flex-col justify-center">
+              <span className="block text-lg sm:text-xl font-black text-[#C5A059] font-serif mb-1.5">
+                Home &amp; Diaspora
+              </span>
+              <span className="text-xs text-gray-300 font-medium leading-relaxed">
+                Built for Nigerians saving together across states and borders.
+              </span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -299,125 +387,262 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Value Proposition Section (Engineered for Trust & Transparency) */}
+      {/* Unified Platform & Trust Showcase Section (Side by Side) */}
       <section id="features" className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-b border-gray-200 overflow-hidden">
         <motion.div 
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={staggerContainer}
-          className="container mx-auto px-6 lg:px-12"
+          className="container mx-auto px-6 lg:px-12 max-w-7xl"
         >
-          <motion.div variants={fadeIn} className="flex flex-col items-center justify-center text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
-              Engineered for Trust & Transparency
-            </h2>
-            <p className="max-w-2xl text-[#1F2937]/80 text-lg">
-              We've taken the traditional Ajo and wrapped it in a premium software experience. Everything you need to manage your group effortlessly.
-            </p>
-          </motion.div>
-          
-          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20">
-            {/* Left side: Tabs list */}
-            <div className="lg:w-1/3 flex flex-col gap-4">
-              {[
-                {
-                  icon: ShieldCheck,
-                  title: "Immutable Records",
-                  desc: "Every contribution is logged in a transparent ledger. No more disputes over who paid when."
-                },
-                {
-                  icon: Rocket,
-                  title: "Automated Turns",
-                  desc: "The system automatically assigns and tracks payout turns, taking the administrative burden off the creator."
-                },
-                {
-                  icon: Lock,
-                  title: "Admin Control",
-                  desc: "Powerful dashboard allowing admins to flag defaulters, manage earnings, and control the group lifecycle."
-                }
-              ].map((feature, i) => (
-                <motion.button
-                  variants={fadeIn}
-                  key={i}
-                  onClick={() => setActiveFeatureTab(i)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`text-left p-6 rounded-2xl border-2 transition-all duration-300 ${activeFeatureTab === i ? "border-[#C5A059] bg-[#FDFBF7] shadow-md" : "border-transparent hover:bg-[#FDFBF7]/50"}`}
-                >
-                  <h3 className={`text-xl font-bold mb-2 ${activeFeatureTab === i ? "text-[#0B3022]" : "text-[#1F2937]/70"}`}>{feature.title}</h3>
-                  <p className={`text-sm leading-relaxed ${activeFeatureTab === i ? "text-[#1F2937]" : "text-[#1F2937]/50"}`}>
-                    {feature.desc}
-                  </p>
-                </motion.button>
-              ))}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 lg:gap-16">
+            
+            {/* Left Column: Engineered for Trust & Transparency */}
+            <div className="flex flex-col h-full">
+              <motion.div variants={fadeIn} className="mb-8">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] block mb-2">
+                  System Architecture
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] font-serif mb-4">
+                  Engineered for Trust &amp; Transparency
+                </h2>
+                <p className="text-[#1F2937]/80 text-base leading-relaxed">
+                  We&rsquo;ve taken the traditional Ajo and wrapped it in a premium software experience. Everything you need to manage your group effortlessly.
+                </p>
+              </motion.div>
+
+              {/* Feature Tab Selectors */}
+              <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-white/60 border border-gray-200 mb-6">
+                {[
+                  { title: "Immutable Records", icon: ShieldCheck },
+                  { title: "Automated Turns", icon: Rocket },
+                  { title: "Admin Control", icon: Lock }
+                ].map((feature, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveFeatureTab(i)}
+                    className={`py-3 px-2 rounded-xl text-xs font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
+                      activeFeatureTab === i 
+                        ? "bg-[#0B3022] text-[#C5A059] shadow-md" 
+                        : "text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-black/5"
+                    }`}
+                  >
+                    <feature.icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{feature.title}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Feature Detail Card */}
+              <motion.div variants={fadeIn} className="flex-1">
+                <div className="bg-[#FDFBF7] rounded-3xl p-6 md:p-8 border border-gray-200 shadow-xl h-full flex flex-col justify-between relative overflow-hidden">
+                  <div className="absolute -top-16 -right-16 w-48 h-48 bg-[#C5A059]/10 rounded-full blur-[40px] pointer-events-none" />
+
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeFeatureTab}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      transition={{ duration: 0.25 }}
+                      className="relative z-10 flex flex-col h-full justify-between"
+                    >
+                      {[
+                        {
+                          icon: ShieldCheck,
+                          title: "Immutable Records",
+                          tagline: "Total transparency for every member.",
+                          points: [
+                            "Tamper-proof contribution logging",
+                            "Real-time Open-Banking payment verification",
+                            "Permanent, downloadable ledger audit history"
+                          ]
+                        },
+                        {
+                          icon: Rocket,
+                          title: "Automated Turns",
+                          tagline: "Set it up once, let the system run.",
+                          points: [
+                            "Fair, randomized or custom member sequencing",
+                            "Automatic turn assignment & morning sweeps",
+                            "Instant fallback alerts & countdown timers"
+                          ]
+                        },
+                        {
+                          icon: Lock,
+                          title: "Admin Control",
+                          tagline: "Total authority to protect the group.",
+                          points: [
+                            "Freeze defaulting members with credit penalty",
+                            "One-click fund disbursement confirmation",
+                            "Modify active rosters securely before round starts"
+                          ]
+                        }
+                      ].filter((_, i) => i === activeFeatureTab).map((content, i) => (
+                        <div key={i} className="flex flex-col h-full justify-between gap-6">
+                          <div>
+                            <div className="w-12 h-12 rounded-xl bg-[#0B3022] flex items-center justify-center shadow-md mb-4">
+                              <content.icon className="w-6 h-6 text-[#C5A059]" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-[#0B3022] mb-1">{content.title}</h3>
+                            <p className="text-sm text-[#1F2937]/70 font-medium mb-6">{content.tagline}</p>
+                            <ul className="space-y-3">
+                              {content.points.map((point, j) => (
+                                <li key={j} className="flex items-center gap-2.5 text-xs sm:text-sm text-[#1F2937] font-medium">
+                                  <div className="shrink-0 w-5 h-5 rounded-full bg-[#C5A059]/20 flex items-center justify-center">
+                                    <Check className="w-3.5 h-3.5 text-[#C5A059]" />
+                                  </div>
+                                  <span>{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                            <span>Turn by turn, guaranteed.</span>
+                            <span className="font-semibold text-[#0B3022]">Bank-grade automation</span>
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </motion.div>
             </div>
 
-            {/* Right side: Active Tab Display */}
-            <motion.div variants={fadeIn} className="lg:w-2/3">
-              <div className="bg-[#FDFBF7] rounded-3xl p-8 md:p-12 border border-gray-200 shadow-xl h-full flex flex-col justify-center relative overflow-hidden min-h-[400px]">
-                {/* Decorative background flair */}
-                <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#C5A059]/10 rounded-full blur-[50px] pointer-events-none" />
-                
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeFeatureTab}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex flex-col md:flex-row items-center gap-8 relative z-10"
+            {/* Right Column: Everything in one place */}
+            <div className="flex flex-col h-full">
+              <motion.div variants={fadeIn} className="mb-8">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] block mb-2">
+                  Live UI Experience
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] font-serif mb-4">
+                  Everything in one place
+                </h2>
+                <p className="text-[#1F2937]/80 text-base leading-relaxed">
+                  A beautifully designed dashboard to manage every aspect of your Ajo group.
+                </p>
+              </motion.div>
+
+              {/* Showcase Tab Selectors */}
+              <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-white/60 border border-gray-200 mb-6">
+                {[
+                  { title: "Overview", icon: LayoutDashboard },
+                  { title: "Roster", icon: Users },
+                  { title: "Ledger", icon: History }
+                ].map((item, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveShowcase(i)}
+                    className={`py-3 px-2 rounded-xl text-xs font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
+                      activeShowcase === i 
+                        ? "bg-[#0B3022] text-[#C5A059] shadow-md" 
+                        : "text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-black/5"
+                    }`}
                   >
-                    {[
-                      {
-                        icon: ShieldCheck,
-                        title: "Immutable Records",
-                        tagline: "Total transparency for every member.",
-                        points: ["Tamper-proof contribution logging", "Real-time payment verification", "Historical ledger access"]
-                      },
-                      {
-                        icon: Rocket,
-                        title: "Automated Turns",
-                        tagline: "Set it up once, let the system run.",
-                        points: ["Fair, randomized member sequencing", "Automatic turn assignment", "Next-in-line alerts"]
-                      },
-                      {
-                        icon: Lock,
-                        title: "Admin Control",
-                        tagline: "Total authority to protect the group.",
-                        points: ["Freeze defaulting members", "One-click fund disbursement", "Modify active rosters securely"]
-                      }
-                    ].filter((_, i) => i === activeFeatureTab).map((content, i) => (
-                      <div key={i} className="flex-1 w-full flex flex-col gap-6">
-                        <div className="w-16 h-16 rounded-2xl bg-[#0B3022] flex items-center justify-center shadow-lg">
-                          <content.icon className="w-8 h-8 text-[#C5A059]" />
-                        </div>
-                        <div>
-                          <h3 className="text-3xl font-bold text-[#0B3022] mb-3">{content.title}</h3>
-                          <p className="text-xl text-[#1F2937]/70 font-medium mb-8">{content.tagline}</p>
-                          <ul className="space-y-4">
-                            {content.points.map((point, j) => (
-                              <motion.li 
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.2 + (j * 0.1) }}
-                                key={j} 
-                                className="flex items-center gap-3"
-                              >
-                                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#C5A059]/20 flex items-center justify-center">
-                                  <Check className="w-4 h-4 text-[#C5A059]" />
-                                </div>
-                                <span className="text-[#1F2937] font-medium">{point}</span>
-                              </motion.li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    ))}
-                  </motion.div>
-                </AnimatePresence>
+                    <item.icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{item.title}</span>
+                  </button>
+                ))}
               </div>
-            </motion.div>
+
+              {/* Interactive Showcase Mockup Window */}
+              <motion.div variants={fadeIn} className="flex-1">
+                <div className="bg-[#0B3022] rounded-3xl p-6 sm:p-8 shadow-2xl relative h-full flex flex-col justify-between overflow-hidden border-2 border-gray-800 text-white min-h-[360px]">
+                  {/* Mac window header */}
+                  <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-rose-500" />
+                      <div className="w-3 h-3 rounded-full bg-amber-500" />
+                      <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                    </div>
+                    <span className="text-[11px] font-mono text-gray-400">ajose.app/dashboard</span>
+                  </div>
+
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeShowcase}
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.04 }}
+                      transition={{ duration: 0.25 }}
+                      className="flex-1 flex flex-col justify-center"
+                    >
+                      {activeShowcase === 0 && (
+                        <div className="bg-[#FDFBF7] rounded-2xl p-5 text-[#0B3022] shadow-lg flex flex-col gap-4">
+                          <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                            <div>
+                              <h4 className="font-bold text-sm">Tech Savers Circle</h4>
+                              <p className="text-[11px] text-gray-500">October Round 4 of 10</p>
+                            </div>
+                            <span className="text-[#C5A059] font-black text-lg font-mono">₦1,200,000</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-[#F4F1EA] p-3 rounded-xl">
+                              <p className="text-[10px] text-gray-500 font-bold mb-0.5">TOTAL MEMBERS</p>
+                              <p className="text-xl font-black text-[#0B3022]">12 Savers</p>
+                            </div>
+                            <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                              <p className="text-[10px] text-emerald-700 font-bold mb-0.5">NEXT PAYOUT</p>
+                              <p className="text-lg font-bold text-emerald-800">Oct 15 (₦1.2M)</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeShowcase === 1 && (
+                        <div className="bg-[#FDFBF7] rounded-2xl p-5 text-[#0B3022] shadow-lg space-y-2.5">
+                          <h4 className="font-bold text-xs uppercase tracking-wider text-gray-500 mb-2">Turn Sequence</h4>
+                          {[
+                            { name: "Dr. Kunle A.", turn: "Turn 1", status: "Paid Out ✓", bg: "bg-emerald-100 text-emerald-800" },
+                            { name: "Bisi A.", turn: "Turn 2", status: "Paid Out ✓", bg: "bg-emerald-100 text-emerald-800" },
+                            { name: "David K.", turn: "Turn 3 (Current)", status: "Collecting 🎯", bg: "bg-amber-100 text-amber-900" }
+                          ].map((m, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-[#F4F1EA] text-xs">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-full bg-[#0B3022] text-white flex items-center justify-center font-bold text-[10px]">
+                                  {m.name[0]}
+                                </div>
+                                <span className="font-semibold text-gray-800">{m.name}</span>
+                              </div>
+                              <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${m.bg}`}>{m.status}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {activeShowcase === 2 && (
+                        <div className="bg-[#FDFBF7] rounded-2xl p-5 text-[#0B3022] shadow-lg space-y-2.5">
+                          <h4 className="font-bold text-xs uppercase tracking-wider text-gray-500 mb-2">Real-Time Open Banking Ledger</h4>
+                          {[
+                            { title: "Direct Debit: Sarah J.", time: "Today, 08:00 AM", amount: "+₦100,000" },
+                            { title: "Direct Debit: Michael O.", time: "Today, 08:01 AM", amount: "+₦100,000" },
+                            { title: "Auto Payout: David K.", time: "Today, 08:05 AM", amount: "-₦1,000,000" }
+                          ].map((t, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2.5 border-b border-gray-100 last:border-0 text-xs">
+                              <div>
+                                <p className="font-bold text-gray-900">{t.title}</p>
+                                <p className="text-[10px] text-gray-400">{t.time}</p>
+                              </div>
+                              <span className={`font-mono font-bold ${t.amount.startsWith('+') ? 'text-emerald-600' : 'text-[#C5A059]'}`}>
+                                {t.amount}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+
+                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-gray-300">
+                    <span>Live Mono Open Banking Feed</span>
+                    <span className="text-[#C5A059] font-bold">100% Non-Custodial</span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
           </div>
         </motion.div>
       </section>
@@ -431,51 +656,109 @@ export default function Home() {
           variants={staggerContainer}
           className="container mx-auto px-6 lg:px-12"
         >
+          {/* 3-Way Direct Head-to-Head Comparison */}
+          <div className="max-w-6xl mx-auto mb-20">
+            <motion.div variants={fadeIn} className="text-center mb-12">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] block mb-2">
+                Uncompromising Distinction
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] font-serif mb-4">
+                How Àjọṣe Compares to WhatsApp Groups &amp; Solo Apps
+              </h2>
+              <p className="text-[#1F2937]/80 text-base md:text-lg max-w-2xl mx-auto">
+                Why Nigeria&rsquo;s smartest circles choose automated enforcement over manual WhatsApp chaos or solo-saving apps.
+              </p>
+            </motion.div>
+
+            <motion.div variants={fadeIn} className="bg-[#FDFBF7] rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[640px]">
+                  <thead>
+                    <tr className="bg-[#0B3022] text-white">
+                      <th className="p-5 md:p-6 text-sm font-bold w-1/4">Key Capability</th>
+                      <th className="p-5 md:p-6 text-sm font-bold text-gray-300 w-1/4 text-center">
+                        <span className="block text-white">WhatsApp Groups</span>
+                        <span className="text-[10px] text-gray-400 font-normal">Traditional Peer Thrift</span>
+                      </th>
+                      <th className="p-5 md:p-6 text-sm font-bold text-gray-300 w-1/4 text-center">
+                        <span className="block text-white">Solo Apps</span>
+                        <span className="text-[10px] text-gray-400 font-normal">Isolated Personal Lock</span>
+                      </th>
+                      <th className="p-5 md:p-6 text-sm font-bold text-[#C5A059] w-1/4 text-center bg-[#072418]">
+                        <span className="block text-[#C5A059]">Àjọṣe Platform</span>
+                        <span className="text-[10px] text-[#C5A059]/80 font-normal">Automated Rotational Engine</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 text-xs md:text-sm">
+                    {[
+                      {
+                        title: "Rotating Lump-Sum Payout",
+                        desc: "Get large capital multiplier on your assigned turn",
+                        whatsapp: { text: "High Default Risk", sub: "People vanish after collecting", status: "warn" },
+                        fintech: { text: "No (Solo Only)", sub: "Save alone with zero leverage", status: "bad" },
+                        ajose: { text: "Automated & Enforced", sub: "Guaranteed turns with identity locks", status: "good" }
+                      },
+                      {
+                        title: "Automated Bank Sweeps",
+                        desc: "Morning direct-debit on contribution date",
+                        whatsapp: { text: "Manual Transfers", sub: "Fake receipt screenshots & drama", status: "bad" },
+                        fintech: { text: "Automated Debit", sub: "Debited into company omnibus pool", status: "neutral" },
+                        ajose: { text: "Direct Open-Banking", sub: "Automated via Mono (NIBSS rail)", status: "good" }
+                      },
+                      {
+                        title: "Defaulter Protection",
+                        desc: "Sanctions when a member misses their turn payment",
+                        whatsapp: { text: "None (Endless Wahala)", sub: "Damaged relationships & lost money", status: "bad" },
+                        fintech: { text: "N/A", sub: "No peer group accountability", status: "neutral" },
+                        ajose: { text: "Credit Score Penalty", sub: "Nationwide blacklist & 15% fine", status: "good" }
+                      },
+                      {
+                        title: "Fund Custody & Safety",
+                        desc: "Where your contributions are held",
+                        whatsapp: { text: "Admin Personal Acct", sub: "Risky phone custody with organizer", status: "bad" },
+                        fintech: { text: "Corporate Omnibus", sub: "Fintech company holds the funds", status: "neutral" },
+                        ajose: { text: "100% Non-Custodial", sub: "Direct pass-through to collector", status: "good" }
+                      },
+                      {
+                        title: "Organizer Monetization",
+                        desc: "Commission for running circles",
+                        whatsapp: { text: "Awkward Deductions", sub: "Manual cuts cause group suspicion", status: "bad" },
+                        fintech: { text: "0% Admin Cut", sub: "Platform keeps all yield & spread", status: "bad" },
+                        ajose: { text: "0–15% Automated Cut", sub: "Verified earnings paid directly to Admin", status: "good" }
+                      }
+                    ].map((row, idx) => (
+                      <tr key={idx} className="hover:bg-amber-50/20 transition-colors">
+                        <td className="p-4 md:p-6 font-bold text-[#0B3022]">
+                          <div>{row.title}</div>
+                          <div className="text-[11px] text-gray-500 font-normal mt-0.5">{row.desc}</div>
+                        </td>
+                        <td className="p-4 md:p-6 text-center text-gray-700 bg-red-50/10">
+                          <span className="font-semibold text-rose-800 text-xs block">{row.whatsapp.text}</span>
+                          <span className="text-[10px] text-gray-500">{row.whatsapp.sub}</span>
+                        </td>
+                        <td className="p-4 md:p-6 text-center text-gray-700">
+                          <span className="font-semibold text-gray-800 text-xs block">{row.fintech.text}</span>
+                          <span className="text-[10px] text-gray-500">{row.fintech.sub}</span>
+                        </td>
+                        <td className="p-4 md:p-6 text-center bg-[#C5A059]/10 border-x border-[#C5A059]/30">
+                          <span className="font-bold text-[#0B3022] text-xs flex items-center justify-center gap-1">
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                            {row.ajose.text}
+                          </span>
+                          <span className="text-[10px] text-[#0B3022]/80 font-medium block mt-0.5">{row.ajose.sub}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
-            {/* Left: Comparison Table */}
+            {/* Left: Pricing Section */}
             <div className="flex flex-col h-full">
-              <motion.div variants={fadeIn} className="mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] mb-4">
-                  Why switch to Àjọṣe?
-                </h2>
-                <p className="text-[#1F2937]/80 text-lg">
-                  Say goodbye to messy spreadsheets and unverified WhatsApp messages.
-                </p>
-              </motion.div>
-
-              <motion.div variants={fadeIn} className="flex-1 bg-[#FDFBF7] rounded-3xl shadow-xl border border-gray-200 overflow-hidden flex flex-col">
-                <div className="grid grid-cols-3 bg-[#0B3022] text-white p-6 md:p-8 font-bold text-sm md:text-base">
-                  <div>Feature</div>
-                  <div className="text-center text-gray-400">Traditional</div>
-                  <div className="text-center text-[#C5A059]">Àjọṣe</div>
-                </div>
-                
-                <div className="flex-1 flex flex-col">
-                  {[
-                    { feature: "Record Keeping", traditional: "Manual", ajo: "Automated" },
-                    { feature: "Turn Assignment", traditional: "Arguments", ajo: "System" },
-                    { feature: "Defaulter Protection", traditional: "None", ajo: "Credit Score" },
-                    { feature: "Payment Tracking", traditional: "Screenshots", ajo: "1-Click Verify" },
-                    { feature: "Admin Stress", traditional: "High", ajo: "Zero" },
-                  ].map((row, i) => (
-                    <div key={i} className={`flex-1 grid grid-cols-3 p-4 md:p-6 border-t border-gray-100 items-center transition-colors hover:bg-[#F4F1EA]/50 ${i % 2 === 0 ? 'bg-[#FDFBF7]' : 'bg-[#FDFBF7]'}`}>
-                      <div className="font-semibold text-[#0B3022] text-sm">{row.feature}</div>
-                      <div className="flex flex-col items-center text-center text-[#1F2937]/70 text-sm">
-                        <X className="w-4 h-4 text-red-400 mb-1" />
-                        {row.traditional}
-                      </div>
-                      <div className="flex flex-col items-center text-center font-bold text-[#0B3022] text-sm">
-                        <Check className="w-4 h-4 text-emerald-500 mb-1" />
-                        {row.ajo}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Right: Pricing Section */}
-            <div className="flex flex-col h-full mt-12 lg:mt-0">
               <motion.div variants={fadeIn} className="mb-8">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] mb-4">
                   Simple, Transparent Pricing
@@ -490,7 +773,7 @@ export default function Home() {
                   <div className="absolute top-0 left-0 w-full h-full bg-[#C5A059]/10"></div>
                   <h3 className="text-2xl font-bold relative z-10">Flexible Circle Plans</h3>
                   <p className="text-[#C5A059] text-xs font-bold uppercase tracking-wider mt-1 relative z-10">
-                    Zero Hidden Fees • Guaranteed Rotations
+                    Zero Hidden Fees &bull; Guaranteed Rotations
                   </p>
                 </div>
                 
@@ -502,11 +785,11 @@ export default function Home() {
                         <span className="text-xs font-bold text-[#0B3022] flex items-center gap-1.5">
                           📅 Monthly Groups
                         </span>
-                        <p className="text-[11px] text-gray-500 mt-0.5">Deducted only on successful payouts</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5">Open-Banking Protection fee &bull; 0% on member debits</p>
                       </div>
                       <div className="text-right">
                         <span className="text-base font-black text-[#0B3022]">2%</span>
-                        <span className="text-[10px] text-gray-400 block font-semibold">Capped at ₦10k</span>
+                        <span className="text-[10px] text-gray-400 block font-semibold">Capped at ₦10k Max</span>
                       </div>
                     </div>
 
@@ -548,11 +831,79 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <Link
-                    href="/signup"
-                    className="w-full inline-flex h-12 items-center justify-center rounded-xl bg-[#0B3022] hover:bg-[#154634] text-sm font-bold text-white shadow-md transition-all mt-6"
-                  >
-                    Create a Group Free
+                  <div className="flex items-center gap-3 mt-6">
+                    <Link
+                      href="/signup"
+                      className="flex-1 inline-flex h-12 items-center justify-center rounded-xl bg-[#0B3022] hover:bg-[#154634] text-sm font-bold text-white shadow-md transition-all"
+                    >
+                      Create a Group Free
+                    </Link>
+                    <Link
+                      href="/pricing"
+                      className="inline-flex h-12 items-center justify-center px-4 rounded-xl border border-gray-300 hover:bg-gray-50 text-sm font-bold text-[#0B3022] transition-all"
+                    >
+                      Full Pricing
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right: Default Protection Protocol Guarantee */}
+            <div className="flex flex-col h-full mt-12 lg:mt-0">
+              <motion.div variants={fadeIn} className="mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] mb-4">
+                  What Happens If Someone Doesn&rsquo;t Pay?
+                </h2>
+                <p className="text-[#1F2937]/80 text-lg">
+                  Every rotational circle is protected by automated enforcement rails.
+                </p>
+              </motion.div>
+
+              <motion.div variants={fadeIn} className="flex-1 bg-white rounded-3xl shadow-xl border-2 border-emerald-600/30 p-6 md:p-8 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold mb-6">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <span>Multi-Layer Default Protection Protocol</span>
+                  </div>
+
+                  <ol className="space-y-4">
+                    <li className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[#0B3022] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#0B3022]">Automated Retry Sweeps</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">If morning sweep fails due to insufficient balance, automatic retry sweeps trigger at 12:00 PM and 6:00 PM.</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[#0B3022] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#0B3022]">Credit Bureau Score Degradation</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">The defaulter&rsquo;s Ajo Credit Score drops by -10 points and automatically freezes them from joining other circles nationwide.</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[#0B3022] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#0B3022]">Automated Fallback Notifications</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Instant 1-click fallback bank transfer link sent directly via SMS and WhatsApp.</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[#0B3022] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#0B3022]">15% Penalty Redistribution</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Late settlement penalties (15%) are distributed directly to compensate the affected circle members.</p>
+                      </div>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
+                  <span className="text-xs text-gray-500 font-medium">Turn by turn, guaranteed.</span>
+                  <Link href="/pricing" className="text-xs font-bold text-[#0B3022] hover:text-[#C5A059] flex items-center gap-1">
+                    <span>Calculate Your Pot Payout</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </motion.div>
@@ -561,118 +912,11 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* App Showcase / UI Carousel */}
-      <section className="w-full py-24 md:py-32 bg-[#FDFBF7] relative z-10 border-t border-gray-200 overflow-hidden">
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-          className="container mx-auto px-6 lg:px-12"
-        >
-          <motion.div variants={fadeIn} className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
-              Everything in one place
-            </h2>
-            <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-lg">
-              A beautifully designed dashboard to manage every aspect of your Ajo group.
-            </p>
-          </motion.div>
-
-          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 items-center">
-            {/* Sidebar Controls */}
-            <div className="lg:w-1/3 flex flex-col gap-4 w-full">
-              {[
-                { icon: LayoutDashboard, title: "Overview Dashboard", desc: "Track total contributions and upcoming payouts at a glance." },
-                { icon: Users, title: "Member Roster", desc: "See exactly whose turn is next and who has already been paid." },
-                { icon: History, title: "Immutable Ledger", desc: "A permanent history of every payment verified by the admin." }
-              ].map((item, i) => (
-                <motion.button
-                  variants={fadeIn}
-                  key={i}
-                  onClick={() => setActiveShowcase(i)}
-                  whileHover={{ scale: 1.02, x: 5 }}
-                  className={`flex flex-col text-left p-6 rounded-2xl border-2 transition-all duration-300 ${activeShowcase === i ? "border-[#0B3022] bg-[#0B3022] text-white shadow-xl" : "border-gray-200 bg-[#F4F1EA] text-[#0B3022] hover:border-[#C5A059]"}`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <item.icon className={`w-5 h-5 ${activeShowcase === i ? "text-[#C5A059]" : "text-[#0B3022]"}`} />
-                    <h3 className="text-lg font-bold">{item.title}</h3>
-                  </div>
-                  <p className={`text-sm leading-relaxed ${activeShowcase === i ? "text-gray-300" : "text-[#1F2937]/70"}`}>{item.desc}</p>
-                </motion.button>
-              ))}
-            </div>
-
-            {/* Showcase Visuals */}
-            <motion.div variants={fadeIn} className="lg:w-2/3 w-full">
-              <div className="bg-[#0B3022] rounded-3xl p-4 md:p-8 shadow-2xl relative min-h-[450px] flex items-center justify-center overflow-hidden border-4 border-gray-900">
-                {/* Mac window dots */}
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                </div>
-
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeShowcase}
-                    initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
-                    transition={{ duration: 0.4 }}
-                    className="w-full max-w-lg mt-8"
-                  >
-                    {activeShowcase === 0 && (
-                      <div className="bg-[#FDFBF7] rounded-xl p-6 flex flex-col gap-4">
-                        <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-                          <h4 className="font-bold text-[#0B3022]">Total Pool</h4>
-                          <span className="text-[#C5A059] font-bold text-xl">₦1,200,000</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-[#F4F1EA] p-4 rounded-lg">
-                            <p className="text-xs text-gray-500 font-bold mb-1">MEMBERS</p>
-                            <p className="text-2xl font-bold text-[#0B3022]">12</p>
-                          </div>
-                          <div className="bg-emerald-50 p-4 rounded-lg">
-                            <p className="text-xs text-emerald-600 font-bold mb-1">NEXT PAYOUT</p>
-                            <p className="text-xl font-bold text-emerald-700">Oct 15</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {activeShowcase === 1 && (
-                      <div className="bg-[#FDFBF7] rounded-xl p-6 flex flex-col gap-3">
-                        {[1, 2, 3].map((_, i) => (
-                          <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 bg-[#F4F1EA]">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-[#0B3022] rounded-full"></div>
-                              <div className="h-4 w-24 bg-gray-300 rounded"></div>
-                            </div>
-                            <div className="h-6 w-16 bg-emerald-100 rounded-full"></div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {activeShowcase === 2 && (
-                      <div className="bg-[#FDFBF7] rounded-xl p-6 flex flex-col gap-3">
-                        <h4 className="font-bold text-[#0B3022] mb-2">Transaction History</h4>
-                        {[1, 2, 3].map((_, i) => (
-                          <div key={i} className="flex items-center justify-between p-3 border-b border-gray-100 last:border-0">
-                            <div>
-                              <p className="font-bold text-sm text-[#0B3022]">Contribution Received</p>
-                              <p className="text-xs text-gray-400">Today, 14:30</p>
-                            </div>
-                            <span className="text-emerald-600 font-bold text-sm">+₦100,000</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
+      {/* Interactive Organizer Revenue Simulator (B2B Engine) */}
+      <section className="w-full py-20 md:py-28 bg-[#FDFBF7] relative z-10 border-t border-gray-200">
+        <div className="container mx-auto px-6 lg:px-12 max-w-6xl">
+          <InteractiveRevenueCalculator showTitle={true} />
+        </div>
       </section>
 
       {/* Security & Trust Section */}
@@ -762,7 +1006,7 @@ export default function Home() {
                 <CountryFlag code="KE" size="xs" />
               </div>
               <span className="text-xs font-bold text-[#0B3022] tracking-wide">
-                Loved Across 14+ Countries &amp; Diaspora Circles
+                Built for Nigerians at Home &amp; Diaspora Circles
               </span>
             </div>
 
