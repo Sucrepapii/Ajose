@@ -45,8 +45,10 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og-image.png",
+        secureUrl: "https://ajose.ng/og-image.png",
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "Àjọṣe — Rotational Thrift Platform",
       },
     ],

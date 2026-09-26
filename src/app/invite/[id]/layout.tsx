@@ -53,8 +53,10 @@ export async function generateMetadata(
       images: [
         {
           url: "/og-image.png",
+          secureUrl: "https://ajose.ng/og-image.png",
           width: 1200,
           height: 630,
+          type: "image/png",
           alt: `Join ${groupName} on Àjọṣe`,
         },
       ],
