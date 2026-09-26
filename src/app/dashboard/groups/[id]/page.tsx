@@ -16,9 +16,11 @@ import {
   Clock,
   Sparkles,
   Building2,
-  EyeOff
+  EyeOff,
+  Coins
 } from "lucide-react";
 import { CopyInviteButton } from "@/components/CopyInviteButton";
+import { OrganizerShareKitModal } from "@/components/OrganizerShareKitModal";
 import { RulesModal } from "@/components/RulesModal";
 import { ProcessPayoutClient } from "@/components/ProcessPayoutClient";
 import { StartCycleClient } from "@/components/StartCycleClient";
@@ -235,7 +237,23 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           )}
         </div>
         
-        <div className="flex items-center gap-2 sm:gap-3 justify-end">
+        <div className="flex items-center gap-2 sm:gap-3 justify-end flex-wrap">
+          {/* Organizer Invite & Share Kit for Admin */}
+          {isAdmin && (
+            <OrganizerShareKitModal 
+              groupId={groupId}
+              groupName={group.name}
+              amount={group.contribution_amount}
+              frequency={group.frequency}
+              maxMembers={group.max_members}
+              joinedCount={contributingMembers.length}
+              minScore={group.min_credit_score ?? 0}
+              adminCommissionPct={group.admin_commission_pct ?? 0}
+              buttonLabel="Invite Kit"
+              variant="primary"
+            />
+          )}
+
           {isAdmin && group.status === 'active' && (
             <>
               <TriggerSweepClient 
@@ -268,6 +286,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           )}
         </div>
       </div>
+
 
       {/* Pending Manual Bank Transfers Alert for Admin */}
       {isAdmin && pendingTransactions.length > 0 && (
@@ -393,6 +412,42 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         </div>
       </div>
 
+      {/* Organizer Commission Earnings Card for Admin */}
+      {isAdmin && (group.admin_commission_pct || 0) > 0 && (
+        <div className="bg-gradient-to-r from-amber-50 to-[#FDFBF7] border border-amber-200/90 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-amber-100/80 border border-amber-200 flex items-center justify-center shrink-0">
+              <Coins className="h-5 w-5 text-amber-700" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="font-bold text-[#0B3022] text-sm">
+                  Your Organizer Commission: {group.admin_commission_pct}%
+                </h4>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-amber-200/60 text-amber-900 px-2 py-0.5 rounded-full">
+                  Admin Compensation
+                </span>
+              </div>
+              <p className="text-xs text-[#1F2937]/75 mt-0.5">
+                You earn approximately <strong>₦{Math.round(((group.admin_commission_pct || 0) / 100) * totalPool).toLocaleString()}</strong> upon round payout for organizing and maintaining this circle.
+              </p>
+            </div>
+          </div>
+          <OrganizerShareKitModal 
+            groupId={groupId} 
+            groupName={group.name} 
+            amount={group.contribution_amount}
+            frequency={group.frequency}
+            maxMembers={group.max_members}
+            joinedCount={contributingMembers.length}
+            minScore={group.min_credit_score ?? 0}
+            adminCommissionPct={group.admin_commission_pct ?? 0}
+            buttonLabel="Invite More"
+            variant="secondary"
+          />
+        </div>
+      )}
+
       {/* Member List Table */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
@@ -406,9 +461,11 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
               frequency={group.frequency}
               maxMembers={group.max_members}
               minScore={group.min_credit_score ?? 0}
+              adminCommissionPct={group.admin_commission_pct ?? 0}
             />
           )}
         </div>
+
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">

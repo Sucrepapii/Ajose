@@ -13,8 +13,11 @@ import {
   Users,
   Coins
 } from "lucide-react";
+import { OrganizerEarningsCalculator } from "@/components/OrganizerEarningsCalculator";
+import { OrganizerShareKitModal } from "@/components/OrganizerShareKitModal";
 
 export default async function DashboardOverview() {
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -205,6 +208,12 @@ export default async function DashboardOverview() {
 
       </div>
 
+      {/* B2B Organizer Engine: Revenue Calculator & Tier Moat */}
+      <OrganizerEarningsCalculator 
+        currentAdminCircles={adminGroupCount} 
+        currentProjectedEarnings={totalAdminEarnings} 
+      />
+
       {/* Active Groups & Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
@@ -233,6 +242,7 @@ export default async function DashboardOverview() {
               activeGroups.map((membership: any) => {
                 const group = membership.groups;
                 const totalPool = group.contribution_amount * group.max_members;
+                const isAdmin = membership.role === 'admin';
                 
                 return (
                   <Link key={membership.id} href={`/dashboard/groups/${group.id}`} className="block bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/50 hover:shadow-md transition-all group">
@@ -242,13 +252,36 @@ export default async function DashboardOverview() {
                           {group.name.substring(0, 1)}
                         </div>
                         <div>
-                          <h4 className="text-lg font-bold text-[#0B3022]">{group.name}</h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-lg font-bold text-[#0B3022]">{group.name}</h4>
+                            {isAdmin && (
+                              <span className="text-[10px] font-black uppercase tracking-wider bg-[#C5A059]/20 text-[#0B3022] border border-[#C5A059]/40 px-2 py-0.5 rounded-full">
+                                Admin
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm text-[#1F2937]/70 font-medium">{group.max_members} Members • <span className="capitalize">{group.frequency}</span></p>
                         </div>
                       </div>
-                      <div className="text-left md:text-right">
-                        <p className="text-lg font-bold text-[#0B3022]">₦{group.contribution_amount.toLocaleString()}<span className="text-sm text-[#1F2937]/50 font-normal">/cycle</span></p>
-                        <p className="text-sm text-[#1F2937]/70 font-medium">Total pool: <span className="font-bold text-[#0B3022]">₦{totalPool.toLocaleString()}</span></p>
+                      <div className="flex flex-row md:flex-col items-center md:items-end justify-between gap-2">
+                        <div className="text-left md:text-right">
+                          <p className="text-lg font-bold text-[#0B3022]">₦{group.contribution_amount.toLocaleString()}<span className="text-sm text-[#1F2937]/50 font-normal">/cycle</span></p>
+                          <p className="text-xs text-[#1F2937]/70 font-medium">Pool: <span className="font-bold text-[#0B3022]">₦{totalPool.toLocaleString()}</span></p>
+                        </div>
+                        {isAdmin && (
+                          <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                            <OrganizerShareKitModal
+                              groupId={group.id}
+                              groupName={group.name}
+                              amount={group.contribution_amount}
+                              frequency={group.frequency}
+                              maxMembers={group.max_members}
+                              adminCommissionPct={group.admin_commission_pct ?? 0}
+                              buttonLabel="Invite Kit"
+                              variant="compact"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                     
@@ -275,6 +308,7 @@ export default async function DashboardOverview() {
                 );
               })
             )}
+
 
           </div>
         </div>
