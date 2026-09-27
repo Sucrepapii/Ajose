@@ -9,7 +9,7 @@ export default function TermsOfServicePage() {
 
         <div className="prose prose-lg max-w-none text-[#1F2937]/90 marker:text-[#0B3022]">
           <p className="lead font-medium">
-            This Terms of Service Agreement ("Agreement") constitutes a legally binding commercial contract between you ("User", "Customer", or "Member") and [Àjọṣe Limited / RC Number] ("Company", "We", "Us", or "Our"), the operator of the Àjọṣe application ("Platform").
+            This Terms of Service Agreement ("Agreement") constitutes a legally binding commercial contract between you ("User", "Customer", or "Member") and Ajose Technologies ("Company", "We", "Us", or "Our"), the operator of the Àjọṣe application ("Platform").
           </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">1. Definitions and Interpretation</h2>
@@ -23,7 +23,7 @@ export default function TermsOfServicePage() {
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">2. Licensing Framework and Operational Capacity</h2>
           <p>
-            2.1. <strong>Payment Infrastructure &amp; Licensing:</strong> Payment processing, debit switching, card transactions, and automated settlement infrastructure on Àjọṣe are powered by <strong>Paylode Services Limited</strong>, operating under a Payment Solution Service Provider (PSSP) license issued and regulated by the Central Bank of Nigeria (CBN). Àjọṣe Technologies Ltd. provides non-custodial rotating credit software. We are <strong>not</strong> a licensed commercial bank, nor are we a deposit-taking Mobile Money Operator (MMO).
+            2.1. <strong>Payment Infrastructure &amp; Licensing:</strong> Payment processing, debit switching, card transactions, and automated settlement infrastructure on Àjọṣe are powered by <strong>Paylode Services Limited</strong>, operating under a Payment Solution Service Provider (PSSP) license issued and regulated by the Central Bank of Nigeria (CBN). Ajose Technologies provides non-custodial rotating credit software. We are <strong>not</strong> a licensed commercial bank, nor are we a deposit-taking Mobile Money Operator (MMO).
           </p>
           <p>
             2.2. <strong>Fund Escrow:</strong> We do not hold, absorb, or leverage User deposits. All customer funds ("Ajo Pots") are securely routed, settled, and escrowed exclusively via regulated commercial partner banks in strict compliance with CBN client-fund segregation guidelines.

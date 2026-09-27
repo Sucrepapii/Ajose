@@ -16,7 +16,9 @@ import {
   Lock, 
   X,
   Users,
-  ExternalLink
+  ExternalLink,
+  Trash2,
+  AlertTriangle
 } from "lucide-react";
 
 export function ProfileSettingsClient({ 
@@ -69,6 +71,34 @@ export function ProfileSettingsClient({
     confirmPin: ""
   });
   const [isPinSubmitting, setIsPinSubmitting] = useState(false);
+
+  // Self-Serve Account Deletion states (Apple App Store Guideline 5.1.1 & NDPA)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText.trim().toUpperCase() !== "DELETE") {
+      toast.error('Please type "DELETE" to confirm.');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    try {
+      const res = await fetch("/api/user/delete", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete account.");
+      }
+      toast.success("Your account has been deleted.");
+      router.push("/signup");
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete account.");
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
@@ -638,6 +668,31 @@ export function ProfileSettingsClient({
         </button>
       </div>
 
+      {/* Danger Zone: Account Deletion (Apple Guideline 5.1.1 & NDPA Compliance) */}
+      <div className="bg-red-950/20 border border-red-900/30 rounded-2xl p-6 sm:p-8 space-y-4 mt-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-red-400 font-bold text-base">
+              <Trash2 className="h-5 w-5" />
+              <span>Delete Account</span>
+            </div>
+            <p className="text-xs text-zinc-400 max-w-xl leading-relaxed">
+              Permanently delete your account, personal records, and credit standing from Àjọṣe. This action is irreversible. You cannot delete your account while you have active commitments in ongoing circles.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setDeleteConfirmText("");
+              setIsDeleteModalOpen(true);
+            }}
+            className="px-4 py-2.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/40 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer text-center"
+          >
+            Delete Account
+          </button>
+        </div>
+      </div>
+
       {/* MODAL 1: Authorize Re-linking Bank Account with PIN */}
       {isRelinkPinModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
@@ -859,6 +914,71 @@ export function ProfileSettingsClient({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: Account Deletion Confirmation Modal (Double Opt-In) */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-zinc-900 border border-red-900/40 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 mx-auto flex items-center justify-center">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-bold text-white">Permanently Delete Account?</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                This will purge your profile, remove verified identity records, delete your Ajo credit score, and erase your notification history.
+                <strong className="text-red-400 block mt-1.5 font-medium">This action is permanent and cannot be undone.</strong>
+              </p>
+            </div>
+
+            <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-2">
+              <label className="block text-xs font-semibold text-zinc-400">
+                To confirm, type <span className="font-mono text-red-400 font-bold">DELETE</span> below:
+              </label>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Type DELETE"
+                className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-red-500"
+              />
+            </div>
+
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={isDeletingAccount || deleteConfirmText.trim().toUpperCase() !== "DELETE"}
+                className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {isDeletingAccount ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4" />
+                    <span>Delete Forever</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

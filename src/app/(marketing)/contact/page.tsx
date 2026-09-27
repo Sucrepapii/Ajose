@@ -61,7 +61,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="text-xl font-black text-[#0B3022] mb-1">Email Support</h4>
-                    <p className="text-[#1F2937]/70 font-medium text-lg">support@ajose.com</p>
+                    <p className="text-[#1F2937]/70 font-medium text-lg">ajoseapp@gmail.com</p>
                   </div>
                 </div>
 
@@ -82,8 +82,8 @@ export default function ContactPage() {
                   <div>
                     <h4 className="text-xl font-black text-[#0B3022] mb-2">Headquarters</h4>
                     <p className="text-[#1F2937]/70 leading-relaxed font-medium text-lg">
-                      14 Financial District,<br />
-                      Victoria Island, Lagos<br />
+                      51 Remi Fani-Kayode Avenue,<br />
+                      GRA, Ikeja, Lagos<br />
                       Nigeria
                     </p>
                   </div>
