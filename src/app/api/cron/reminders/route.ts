@@ -137,11 +137,15 @@ async function handlePreDebitReminders(req: NextRequest) {
         const userName = `${u.first_name || ""} ${u.last_name || ""}`.trim() || u.nickname || "Valued Member";
         const userEmail = u.email;
 
+        const feePct = group.admin_commission_pct || 0;
+        const feeAmount = (group.contribution_amount * feePct) / 100;
+        const totalDebitAmount = group.contribution_amount + feeAmount;
+
         // In-app notification
         await supabase.from("notifications").insert({
           user_id: u.id,
-          title: `⏰ Auto-Debit Tomorrow: ₦${group.contribution_amount.toLocaleString()}`,
-          message: `Your scheduled auto-debit contribution for "${group.name}" is scheduled for tomorrow (${formattedDueDate}). Please ensure your account has sufficient funds.`,
+          title: `⏰ Auto-Debit Tomorrow: ₦${totalDebitAmount.toLocaleString()}`,
+          message: `Your scheduled auto-debit for "${group.name}" is tomorrow (${formattedDueDate}). This includes your base contribution of ₦${group.contribution_amount.toLocaleString()} plus a ${feePct}% platform fee (₦${feeAmount.toLocaleString()}). Please ensure your account is funded.`,
           type: "warning",
         });
 
@@ -152,7 +156,7 @@ async function handlePreDebitReminders(req: NextRequest) {
               to: userEmail,
               userName,
               groupName: group.name,
-              amount: group.contribution_amount,
+              amount: totalDebitAmount,
               dueDate: formattedDueDate,
               frequency: group.frequency || "monthly",
             });
