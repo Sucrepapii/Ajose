@@ -8,7 +8,7 @@ export default async function TransactionsPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/signup");
+    redirect("/login");
   }
 
   const adminClient = createAdminClient();

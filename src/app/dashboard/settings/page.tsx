@@ -38,7 +38,7 @@ export default async function SettingsPage() {
         has_pin: true
       };
     } else {
-      redirect("/signup");
+      redirect("/login");
     }
   } else {
     const { data: profile } = await supabase

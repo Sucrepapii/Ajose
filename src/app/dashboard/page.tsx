@@ -21,7 +21,7 @@ export default async function DashboardOverview() {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/signup");
+    redirect("/login");
   }
 
   // Fetch the user's profile details

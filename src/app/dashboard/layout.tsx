@@ -26,7 +26,7 @@ export default async function DashboardLayout({
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/signup");
+    redirect("/login");
   }
 
   // Get user profile details from public.users table (optional, but good for name/phone)

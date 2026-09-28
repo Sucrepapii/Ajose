@@ -41,7 +41,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/signup");
+    redirect("/login");
   }
 
   const adminClient = createAdminClient();
