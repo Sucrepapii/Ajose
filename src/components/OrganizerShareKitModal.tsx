@@ -43,7 +43,7 @@ export function OrganizerShareKitModal({
   variant = "primary"
 }: OrganizerShareKitModalProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"whatsapp" | "qr" | "links">("whatsapp");
+  const [activeTab, setActiveTab] = useState<"whatsapp" | "qr">("whatsapp");
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedMessage, setCopiedMessage] = useState(false);
 
@@ -69,22 +69,22 @@ export function OrganizerShareKitModal({
   // Formatted WhatsApp Viral Message
   const formatWhatsAppMessage = () => {
     const freqLabel = frequency === "daily" ? "Daily" : frequency === "weekly" ? "Weekly" : "Monthly";
-    return `🇳🇬 *Àjọṣe Rotational Thrift Circle Invitation*
+    return `*Àjọṣe Rotational Thrift Circle Invitation*
 ━━━━━━━━━━━━━━━━━━
-👋 You've been invited by the organizer to join *${groupName}*!
+You have been invited by the organizer to join *${groupName}*.
 
-💰 *Contribution:* ₦${amount.toLocaleString()} / ${freqLabel}
-🎯 *Total Cycle Pot:* ₦${totalPool.toLocaleString()}
-👥 *Open Slots:* ${openSlots} of ${maxMembers} slots remaining
-🔄 *Rotational Model:* Guaranteed direct payout when it's your turn
+*Contribution:* ₦${amount.toLocaleString()} / ${freqLabel}
+*Total Cycle Pot:* ₦${totalPool.toLocaleString()}
+*Open Slots:* ${openSlots} of ${maxMembers} slots remaining
+*Rotational Model:* Guaranteed direct payout when it's your turn
 
-🛡️ *Bank-Grade Security:*
+*Bank-Grade Security:*
 • Direct bank settlement via Mono Open-Banking
 • Verified BVN Identity & Ajo Trust Standing
 • Automated direct debit sweeps — zero manual cash chasing
 • 100% transparent live ledger
 
-👉 *Tap below to reserve your payout slot now:*
+*Tap the link below to reserve your payout slot:*
 ${inviteUrl}`;
   };
 
@@ -160,9 +160,9 @@ ${inviteUrl}`;
 
       {/* Modal Backdrop */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200" onClick={() => setIsOpen(false)}>
           <div 
-            className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-gray-200 flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
+            className="bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-gray-200 flex flex-col max-h-[90vh] mt-10 sm:mt-0 animate-in slide-in-from-bottom-10 sm:zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -203,10 +203,10 @@ ${inviteUrl}`;
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex border-b border-gray-200 bg-gray-50/80 px-4 pt-2 shrink-0">
+            <div className="flex border-b border-gray-200 bg-gray-50/80 px-2 sm:px-4 pt-2 shrink-0">
               <button
                 onClick={() => setActiveTab("whatsapp")}
-                className={`flex-1 py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border-b-2 transition-all cursor-pointer ${
+                className={`flex-1 py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 border-b-2 transition-all cursor-pointer ${
                   activeTab === "whatsapp"
                     ? "border-[#0B3022] text-[#0B3022] bg-white rounded-t-xl shadow-xs"
                     : "border-transparent text-gray-500 hover:text-gray-900"
@@ -217,7 +217,7 @@ ${inviteUrl}`;
               </button>
               <button
                 onClick={() => setActiveTab("qr")}
-                className={`flex-1 py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border-b-2 transition-all cursor-pointer ${
+                className={`flex-1 py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 border-b-2 transition-all cursor-pointer ${
                   activeTab === "qr"
                     ? "border-[#0B3022] text-[#0B3022] bg-white rounded-t-xl shadow-xs"
                     : "border-transparent text-gray-500 hover:text-gray-900"
@@ -225,17 +225,6 @@ ${inviteUrl}`;
               >
                 <QrCode className="h-4 w-4 text-[#C5A059]" />
                 <span>Scan & QR Pass</span>
-              </button>
-              <button
-                onClick={() => setActiveTab("links")}
-                className={`flex-1 py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border-b-2 transition-all cursor-pointer ${
-                  activeTab === "links"
-                    ? "border-[#0B3022] text-[#0B3022] bg-white rounded-t-xl shadow-xs"
-                    : "border-transparent text-gray-500 hover:text-gray-900"
-                }`}
-              >
-                <Copy className="h-4 w-4 text-gray-600" />
-                <span>Quick Links</span>
               </button>
             </div>
 
@@ -245,16 +234,6 @@ ${inviteUrl}`;
               {/* TAB 1: WhatsApp Viral Invite Kit */}
               {activeTab === "whatsapp" && (
                 <div className="space-y-4 animate-in fade-in duration-150">
-                  <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-4 text-xs text-emerald-950 font-medium flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                      <MessageCircle className="h-4 w-4 text-emerald-700" />
-                    </div>
-                    <div>
-                      <strong className="block text-emerald-900 text-sm mb-0.5">High-Converting WhatsApp Template</strong>
-                      Drop this directly into your church group, market union, office clique, or family WhatsApp chat to fill slots instantly.
-                    </div>
-                  </div>
-
                   {/* Message Preview */}
                   <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 font-mono text-[11px] sm:text-xs text-gray-800 whitespace-pre-line leading-relaxed max-h-56 overflow-y-auto select-all">
                     {formatWhatsAppMessage()}
@@ -290,9 +269,9 @@ ${inviteUrl}`;
                 </div>
               )}
 
-              {/* TAB 2: QR Code & Printable Flyer */}
+              {/* TAB 2: QR Code, Direct Link & Share */}
               {activeTab === "qr" && (
-                <div className="space-y-4 animate-in fade-in duration-150 text-center">
+                <div className="space-y-5 animate-in fade-in duration-150 text-center pb-4">
                   <p className="text-xs text-[#1F2937]/80 font-medium">
                     Have members scan this code with their smartphone camera at meetings, market stalls, or events to join instantly.
                   </p>
@@ -302,7 +281,7 @@ ${inviteUrl}`;
                     <img 
                       src={qrCodeUrl} 
                       alt={`QR code for ${groupName}`} 
-                      className="w-48 h-48 sm:w-56 sm:h-56 mx-auto rounded-xl"
+                      className="w-40 h-40 sm:w-48 sm:h-48 mx-auto rounded-xl"
                     />
                     <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-center gap-1.5 text-xs font-bold text-[#0B3022]">
                       <ShieldCheck className="w-4 h-4 text-emerald-600" />
@@ -310,32 +289,9 @@ ${inviteUrl}`;
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
-                    <button
-                      onClick={handleCopyLink}
-                      className="w-full sm:w-auto py-2.5 px-5 bg-[#0B3022] hover:bg-[#154634] text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      {copiedLink ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                      <span>{copiedLink ? "Link Copied!" : "Copy Target URL"}</span>
-                    </button>
-                    <a
-                      href={qrCodeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full sm:w-auto py-2.5 px-5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      <span>Save QR Image</span>
-                    </a>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 3: Direct Link & Multi-Channel */}
-              {activeTab === "links" && (
-                <div className="space-y-4 animate-in fade-in duration-150">
-                  <div>
-                    <label className="block text-xs font-bold text-[#0B3022] mb-1 uppercase tracking-wider">
+                  {/* Direct Link */}
+                  <div className="text-left mt-2">
+                    <label className="block text-xs font-bold text-[#0B3022] mb-1.5 uppercase tracking-wider">
                       Direct Circle Invite Link
                     </label>
                     <div className="flex items-center gap-2">
@@ -349,60 +305,21 @@ ${inviteUrl}`;
                         onClick={handleCopyLink}
                         className="py-2.5 px-4 bg-[#0B3022] hover:bg-[#154634] text-white text-xs font-bold rounded-xl transition-all shadow-xs shrink-0 cursor-pointer"
                       >
-                        {copiedLink ? "Copied!" : "Copy"}
+                        {copiedLink ? "Copied!" : "Copy Link"}
                       </button>
                     </div>
                   </div>
 
-                  <div className="pt-2">
-                    <span className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
-                      Other Share Channels
-                    </span>
-                    <div className="grid grid-cols-3 gap-2">
-                      <a
-                        href={`https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent(`Join our verified Àjọ circle "${groupName}" on Àjọṣe!`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 text-xs font-bold flex flex-col items-center justify-center gap-1 transition-colors"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        <span>Telegram</span>
-                      </a>
-
-                      <a
-                        href={`sms:?body=${encodeURIComponent(`Join our verified Àjọ circle "${groupName}" on Àjọṣe: ${inviteUrl}`)}`}
-                        className="p-3 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl border border-amber-200 text-xs font-bold flex flex-col items-center justify-center gap-1 transition-colors"
-                      >
-                        <Send className="h-4 w-4" />
-                        <span>SMS / Text</span>
-                      </a>
-
-                      <a
-                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Join my verified rotational thrift circle "${groupName}" on @ajose_app! Automated direct debits via Mono Open-Banking: ${inviteUrl}`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-3 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 rounded-xl border border-zinc-200 text-xs font-bold flex flex-col items-center justify-center gap-1 transition-colors"
-                      >
-                        <Share2 className="h-4 w-4" />
-                        <span>Twitter / X</span>
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Summary Card */}
-                  <div className="bg-[#FDFBF7] border border-gray-200 rounded-2xl p-4 space-y-2 text-xs">
-                    <div className="flex justify-between text-gray-600 font-medium">
-                      <span>Circle Frequency:</span>
-                      <strong className="text-[#0B3022] capitalize">{frequency}</strong>
-                    </div>
-                    <div className="flex justify-between text-gray-600 font-medium">
-                      <span>Per Member Contribution:</span>
-                      <strong className="text-[#0B3022]">₦{amount.toLocaleString()}</strong>
-                    </div>
-                    <div className="flex justify-between text-gray-600 font-medium">
-                      <span>Capacity:</span>
-                      <strong className="text-[#0B3022]">{joinedCount} of {maxMembers} filled</strong>
-                    </div>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
+                    <a
+                      href={qrCodeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 px-5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      <span>Save QR Image</span>
+                    </a>
                   </div>
                 </div>
               )}

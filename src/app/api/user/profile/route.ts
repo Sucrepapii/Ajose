@@ -26,16 +26,22 @@ export async function GET() {
       .eq("id", user.id)
       .maybeSingle();
 
+    const userMeta = user.user_metadata || {};
+    
     const mergedProfile = {
-      ...(user.user_metadata || {}),
+      ...userMeta,
       ...(dbUser || {}),
+      first_name: dbUser?.first_name || userMeta.first_name || "",
+      last_name: dbUser?.last_name || userMeta.last_name || "",
+      nickname: dbUser?.nickname || userMeta.nickname || "",
+      phone: dbUser?.phone || userMeta.phone || "",
       id: user.id,
       email: user.email,
       bank_name: dbUser?.bank_name ?? null,
       account_number: dbUser?.account_number ?? null,
       account_name: dbUser?.account_name ?? null,
       bvn_verified: Boolean(dbUser?.bvn_verified),
-      has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash)
+      has_pin: Boolean(userMeta.has_pin || userMeta.pin_hash)
     };
 
     return NextResponse.json({ success: true, profile: mergedProfile });

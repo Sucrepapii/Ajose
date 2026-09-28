@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -47,6 +47,21 @@ export function ProfileSettingsClient({
     guarantor_phone: initialProfile?.guarantor_phone || "",
     guarantor_relationship: initialProfile?.guarantor_relationship || "Brother"
   });
+
+  const [initialData, setInitialData] = useState(formData);
+  const isDirty = JSON.stringify(formData) !== JSON.stringify(initialData);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   // Verified Bank details (Strictly synchronized with Identity & Bank Verification / Mono)
   const isBankVerified = Boolean(initialProfile?.bvn_verified && initialProfile?.bank_name);
@@ -170,6 +185,7 @@ export function ProfileSettingsClient({
       }
 
       toast.success(data.message || "Profile & Next of Kin records saved successfully!");
+      setInitialData(formData);
       router.refresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to update profile.");

@@ -47,16 +47,23 @@ export default async function SettingsPage() {
       .eq('id', user.id)
       .maybeSingle();
 
+    const userMeta = user.user_metadata || {};
+    const dbProfile = profile || {};
+
     currentProfile = {
-      ...(user.user_metadata || {}),
-      ...(profile || {}),
+      ...userMeta,
+      ...dbProfile,
+      first_name: dbProfile.first_name || userMeta.first_name || "",
+      last_name: dbProfile.last_name || userMeta.last_name || "",
+      nickname: dbProfile.nickname || userMeta.nickname || "",
+      phone: dbProfile.phone || userMeta.phone || "",
       id: user.id,
       email: user.email,
-      bank_name: profile?.bank_name ?? null,
-      account_number: profile?.account_number ?? null,
-      account_name: profile?.account_name ?? null,
-      bvn_verified: Boolean(profile?.bvn_verified),
-      has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash)
+      bank_name: dbProfile.bank_name ?? null,
+      account_number: dbProfile.account_number ?? null,
+      account_name: dbProfile.account_name ?? null,
+      bvn_verified: Boolean(dbProfile.bvn_verified),
+      has_pin: Boolean(userMeta.has_pin || userMeta.pin_hash)
     };
 
     // Query user's actual group memberships to compute real trust statistics
