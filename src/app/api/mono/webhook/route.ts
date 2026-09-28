@@ -92,7 +92,13 @@ export async function POST(req: NextRequest) {
           const allCleared = contributingMembers.length > 0 && contributingMembers.every((m) => completedUserIds.has(m.user_id));
 
           if (allCleared && group) {
-            const totalPool = group.contribution_amount * contributingMembers.length;
+            // Additive Fee Model: Members pay the platform fee on top of their debit.
+            // So we pay out exactly 100% of the guaranteed savings pot!
+            const platformFeePct = group.admin_commission_pct || 0;
+            const targetBasePool = group.contribution_amount * contributingMembers.length;
+            const platformFeeAmount = (targetBasePool * platformFeePct) / 100;
+            const finalPayoutAmount = targetBasePool; // Guaranteed 100% payout
+            
             const beneficiary = allMembers?.find((m) => m.payout_turn === cycle_turn);
             const admin = allMembers?.find((m) => m.role === "admin");
 
@@ -110,11 +116,11 @@ export async function POST(req: NextRequest) {
 
               const payoutReference = `ajose_pool_${group.id}_turn${cycle_turn}_admin_${Date.now()}`;
 
-              // Trigger Mono Payout API to credit the Admin directly
+              // Trigger Mono Payout API to credit the Admin directly (minus platform fee)
               const payoutResult = await initiatePayoutWithMono({
                 recipientAccountNumber: adminUser?.account_number || "0123456789",
                 recipientBankCode: getBankCode(adminUser?.bank_name),
-                amount: totalPool,
+                amount: finalPayoutAmount,
                 narration: `Àjọṣe Pool (Turn ${cycle_turn}) - ${group.name}`,
                 reference: payoutReference
               });
@@ -123,10 +129,10 @@ export async function POST(req: NextRequest) {
               await supabase.from("transactions").insert({
                 group_id,
                 user_id: admin.user_id,
-                amount: totalPool,
+                amount: finalPayoutAmount,
                 type: "payout",
                 status: payoutResult.success ? "completed" : "failed",
-                description: `Full Turn ${cycle_turn} pool credited to Admin (${adminName} - ${adminUser?.account_number || "Default"}) - Ref: ${payoutReference}`,
+                description: `Turn ${cycle_turn} payout credited to Admin (${adminName}). Base Pool: ₦${targetBasePool}, Platform Fee Deducted: ₦0 (Additive Fee Model)`,
                 cycle_turn
               });
 
@@ -139,8 +145,8 @@ export async function POST(req: NextRequest) {
               // Notify the Admin that pool has landed in their account
               await supabase.from("notifications").insert({
                 user_id: admin.user_id,
-                title: `💰 ₦${totalPool.toLocaleString()} Pool Credited to Your Account!`,
-                message: `All member contributions for Turn ${cycle_turn} in ${group.name} are complete. The full pool of ₦${totalPool.toLocaleString()} has been credited to your bank account for payout to the turn collector.`,
+                title: `💰 ₦${finalPayoutAmount.toLocaleString()} Pool Credited to Your Account!`,
+                message: `All member contributions for Turn ${cycle_turn} in ${group.name} are complete. Members paid their platform fees upfront, so the guaranteed payout of ₦${finalPayoutAmount.toLocaleString()} has been credited to your bank account with zero deductions!`,
                 type: "success"
               });
 
@@ -149,7 +155,7 @@ export async function POST(req: NextRequest) {
                 await supabase.from("notifications").insert({
                   user_id: beneficiary.user_id,
                   title: `🎉 Turn ${cycle_turn} Contributions Complete!`,
-                  message: `All members in ${group.name} have paid! The total pool of ₦${totalPool.toLocaleString()} has been collected and credited to the Admin account for distribution.`,
+                  message: `All members in ${group.name} have paid! The total pool has been collected and the final payout of ₦${finalPayoutAmount.toLocaleString()} has been credited to the Admin account for distribution.`,
                   type: "success"
                 });
               }

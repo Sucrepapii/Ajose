@@ -11,26 +11,28 @@ export function MemberFeeCalculator() {
   const [contribution, setContribution] = useState<number>(50000);
   const [members, setMembers] = useState<number>(10);
 
-  // Calculations
   const totalPot = contribution * members;
   
-  let fee = 0;
+  let totalFee = 0;
   let feeDescription = "";
   
   if (schedule === "MONTHLY") {
-    // 2% standard capped at 10,000
-    fee = Math.min(totalPot * 0.02, 10000);
+    // 2% standard capped at 10,000 total
+    totalFee = Math.min(totalPot * 0.02, 10000);
     feeDescription = totalPot * 0.02 > 10000 ? "2% Capped at ₦10,000 Max" : "2% Open-Banking Protection Fee";
   } else if (schedule === "WEEKLY") {
-    fee = 300;
-    feeDescription = "₦300 Open-Banking Sweep Fee";
+    totalFee = 300 * members; // Changed to per-member logic, or keep original 300 total? Let's just use the original total fee.
+    feeDescription = "₦300 total Open-Banking Sweep Fee";
+    totalFee = 300;
   } else {
-    fee = 100;
-    feeDescription = "₦100 Micro-Thrift Processing Fee";
+    totalFee = 100;
+    feeDescription = "₦100 total Micro-Thrift Processing Fee";
   }
 
-  const netPayout = Math.max(0, totalPot - fee);
-  const effectivePercentage = totalPot > 0 ? ((fee / totalPot) * 100).toFixed(2) : "0";
+  const memberFee = totalFee / members;
+  const memberTotalDebit = contribution + memberFee;
+  const netPayout = totalPot; // Additive model: Payout is exactly the base pot!
+  const effectivePercentage = totalPot > 0 ? ((totalFee / totalPot) * 100).toFixed(2) : "0";
 
   return (
     <div className="bg-[#0B3022] rounded-3xl p-6 sm:p-10 border-2 border-[#C5A059]/40 text-white shadow-2xl relative overflow-hidden">
@@ -177,22 +179,22 @@ export function MemberFeeCalculator() {
           <div>
             <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
               <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                Gross Pool Collected
+                Total Member Debit (Base + Fee)
               </span>
-              <span className="font-mono text-base font-black text-gray-700">
-                ₦{totalPot.toLocaleString()}
+              <span className="font-mono text-base font-black text-rose-600">
+                ₦{memberTotalDebit.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} /saver
               </span>
             </div>
 
             <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-500 block">
-                  Automation &amp; Protection
+                  Platform Automation Fee
                 </span>
-                <span className="text-[10px] text-gray-400 font-semibold">{feeDescription}</span>
+                <span className="text-[10px] text-gray-400 font-semibold">{feeDescription} (Added on top)</span>
               </div>
-              <span className="font-mono text-base font-black text-rose-600">
-                -₦{fee.toLocaleString()}
+              <span className="font-mono text-base font-black text-gray-500">
+                +₦{totalFee.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}
               </span>
             </div>
 
@@ -200,17 +202,17 @@ export function MemberFeeCalculator() {
             <div className="p-4 rounded-xl bg-[#0B3022]/5 border border-[#0B3022]/10 mb-6">
               <div className="flex justify-between items-center mb-1">
                 <span className="text-xs font-black uppercase tracking-wider text-[#0B3022]">
-                  Net Take-Home Payout
+                  Guaranteed Take-Home Payout
                 </span>
                 <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
-                  {effectivePercentage}% effective fee
+                  Zero deductions!
                 </span>
               </div>
               <div className="font-mono text-3xl sm:text-4xl font-black text-[#0B3022] tracking-tight">
                 ₦{netPayout.toLocaleString()}
               </div>
               <p className="text-[11px] text-gray-600 mt-1">
-                Disbursed straight to your verified Nigerian bank account on your scheduled turn.
+                The exact target savings pot! Disbursed straight to the verified bank account.
               </p>
             </div>
           </div>
