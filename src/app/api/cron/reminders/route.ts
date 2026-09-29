@@ -145,7 +145,7 @@ async function handlePreDebitReminders(req: NextRequest) {
         // In-app notification
         await supabase.from("notifications").insert({
           user_id: u.id,
-          title: `⏰ Auto-Debit Tomorrow: ₦${totalDebitAmount.toLocaleString()}`,
+          title: `Auto-Debit Tomorrow: ₦${totalDebitAmount.toLocaleString()}`,
           message: `Your scheduled auto-debit for "${group.name}" is tomorrow (${formattedDueDate}). This includes your base contribution of ₦${group.contribution_amount.toLocaleString()} plus a ${feePct}% platform fee (₦${feeAmount.toLocaleString()}). Please ensure your account is funded.`,
           type: "warning",
         });
