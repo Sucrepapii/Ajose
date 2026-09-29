@@ -62,6 +62,7 @@ export function MarketingFooter() {
               <li><Link href="/terms" className="text-gray-400 hover:text-[#C5A059] transition-colors">Terms of Service</Link></li>
               <li><Link href="/privacy" className="text-gray-400 hover:text-[#C5A059] transition-colors">Privacy Policy</Link></li>
               <li><Link href="/cookies" className="text-gray-400 hover:text-[#C5A059] transition-colors">Cookie Policy</Link></li>
+              <li><Link href="/security" className="text-gray-400 hover:text-[#C5A059] transition-colors">Security</Link></li>
             </ul>
           </div>
           
@@ -83,12 +84,6 @@ export function MarketingFooter() {
                 Mono Direct Debit
               </span>
             </div>
-          </div>
-          <div className="flex items-center gap-6 text-xs text-gray-400">
-            <Link href="/privacy" className="hover:text-[#C5A059] transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-[#C5A059] transition-colors">Terms</Link>
-            <Link href="/security" className="hover:text-[#C5A059] transition-colors">Security</Link>
-            <Link href="/feedback" className="hover:text-[#C5A059] transition-colors">Feedback</Link>
           </div>
         </div>
       </div>

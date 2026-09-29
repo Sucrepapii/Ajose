@@ -190,12 +190,15 @@ export default function Home() {
                 >
                   Start Your Ajo Group
                 </Link>
-                <Link
-                  href="#how-it-works"
-                  className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-md border-2 border-[#C5A059] px-8 text-base font-medium text-[#C5A059] hover:bg-[#C5A059]/10 transition-all"
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-md border-2 border-[#C5A059] px-8 text-base font-medium text-[#C5A059] hover:bg-[#C5A059]/10 transition-all cursor-pointer"
                 >
                   See how it works
-                </Link>
+                </button>
               </motion.div>
 
               {/* Above-The-Fold Regulatory & Compliance Trust Bar */}
@@ -734,15 +737,15 @@ export default function Home() {
                           <div className="text-[11px] text-gray-500 font-normal mt-0.5">{row.desc}</div>
                         </td>
                         <td className="p-4 md:p-6 text-center text-gray-700 bg-red-50/10">
-                          <span className="font-semibold text-rose-800 text-xs block">{row.whatsapp.text}</span>
+                          <span className="font-semibold text-rose-800 block">{row.whatsapp.text}</span>
                           <span className="text-[10px] text-gray-500">{row.whatsapp.sub}</span>
                         </td>
                         <td className="p-4 md:p-6 text-center text-gray-700">
-                          <span className="font-semibold text-gray-800 text-xs block">{row.fintech.text}</span>
+                          <span className="font-semibold text-gray-800 block">{row.fintech.text}</span>
                           <span className="text-[10px] text-gray-500">{row.fintech.sub}</span>
                         </td>
                         <td className="p-4 md:p-6 text-center bg-[#C5A059]/10 border-x border-[#C5A059]/30">
-                          <span className="font-bold text-[#0B3022] text-xs flex items-center justify-center gap-1">
+                          <span className="font-bold text-[#0B3022] flex items-center justify-center gap-1">
                             <Check className="w-3.5 h-3.5 text-emerald-600" />
                             {row.ajose.text}
                           </span>

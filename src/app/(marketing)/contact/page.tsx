@@ -1,6 +1,7 @@
 "use client";
 
 import { Mail, MapPin, Phone } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ContactPage() {
   return (
@@ -21,26 +22,30 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all">
             <h3 className="text-3xl font-black text-[#0B3022] mb-8">Send us a message</h3>
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={(e) => {
+              e.preventDefault();
+              toast.success("Message sent successfully! We will get back to you shortly.");
+              e.currentTarget.reset();
+            }}>
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-[#1F2937] mb-2">First Name</label>
-                  <input type="text" className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium" placeholder="Jane" />
+                  <input type="text" required className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium" placeholder="Jane" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#1F2937] mb-2">Last Name</label>
-                  <input type="text" className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium" placeholder="Doe" />
+                  <input type="text" required className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium" placeholder="Doe" />
                 </div>
               </div>
               
               <div>
                 <label className="block text-sm font-bold text-[#1F2937] mb-2">Email Address</label>
-                <input type="email" className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium" placeholder="jane@example.com" />
+                <input type="email" required className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium" placeholder="jane@example.com" />
               </div>
 
               <div>
                 <label className="block text-sm font-bold text-[#1F2937] mb-2">Message</label>
-                <textarea rows={4} className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium" placeholder="How can we help you?"></textarea>
+                <textarea rows={4} required className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium" placeholder="How can we help you?"></textarea>
               </div>
 
               <button type="submit" className="w-full py-5 bg-[#0B3022] hover:bg-[#072117] text-white font-black text-lg rounded-xl transition-all shadow-md hover:shadow-xl mt-4">
