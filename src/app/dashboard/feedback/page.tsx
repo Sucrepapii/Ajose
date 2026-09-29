@@ -1,14 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
+import { createClient } from "@/utils/supabase/client";
 
 export default function FeedbackPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [category, setCategory] = useState("");
   const [message, setMessage] = useState("");
+  const [userName, setUserName] = useState("Authenticated User");
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    async function fetchUser() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email || "");
+        
+        // Fetch user profile for full name
+        const { data: profile } = await supabase
+          .from("users")
+          .select("first_name, last_name")
+          .eq("id", user.id)
+          .single();
+          
+        if (profile) {
+          setUserName(`${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Authenticated User");
+        }
+      }
+    }
+    fetchUser();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +45,14 @@ export default function FeedbackPage() {
       const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category, message }),
+        body: JSON.stringify({ 
+          category, 
+          message,
+          rating: 5,
+          name: userName,
+          email: userEmail,
+          url: "Dashboard Feedback Page"
+        }),
       });
 
       const data = await res.json();
