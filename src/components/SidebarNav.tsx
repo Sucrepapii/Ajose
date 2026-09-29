@@ -7,7 +7,9 @@ import {
   Users, 
   ArrowRightLeft, 
   Settings,
-  ShieldCheck
+  ShieldCheck,
+  HelpCircle,
+  MessageSquare
 } from "lucide-react";
 
 export function SidebarNav() {
@@ -15,10 +17,12 @@ export function SidebarNav() {
 
   const links = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/groups", label: "My Groups", icon: Users },
-    { href: "/dashboard/transactions", label: "Transactions", icon: ArrowRightLeft },
-    { href: "/dashboard/verify", label: "Verify Identity", icon: ShieldCheck },
-    { href: "/dashboard/settings", label: "Profile & Bank", icon: Settings },
+    { href: "/dashboard/groups", label: "My Groups", icon: Users, tourClass: "tour-desktop-create-group" },
+    { href: "/dashboard/transactions", label: "Transactions", icon: ArrowRightLeft, tourClass: "tour-desktop-transactions" },
+    { href: "/dashboard/verify", label: "Verify Identity", icon: ShieldCheck, tourClass: "tour-desktop-verify" },
+    { href: "/dashboard/settings", label: "Profile & Bank", icon: Settings, tourClass: "tour-desktop-link-bank" },
+    { href: "/dashboard/support", label: "Help & Support", icon: HelpCircle },
+    { href: "/dashboard/feedback", label: "Feedback", icon: MessageSquare },
   ];
 
   return (
@@ -36,7 +40,7 @@ export function SidebarNav() {
           <Link 
             key={link.href} 
             href={link.href} 
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+            className={`${link.tourClass || ""} flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
               isActive 
                 ? "bg-white/10 text-[#C5A059] font-bold" 
                 : "text-white/60 hover:bg-white/5 hover:text-white"

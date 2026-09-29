@@ -47,7 +47,7 @@ export function MobileBottomNav() {
         {/* Tab 2: Circles */}
         <Link 
           href="/dashboard/groups"
-          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all active:scale-90 ${
+          className={`tour-mobile-create-group flex flex-col items-center justify-center flex-1 py-1 transition-all active:scale-90 ${
             isCirclesActive ? "text-[#C5A059]" : "text-white/60 hover:text-white/90"
           }`}
         >
@@ -79,7 +79,7 @@ export function MobileBottomNav() {
         {/* Tab 4: Activity / Ledger */}
         <Link 
           href="/dashboard/transactions"
-          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all active:scale-90 ${
+          className={`tour-mobile-transactions flex flex-col items-center justify-center flex-1 py-1 transition-all active:scale-90 ${
             isActivityActive ? "text-[#C5A059]" : "text-white/60 hover:text-white/90"
           }`}
         >
@@ -97,7 +97,7 @@ export function MobileBottomNav() {
         {/* Tab 5: Account / Settings */}
         <Link 
           href="/dashboard/settings"
-          className={`flex flex-col items-center justify-center flex-1 py-1 transition-all active:scale-90 ${
+          className={`tour-mobile-link-bank tour-mobile-verify flex flex-col items-center justify-center flex-1 py-1 transition-all active:scale-90 ${
             isSettingsActive ? "text-[#C5A059]" : "text-white/60 hover:text-white/90"
           }`}
         >

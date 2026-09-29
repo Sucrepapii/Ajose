@@ -15,6 +15,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { MobileDashboardHeader } from "@/components/MobileDashboardHeader";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { AutoLogout } from "@/components/AutoLogout";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import Image from "next/image";
 
 export default async function DashboardLayout({
@@ -48,6 +49,7 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-[#FDFBF7] flex flex-col md:flex-row font-sans text-[#1F2937] relative">
       <AutoLogout />
+      <OnboardingTour />
       {/* Sidebar for Desktop */}
       <aside className="w-64 bg-[#0B3022] border-r border-[#0B3022]/10 hidden md:flex flex-col shadow-xl z-20">
         <div className="h-20 flex items-center px-6 border-b border-white/10">
