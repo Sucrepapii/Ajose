@@ -8,7 +8,6 @@ import {
   MoreVertical,
   User
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 
 export const dynamic = 'force-dynamic';
 
@@ -130,7 +129,7 @@ export default async function AdminFeedbackPage() {
                       {getStatusBadge(item.status)}
                     </td>
                     <td className="px-6 py-4 text-gray-500 text-xs font-medium">
-                      {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
+                      {new Date(item.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button className="text-gray-400 hover:text-gray-700 transition-colors p-1 rounded-md hover:bg-gray-100">
