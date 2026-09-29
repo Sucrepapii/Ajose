@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Joyride, STATUS } from "react-joyride";
-import type { Step, CallBackProps } from "react-joyride";
+import type { Step, EventData } from "react-joyride";
 
 export function OnboardingTour() {
   const [run, setRun] = useState(false);
@@ -63,7 +63,7 @@ export function OnboardingTour() {
     }
   ];
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data: EventData) => {
     const { status } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
@@ -81,7 +81,7 @@ export function OnboardingTour() {
       showProgress
       showSkipButton
       hideCloseButton={true}
-      callback={handleJoyrideCallback}
+      onEvent={handleJoyrideCallback}
       styles={{
         options: {
           primaryColor: "#0B3022",
