@@ -59,7 +59,7 @@ export function OnboardingTour() {
       title: "Track Activity",
       content: "Monitor all your automated contributions and incoming payouts here in real-time.",
       placement: "top",
-      disableBeacon: true,
+      skipBeacon: true,
     }
   ];
 
@@ -78,18 +78,17 @@ export function OnboardingTour() {
       steps={steps}
       run={run}
       continuous
-      showProgress
-      showSkipButton
-      hideCloseButton={true}
       onEvent={handleJoyrideCallback}
+      options={{
+        primaryColor: "#0B3022",
+        textColor: "#1F2937",
+        backgroundColor: "#FDFBF7",
+        arrowColor: "#FDFBF7",
+        width: 320,
+        showProgress: true,
+        buttons: ['back', 'primary', 'skip'],
+      }}
       styles={{
-        options: {
-          primaryColor: "#0B3022",
-          textColor: "#1F2937",
-          backgroundColor: "#FDFBF7",
-          arrowColor: "#FDFBF7",
-          width: 320,
-        },
         tooltip: {
           borderRadius: '16px',
           padding: '24px 16px',
@@ -105,7 +104,7 @@ export function OnboardingTour() {
           color: '#4B5563',
           padding: '12px 0',
         },
-        buttonNext: {
+        buttonPrimary: {
           backgroundColor: "#C5A059",
           color: "#0B3022",
           fontWeight: "800",
