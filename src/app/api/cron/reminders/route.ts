@@ -45,7 +45,8 @@ async function handlePreDebitReminders(req: NextRequest) {
         frequency,
         current_turn,
         status,
-        admin_id
+        admin_id,
+        admin_commission_pct
       `)
       .eq("status", "active");
 
