@@ -26,76 +26,14 @@ workflows:
           set -euo pipefail
           mkdir -p /tmp/signing
 
+          # Decode P12 (cert + private key)
           printf '%s' "$CM_P12_BASE64" | base64 -d > /tmp/signing/signing.p12
 
-          python3 - << 'PYEOF' 2>&1
-          import base64, json, time, urllib.request, urllib.error, os, sys
-          from cryptography.hazmat.primitives.serialization import load_pem_private_key
-          from cryptography.hazmat.primitives.asymmetric.ec import ECDSA
-          from cryptography.hazmat.primitives.hashes import SHA256
-          from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
-          key_pem = os.environ.get('APP_STORE_CONNECT_PRIVATE_KEY', '').strip().replace('\\n', '\n')
-          key_id  = os.environ.get('APP_STORE_CONNECT_KEY_IDENTIFIER', '')
-          issuer  = os.environ.get('APP_STORE_CONNECT_ISSUER_ID', '')
-          bundle_id = os.environ.get('BUNDLE_ID', '')
-          cert_id = os.environ.get('CM_SIGNING_CERT_ID', '')
-          if not all([key_pem, key_id, issuer, bundle_id, cert_id]):
-              print('ERROR: missing env vars'); sys.exit(1)
-          def b64url(b):
-              if isinstance(b, str): b = b.encode()
-              return base64.urlsafe_b64encode(b).rstrip(b'=').decode()
-          pk = load_pem_private_key(key_pem.encode(), password=None)
-          now = int(time.time())
-          hdr = b64url(json.dumps({'alg':'ES256','kid':key_id,'typ':'JWT'}))
-          pld = b64url(json.dumps({'iss':issuer,'iat':now,'exp':now+1200,'aud':'appstoreconnect-v1'}))
-          msg = (hdr+'.'+pld).encode()
-          sig = pk.sign(msg, ECDSA(SHA256()))
-          r, s = decode_dss_signature(sig)
-          TOKEN = hdr+'.'+pld+'.'+b64url(r.to_bytes(32,'big')+s.to_bytes(32,'big'))
-          H = {'Authorization':'Bearer '+TOKEN, 'Content-Type':'application/json'}
-          def api(method, path, body=None):
-              data = json.dumps(body).encode() if body else None
-              req = urllib.request.Request('https://api.appstoreconnect.apple.com'+path,
-                    method=method, data=data, headers=H)
-              try:
-                  with urllib.request.urlopen(req) as rsp:
-                      b = rsp.read(); return (json.loads(b) if b else {}), rsp.status
-              except urllib.error.HTTPError as e:
-                  b = e.read(); return (json.loads(b) if b else {}), e.code
-          print(f'Using stored cert: {cert_id}')
-          resp, _ = api('GET', f'/v1/bundleIds?filter[identifier]={bundle_id}&limit=5')
-          bundles = resp.get('data', [])
-          if not bundles:
-              print(f'ERROR: bundle {bundle_id} not found'); sys.exit(1)
-          bundle_res_id = bundles[0]['id']
-          print(f'Bundle resource ID: {bundle_res_id}')
-          safe_name = bundle_id.replace('.', '-')
-          name_prefix = f'CM-{safe_name}-'
-          resp, _ = api('GET', '/v1/profiles?filter[profileType]=IOS_APP_STORE&limit=50')
-          for p in resp.get('data', []):
-              if p['attributes'].get('name', '').startswith(name_prefix):
-                  _, st = api('DELETE', f'/v1/profiles/{p["id"]}')
-                  print(f'Deleted profile {p["attributes"].get("name",p["id"])} -> HTTP {st}')
-          time.sleep(3)
-          prof_name = f'{name_prefix}{int(time.time())}'
-          prof_body = {'data':{'type':'profiles',
-              'attributes':{'name':prof_name,'profileType':'IOS_APP_STORE'},
-              'relationships':{
-                  'bundleId':{'data':{'type':'bundleIds','id':bundle_res_id}},
-                  'certificates':{'data':[{'type':'certificates','id':cert_id}]}
-              }
-          }}
-          prof_resp, prof_status = api('POST', '/v1/profiles', prof_body)
-          if prof_status not in (200, 201):
-              print(f'ERROR creating profile: {prof_status}: {prof_resp}'); sys.exit(1)
-          prof_id = prof_resp['data']['id']
-          prof_bytes = base64.b64decode(prof_resp['data']['attributes']['profileContent'])
-          print(f'Created profile: {prof_id}')
-          profiles_dir = os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles')
-          os.makedirs(profiles_dir, exist_ok=True)
-          with open(os.path.join(profiles_dir, f'{prof_id}.mobileprovision'), 'wb') as f: f.write(prof_bytes)
-          print('=== Ajose signing setup complete ===')
-          PYEOF
+          # Install pre-generated provisioning profile (no ASC API call needed)
+          PROFILES_DIR=~/Library/MobileDevice/Provisioning\ Profiles
+          mkdir -p "$PROFILES_DIR"
+          printf '%s' "$CM_AJOSE_PROFILE_B64" | base64 -d > "$PROFILES_DIR/ajose-appstore.mobileprovision"
+          echo "=== Provisioning profile installed ==="
 
           keychain initialize
           keychain add-certificates \
