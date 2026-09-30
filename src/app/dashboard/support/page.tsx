@@ -1,6 +1,6 @@
 "use client";
 
-import { HelpCircle, Mail, MessageSquare, Phone } from "lucide-react";
+import { HelpCircle, Mail, MessageSquare, MessageCircle } from "lucide-react";
 
 export default function SupportPage() {
   const faqs = [
@@ -45,12 +45,12 @@ export default function SupportPage() {
             </div>
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 rounded-full bg-[#C5A059]/10 flex items-center justify-center shrink-0">
-                <Phone className="w-5 h-5 text-[#C5A059]" />
+                <MessageCircle className="w-5 h-5 text-[#C5A059]" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-gray-900">Phone Support</h3>
+                <h3 className="text-sm font-bold text-gray-900">WhatsApp Support</h3>
                 <p className="text-xs text-gray-500 mb-1">Mon-Fri, 9am - 5pm</p>
-                <a href="tel:0800AJOSE" className="text-sm text-[#0B3022] font-semibold hover:underline">0800 AJOSE (Toll Free)</a>
+                <a href="https://wa.me/2348125225352" target="_blank" rel="noopener noreferrer" className="text-sm text-[#0B3022] font-semibold hover:underline">Chat on WhatsApp</a>
               </div>
             </div>
           </div>

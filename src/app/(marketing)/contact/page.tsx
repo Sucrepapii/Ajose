@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ContactPage() {
@@ -70,15 +70,15 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-6 group">
+                <a href="https://wa.me/2348125225352" target="_blank" rel="noopener noreferrer" className="flex items-start gap-6 group hover:cursor-pointer">
                   <div className="w-16 h-16 rounded-2xl bg-[#C5A059]/10 group-hover:bg-[#C5A059]/20 transition-colors flex items-center justify-center shrink-0 border border-[#C5A059]/20">
-                    <Phone className="w-8 h-8 text-[#C5A059]" />
+                    <MessageCircle className="w-8 h-8 text-[#C5A059]" />
                   </div>
                   <div>
-                    <h4 className="text-xl font-black text-[#0B3022] mb-1">Phone</h4>
-                    <p className="text-[#1F2937]/70 font-medium text-lg">+234 (0) 800 AJOSE</p>
+                    <h4 className="text-xl font-black text-[#0B3022] mb-1 group-hover:underline">WhatsApp</h4>
+                    <p className="text-[#1F2937]/70 font-medium text-lg">+234 812 522 5352</p>
                   </div>
-                </div>
+                </a>
 
                 <div className="flex items-start gap-6 group">
                   <div className="w-16 h-16 rounded-2xl bg-[#C5A059]/10 group-hover:bg-[#C5A059]/20 transition-colors flex items-center justify-center shrink-0 border border-[#C5A059]/20">
