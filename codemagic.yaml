@@ -68,8 +68,8 @@ workflows:
           echo "--- publish output ---" >> "$LOG"
           app-store-connect publish \
             --path "$IPA" \
-            --api-key TH9U3Q6N34 \
-            --api-issuer b7d9e967-a2df-47e8-82a2-29287c37db11 \
+            --key-id TH9U3Q6N34 \
+            --issuer-id b7d9e967-a2df-47e8-82a2-29287c37db11 \
             --private-key @file:/tmp/asc_key.p8 >> "$LOG" 2>&1
           UPLOAD_EXIT=$?
           cat "$LOG"
