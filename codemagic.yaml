@@ -57,49 +57,13 @@ workflows:
             -archivePath $CM_BUILD_DIR/App.xcarchive \
             -exportPath $CM_BUILD_DIR/ipa \
             -exportOptionsPlist /Users/builder/export_options.plist | xcpretty
-      - name: Upload to TestFlight
-        script: |
-          set -euo pipefail
-          IPA=$(find "$CM_BUILD_DIR/ipa" -name "*.ipa" | head -1)
-          [ -f "$IPA" ] || { echo "ERROR: IPA not found"; exit 1; }
-          echo "IPA: $IPA"
-
-          # Decode key to file
-          printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
-
-          # Method 1: app-store-connect with env var auth (CLI auto-detects these 3 vars)
-          export APP_STORE_CONNECT_KEY_IDENTIFIER=TH9U3Q6N34
-          export APP_STORE_CONNECT_ISSUER_ID=b7d9e967-a2df-47e8-82a2-29287c37db11
-          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat /tmp/asc_key.p8)"
-          echo "--- codemagic-cli-tools version ---"
-          pip show codemagic-cli-tools 2>/dev/null | head -3 || true
-          echo "--- trying app-store-connect publish (env var auth) ---"
-          if app-store-connect publish --path "$IPA" --testflight; then
-            echo "SUCCESS: uploaded via app-store-connect"
-            exit 0
-          fi
-          echo "app-store-connect failed, falling back to iTMSTransporter"
-
-          # Method 2: iTMSTransporter (bundled with Xcode)
-          ITMS=""
-          for p in \
-            "/usr/local/itms/bin/iTMSTransporter" \
-            "$(xcode-select -p)/usr/bin/iTMSTransporter" \
-            "/Applications/Xcode.app/Contents/SharedFrameworks/ContentDeliveryServices.framework/Versions/A/itms-services/iTMSTransporter/bin/iTMSTransporter"; do
-            [ -x "$p" ] && ITMS="$p" && break
-          done
-          if [ -z "$ITMS" ]; then
-            echo "iTMSTransporter not found; listing Xcode frameworks:"
-            ls "$(xcode-select -p)/../SharedFrameworks/" 2>/dev/null | grep -i content || true
-            exit 1
-          fi
-          echo "iTMSTransporter: $ITMS"
-          mkdir -p ~/.appstoreconnect/private_keys
-          cp /tmp/asc_key.p8 ~/.appstoreconnect/private_keys/AuthKey_TH9U3Q6N34.p8
-          "$ITMS" -m upload -f "$IPA" -apiKey TH9U3Q6N34 -apiIssuer b7d9e967-a2df-47e8-82a2-29287c37db11
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
 
   # ── Android ───────────────────────────────────────────────────────────────
   ajose-android:
