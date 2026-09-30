@@ -36,7 +36,7 @@ workflows:
           from cryptography.hazmat.primitives.asymmetric.ec import ECDSA
           from cryptography.hazmat.primitives.hashes import SHA256
           from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
-          key_pem = os.environ.get('APP_STORE_CONNECT_PRIVATE_KEY', '').strip()
+          key_pem = os.environ.get('APP_STORE_CONNECT_PRIVATE_KEY', '').strip().replace('\\n', '\n')
           key_id  = os.environ.get('APP_STORE_CONNECT_KEY_IDENTIFIER', '')
           issuer  = os.environ.get('APP_STORE_CONNECT_ISSUER_ID', '')
           bundle_id = os.environ.get('BUNDLE_ID', '')
