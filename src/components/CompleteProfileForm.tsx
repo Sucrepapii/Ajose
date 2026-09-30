@@ -6,8 +6,16 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, ArrowRight } from "lucide-react";
 
-export function CompleteProfileForm({ userId }: { userId: string }) {
-  const [formData, setFormData] = useState({ phone: "", bvn: "" });
+export function CompleteProfileForm({ 
+  userId,
+  initialPhone = "",
+  initialBvn = ""
+}: { 
+  userId: string;
+  initialPhone?: string;
+  initialBvn?: string;
+}) {
+  const [formData, setFormData] = useState({ phone: initialPhone, bvn: initialBvn });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const supabase = createClient();
   const router = useRouter();

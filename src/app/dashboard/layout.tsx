@@ -51,7 +51,7 @@ export default async function DashboardLayout({
       <AutoLogout />
       <OnboardingTour />
       {/* Sidebar for Desktop */}
-      <aside className="w-64 bg-[#0B3022] border-r border-[#0B3022]/10 hidden md:flex flex-col shadow-xl z-20">
+      <aside className="w-64 bg-[#0B3022] border-r border-[#0B3022]/10 hidden md:flex flex-col shadow-xl z-50 relative">
         <div className="h-20 flex items-center px-6 border-b border-white/10">
           <div className="relative">
             <Link className="flex items-center gap-3 group relative hover:opacity-90 transition-opacity py-1" href="/">

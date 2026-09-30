@@ -685,14 +685,14 @@ export function ProfileSettingsClient({
       </div>
 
       {/* Danger Zone: Account Deletion (Apple Guideline 5.1.1 & NDPA Compliance) */}
-      <div className="bg-red-950/20 border border-red-900/30 rounded-2xl p-6 sm:p-8 space-y-4 mt-8">
+      <div className="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8 space-y-4 mt-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-red-400 font-bold text-base">
+            <div className="flex items-center gap-2 text-red-600 font-bold text-base">
               <Trash2 className="h-5 w-5" />
               <span>Delete Account</span>
             </div>
-            <p className="text-xs text-zinc-400 max-w-xl leading-relaxed">
+            <p className="text-xs text-red-800/80 max-w-xl leading-relaxed">
               Permanently delete your account, personal records, and credit standing from Àjọṣe. This action is irreversible. You cannot delete your account while you have active commitments in ongoing circles.
             </p>
           </div>
@@ -702,7 +702,7 @@ export function ProfileSettingsClient({
               setDeleteConfirmText("");
               setIsDeleteModalOpen(true);
             }}
-            className="px-4 py-2.5 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/40 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer text-center"
+            className="px-4 py-2.5 bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer text-center"
           >
             Delete Account
           </button>

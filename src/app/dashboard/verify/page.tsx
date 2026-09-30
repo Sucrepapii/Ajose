@@ -31,7 +31,7 @@ export default async function VerifyPage() {
   } else {
     const { data: profile } = await supabase
       .from('users')
-      .select('phone, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
+      .select('phone, bvn, nin, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -58,7 +58,11 @@ export default async function VerifyPage() {
       </div>
 
       {(!currentProfile?.bvn_verified || !currentProfile?.phone) ? (
-        <CompleteProfileForm userId={currentUserId || ""} />
+        <CompleteProfileForm 
+          userId={currentUserId || ""} 
+          initialPhone={currentProfile?.phone || ""}
+          initialBvn={currentProfile?.bvn || ""}
+        />
       ) : (
         <MonoConnectWidget 
           userId={currentUserId || "demo-user"} 
