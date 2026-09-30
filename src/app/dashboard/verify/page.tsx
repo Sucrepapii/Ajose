@@ -29,9 +29,9 @@ export default async function VerifyPage() {
       redirect("/login");
     }
   } else {
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from('users')
-      .select('phone, bvn, nin, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
+      .select('phone, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
       .eq('id', user.id)
       .maybeSingle();
 
