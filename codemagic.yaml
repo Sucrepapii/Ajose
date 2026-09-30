@@ -62,13 +62,14 @@ workflows:
           set -euo pipefail
           IPA=$(ls $CM_BUILD_DIR/ipa/*.ipa | head -1)
           echo "Uploading: $IPA"
-          # Decode the .p8 key for app-store-connect CLI
-          export APP_STORE_CONNECT_PRIVATE_KEY=$(printf '%s' "$CM_ASC_KEY_B64" | base64 -d)
-          export APP_STORE_CONNECT_KEY_IDENTIFIER="TH9U3Q6N34"
-          export APP_STORE_CONNECT_ISSUER_ID="b7d9e967-a2df-47e8-82a2-29287c37db11"
+          # Decode key to file (avoids command-substitution stripping newlines)
+          printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
           app-store-connect publish \
             --path "$IPA" \
-            --enable-testflight
+            --enable-testflight \
+            --key-id "TH9U3Q6N34" \
+            --issuer-id "b7d9e967-a2df-47e8-82a2-29287c37db11" \
+            --private-key "@file:/tmp/asc_key.p8"
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
