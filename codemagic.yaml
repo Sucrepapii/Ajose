@@ -59,20 +59,25 @@ workflows:
             -exportOptionsPlist /Users/builder/export_options.plist | xcpretty
       - name: Upload to TestFlight
         script: |
-          set -euo pipefail
           IPA=$(find "$CM_BUILD_DIR/ipa" -name "*.ipa" | head -1)
           [ -f "$IPA" ] || { echo "IPA not found"; exit 1; }
-          echo "IPA: $IPA"
           printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
-          echo "CLI version: $(pip show codemagic-cli-tools 2>/dev/null | grep ^Version || echo unknown)"
+          LOG=/tmp/asc_upload.log
+          pip show codemagic-cli-tools 2>&1 | grep -E "^(Name|Version)" >> "$LOG" || true
+          which app-store-connect >> "$LOG" 2>&1 || true
+          echo "--- publish output ---" >> "$LOG"
           app-store-connect publish \
             --path "$IPA" \
             --api-key TH9U3Q6N34 \
             --api-issuer b7d9e967-a2df-47e8-82a2-29287c37db11 \
-            --private-key @file:/tmp/asc_key.p8
+            --private-key @file:/tmp/asc_key.p8 >> "$LOG" 2>&1
+          UPLOAD_EXIT=$?
+          cat "$LOG"
+          exit $UPLOAD_EXIT
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
+      - /tmp/asc_upload.log
 
   # ── Android ───────────────────────────────────────────────────────────────
   ajose-android:
