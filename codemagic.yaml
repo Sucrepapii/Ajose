@@ -60,15 +60,20 @@ workflows:
       - name: Upload to TestFlight
         script: |
           set -euo pipefail
-          IPA=$(ls $CM_BUILD_DIR/ipa/*.ipa | head -1)
-          echo "Uploading: $IPA"
+          IPA=$(find "$CM_BUILD_DIR/ipa" -name "*.ipa" | head -1)
+          echo "IPA path: $IPA"
+          [ -f "$IPA" ] || { echo "ERROR: IPA not found"; exit 1; }
           # Decode key to file (avoids command-substitution stripping newlines)
           printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
+          # Show available commands to confirm correct CLI version
+          app-store-connect --help 2>&1 | head -30 || true
+          app-store-connect publish --help 2>&1 | head -30 || true
+          # Upload
           app-store-connect publish \
             --path "$IPA" \
-            --enable-testflight \
-            --key-id "TH9U3Q6N34" \
-            --issuer-id "b7d9e967-a2df-47e8-82a2-29287c37db11" \
+            --testflight \
+            --api-key "TH9U3Q6N34" \
+            --api-issuer "b7d9e967-a2df-47e8-82a2-29287c37db11" \
             --private-key "@file:/tmp/asc_key.p8"
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
