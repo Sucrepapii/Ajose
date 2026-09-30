@@ -57,14 +57,23 @@ workflows:
             -archivePath $CM_BUILD_DIR/App.xcarchive \
             -exportPath $CM_BUILD_DIR/ipa \
             -exportOptionsPlist /Users/builder/export_options.plist | xcpretty
+      - name: Upload to TestFlight
+        script: |
+          set -euo pipefail
+          IPA=$(ls $CM_BUILD_DIR/ipa/*.ipa | head -1)
+          echo "Uploading: $IPA"
+          mkdir -p /tmp/api_keys
+          printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/api_keys/AuthKey_TH9U3Q6N34.p8
+          xcrun altool --upload-app \
+            --type ios \
+            -f "$IPA" \
+            --apiKey "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID" \
+            --private-keys /tmp/api_keys \
+            --show-progress
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-    publishing:
-      app_store_connect:
-        auth: api_key
-        submit_to_testflight: true
-        submit_to_app_store: false
 
   # ── Android ───────────────────────────────────────────────────────────────
   ajose-android:
