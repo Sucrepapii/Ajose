@@ -57,13 +57,22 @@ workflows:
             -archivePath $CM_BUILD_DIR/App.xcarchive \
             -exportPath $CM_BUILD_DIR/ipa \
             -exportOptionsPlist /Users/builder/export_options.plist | xcpretty
+      - name: Upload to TestFlight
+        script: |
+          set -euo pipefail
+          IPA=$(find "$CM_BUILD_DIR/ipa" -name "*.ipa" | head -1)
+          [ -f "$IPA" ] || { echo "IPA not found"; exit 1; }
+          echo "IPA: $IPA"
+          printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
+          echo "CLI version: $(pip show codemagic-cli-tools 2>/dev/null | grep ^Version || echo unknown)"
+          app-store-connect publish \
+            --path "$IPA" \
+            --api-key TH9U3Q6N34 \
+            --api-issuer b7d9e967-a2df-47e8-82a2-29287c37db11 \
+            --private-key @file:/tmp/asc_key.p8
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-    publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
 
   # ── Android ───────────────────────────────────────────────────────────────
   ajose-android:
