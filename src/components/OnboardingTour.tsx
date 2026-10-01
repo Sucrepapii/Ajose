@@ -13,6 +13,9 @@ export function OnboardingTour() {
     const hasSeenTour = localStorage.getItem("ajose_onboarding_tour");
     if (!hasSeenTour) {
       setRun(true);
+      // Set the flag immediately when the tour starts. 
+      // If we wait for the callback and they navigate away midway, it will replay next time!
+      localStorage.setItem("ajose_onboarding_tour", "true");
     }
     
     if (typeof window !== "undefined") {
