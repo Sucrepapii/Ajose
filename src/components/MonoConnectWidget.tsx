@@ -86,9 +86,8 @@ export function MonoConnectWidget({
       }
     }
 
-    // Fallback to simulated bank selector if Connect script is not loaded
-    setStep("select");
-    setIsOpen(true);
+    // If Connect script is not loaded yet (e.g. adblock or bad connection)
+    toast.error("Connecting to secure banking partner... Please try clicking again in a few seconds.");
   };
   
   const handleSelectBank = (bank: typeof BANKS[0]) => {
@@ -418,7 +417,7 @@ export function MonoConnectWidget({
       {/* Official Mono Connect SDK script */}
       <Script 
         src="https://connect.withmono.com/connect.js" 
-        strategy="lazyOnload" 
+        strategy="afterInteractive" 
       />
     </>
   );
