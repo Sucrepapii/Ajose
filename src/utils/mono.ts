@@ -301,9 +301,26 @@ export async function verifyIdentityWithMono({
           },
           message: "BVN and NIN identity verified via live Mono API.",
         };
+      } else {
+        const errData = await bvnRes.json();
+        console.error("Mono Live API rejected BVN:", errData);
+        return {
+          verified: false,
+          bvnValid: false,
+          ninValid: false,
+          nameMatch: false,
+          message: errData.message || "Mono API rejected the verification. Check your BVN or API Keys.",
+        };
       }
-    } catch (err) {
-      console.warn("Mono identity lookup API error, falling back to sandbox mode:", err);
+    } catch (err: any) {
+      console.error("Mono identity lookup API error:", err);
+      return {
+        verified: false,
+        bvnValid: false,
+        ninValid: false,
+        nameMatch: false,
+        message: err.message || "Network error connecting to Mono Live API.",
+      };
     }
   }
 
