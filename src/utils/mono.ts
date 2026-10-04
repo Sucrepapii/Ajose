@@ -258,7 +258,7 @@ export async function verifyIdentityWithMono({
   lastName?: string;
   phone?: string;
 }): Promise<MonoIdentityVerificationResult> {
-  const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
+  const monoSecretKey = process.env.MONO_LOOKUP_SECRET_KEY || process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
 
   const isBvnValid = Boolean(bvn && /^\d{11}$/.test(bvn));
   const isNinValid = Boolean(!nin || /^\d{11}$/.test(nin));
@@ -274,7 +274,7 @@ export async function verifyIdentityWithMono({
   }
 
   // Live Mono API verification check if secret key is configured
-  if (monoSecretKey && monoSecretKey !== "test_sk_m965s64o22p1sovu3koh") {
+  if (monoSecretKey && !monoSecretKey.startsWith("test_")) {
     try {
       const bvnRes = await fetch("https://api.withmono.com/v3/lookup/bvn", {
         method: "POST",
