@@ -325,19 +325,13 @@ export async function verifyIdentityWithMono({
   }
 
   // Simulated Mono lookup verification for sandbox testing
+  // TEMPORARY DEBUGGING CHECK: Force it to throw an error so we can see what key Vercel is actually using.
   return {
-    verified: true,
-    bvnValid: true,
-    ninValid: true,
-    nameMatch: true,
-    details: {
-      firstName: firstName || "Verified",
-      lastName: lastName || "User",
-      bvn,
-      nin,
-      phone,
-    },
-    message: "Identity (BVN & NIN) successfully verified via Mono Identity Check.",
+    verified: false,
+    bvnValid: false,
+    ninValid: false,
+    nameMatch: false,
+    message: `Vercel is STILL running in test mode! It sees the key: "${monoSecretKey.substring(0, 10)}..." Please make sure the key in Vercel starts with live_sk_`,
   };
 }
 
