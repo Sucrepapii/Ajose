@@ -31,8 +31,21 @@ export function CompleteProfileForm({
     const toastId = toast.loading("Verifying your identity...");
 
     try {
-      // 1. Simulate Mono BVN verification (same as signup)
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // 1. Call actual Mono BVN verification endpoint
+      const res = await fetch("/api/mono/verify-identity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bvn: formData.bvn,
+          phone: formData.phone
+        })
+      });
+      
+      const verificationResult = await res.json();
+      
+      if (!res.ok || !verificationResult.success) {
+        throw new Error(verificationResult.error || "Identity verification failed. Please check your BVN.");
+      }
 
       // 2. Update the user profile
       const { error } = await supabase

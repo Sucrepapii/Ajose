@@ -207,6 +207,7 @@ export default function SignupPage() {
         toast.success("Identity verified via Mono!", { id: monoToastId });
 
         // 3. Register user in Supabase
+
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
