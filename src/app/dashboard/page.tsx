@@ -31,6 +31,10 @@ export default async function DashboardOverview() {
     .eq('id', user.id)
     .single();
 
+  if (!profile?.bvn_verified) {
+    redirect("/dashboard/verify");
+  }
+
   const dbScore = profile?.credit_score;
   const creditScore = (dbScore === null || dbScore === undefined || dbScore === 0) ? 85 : dbScore;
   const isAutoSweep = profile?.auto_sweep_enabled || false;
