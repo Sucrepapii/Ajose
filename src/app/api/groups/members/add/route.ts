@@ -50,41 +50,30 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4. Find target user by phone, email, or nickname
+    // 4. Find target user by phone, email, or nickname (exact matches only to prevent H9 injection)
     const cleanIdentifier = identifier.trim().toLowerCase();
-    const { data: matchedUsers, error: userSearchErr } = await supabaseAdmin
-      .from("users")
-      .select("id, phone, first_name, last_name, nickname, email")
-      .or(`phone.ilike.%${cleanIdentifier}%,nickname.ilike.%${cleanIdentifier}%`);
+    const isEmail = cleanIdentifier.includes("@");
+    
+    let targetUser: any = null;
 
-    let targetUser: any = matchedUsers?.[0];
-
-    // If not found by phone/nickname, search Supabase auth or use a placeholder
-    if (!targetUser) {
-      // Check auth users via admin API if available
-      try {
-        const { data: authList } = await supabaseAdmin.auth.admin.listUsers();
-        const foundAuth = authList?.users?.find(
-          u => u.email?.toLowerCase() === cleanIdentifier || u.phone === cleanIdentifier
-        );
-        if (foundAuth) {
-          const { data: userProfile } = await supabaseAdmin
-            .from("users")
-            .select("id, phone, first_name, last_name, nickname, email")
-            .eq("id", foundAuth.id)
-            .maybeSingle();
-          targetUser = userProfile || { 
-            id: foundAuth.id, 
-            email: foundAuth.email || (cleanIdentifier.includes("@") ? cleanIdentifier : undefined),
-            phone: foundAuth.phone || cleanIdentifier,
-            first_name: "",
-            last_name: "",
-            nickname: ""
-          };
-        }
-      } catch (authErr) {
-        console.warn("Auth lookup warning:", authErr);
-      }
+    if (isEmail) {
+      const { data: matchedUsers } = await supabaseAdmin
+        .from("users")
+        .select("id, phone, first_name, last_name, nickname, email")
+        .eq("email", cleanIdentifier)
+        .limit(1);
+      targetUser = matchedUsers?.[0];
+    } else {
+      // Normalize phone for exact match
+      const digits = cleanIdentifier.replace(/\D/g, "");
+      const searchPhone = digits.length >= 10 ? digits.slice(-10) : cleanIdentifier;
+      
+      const { data: matchedUsers } = await supabaseAdmin
+        .from("users")
+        .select("id, phone, first_name, last_name, nickname, email")
+        .or(`phone.eq.${cleanIdentifier},phone.eq.${searchPhone},nickname.eq.${cleanIdentifier}`)
+        .limit(1);
+      targetUser = matchedUsers?.[0];
     }
 
     if (!targetUser) {

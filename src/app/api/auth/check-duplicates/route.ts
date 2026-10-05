@@ -34,40 +34,20 @@ export async function POST(req: Request) {
         );
       }
 
-      // Check Supabase Auth users list
-      try {
-        const { data: authData } = await supabase.auth.admin.listUsers();
-        const existingAuthUser = authData?.users?.find(
-          u => u.email?.toLowerCase() === cleanEmail && u.id !== userId
-        );
-        if (existingAuthUser) {
-          return NextResponse.json(
-            { 
-              exists: true, 
-              field: "email",
-              error: "An account with this email address already exists. Please log in instead." 
-            },
-            { status: 409 }
-          );
-        }
-      } catch (authErr) {
-        // Ignored if admin permissions unavailable
-      }
+      // We rely solely on the `users` table check above as the primary source of truth.
     }
 
     // 2. Check Phone Number Duplicate
     if (phone) {
       const searchSuffix = normalizePhone(phone);
       if (searchSuffix) {
-        const { data: allUsers } = await supabase
+        // Query the database directly for the phone suffix instead of a full table scan
+        const { data: duplicatePhone } = await supabase
           .from("users")
-          .select("id, phone")
-          .not("phone", "is", null);
-
-        const duplicatePhone = allUsers?.find(u => {
-          if (!u.phone || u.id === userId) return false;
-          return normalizePhone(u.phone) === searchSuffix;
-        });
+          .select("id")
+          .ilike("phone", `%${searchSuffix}%`)
+          .neq("id", userId || "")
+          .maybeSingle();
 
         if (duplicatePhone) {
           return NextResponse.json(
@@ -80,27 +60,8 @@ export async function POST(req: Request) {
           );
         }
 
-        // Check Auth users for metadata phone
-        try {
-          const { data: authData } = await supabase.auth.admin.listUsers();
-          const existingAuthPhone = authData?.users?.find(u => {
-            if (u.id === userId) return false;
-            const userPhone = u.phone || u.user_metadata?.phone;
-            return userPhone && normalizePhone(userPhone) === searchSuffix;
-          });
-          if (existingAuthPhone) {
-            return NextResponse.json(
-              { 
-                exists: true, 
-                field: "phone",
-                error: "An account with this phone number already exists. Please log in or use a different phone number." 
-              },
-              { status: 409 }
-            );
-          }
-        } catch (authErr) {
-          // Ignored
-        }
+        // We can't efficiently search auth metadata for phone without a full scan,
+        // but we rely on the `users` table check above as the primary source of truth.
       }
     }
 

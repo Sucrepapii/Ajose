@@ -110,10 +110,14 @@ export async function reportMemberDefaultToBureaus({
 }) {
   const referenceId = `BUR-DEF-${groupId.slice(0, 4)}-${Math.floor(100000 + Math.random() * 900000)}`;
 
+  // Mask sensitive PII in logs (M3)
+  const maskedBvn = bvn ? `***${bvn.slice(-4)}` : undefined;
+  const maskedNin = nin ? `***${nin.slice(-4)}` : undefined;
+
   console.log(`[CREDIT BUREAU REPORTING] Sent to CRC & FirstCentral:`, {
     referenceId,
-    bvn,
-    nin,
+    bvn: maskedBvn,
+    nin: maskedNin,
     memberName,
     amount: defaultedAmount,
     daysOverdue,
@@ -121,11 +125,16 @@ export async function reportMemberDefaultToBureaus({
     timestamp: new Date().toISOString()
   });
 
+  // Remove simulated success fallback in production (Q2/O9)
+  if (process.env.NODE_ENV === "production" && process.env.PAYMENTS_MODE !== "sandbox") {
+    throw new Error("Credit Bureau reporting integration is not currently live. Cannot process default.");
+  }
+
   return {
     success: true,
     referenceId,
-    bureausReported: ["CRC Credit Bureau", "FirstCentral Credit Bureau", "CreditRegistry"],
+    bureausReported: ["Sandbox Credit Bureau"],
     reportedAt: new Date().toISOString(),
-    message: `Default of ₦${defaultedAmount.toLocaleString()} officially submitted to national credit bureaus.`
+    message: `Default of ₦${defaultedAmount.toLocaleString()} submitted to sandbox tracking.`
   };
 }

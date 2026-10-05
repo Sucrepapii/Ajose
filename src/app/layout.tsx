@@ -15,8 +15,6 @@ const geistMono = Geist_Mono({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
   themeColor: "#0B3022",
 };
@@ -73,13 +71,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body suppressHydrationWarning className="min-h-full flex flex-col bg-zinc-950 text-zinc-50">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-white text-zinc-950">
         <CapacitorListener />
         {children}
         <Toaster 
-          theme="dark" 
+          theme="system" 
           position="bottom-right" 
           richColors 
           toastOptions={{

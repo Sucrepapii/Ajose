@@ -7,7 +7,11 @@ export async function GET(request: Request) {
   try {
     const requestUrl = new URL(request.url);
     const code = requestUrl.searchParams.get("code");
-    const next = requestUrl.searchParams.get("next") ?? "/dashboard";
+    let next = requestUrl.searchParams.get("next") ?? "/dashboard";
+    // Fix H3: Prevent open redirects by ensuring the path is relative and starts with exactly one slash
+    if (!next.startsWith("/") || next.startsWith("//")) {
+      next = "/dashboard";
+    }
 
     if (code) {
       const supabase = await createClient();
@@ -38,11 +42,8 @@ export async function GET(request: Request) {
     // return the user to an error page with instructions
     return NextResponse.redirect(new URL("/login?error=auth_failed", request.url));
   } catch (err: any) {
-    console.error("Auth Callback Crash:", err);
-    return NextResponse.json({ 
-      error: "502 Bad Gateway Intercepted - Server Crash", 
-      message: err.message, 
-      stack: err.stack 
-    }, { status: 500 });
+    console.error("Auth Callback Error:", err);
+    // Fix M2: Return generic error message instead of stack trace
+    return NextResponse.redirect(new URL("/login?error=server_error", request.url));
   }
 }
