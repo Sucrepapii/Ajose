@@ -304,7 +304,7 @@ export function AdminTeamClient({
 
                       {/* Temporary Password & Status */}
                       <td className="px-5 py-4">
-                        {admin.requiresPasswordChange || admin.temporaryPassword ? (
+                        {admin.temporaryPassword ? (
                           <div className="space-y-1">
                             <div className="flex items-center gap-1.5">
                               <span className="font-mono text-[11px] text-[#C5A059] bg-black/40 border border-zinc-800 px-2 py-0.5 rounded">

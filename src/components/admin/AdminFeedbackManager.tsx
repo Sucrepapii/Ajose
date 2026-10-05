@@ -437,7 +437,7 @@ export function AdminFeedbackManager({
                         {(item.location || item.countryCode) && (
                           <span className="inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-300 font-medium border border-zinc-700">
                             <CountryFlag code={item.countryCode || "NG"} size="xs" />
-                            <span>{item.location || item.country || "Nigeria"}</span>
+                            <span>{item.location || "Nigeria"}</span>
                           </span>
                         )}
                       </div>
