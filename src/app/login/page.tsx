@@ -14,12 +14,15 @@ import {
   Lock, 
   CheckCircle2 
 } from "lucide-react";
+import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const isNative = Capacitor.isNativePlatform();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -156,13 +159,22 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const redirectTo = isNative 
+        ? 'ajose://login-callback' 
+        : `${window.location.origin}/auth/callback`;
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo,
+          skipBrowserRedirect: isNative,
         },
       });
       if (error) throw error;
+
+      if (isNative && data?.url) {
+        await Browser.open({ url: data.url });
+      }
     } catch (error: any) {
       toast.error(error.message || "Failed to log in with Google.");
     }

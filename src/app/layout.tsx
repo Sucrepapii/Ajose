@@ -63,6 +63,8 @@ export const metadata: Metadata = {
 
 import { Toaster } from 'sonner';
 
+import { CapacitorListener } from "@/components/CapacitorListener";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -74,6 +76,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-zinc-950 text-zinc-50">
+        <CapacitorListener />
         {children}
         <Toaster 
           theme="dark" 

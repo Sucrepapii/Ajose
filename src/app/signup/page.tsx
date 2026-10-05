@@ -6,12 +6,15 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock, Users } from "lucide-react";
+import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
 
 import Image from "next/image";
 
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
+  const isNative = Capacitor.isNativePlatform();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -92,13 +95,22 @@ export default function SignupPage() {
 
   const handleGoogleSignup = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const redirectTo = isNative 
+        ? 'ajose://login-callback' 
+        : `${window.location.origin}/auth/callback`;
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo,
+          skipBrowserRedirect: isNative,
         },
       });
       if (error) throw error;
+
+      if (isNative && data?.url) {
+        await Browser.open({ url: data.url });
+      }
     } catch (error: any) {
       toast.error(error.message || "Failed to sign up with Google.");
     }
