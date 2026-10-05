@@ -226,7 +226,8 @@ async function handleSweep(req: NextRequest) {
         const automationFee = isDaily ? 100 : isWeekly ? 300 : 0;
         const totalDebitAmount = (group.contribution_amount || 0) + automationFee;
 
-        const reference = `ajose_sweep_${group.id}_turn${currentTurn}_${member.user_id}_${Date.now()}`;
+        const failedAttempts = (existingTxs || []).filter(tx => tx.user_id === member.user_id && tx.status === "failed").length;
+        const reference = `ajose_sweep_${group.id}_turn${currentTurn}_${member.user_id}_attempt${failedAttempts + 1}`;
         let debitSuccess = false;
         let debitMessage = "";
 

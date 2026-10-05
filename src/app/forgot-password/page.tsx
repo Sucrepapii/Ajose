@@ -32,7 +32,6 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
 
     try {
-      // 1. Attempt native Supabase resetPasswordForEmail
       const redirectUrl = `${window.location.origin}/reset-password`;
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: redirectUrl,
@@ -43,26 +42,7 @@ export default function ForgotPasswordPage() {
       setStep(2);
       toast.success("Password recovery email sent!");
     } catch (err: any) {
-      console.warn("Supabase resetPasswordForEmail native SMTP error, invoking Resend API fallback:", err);
-      
-      // 2. Resend API Fallback if Supabase native SMTP fails or returns 500
-      try {
-        const resendRes = await fetch("/api/auth/send-recovery-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email.trim() }),
-        });
-
-        const resendData = await resendRes.json();
-        if (!resendRes.ok || !resendData.success) {
-          throw new Error(resendData.error || "Failed to deliver recovery email.");
-        }
-
-        setStep(2);
-        toast.success("Password reset code delivered via Resend!");
-      } catch (fallbackErr: any) {
-        toast.error(fallbackErr.message || "Failed to send reset code. Please check your email.");
-      }
+      toast.error(err.message || "Failed to send reset code. Please check your email.");
     } finally {
       setIsSubmitting(false);
     }
@@ -96,46 +76,20 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
 
     try {
-      // 1. Attempt native Supabase verifyOtp
       const { data: otpData, error: otpError } = await supabase.auth.verifyOtp({
         email: email.trim(),
         token: cleanOtp,
         type: 'recovery',
       });
 
-      if (!otpError) {
-        // Update password for authenticated recovery session
-        const { error: updateError } = await supabase.auth.updateUser({
-          password: password,
-        });
+      if (otpError) throw otpError;
 
-        if (updateError) throw updateError;
-
-        setStep(3);
-        toast.success("Password reset successfully!");
-        setTimeout(() => {
-          router.push("/login");
-        }, 3000);
-        return;
-      }
-
-      console.warn("Supabase native verifyOtp failed, trying backend Resend OTP verification fallback:", otpError);
-
-      // 2. Resend Custom OTP Verification Fallback via Server API
-      const verifyRes = await fetch("/api/auth/verify-reset-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim(),
-          otp: cleanOtp,
-          password: password,
-        }),
+      // Update password for authenticated recovery session
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: password,
       });
 
-      const verifyData = await verifyRes.json();
-      if (!verifyRes.ok || !verifyData.success) {
-        throw new Error(verifyData.error || "Invalid or expired OTP code.");
-      }
+      if (updateError) throw updateError;
 
       setStep(3);
       toast.success("Password reset successfully!");
