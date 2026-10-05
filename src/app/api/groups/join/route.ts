@@ -6,19 +6,20 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: Request) {
   try {
     const authHeader = req.headers.get("authorization");
-    const { 
-      groupId: rawCode, 
-      userId, 
-      groupName, 
-      contributionAmount, 
-      frequency, 
-      maxMembers, 
-      minCreditScore 
-    } = await req.json();
+    // 0. Authenticate session
+    const supabaseServer = await createClient();
+    const { data: { user } } = await supabaseServer.auth.getUser();
 
-    if (!rawCode || !userId) {
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized. You must be logged in to join." }, { status: 401 });
+    }
+
+    const { groupId: rawCode } = await req.json();
+    const userId = user.id;
+
+    if (!rawCode) {
       return NextResponse.json(
-        { error: "groupId and userId are required" },
+        { error: "groupId is required" },
         { status: 400 }
       );
     }
@@ -30,19 +31,6 @@ export async function POST(req: Request) {
       cleanCode = parts[1].split("?")[0].split("/")[0].trim();
     }
     cleanCode = cleanCode.replace(/^#/, "").trim();
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://npvwtzmlhpagsdohkuvm.supabase.co";
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-    const hasServiceRole = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-    // Create userClient with Bearer token if provided, otherwise fallback to server cookies
-    const supabaseServer = await createClient();
-    const userClient = authHeader
-      ? createSupabaseJsClient(supabaseUrl, supabaseAnonKey, {
-          global: { headers: { Authorization: authHeader } },
-          auth: { persistSession: false, autoRefreshToken: false }
-        })
-      : supabaseServer;
 
     const adminClient = createAdminClient();
     const queryClient = adminClient;
@@ -60,51 +48,6 @@ export async function POST(req: Request) {
 
       if (directMatch) {
         targetGroup = directMatch;
-      }
-    }
-
-    // If not found by direct UUID, search by short code prefix or circle name
-    if (!targetGroup) {
-      const { data: allGroups } = await queryClient
-        .from("groups")
-        .select("id, name, contribution_amount, frequency, max_members, status, min_credit_score");
-
-      const normalizedInput = cleanCode.toLowerCase().replace(/-/g, "");
-
-      targetGroup = (allGroups || []).find((g: any) => {
-        const idLower = g.id.toLowerCase();
-        const idNoHyphens = idLower.replace(/-/g, "");
-        const nameLower = (g.name || "").toLowerCase().trim();
-
-        return (
-          idLower.startsWith(cleanCode.toLowerCase()) ||
-          idNoHyphens.startsWith(normalizedInput) ||
-          nameLower === cleanCode.toLowerCase().trim()
-        );
-      });
-    }
-
-    // If still not found and a full UUID was provided with metadata, fallback to creating it
-    if (!targetGroup && uuidRegex.test(cleanCode)) {
-      const fallbackPayload = {
-        id: cleanCode,
-        name: groupName || "Ajose Contribution Circle",
-        contribution_amount: contributionAmount ? Number(contributionAmount) : 50000,
-        frequency: frequency || "monthly",
-        max_members: maxMembers ? Number(maxMembers) : 10,
-        min_credit_score: minCreditScore ? Number(minCreditScore) : 0,
-        status: "pending",
-        admin_id: userId
-      };
-
-      const { data: createdGroup, error: createErr } = await (hasServiceRole ? adminClient : userClient)
-        .from("groups")
-        .upsert(fallbackPayload, { onConflict: "id", ignoreDuplicates: true })
-        .select()
-        .maybeSingle();
-
-      if (!createErr && (createdGroup || fallbackPayload)) {
-        targetGroup = createdGroup || fallbackPayload;
       }
     }
 
@@ -145,8 +88,7 @@ export async function POST(req: Request) {
 
     const nextTurn = (count || 0) + 1;
 
-    // 5. Insert Membership Record - with resilient dual-attempt fallback
-    let membershipErr: any = null;
+    // 5. Insert Membership Record
     const membershipPayload = {
       group_id: resolvedGroupId,
       user_id: userId,
@@ -155,32 +97,18 @@ export async function POST(req: Request) {
       payout_turn: nextTurn
     };
 
-    // Primary attempt with adminClient (bypasses RLS)
     const { error: primaryErr } = await adminClient
       .from("memberships")
       .insert(membershipPayload);
 
     if (primaryErr) {
-      console.warn("adminClient membership insertion error, trying userClient fallback:", primaryErr.message);
-      // Secondary attempt with userClient
-      const { error: fallbackErr } = await userClient
-        .from("memberships")
-        .insert(membershipPayload);
-
-      if (fallbackErr) {
-        membershipErr = fallbackErr;
-      }
-    }
-
-    if (membershipErr) {
-      console.error("Membership creation error:", membershipErr);
-      throw membershipErr;
+      console.error("Membership creation error:", primaryErr);
+      throw primaryErr;
     }
 
     // 6. Send in-app notification to member (fail-safe)
     try {
-      const notifClient = hasServiceRole ? adminClient : userClient;
-      await notifClient.from("notifications").insert({
+      await adminClient.from("notifications").insert({
         user_id: userId,
         title: `Joined ${targetGroup.name}`,
         message: `You have successfully joined ${targetGroup.name} at turn position #${nextTurn}.`,
