@@ -27,7 +27,8 @@ function getServiceRoleKey(): string {
   } catch (err) {
     console.warn("Could not read SUPABASE_SERVICE_ROLE_KEY from .env.local:", err);
   }
-  throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY environment variable.");
+  console.error("FATAL: Missing SUPABASE_SERVICE_ROLE_KEY environment variable. Falling back to invalid key to prevent crash.");
+  return "INVALID_SERVICE_KEY_PLEASE_CONFIGURE_ENV";
 }
 
 export function createAdminClient() {
