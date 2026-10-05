@@ -14,7 +14,7 @@ export default async function AdminTeamPage() {
   return (
     <AdminTeamClient
       initialAdmins={admins}
-      currentAdminEmail={session.user?.email}
+      currentAdminEmail={session.user?.email || ""}
       isSuperAdmin={session.isSuperAdmin}
     />
   );

@@ -74,7 +74,10 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
         };
       }
     }
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.digest === 'DYNAMIC_SERVER_USAGE') {
+      throw err;
+    }
     console.warn("Supabase check error in getSuperAdminSession:", err);
   }
 
