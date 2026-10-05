@@ -3,7 +3,7 @@ import { verifyIdentityWithMono } from "@/utils/mono";
 
 export async function POST(req: Request) {
   try {
-    const { bvn, nin, firstName, lastName, phone } = await req.json();
+    const { bvn, nin, phone } = await req.json();
 
     if (!bvn) {
       return NextResponse.json(
@@ -11,14 +11,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-    const verificationResult = await verifyIdentityWithMono({
-      bvn,
-      nin,
-      firstName,
-      lastName,
-      phone,
-    });
 
     const { createClient } = await import("@/utils/supabase/server");
     const supabaseServer = await createClient();
@@ -28,6 +20,28 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { createAdminClient } = await import("@/utils/supabase/admin");
+    const supabaseAdmin = createAdminClient();
+
+    // Fetch the user's actual registered name to prevent BVN spoofing
+    const { data: profile } = await supabaseAdmin
+      .from('users')
+      .select('first_name, last_name')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile) {
+      return NextResponse.json({ error: "Profile not found." }, { status: 404 });
+    }
+
+    const verificationResult = await verifyIdentityWithMono({
+      bvn,
+      nin,
+      firstName: profile.first_name,
+      lastName: profile.last_name,
+      phone,
+    });
+
     if (!verificationResult.verified) {
       return NextResponse.json(
         { error: verificationResult.message },
@@ -35,8 +49,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const { createAdminClient } = await import("@/utils/supabase/admin");
-    const supabaseAdmin = createAdminClient();
+    // Optional: Strictly check if nameMatch is true
+    if (!verificationResult.nameMatch) {
+      return NextResponse.json(
+        { error: "BVN validation failed: The name associated with this BVN does not match your registered profile." },
+        { status: 422 }
+      );
+    }
 
     const { error: dbErr } = await supabaseAdmin
       .from('users')

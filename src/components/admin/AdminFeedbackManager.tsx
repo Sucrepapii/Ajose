@@ -118,11 +118,11 @@ export function AdminFeedbackManager({
   // Open modal to configure feature in community
   const handleOpenFeatureModal = (item: FeedbackItem) => {
     setModalItem(item);
-    setEditQuote(item.featuredQuote || item.message);
-    setEditAuthor(item.featuredAuthor || item.name);
+    setEditQuote(item.featuredQuote || item.message || "");
+    setEditAuthor(item.featuredAuthor || item.name || "");
     setEditRole(item.featuredRole || "Group Admin");
     setEditCountryCode(item.countryCode || "NG");
-    setEditLocation(item.location || item.country || "Nigeria");
+    setEditLocation(item.location || "Nigeria");
   };
 
   // Submit Feature or Edit to API

@@ -22,7 +22,7 @@ export default async function AdminTeamPage() {
     fullName: `${a.first_name || ""} ${a.last_name || ""}`.trim() || a.email.split("@")[0],
     email: a.email,
     role: a.admin_role || (a.is_super_admin ? "Super Admin" : "Staff"),
-    status: "active",
+    status: "active" as "active" | "suspended",
     createdAt: a.created_at,
     isSuperAdmin: a.is_super_admin,
     createdBy: "System",

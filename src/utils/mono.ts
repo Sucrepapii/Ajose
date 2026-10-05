@@ -294,6 +294,29 @@ export async function verifyIdentityWithMono({
 
       if (bvnRes.ok) {
         const bvnData = await bvnRes.json();
+        
+        // Ensure name match
+        const returnedFirst = (bvnData.data?.first_name || "").toLowerCase();
+        const returnedLast = (bvnData.data?.last_name || "").toLowerCase();
+        
+        const providedFirst = (firstName || "").toLowerCase();
+        const providedLast = (lastName || "").toLowerCase();
+        
+        // Check if the names match (at least one part matches heavily or exact match)
+        const nameMatch = (returnedFirst && providedFirst && returnedFirst.includes(providedFirst)) || 
+                          (returnedLast && providedLast && returnedLast.includes(providedLast)) ||
+                          (providedFirst.includes(returnedFirst) || providedLast.includes(returnedLast));
+                          
+        if (!nameMatch && providedFirst && providedLast) {
+           return {
+            verified: false,
+            bvnValid: true,
+            ninValid: true,
+            nameMatch: false,
+            message: `BVN validation failed. The name on the BVN (${bvnData.data?.first_name} ${bvnData.data?.last_name}) does not match your registered profile (${firstName} ${lastName}).`,
+          };
+        }
+
         return {
           verified: true,
           bvnValid: true,
