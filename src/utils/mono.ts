@@ -258,7 +258,7 @@ export async function verifyIdentityWithMono({
   lastName?: string;
   phone?: string;
 }): Promise<MonoIdentityVerificationResult> {
-  const monoSecretKey = process.env.MONO_LOOKUP_SECRET_KEY || process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
+  const monoSecretKey = process.env.MONO_LOOKUP_SECRET_KEY || process.env.MONO_SECRET_KEY;
 
   const isBvnValid = Boolean(bvn && /^\d{11}$/.test(bvn));
   const isNinValid = Boolean(!nin || /^\d{11}$/.test(nin));
@@ -325,13 +325,14 @@ export async function verifyIdentityWithMono({
   }
 
   // Simulated Mono lookup verification for sandbox testing
-  // TEMPORARY DEBUGGING CHECK: Force it to throw an error so we can see what key Vercel is actually using.
   return {
     verified: false,
     bvnValid: false,
     ninValid: false,
     nameMatch: false,
-    message: `Vercel is STILL running in test mode! It sees the key: "${monoSecretKey.substring(0, 10)}..." Please make sure the key in Vercel starts with live_sk_`,
+    message: monoSecretKey 
+      ? `Vercel is STILL running in test mode! It sees the key: "${monoSecretKey.substring(0, 10)}..." Please make sure the key in Vercel starts with live_sk_`
+      : `Vercel cannot find your MONO_LOOKUP_SECRET_KEY! It is completely missing from the environment variables.`,
   };
 }
 
