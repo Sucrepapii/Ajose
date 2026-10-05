@@ -25,15 +25,15 @@ export async function POST(req: Request) {
     const supabaseServer = await createClient();
     const { data: { user: serverUser } } = await supabaseServer.auth.getUser();
 
-    const userId = serverUser?.id || bodyUserId;
-    const userEmail = serverUser?.email || bodyUserEmail;
-
-    if (!userId) {
+    if (!serverUser || !serverUser.id) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in to create a group." },
         { status: 401 }
       );
     }
+
+    const userId = serverUser.id;
+    const userEmail = serverUser.email || bodyUserEmail;
 
     if (!name || !contributionAmount || !maxMembers) {
       return NextResponse.json(

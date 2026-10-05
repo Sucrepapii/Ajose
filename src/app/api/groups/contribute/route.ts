@@ -3,12 +3,22 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { sendEmail } from "@/utils/resend";
 import { getContributionReceiptEmailTemplate } from "@/utils/emailTemplates";
 
+import { createClient } from "@/utils/supabase/server";
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { groupId, userId, amount, currentTurn, simulateFailure, method } = body;
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!groupId || !userId || !amount) {
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized. You must be logged in." }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { groupId, amount, currentTurn, method } = body;
+    const userId = user.id;
+
+    if (!groupId || !amount) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
@@ -33,46 +43,7 @@ export async function POST(req: Request) {
       .eq("id", groupId)
       .single();
 
-    // Case A: Simulated Failure
-    if (simulateFailure) {
-      await supabaseAdmin.from("transactions").insert({
-        membership_id: memberRecord.id,
-        amount: Number(amount),
-        type: "contribution",
-        status: "failed",
-        cycle_turn: Number(currentTurn)
-      });
-
-      // Penalize credit score by 10
-      const { data: profile } = await supabaseAdmin
-        .from("users")
-        .select("credit_score")
-        .eq("id", userId)
-        .single();
-
-      if (profile) {
-        await supabaseAdmin
-          .from("users")
-          .update({ credit_score: Math.max(0, (profile.credit_score ?? 50) - 10) })
-          .eq("id", userId);
-      }
-
-      // Notify admin
-      if (group?.admin_id) {
-        await supabaseAdmin.from("notifications").insert({
-          user_id: group.admin_id,
-          title: "Member Auto-Debit Failed",
-          message: `A member's automated debit sweep of ₦${Number(amount).toLocaleString()} failed for Turn ${currentTurn} in ${group.name || "Ajo"}.`,
-          type: "error"
-        });
-      }
-
-      return NextResponse.json({
-        success: true,
-        failed: true,
-        message: "Auto-debit sweep was declined."
-      });
-    }
+    // Removed simulated failure vulnerability (S5)
 
     // Case B: Manual Bank Transfer Submission (Pending confirmation)
     if (method === "transfer") {

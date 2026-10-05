@@ -1,18 +1,49 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 
+import { createClient } from "@/utils/supabase/server";
+
 export async function POST(req: Request) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized. You must be logged in." }, { status: 401 });
+    }
+
     const body = await req.json();
     const { transactionId, action, groupId, currentTurn, memberUserId, amount, memberName } = body;
 
-    if (!transactionId || !action) {
+    if (!transactionId || !action || !groupId) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
     const supabaseAdmin = createAdminClient();
 
+    // Verify caller is group admin
+    const { data: groupRecord } = await supabaseAdmin
+      .from("groups")
+      .select("admin_id")
+      .eq("id", groupId)
+      .single();
+
+    if (!groupRecord || groupRecord.admin_id !== user.id) {
+      return NextResponse.json({ error: "Forbidden. Only the group admin can confirm transfers." }, { status: 403 });
+    }
+
     if (action === "confirm") {
+      // 0. Verify transaction is pending
+      const { data: txData } = await supabaseAdmin
+        .from("transactions")
+        .select("status")
+        .eq("id", transactionId)
+        .single();
+        
+      if (!txData || txData.status !== "pending") {
+         return NextResponse.json({ error: "Transaction is already processed." }, { status: 400 });
+      }
+
       // 1. Update this transaction status to 'successful'
       const { error: updateError } = await supabaseAdmin
         .from("transactions")
@@ -73,6 +104,17 @@ export async function POST(req: Request) {
     }
 
     if (action === "reject") {
+      // 0. Verify transaction is pending
+      const { data: txData } = await supabaseAdmin
+        .from("transactions")
+        .select("status")
+        .eq("id", transactionId)
+        .single();
+        
+      if (!txData || txData.status !== "pending") {
+         return NextResponse.json({ error: "Transaction is already processed." }, { status: 400 });
+      }
+
       // 1. Mark transaction as failed
       const { error: updateError } = await supabaseAdmin
         .from("transactions")
