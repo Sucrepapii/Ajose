@@ -4,8 +4,6 @@ import path from "path";
 
 let cachedServiceKey: string | null = null;
 
-const FALLBACK_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wdnd0em1saHBhZ3Nkb2hrdXZtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzU4OTg3NiwiZXhwIjoyMTAzMTY1ODc2fQ.pFllboLScjbRyNDMqq9J4OKRqmpkpbMQxjzNC0Fu8K8";
-
 function getServiceRoleKey(): string {
   if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -29,7 +27,7 @@ function getServiceRoleKey(): string {
   } catch (err) {
     console.warn("Could not read SUPABASE_SERVICE_ROLE_KEY from .env.local:", err);
   }
-  return FALLBACK_SERVICE_ROLE_KEY;
+  throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY environment variable.");
 }
 
 export function createAdminClient() {
