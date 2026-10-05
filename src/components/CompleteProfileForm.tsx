@@ -47,17 +47,7 @@ export function CompleteProfileForm({
         throw new Error(verificationResult.error || "Identity verification failed. Please check your BVN.");
       }
 
-      // 2. Update the user profile
-      const { error } = await supabase
-        .from('users')
-        .update({
-          phone: formData.phone,
-          bvn_verified: true,
-          credit_score: 85,
-        })
-        .eq('id', userId);
-
-      if (error) throw error;
+      // DB update is now handled securely on the server in the /api/mono/verify-identity route
 
       toast.success("Identity verified! You can now link your bank account.", { id: toastId });
       router.refresh();
