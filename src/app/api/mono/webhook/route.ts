@@ -23,13 +23,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
     }
 
-    // Webhook verification check (if webhook secret configured)
+    // Webhook verification check
     const webhookSecret = process.env.MONO_WEBHOOK_SECRET;
     const incomingSignature = req.headers.get("mono-webhook-secret") || req.headers.get("x-mono-signature");
 
-    if (webhookSecret && incomingSignature && incomingSignature !== webhookSecret) {
-      console.warn("Mono webhook signature mismatch rejected.");
-      return NextResponse.json({ error: "Signature mismatch" }, { status: 401 });
+    if (!webhookSecret || !incomingSignature) {
+      console.warn("Mono webhook rejected: missing signature or secret.");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    try {
+      const crypto = await import("crypto");
+      const a = Buffer.from(webhookSecret);
+      const b = Buffer.from(incomingSignature);
+      if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+        console.warn("Mono webhook signature mismatch rejected.");
+        return NextResponse.json({ error: "Signature mismatch" }, { status: 401 });
+      }
+    } catch (err) {
+      return NextResponse.json({ error: "Signature verification failed" }, { status: 401 });
     }
 
     const event = body.event || body.type;

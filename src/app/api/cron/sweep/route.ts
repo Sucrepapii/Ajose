@@ -173,7 +173,11 @@ async function handleSweep(req: NextRequest) {
 
       const paidUserIds = new Set(
         (existingTxs || [])
-          .filter((tx) => tx.status === "completed" || tx.status === "pending_confirmation")
+          .filter((tx) => 
+            tx.status === "completed" || 
+            tx.status === "pending_confirmation" || 
+            tx.status === "pending"
+          )
           .map((tx) => tx.user_id)
       );
 
@@ -263,9 +267,14 @@ async function handleSweep(req: NextRequest) {
             debitMessage = err.message || "Mono connection error.";
           }
         } else {
-          // SANDBOX / SIMULATION MODE
-          debitSuccess = true;
-          debitMessage = "Auto-debit successfully swept via Mono sandbox mandate.";
+          if (process.env.PAYMENTS_MODE === "sandbox" && process.env.NODE_ENV !== "production") {
+            // SANDBOX / SIMULATION MODE
+            debitSuccess = true;
+            debitMessage = "Auto-debit successfully swept via Mono sandbox mandate.";
+          } else {
+            debitSuccess = false;
+            debitMessage = "Mono API Error. Live configuration required.";
+          }
         }
 
         // Record the transaction result in the ledger
@@ -275,7 +284,7 @@ async function handleSweep(req: NextRequest) {
             user_id: member.user_id,
             amount: totalDebitAmount,
             type: "contribution",
-            status: isSandbox ? "completed" : "pending",
+            status: (isSandbox && process.env.PAYMENTS_MODE === "sandbox") ? "completed" : "pending",
             description: `Auto-debit sweep via Mono for Turn ${currentTurn} (${reference})`,
             cycle_turn: currentTurn
           });

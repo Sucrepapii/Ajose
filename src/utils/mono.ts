@@ -93,23 +93,29 @@ export async function verifyTransferWithMono({
   }
 
   // 2. Intelligent Simulation Fallback (for development, sandbox testing, or demo mode)
-  // When testing, this allows verifying the end-to-end user flow reliably.
-  const simulatedMonoTxId = `mono_tx_${Math.floor(100000000 + Math.random() * 900000000)}`;
-  const now = new Date();
-  const timeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (process.env.PAYMENTS_MODE === "sandbox" && process.env.NODE_ENV !== "production") {
+    const simulatedMonoTxId = `mono_tx_${Math.floor(100000000 + Math.random() * 900000000)}`;
+    const now = new Date();
+    const timeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    return {
+      verified: true,
+      source: "simulation",
+      matchDetails: {
+        monoTxId: simulatedMonoTxId,
+        amount: amount,
+        narration: `TRF/${narrationCode}/${senderName ? senderName.toUpperCase() : 'MEMBER'}/AJO POOL`,
+        date: `${now.toLocaleDateString()} at ${timeFormatted}`,
+        bankName: adminBankName,
+        senderName: senderName || "Verified Member"
+      },
+      message: `Mono detected matching ₦${amount.toLocaleString()} deposit in ${adminBankName} (${timeFormatted}). Narration: "${narrationCode}".`
+    };
+  }
 
   return {
-    verified: true,
-    source: "simulation",
-    matchDetails: {
-      monoTxId: simulatedMonoTxId,
-      amount: amount,
-      narration: `TRF/${narrationCode}/${senderName ? senderName.toUpperCase() : 'MEMBER'}/AJO POOL`,
-      date: `${now.toLocaleDateString()} at ${timeFormatted}`,
-      bankName: adminBankName,
-      senderName: senderName || "Verified Member"
-    },
-    message: `Mono detected matching ₦${amount.toLocaleString()} deposit in ${adminBankName} (${timeFormatted}). Narration: "${narrationCode}".`
+    verified: false,
+    message: "No matching deposit found via Mono Open Banking. Please check your bank."
   };
 }
 
@@ -400,18 +406,29 @@ export async function initiatePayoutWithMono({
         console.warn("Mono Payout API error:", errData);
       }
     } catch (err) {
-      console.error("Mono Payout network error, falling back to sandbox mode:", err);
+      console.error("Mono Payout network error:", err);
     }
   }
 
-  // Simulation / Sandbox fallback
+  if (process.env.PAYMENTS_MODE === "sandbox" && process.env.NODE_ENV !== "production") {
+    // Simulation / Sandbox fallback
+    return {
+      success: true,
+      source: "simulation",
+      payoutId: `mono_payout_${Math.floor(100000000 + Math.random() * 900000000)}`,
+      reference,
+      amount,
+      message: `Payout of ₦${amount.toLocaleString()} simulated successfully to ${recipientAccountNumber}.`
+    };
+  }
+
   return {
-    success: true,
-    source: "simulation",
-    payoutId: `mono_payout_${Math.floor(100000000 + Math.random() * 900000000)}`,
+    success: false,
+    source: "mono_api",
+    payoutId: reference,
     reference,
     amount,
-    message: `Payout of ₦${amount.toLocaleString()} simulated successfully to ${recipientAccountNumber}.`
+    message: "Failed to process Mono payout. API error."
   };
 }
 
@@ -506,13 +523,24 @@ export async function initiateMonoDirectDebit({
     }
   }
 
-  // Simulation / Sandbox fallback for development & testing
+  if (process.env.PAYMENTS_MODE === "sandbox" && process.env.NODE_ENV !== "production") {
+    // Simulation / Sandbox fallback for development & testing
+    return {
+      success: true,
+      source: "simulation",
+      debitId: `mono_debit_${Math.floor(100000000 + Math.random() * 900000000)}`,
+      reference,
+      amount,
+      message: `Direct debit of ₦${amount.toLocaleString()} simulated successfully via Mono mandate.`,
+    };
+  }
+
   return {
-    success: true,
-    source: "simulation",
-    debitId: `mono_debit_${Math.floor(100000000 + Math.random() * 900000000)}`,
+    success: false,
+    source: "mono_api",
+    debitId: reference,
     reference,
     amount,
-    message: `Direct debit of ₦${amount.toLocaleString()} simulated successfully via Mono mandate.`,
+    message: "Mono Direct Debit failed. Check Mono configuration.",
   };
 }
