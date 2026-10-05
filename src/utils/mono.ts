@@ -331,8 +331,8 @@ export async function verifyIdentityWithMono({
     ninValid: false,
     nameMatch: false,
     message: monoSecretKey 
-      ? `Vercel is STILL running in test mode! It sees the key: "${monoSecretKey.substring(0, 10)}..." Please make sure the key in Vercel starts with live_sk_`
-      : `Vercel cannot find your MONO_LOOKUP_SECRET_KEY! It is completely missing from the environment variables.`,
+      ? `ERROR: Vercel sees the key as "${monoSecretKey.substring(0, 10)}...". Please delete any test_sk keys from Vercel env!`
+      : `ERROR: Missing keys! MONO_LOOKUP_SECRET_KEY is: ${process.env.MONO_LOOKUP_SECRET_KEY}, MONO_SECRET_KEY is: ${process.env.MONO_SECRET_KEY}`,
   };
 }
 
