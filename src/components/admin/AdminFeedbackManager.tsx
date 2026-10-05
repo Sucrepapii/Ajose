@@ -24,7 +24,23 @@ import {
   Briefcase
 } from "lucide-react";
 import { toast } from "sonner";
-import { FeedbackItem } from "@/utils/feedbackStore";
+export interface FeedbackItem {
+  id: string;
+  name?: string;
+  email?: string;
+  category: string;
+  message: string;
+  rating?: number;
+  sourceUrl?: string;
+  isFeaturedInCommunity?: boolean;
+  featuredQuote?: string;
+  featuredAuthor?: string;
+  featuredRole?: string;
+  countryCode?: string;
+  location?: string;
+  createdAt: string;
+}
+
 import Link from "next/link";
 import { CountryFlag } from "@/components/CountryFlag";
 

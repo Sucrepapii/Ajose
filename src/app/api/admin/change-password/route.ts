@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { validateAdminCredentials, updateAdminPassword } from "@/utils/adminStore";
-import { ADMIN_SESSION_COOKIE } from "@/utils/adminAuth";
+import { createClient } from "@/utils/supabase/server";
+import { getSuperAdminSession } from "@/utils/adminAuth";
 
 export async function POST(req: Request) {
   try {
-    const { email, currentPassword, newPassword } = await req.json();
-
-    if (!email || !currentPassword || !newPassword) {
+    const session = await getSuperAdminSession();
+    if (!session.isAuthenticated || !session.user?.email) {
       return NextResponse.json(
-        { success: false, message: "Email, current password, and new permanent password are required." },
+        { success: false, message: "Unauthorized." },
+        { status: 401 }
+      );
+    }
+
+    const { currentPassword, newPassword } = await req.json();
+
+    if (!currentPassword || !newPassword) {
+      return NextResponse.json(
+        { success: false, message: "Current password and new password are required." },
         { status: 400 }
       );
     }
@@ -21,48 +28,41 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verify current (temporary) password
-    const admin = await validateAdminCredentials(email.trim(), currentPassword.trim());
-    if (!admin) {
+    const supabase = await createClient();
+
+    // Verify current password by attempting to sign in again
+    const { error: signInErr } = await supabase.auth.signInWithPassword({
+      email: session.user.email,
+      password: currentPassword.trim()
+    });
+
+    if (signInErr) {
       return NextResponse.json(
-        { success: false, message: "Current temporary password is incorrect or expired." },
+        { success: false, message: "Current password is incorrect." },
         { status: 401 }
       );
     }
 
-    // Update permanent password and clear temporary status
-    const updatedAdmin = await updateAdminPassword(email.trim(), newPassword.trim());
-
-    // Issue updated session cookie
-    const sessionPayload = {
-      id: updatedAdmin.id,
-      email: updatedAdmin.email,
-      fullName: updatedAdmin.fullName,
-      role: updatedAdmin.role,
-      isSuperAdmin: updatedAdmin.isSuperAdmin,
-      exp: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
-    };
-
-    const sessionCookieValue = Buffer.from(JSON.stringify(sessionPayload)).toString("base64");
-
-    const cookieStore = await cookies();
-    cookieStore.set(ADMIN_SESSION_COOKIE, sessionCookieValue, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60 // 7 days
+    // Update password
+    const { error: updateErr } = await supabase.auth.updateUser({
+      password: newPassword.trim()
     });
+
+    if (updateErr) {
+      return NextResponse.json(
+        { success: false, message: updateErr.message || "Failed to update password." },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      message: "Permanent password updated successfully! Redirecting to command center...",
+      message: "Password updated successfully!",
       redirect: "/admin",
       admin: {
-        id: updatedAdmin.id,
-        fullName: updatedAdmin.fullName,
-        email: updatedAdmin.email,
-        role: updatedAdmin.role
+        id: session.user.id,
+        email: session.user.email,
+        role: session.role
       }
     });
 

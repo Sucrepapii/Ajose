@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSuperAdminSession } from "@/utils/adminAuth";
-import { getAllAdmins, createAdminUser, deleteAdminUser, AdminRole } from "@/utils/adminStore";
+import { getSuperAdminSession, AdminRole } from "@/utils/adminAuth";
+import { createAdminClient } from "@/utils/supabase/admin";
 
 export async function GET() {
   try {
@@ -12,18 +12,27 @@ export async function GET() {
       );
     }
 
-    const admins = await getAllAdmins();
-    // Return admins with temporary passwords visible only to super admins for easy onboarding sharing
-    const sanitized = admins.map(a => ({
+    const supabase = createAdminClient();
+    
+    // Fetch users who are either super_admin or have an admin_role
+    const { data: adminUsers, error } = await supabase
+      .from("users")
+      .select("id, first_name, last_name, email, is_super_admin, admin_role, created_at, bvn_verified")
+      .or('is_super_admin.eq.true,admin_role.not.is.null')
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    const sanitized = (adminUsers || []).map((a: any) => ({
       id: a.id,
-      fullName: a.fullName,
+      fullName: `${a.first_name || ""} ${a.last_name || ""}`.trim() || a.email.split("@")[0],
       email: a.email,
-      role: a.role,
-      status: a.status,
-      createdAt: a.createdAt,
-      isSuperAdmin: a.isSuperAdmin,
-      createdBy: a.createdBy,
-      temporaryPassword: session.isSuperAdmin ? a.temporaryPassword : undefined
+      role: a.admin_role || (a.is_super_admin ? "Super Admin" : "Staff"),
+      status: "active", // You can fetch from auth.users or a status column if added
+      createdAt: a.created_at,
+      isSuperAdmin: a.is_super_admin,
+      createdBy: "System",
+      temporaryPassword: undefined // Never expose passwords from Supabase
     }));
 
     return NextResponse.json({
@@ -66,12 +75,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: "Invalid role selected." }, { status: 400 });
     }
 
-    const newAdmin = await createAdminUser({
-      fullName: fullName.trim(),
+    const isSuperAdmin = role === "Super Admin";
+    const generatedPassword = temporaryPassword?.trim() || Math.random().toString(36).slice(-10) + "A1!";
+    
+    const supabase = createAdminClient();
+
+    // 1. Create the user in Supabase Auth
+    const { data: authData, error: authErr } = await supabase.auth.admin.createUser({
       email: email.trim(),
-      role: role as AdminRole,
-      temporaryPassword: temporaryPassword?.trim() || undefined,
-      createdBy: session.user?.email || "Super Admin"
+      password: generatedPassword,
+      email_confirm: true
+    });
+
+    if (authErr) {
+      return NextResponse.json({ success: false, message: authErr.message }, { status: 400 });
+    }
+
+    const newUserId = authData.user.id;
+    const [firstName, ...lastNameParts] = fullName.trim().split(" ");
+    const lastName = lastNameParts.join(" ");
+
+    // 2. Update the public.users profile with admin privileges
+    await supabase.from("users").upsert({
+      id: newUserId,
+      email: email.trim(),
+      first_name: firstName,
+      last_name: lastName || "",
+      is_super_admin: isSuperAdmin,
+      admin_role: role
     });
 
     // Dispatch invitation email with credentials to the new administrator
@@ -83,10 +114,10 @@ export async function POST(req: Request) {
       const loginUrl = `${proto}://${host}/login?next=/admin`;
 
       const emailResult = await sendAdminInvitationEmail({
-        to: newAdmin.email,
-        fullName: newAdmin.fullName,
-        role: newAdmin.role,
-        temporaryPassword: newAdmin.temporaryPassword || "",
+        to: email.trim(),
+        fullName: fullName.trim(),
+        role: role,
+        temporaryPassword: generatedPassword,
         loginUrl
       });
       emailSent = Boolean(emailResult?.success);
@@ -96,16 +127,22 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Administrator "${newAdmin.fullName}" (${newAdmin.role}) created successfully.${emailSent ? ' Credentials emailed.' : ''}`,
+      message: `Administrator "${fullName}" (${role}) created successfully.${emailSent ? ' Credentials emailed.' : ''}`,
       emailSent,
-      admin: newAdmin
+      admin: {
+        id: newUserId,
+        fullName: fullName,
+        email: email,
+        role: role,
+        isSuperAdmin: isSuperAdmin
+      }
     });
 
   } catch (error: any) {
     console.error("Create admin error:", error);
     return NextResponse.json(
-      { success: false, message: error.message || "Failed to create administrator." },
-      { status: 400 }
+      { success: false, message: "Failed to create administrator account." },
+      { status: 500 }
     );
   }
 }
@@ -115,30 +152,46 @@ export async function DELETE(req: Request) {
     const session = await getSuperAdminSession();
     if (!session.isAuthenticated || !session.isSuperAdmin) {
       return NextResponse.json(
-        { success: false, message: "Forbidden. Only Super Administrators can remove accounts." },
+        { success: false, message: "Forbidden. Only Super Administrators can revoke access." },
         { status: 403 }
       );
     }
 
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const adminId = searchParams.get("id");
 
-    if (!id) {
+    if (!adminId) {
       return NextResponse.json({ success: false, message: "Admin ID is required." }, { status: 400 });
     }
 
-    await deleteAdminUser(id);
+    const supabase = createAdminClient();
+
+    // Prevent deleting oneself
+    if (session.user?.id === adminId) {
+      return NextResponse.json(
+        { success: false, message: "You cannot revoke your own access." },
+        { status: 400 }
+      );
+    }
+
+    // Demote user in public.users
+    await supabase.from("users").update({
+      is_super_admin: false,
+      admin_role: null
+    }).eq("id", adminId);
+
+    // Optionally suspend the auth account entirely
+    await supabase.auth.admin.updateUserById(adminId, { ban_duration: "87600h" });
 
     return NextResponse.json({
       success: true,
       message: "Administrator access revoked successfully."
     });
-
   } catch (error: any) {
     console.error("Delete admin error:", error);
     return NextResponse.json(
-      { success: false, message: error.message || "Failed to delete administrator." },
-      { status: 400 }
+      { success: false, message: "Failed to revoke administrator access." },
+      { status: 500 }
     );
   }
 }

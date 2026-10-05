@@ -1,30 +1,21 @@
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { getAdminByEmail, AdminRole } from "@/utils/adminStore";
 
 export const ADMIN_SESSION_COOKIE = "ajose_admin_session";
 
-// Default admin emails or configure via ADMIN_EMAILS environment variable
-const DEFAULT_SUPER_ADMINS = [
-  "samuel@paylodeservices.com",
-  "kemi@ajose.ng",
-  "superadmin@ajose.ng",
-  "operations@ajose.ng",
-  "compliance@ajose.ng"
-];
+export type AdminRole = "Super Admin" | "Operations Lead" | "Risk & Compliance" | "Support Auditor";
 
-export function isSuperAdminEmail(email?: string | null): boolean {
-  if (!email) return false;
-  const normalizedEmail = email.toLowerCase().trim();
-
-  const envAdmins = (process.env.ADMIN_EMAILS || "")
-    .split(",")
-    .map(e => e.trim().toLowerCase())
-    .filter(Boolean);
-
-  const allowedAdmins = [...DEFAULT_SUPER_ADMINS, ...envAdmins];
-
-  return allowedAdmins.includes(normalizedEmail);
+export interface AdminUser {
+  id: string;
+  fullName: string;
+  email: string;
+  role: AdminRole;
+  status: "active" | "suspended";
+  createdAt: string;
+  isSuperAdmin: boolean;
+  createdBy: string;
+  temporaryPassword?: string;
+  lastLogin?: string;
 }
 
 export interface AdminSession {
@@ -43,7 +34,6 @@ export interface AdminSession {
 }
 
 export async function getSuperAdminSession(): Promise<AdminSession> {
-  // Check Supabase Auth User directly (secure, signed, revocable)
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -55,9 +45,10 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
         .eq("id", user.id)
         .maybeSingle();
 
-      const isSuper = isSuperAdminEmail(user.email) || Boolean(profile?.is_super_admin);
+      const isSuper = Boolean(profile?.is_super_admin);
+      const role = profile?.admin_role || (isSuper ? "Super Admin" : undefined);
 
-      if (isSuper) {
+      if (isSuper || role) {
         return {
           isAuthenticated: true,
           isSuperAdmin: isSuper,
@@ -67,10 +58,10 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
           },
           profile: {
             first_name: profile?.first_name || user.email.split("@")[0],
-            role: "Super Admin",
+            role: role || "Staff",
             is_super_admin: isSuper
           },
-          role: "Super Admin"
+          role: role
         };
       }
     }

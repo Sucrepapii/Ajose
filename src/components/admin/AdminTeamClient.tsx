@@ -21,7 +21,7 @@ import {
   X,
   MoreVertical
 } from "lucide-react";
-import { AdminRole, AdminUser } from "@/utils/adminStore";
+import { AdminRole, AdminUser } from "@/utils/adminAuth";
 
 interface AdminTeamClientProps {
   initialAdmins: AdminUser[];

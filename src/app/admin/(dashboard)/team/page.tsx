@@ -1,5 +1,5 @@
 import { getSuperAdminSession } from "@/utils/adminAuth";
-import { getAllAdmins } from "@/utils/adminStore";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminTeamClient } from "@/components/admin/AdminTeamClient";
 
 export const metadata = {
@@ -9,11 +9,28 @@ export const metadata = {
 
 export default async function AdminTeamPage() {
   const session = await getSuperAdminSession();
-  const admins = await getAllAdmins();
+  
+  const supabase = createAdminClient();
+  const { data: adminUsers } = await supabase
+    .from("users")
+    .select("id, first_name, last_name, email, is_super_admin, admin_role, created_at, bvn_verified")
+    .or('is_super_admin.eq.true,admin_role.not.is.null')
+    .order("created_at", { ascending: false });
+
+  const sanitized = (adminUsers || []).map((a: any) => ({
+    id: a.id,
+    fullName: `${a.first_name || ""} ${a.last_name || ""}`.trim() || a.email.split("@")[0],
+    email: a.email,
+    role: a.admin_role || (a.is_super_admin ? "Super Admin" : "Staff"),
+    status: "active",
+    createdAt: a.created_at,
+    isSuperAdmin: a.is_super_admin,
+    createdBy: "System",
+  }));
 
   return (
     <AdminTeamClient
-      initialAdmins={admins}
+      initialAdmins={sanitized}
       currentAdminEmail={session.user?.email || ""}
       isSuperAdmin={session.isSuperAdmin}
     />

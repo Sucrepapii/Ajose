@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { sendEmail } from "@/utils/resend";
-import { 
-  getAllFeedback, 
-  addFeedback, 
-  toggleFeatureInCommunity, 
-  deleteFeedback, 
-  getFeaturedCommunityTestimonials 
-} from "@/utils/feedbackStore";
 
 export const dynamic = "force-dynamic";
 
@@ -18,16 +11,25 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const isFeaturedOnly = req.nextUrl.searchParams.get("featured") === "true";
+    const supabase = createAdminClient();
+
+    let query = supabase.from("feedback").select("*").order("created_at", { ascending: false });
+    
+    if (isFeaturedOnly) {
+      query = query.eq("is_featured", true);
+    }
+
+    const { data: items, error } = await query;
+
+    if (error) throw error;
 
     if (isFeaturedOnly) {
-      const testimonials = await getFeaturedCommunityTestimonials();
       return NextResponse.json({
         success: true,
-        testimonials,
+        testimonials: items,
       });
     }
 
-    const items = await getAllFeedback();
     return NextResponse.json({
       success: true,
       feedback: items,
@@ -67,36 +69,23 @@ export async function POST(req: NextRequest) {
       timeStyle: "short",
     });
 
-    // 1. Persist to unified feedbackStore
-    const savedItem = await addFeedback({
-      name,
-      email,
+    const supabase = createAdminClient();
+    const { data: savedItem, error: dbErr } = await supabase.from("feedback").insert({
       category,
-      message,
+      message: message.trim(),
       rating: Number(rating),
-      sourceUrl: url,
-    });
+      name: name.trim(),
+      email: email.trim(),
+      source_url: url,
+      is_featured: false
+    }).select().single();
 
-    // 2. Try to record in Supabase feedback table if available
-    try {
-      const supabase = createAdminClient();
-      await supabase.from("feedback").insert({
-        id: savedItem.id,
-        category,
-        message: message.trim(),
-        rating: Number(rating),
-        name: name.trim(),
-        email: email.trim(),
-        source_url: url,
-        is_featured: false,
-        created_at: savedItem.createdAt,
-      });
-    } catch (dbErr) {
-      // Table may not exist yet in Supabase schema; logged safely
-      console.warn("Supabase feedback insert skipped:", dbErr);
+    if (dbErr) {
+      console.warn("Supabase feedback insert error:", dbErr);
+      throw dbErr;
     }
 
-    // 3. Dispatch instant email notification to akinboroo@gmail.com
+    // Dispatch instant email notification to akinboroo@gmail.com
     const emailSubject = `💬 Àjọṣe Feedback [${category}] from ${name || "User"}`;
     const starsHtml = "★".repeat(Math.max(1, Math.min(5, Number(rating)))) + 
                       "☆".repeat(Math.max(0, 5 - Math.max(1, Math.min(5, Number(rating)))));
@@ -182,21 +171,29 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Feedback id is required" }, { status: 400 });
     }
 
-    const updated = await toggleFeatureInCommunity(id, {
-      isFeaturedInCommunity,
-      featuredQuote,
-      featuredAuthor,
-      featuredRole,
-    });
+    const supabase = createAdminClient();
+    
+    // Assuming the table schema might have these extra columns added if you're using them
+    const { data: updated, error } = await supabase
+      .from("feedback")
+      .update({
+        is_featured: isFeaturedInCommunity,
+        // featured_quote: featuredQuote, // uncomment if added to schema
+        // featured_author: featuredAuthor, // uncomment if added to schema
+        // featured_role: featuredRole // uncomment if added to schema
+      })
+      .eq("id", id)
+      .select()
+      .single();
 
-    if (!updated) {
+    if (error || !updated) {
       return NextResponse.json({ error: "Feedback item not found" }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
       item: updated,
-      message: updated.isFeaturedInCommunity 
+      message: updated.is_featured 
         ? `Added to 'Loved by Communities' section!` 
         : `Removed from 'Loved by Communities' section.`,
     });
@@ -219,8 +216,10 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Feedback id is required" }, { status: 400 });
     }
 
-    const success = await deleteFeedback(id);
-    if (!success) {
+    const supabase = createAdminClient();
+    const { error } = await supabase.from("feedback").delete().eq("id", id);
+
+    if (error) {
       return NextResponse.json({ error: "Feedback item not found" }, { status: 404 });
     }
 
