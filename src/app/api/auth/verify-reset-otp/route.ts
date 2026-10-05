@@ -24,40 +24,21 @@ export async function POST(req: Request) {
       .single();
 
     if (userError || !userRecord) {
-      // Search in Supabase Auth users list if user profile row missing
-      const { data: authUsers, error: listError } = await supabaseAdmin.auth.admin.listUsers();
-      const targetUser = authUsers?.users?.find(u => u.email?.toLowerCase() === cleanEmail);
-
-      if (listError || !targetUser) {
-        return NextResponse.json(
-          { error: "User account not found." },
-          { status: 404 }
-        );
-      }
-
-      // Update password directly for existing auth user
-      const { error: updateAuthError } = await supabaseAdmin.auth.admin.updateUserById(
-        targetUser.id,
-        { password }
+      return NextResponse.json(
+        { error: "User account not found." },
+        { status: 404 }
       );
-
-      if (updateAuthError) throw updateAuthError;
-
-      return NextResponse.json({
-        success: true,
-        message: "Password reset successfully!",
-      });
     }
 
-    // 2. Validate custom Resend OTP code if stored
-    if (userRecord.reset_otp && userRecord.reset_otp !== cleanOtp) {
+    // 2. Validate custom Resend OTP code is present and matches
+    if (!userRecord.reset_otp || userRecord.reset_otp !== cleanOtp) {
       return NextResponse.json(
         { error: "Invalid OTP code. Please check the 6-digit code sent to your email." },
         { status: 403 }
       );
     }
 
-    if (userRecord.reset_otp_expires_at && new Date(userRecord.reset_otp_expires_at) < new Date()) {
+    if (!userRecord.reset_otp_expires_at || new Date(userRecord.reset_otp_expires_at) < new Date()) {
       return NextResponse.json(
         { error: "OTP code has expired. Please request a new password reset code." },
         { status: 403 }

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { validateAdminCredentials } from "@/utils/adminStore";
-import { ADMIN_SESSION_COOKIE } from "@/utils/adminAuth";
+import { createClient } from "@/utils/supabase/server";
 
 export async function POST(req: Request) {
   try {
@@ -14,9 +13,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const admin = await validateAdminCredentials(email.trim(), password);
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password
+    });
 
-    if (!admin) {
+    if (error || !data.user) {
       return NextResponse.json(
         { 
           success: false, 
@@ -26,49 +29,29 @@ export async function POST(req: Request) {
       );
     }
 
-    // If admin is using a temporary password or requires password change, require permanent password change
-    const needsPasswordChange = admin.requiresPasswordChange || (Boolean(admin.temporaryPassword) && !admin.password);
+    // Now check if they actually have admin rights
+    const { getSuperAdminSession } = await import("@/utils/adminAuth");
+    const adminSession = await getSuperAdminSession();
 
-    if (needsPasswordChange) {
-      return NextResponse.json({
-        success: true,
-        requiresPasswordChange: true,
-        email: admin.email,
-        fullName: admin.fullName,
-        role: admin.role,
-        message: "Temporary password verified. Please set your new permanent password to continue."
-      });
+    if (!adminSession.isAuthenticated) {
+      // Not an admin, sign them out
+      await supabase.auth.signOut();
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: "Access denied. You do not have administrator privileges." 
+        },
+        { status: 403 }
+      );
     }
-
-    // Generate 7-day session token
-    const sessionPayload = {
-      id: admin.id,
-      email: admin.email,
-      fullName: admin.fullName,
-      role: admin.role,
-      isSuperAdmin: admin.isSuperAdmin,
-      exp: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
-    };
-
-    const sessionCookieValue = Buffer.from(JSON.stringify(sessionPayload)).toString("base64");
-
-    const cookieStore = await cookies();
-    cookieStore.set(ADMIN_SESSION_COOKIE, sessionCookieValue, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60 // 7 days
-    });
 
     return NextResponse.json({
       success: true,
       redirect: "/admin",
       admin: {
-        id: admin.id,
-        fullName: admin.fullName,
-        email: admin.email,
-        role: admin.role
+        id: adminSession.user?.id,
+        email: adminSession.user?.email,
+        role: adminSession.role
       }
     });
 

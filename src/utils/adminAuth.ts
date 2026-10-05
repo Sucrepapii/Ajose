@@ -43,60 +43,21 @@ export interface AdminSession {
 }
 
 export async function getSuperAdminSession(): Promise<AdminSession> {
-  const cookieStore = await cookies();
-  const adminCookie = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
-
-  // 1. Check direct Admin Session Cookie
-  if (adminCookie) {
-    try {
-      const sessionData = JSON.parse(
-        Buffer.from(adminCookie, "base64").toString("utf-8")
-      );
-
-      if (sessionData && sessionData.email && (!sessionData.exp || sessionData.exp > Date.now())) {
-        const admin = await getAdminByEmail(sessionData.email);
-        if (admin && admin.status === "active") {
-          return {
-            isAuthenticated: true,
-            isSuperAdmin: admin.isSuperAdmin || admin.role === "Super Admin",
-            user: {
-              id: admin.id,
-              email: admin.email
-            },
-            profile: {
-              first_name: admin.fullName,
-              role: admin.role,
-              is_super_admin: admin.isSuperAdmin
-            },
-            role: admin.role
-          };
-        }
-      }
-    } catch (err) {
-      console.warn("Failed to parse admin session cookie:", err);
-    }
-  }
-
-  // 2. Check Supabase Auth User
+  // Check Supabase Auth User directly (secure, signed, revocable)
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user && user.email) {
-      // Check if user is in admin store or has super admin privileges
-      const adminInStore = await getAdminByEmail(user.email);
-      
       const { data: profile } = await supabase
         .from("users")
         .select("*")
         .eq("id", user.id)
         .maybeSingle();
 
-      const isSuper = isSuperAdminEmail(user.email) || 
-                      Boolean(profile?.is_super_admin) || 
-                      Boolean(adminInStore?.isSuperAdmin);
+      const isSuper = isSuperAdminEmail(user.email) || Boolean(profile?.is_super_admin);
 
-      if (isSuper || adminInStore) {
+      if (isSuper) {
         return {
           isAuthenticated: true,
           isSuperAdmin: isSuper,
@@ -105,11 +66,11 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
             email: user.email
           },
           profile: {
-            first_name: adminInStore?.fullName || profile?.first_name || user.email.split("@")[0],
-            role: adminInStore?.role || "Super Admin",
+            first_name: profile?.first_name || user.email.split("@")[0],
+            role: "Super Admin",
             is_super_admin: isSuper
           },
-          role: adminInStore?.role || "Super Admin"
+          role: "Super Admin"
         };
       }
     }
