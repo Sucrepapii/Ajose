@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
     const accountId = authData.id || authData.data?.id;
 
     // 2. Fetch Account Details
-    let accountName = "Verified Account";
-    let accountNumber = "0123456789";
-    let bankName = "Commercial Bank";
+    let accountName = "";
+    let accountNumber = "";
+    let bankName = "";
 
     try {
       const detailsRes = await fetch(`https://api.withmono.com/v2/accounts/${accountId}`, {
@@ -47,15 +47,22 @@ export async function POST(req: NextRequest) {
           "mono-sec-key": monoSecretKey
         }
       });
-      if (detailsRes.ok) {
-        const detailsData = await detailsRes.json();
-        const acc = detailsData.data || detailsData.account || detailsData;
-        accountName = acc.name || acc.accountName || accountName;
-        accountNumber = acc.accountNumber || accountNumber;
-        bankName = acc.institution?.name || bankName;
+      if (!detailsRes.ok) {
+        throw new Error("Mono API rejected account details request.");
       }
-    } catch (e) {
-      console.warn("Could not fetch full account details:", e);
+      const detailsData = await detailsRes.json();
+      const acc = detailsData.data || detailsData.account || detailsData;
+      
+      accountName = acc.name || acc.accountName;
+      accountNumber = acc.accountNumber;
+      bankName = acc.institution?.name;
+
+      if (!accountNumber) {
+        throw new Error("Account number could not be retrieved from Mono.");
+      }
+    } catch (e: any) {
+      console.error("Could not fetch full account details:", e);
+      throw new Error("Failed to retrieve valid account details from your bank: " + e.message);
     }
 
     // 3. Update Supabase user record in database

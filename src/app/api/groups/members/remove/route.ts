@@ -115,11 +115,10 @@ export async function POST(req: Request) {
     const contribAmount = group.contribution_amount || 50000;
     const adminShare = Math.round(contribAmount * 0.10);
     const platformShare = Math.round(contribAmount * 0.05);
-    const defaultTotalFine = adminShare + platformShare; // 15% total
+    const fineToApply = adminShare + platformShare; // 15% total enforced from server policy (S13 fix)
 
-    const fineToApply = typeof customFine === "number" && customFine >= 0 ? customFine : defaultTotalFine;
-    const actualAdminShare = Math.round(fineToApply * (10 / 15));
-    const actualPlatformShare = fineToApply - actualAdminShare;
+    const actualAdminShare = adminShare;
+    const actualPlatformShare = platformShare;
 
     // 1. Execute Mono Direct Debit for the 15% exit fine from the departing member
     let monoDebitResult: any = null;
@@ -143,18 +142,22 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Execute Mono Payout for the 10% Admin compensation share to the Admin's bank account
+    // 2. Execute Mono Payout for the 10% Admin compensation share ONLY IF DEBIT SETTLES (S13 fix)
     let monoAdminPayoutResult: any = null;
-    if (actualAdminShare > 0) {
+    if (actualAdminShare > 0 && monoDebitResult?.success) {
       const { data: adminUser } = await supabaseAdmin
         .from("users")
         .select("first_name, last_name, bank_name, account_number, account_name")
         .eq("id", group.admin_id || user.id)
         .single();
 
+      if (!adminUser?.account_number) {
+        throw new Error("Admin has no bank account configured to receive the fine compensation.");
+      }
+
       const payoutRef = `ajose_fine_admin_payout_${groupId}_${Date.now()}`;
       monoAdminPayoutResult = await initiatePayoutWithMono({
-        recipientAccountNumber: adminUser?.account_number || "0123456789",
+        recipientAccountNumber: adminUser.account_number,
         recipientBankCode: getBankCode(adminUser?.bank_name),
         amount: actualAdminShare,
         narration: `Àjọṣe Fine: 10% Admin Share (${group.name})`,

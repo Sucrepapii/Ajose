@@ -126,11 +126,34 @@ export async function POST(req: NextRequest) {
                 ? `${adminUser.first_name} ${adminUser.last_name || ""}`.trim()
                 : "Admin";
 
+              if (!adminUser?.account_number) {
+                // Fail the payout instead of using a fallback (F10 fix)
+                await supabase.from("transactions").insert({
+                  group_id,
+                  user_id: admin.user_id,
+                  amount: finalPayoutAmount,
+                  type: "payout",
+                  status: "failed",
+                  description: `Turn ${cycle_turn} payout failed: Admin has no bank account configured.`,
+                  cycle_turn
+                });
+                
+                // Notify admin about the failure
+                await supabase.from("notifications").insert({
+                  user_id: admin.user_id,
+                  title: `⚠️ Action Required: Payout Failed`,
+                  message: `The payout for Turn ${cycle_turn} could not be completed because you have not linked a bank account. Please link your account in settings.`,
+                  type: "warning"
+                });
+                
+                return NextResponse.json({ received: true, status: "payout_failed_missing_account" });
+              }
+
               const payoutReference = `ajose_pool_${group.id}_turn${cycle_turn}_admin_${Date.now()}`;
 
               // Trigger Mono Payout API to credit the Admin directly (minus platform fee)
               const payoutResult = await initiatePayoutWithMono({
-                recipientAccountNumber: adminUser?.account_number || "0123456789",
+                recipientAccountNumber: adminUser.account_number,
                 recipientBankCode: getBankCode(adminUser?.bank_name),
                 amount: finalPayoutAmount,
                 narration: `Àjọṣe Pool (Turn ${cycle_turn}) - ${group.name}`,

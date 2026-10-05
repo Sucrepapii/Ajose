@@ -23,12 +23,13 @@ async function handlePreDebitReminders(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
-    const urlSecret = req.nextUrl.searchParams.get("secret");
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}` && urlSecret !== cronSecret) {
-      if (process.env.NODE_ENV === "production") {
-        return NextResponse.json({ error: "Unauthorized cron trigger" }, { status: 401 });
-      }
+    if (!cronSecret) {
+      return NextResponse.json({ error: "CRON_SECRET is not configured." }, { status: 500 });
+    }
+
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: "Unauthorized cron trigger" }, { status: 401 });
     }
 
     const supabase = createAdminClient();

@@ -43,14 +43,13 @@ async function handleSweep(req: NextRequest) {
     // c) Authenticated Group Admin of specificGroupId
     const authHeader = req.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
-    const urlSecret = req.nextUrl.searchParams.get("secret");
     const specificGroupId = req.nextUrl.searchParams.get("groupId");
 
     let isAuthorized = false;
-    if (cronSecret && (authHeader === `Bearer ${cronSecret}` || urlSecret === cronSecret)) {
+    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
       isAuthorized = true;
-    } else if (!cronSecret && process.env.NODE_ENV !== "production") {
-      isAuthorized = true;
+    } else if (!cronSecret) {
+       return NextResponse.json({ error: "CRON_SECRET is not configured." }, { status: 500 });
     } else {
       // Check for authenticated SuperAdmin
       try {

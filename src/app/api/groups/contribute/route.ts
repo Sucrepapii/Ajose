@@ -2,21 +2,15 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { sendEmail } from "@/utils/resend";
 import { getContributionReceiptEmailTemplate } from "@/utils/emailTemplates";
-
-import { createClient } from "@/utils/supabase/server";
+import { requireUser } from "@/utils/authHelpers";
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized. You must be logged in." }, { status: 401 });
-    }
-
+    const user = await requireUser();
+    const userId = user.id;
+    
     const body = await req.json();
     const { groupId, amount, currentTurn, method } = body;
-    const userId = user.id;
 
     if (!groupId || !amount) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
