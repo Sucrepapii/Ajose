@@ -23,45 +23,7 @@ const DATA_DIR = path.join(process.cwd(), "src", "data");
 const ADMINS_FILE = path.join(DATA_DIR, "admins.json");
 
 // Default initial seeded admins
-const SEED_ADMINS: AdminUser[] = [
-  {
-    id: "admin-samuel-paylode",
-    fullName: "Samuel Akinboro",
-    email: "samuel@paylodeservices.com",
-    role: "Super Admin",
-    status: "active",
-    createdAt: "2026-08-01T00:00:00.000Z",
-    isSuperAdmin: true,
-    createdBy: "System Seed",
-    password: "AjoseAdmin2026!",
-    requiresPasswordChange: false
-  },
-  {
-    id: "admin-mu5lzg0j-7mn6",
-    fullName: "Kemi Adeleke",
-    email: "kemi@ajose.ng",
-    role: "Operations Lead",
-    status: "active",
-    createdAt: "2026-09-17T14:12:16.723Z",
-    isSuperAdmin: false,
-    createdBy: "samuel@paylodeservices.com",
-    password: "KemiSecure2026!",
-    requiresPasswordChange: false
-  },
-  {
-    id: "admin-mu5mek7a-ml8w",
-    fullName: "Tunde Bello",
-    email: "tunde@ajose.ng",
-    role: "Risk & Compliance",
-    requiresPasswordChange: false,
-    status: "active",
-    createdAt: "2026-09-17T14:24:01.990Z",
-    isSuperAdmin: false,
-    createdBy: "samuel@paylodeservices.com",
-    password: "MyPermanentSecurePassword2026!",
-    lastLogin: "2026-09-17T14:24:03.560Z"
-  }
-];
+const SEED_ADMINS: AdminUser[] = [];
 
 // In-memory fallback in case filesystem is restricted
 let memoryAdmins: AdminUser[] = [...SEED_ADMINS];
