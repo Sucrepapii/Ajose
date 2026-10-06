@@ -380,16 +380,6 @@ export async function verifyIdentityWithMono({
       }
     } catch (err: any) {
       console.error("Mono identity lookup API error:", err);
-      if (process.env.NODE_ENV !== "production") {
-        return {
-          verified: true,
-          bvnValid: true,
-          ninValid: isNinValid,
-          nameMatch: true,
-          details: { firstName, lastName, bvn, nin, phone },
-          message: "BVN verified (Sandbox Fallback).",
-        };
-      }
       return {
         verified: false,
         bvnValid: false,
@@ -400,20 +390,12 @@ export async function verifyIdentityWithMono({
     }
   }
 
-  // Simulated Mono lookup verification for sandbox / dev / test key testing
   return {
-    verified: true,
-    bvnValid: true,
+    verified: false,
+    bvnValid: false,
     ninValid: isNinValid,
-    nameMatch: true,
-    details: {
-      firstName: firstName || "Verified",
-      lastName: lastName || "User",
-      bvn,
-      nin,
-      phone,
-    },
-    message: "Identity verified via Mono Sandbox.",
+    nameMatch: false,
+    message: "Identity verification failed: Live Mono Secret Key is missing or invalid.",
   };
 }
 
