@@ -300,25 +300,37 @@ export async function verifyIdentityWithMono({
         const bvnData = await bvnRes.json();
         const bvnRecord = bvnData.data || bvnData;
 
-        const returnedFirst = (bvnRecord?.first_name || "").toLowerCase().trim();
-        const returnedLast = (bvnRecord?.last_name || "").toLowerCase().trim();
-        const returnedMiddle = (bvnRecord?.middle_name || "").toLowerCase().trim();
-        const allReturnedNames = `${returnedFirst} ${returnedLast} ${returnedMiddle}`.trim();
+        const returnedFirst = (bvnRecord?.first_name || bvnRecord?.firstName || "").toLowerCase().trim();
+        const returnedLast = (bvnRecord?.last_name || bvnRecord?.lastName || "").toLowerCase().trim();
+        const returnedMiddle = (bvnRecord?.middle_name || bvnRecord?.middleName || "").toLowerCase().trim();
+        const returnedFull = (bvnRecord?.full_name || bvnRecord?.name || "").toLowerCase().trim();
+
+        const allReturnedString = `${returnedFirst} ${returnedLast} ${returnedMiddle} ${returnedFull}`.trim();
+        const returnedTokens = allReturnedString.split(/\s+/).filter(Boolean);
 
         const providedFirst = (firstName || "").toLowerCase().trim();
         const providedLast = (lastName || "").toLowerCase().trim();
+        const providedTokens = `${providedFirst} ${providedLast}`.split(/\s+/).filter(Boolean);
 
-        const isFirstMatch = !providedFirst || allReturnedNames.includes(providedFirst) || providedFirst.includes(returnedFirst);
-        const isLastMatch = !providedLast || allReturnedNames.includes(providedLast) || providedLast.includes(returnedLast);
-        const nameMatch = isFirstMatch || isLastMatch;
+        let nameMatch = true;
+
+        if (providedTokens.length > 0 && returnedTokens.length > 0) {
+          // Check if at least one provided name token matches any returned BVN name token
+          const tokenMatches = providedTokens.filter(pToken => 
+            returnedTokens.some(rToken => rToken.includes(pToken) || pToken.includes(rToken))
+          );
+
+          nameMatch = tokenMatches.length > 0;
+        }
 
         if (!nameMatch && providedFirst && providedLast) {
+          const displayName = [bvnRecord?.first_name || bvnRecord?.firstName, bvnRecord?.last_name || bvnRecord?.lastName].filter(Boolean).join(" ") || "NIBSS Record";
           return {
             verified: false,
             bvnValid: true,
             ninValid: true,
             nameMatch: false,
-            message: `BVN name mismatch. The name on BVN (${bvnRecord?.first_name || ''} ${bvnRecord?.last_name || ''}) does not match your registered name (${firstName} ${lastName}).`,
+            message: `BVN name mismatch. The name on your BVN (${displayName}) does not match your registered name (${firstName} ${lastName}).`,
           };
         }
 
@@ -328,11 +340,11 @@ export async function verifyIdentityWithMono({
           ninValid: true,
           nameMatch: true,
           details: {
-            firstName: bvnRecord?.first_name || firstName,
-            lastName: bvnRecord?.last_name || lastName,
+            firstName: bvnRecord?.first_name || bvnRecord?.firstName || firstName,
+            lastName: bvnRecord?.last_name || bvnRecord?.lastName || lastName,
             bvn,
             nin,
-            phone: bvnRecord?.phone || phone,
+            phone: bvnRecord?.phone || bvnRecord?.phoneNumber || phone,
           },
           message: "BVN identity verified successfully via live Mono API.",
         };
@@ -340,7 +352,12 @@ export async function verifyIdentityWithMono({
         const errData = await bvnRes.json().catch(() => ({ message: `Mono API HTTP ${bvnRes.status}` }));
         console.error("Mono Live API rejected BVN:", errData);
 
-        const errorMsg = errData?.message || errData?.error || errData?.data?.message || "Mono API rejected BVN lookup.";
+        const errorMsg =
+          errData?.message ||
+          errData?.error ||
+          errData?.data?.message ||
+          errData?.description ||
+          `Mono API error (HTTP ${bvnRes.status})`;
 
         if (process.env.NODE_ENV !== "production") {
           return {
