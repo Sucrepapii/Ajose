@@ -1,12 +1,6 @@
 describe("Row Level Security (RLS) Tests", () => {
-  let supabaseUrl = "https://zivlydwhgofbnhgofbnh.supabase.co";
-  let anonKey = "dummy-anon-key";
-
-  beforeEach(() => {
-    const cypressEnv = (Cypress as unknown as { env: (k: string) => string });
-    supabaseUrl = cypressEnv.env("NEXT_PUBLIC_SUPABASE_URL") || supabaseUrl;
-    anonKey = cypressEnv.env("NEXT_PUBLIC_SUPABASE_ANON_KEY") || anonKey;
-  });
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://zivlydwhgofbnhgofbnh.supabase.co";
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "dummy-anon-key";
 
   it("should prevent anonymous access to transactions table", () => {
     cy.request({
