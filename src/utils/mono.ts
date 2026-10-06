@@ -45,7 +45,7 @@ export async function verifyTransferWithMono({
   senderName?: string;
   adminBankName?: string;
 }): Promise<MonoTransactionMatch> {
-  const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
+  const monoSecretKey = process.env.LIVE_MONO_SECRET_KEY || process.env.MONO_SECRET_KEY || (process.env.NODE_ENV === "production" ? undefined : "test_sk_m965s64o22p1sovu3koh");
 
   // 1. Live Mono API check if secret key and account ID are available
   if (monoSecretKey && adminAccountId && adminAccountId !== "simulated_account") {

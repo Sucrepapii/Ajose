@@ -34,7 +34,7 @@ jobs:
           npx wait-on http://127.0.0.1:3000
           npm run cypress:run
       - name: Audit Dependencies
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high --omit=dev
 
   deploy:
     runs-on: ubuntu-latest

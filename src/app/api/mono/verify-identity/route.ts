@@ -5,6 +5,14 @@ export async function POST(req: Request) {
   try {
     const { bvn, nin, phone, firstName: bodyFirst, lastName: bodyLast } = await req.json();
 
+    console.log("[Mono Verify Route Debug]", {
+      hasMonoSecret: !!process.env.MONO_SECRET_KEY,
+      hasMonoLookupSecret: !!process.env.MONO_LOOKUP_SECRET_KEY,
+      hasLiveMonoSecret: !!process.env.LIVE_MONO_SECRET_KEY,
+      hasLiveMonoLookupSecret: !!process.env.LIVE_MONO_LOOKUP_SECRET_KEY,
+      nodeEnv: process.env.NODE_ENV,
+    });
+
     if (!bvn) {
       return NextResponse.json(
         { error: "BVN is required for identity verification." },
@@ -33,6 +41,13 @@ export async function POST(req: Request) {
         firstName = profile.first_name || firstName;
         lastName = profile.last_name || lastName;
       }
+
+      // Fallback to user_metadata (e.g. Google OAuth metadata) if names are still missing
+      if (!firstName || !lastName) {
+        const meta = user.user_metadata || {};
+        firstName = firstName || meta.first_name || meta.given_name || (meta.full_name ? meta.full_name.split(' ')[0] : "");
+        lastName = lastName || meta.last_name || meta.family_name || (meta.full_name ? meta.full_name.split(' ').slice(1).join(' ') : "");
+      }
     }
 
     const verificationResult = await verifyIdentityWithMono({
@@ -50,7 +65,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Optional: Strictly check if nameMatch is true
+    // Strictly check if nameMatch is true
     if (!verificationResult.nameMatch) {
       return NextResponse.json(
         { error: "BVN validation failed: The name associated with this BVN does not match your registered profile." },
@@ -62,16 +77,29 @@ export async function POST(req: Request) {
       const { createAdminClient } = await import("@/utils/supabase/admin");
       const supabaseAdmin = createAdminClient();
 
+      const updateData: Record<string, any> = {
+        bvn_verified: true,
+        credit_score: 85,
+      };
+
+      if (phone) updateData.phone = phone;
+      if (bvn) updateData.bvn = bvn;
+      if (nin) updateData.nin = nin;
+
+      if (verificationResult.details?.firstName) {
+        updateData.first_name = verificationResult.details.firstName;
+      }
+      if (verificationResult.details?.lastName) {
+        updateData.last_name = verificationResult.details.lastName;
+      }
+
       const { error: dbErr } = await supabaseAdmin
         .from('users')
-        .update({
-          phone: phone || "",
-          bvn_verified: true,
-          credit_score: 85,
-        })
+        .update(updateData)
         .eq('id', user.id);
 
       if (dbErr) {
+        console.error("Failed to update user profile upon BVN verification:", dbErr);
         throw new Error("Identity verified, but failed to update profile.");
       }
     }
