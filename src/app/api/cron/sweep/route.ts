@@ -48,8 +48,6 @@ async function handleSweep(req: NextRequest) {
     let isAuthorized = false;
     if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
       isAuthorized = true;
-    } else if (!cronSecret) {
-       return NextResponse.json({ error: "CRON_SECRET is not configured." }, { status: 500 });
     } else {
       // Check for authenticated SuperAdmin
       try {

@@ -144,9 +144,11 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     console.error("Contribute error:", error);
+    const message = error?.message || "Failed to process contribution";
+    const status = message.toLowerCase().includes("unauthorized") ? 401 : message.toLowerCase().includes("forbidden") ? 403 : 500;
     return NextResponse.json(
-      { error: error?.message || "Failed to process contribution" },
-      { status: 500 }
+      { error: message },
+      { status }
     );
   }
 }
