@@ -191,7 +191,8 @@ async function handleSweep(req: NextRequest) {
         details: [] as any[]
       };
 
-      for (const member of members) {
+      await Promise.allSettled(members.map(async (member) => {
+        try {
         const userProfile = member.users as any;
         const displayName = userProfile?.first_name
           ? `${userProfile.first_name} ${userProfile.last_name || ""}`.trim()
@@ -205,7 +206,7 @@ async function handleSweep(req: NextRequest) {
             name: displayName,
             status: "already_paid"
           });
-          continue;
+          return;
         }
 
         // Non-Contributing Trustee: Admin organizes the group and manages the pool; they do not pay.
@@ -217,7 +218,7 @@ async function handleSweep(req: NextRequest) {
             role: "admin",
             status: "skipped_non_contributing_trustee"
           });
-          continue;
+          return;
         }
 
         const isDaily = group.frequency === "daily";
@@ -333,7 +334,17 @@ async function handleSweep(req: NextRequest) {
             error: debitMessage
           });
         }
-      }
+      } catch (memberErr: any) {
+        console.error("Member sweep failed:", memberErr);
+          groupSummary.failedDebits++;
+          groupSummary.details.push({
+            userId: member.user_id,
+            name: "Member",
+            status: "failed",
+            error: memberErr.message || "Unexpected error during debit processing"
+          });
+        }
+      }));
 
       sweepResults.push(groupSummary);
     }

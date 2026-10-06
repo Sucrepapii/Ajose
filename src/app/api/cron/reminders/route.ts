@@ -131,6 +131,8 @@ async function handlePreDebitReminders(req: NextRequest) {
       });
 
       const groupRemindedMembers: string[] = [];
+      const notificationsToInsert: any[] = [];
+      const emailPromises: Promise<any>[] = [];
 
       for (const m of unpaidMembers) {
         const u = m.users as any;
@@ -143,32 +145,38 @@ async function handlePreDebitReminders(req: NextRequest) {
         const feeAmount = (group.contribution_amount * feePct) / 100;
         const totalDebitAmount = group.contribution_amount + feeAmount;
 
-        // In-app notification
-        await supabase.from("notifications").insert({
+        // Queue in-app notification for bulk insert
+        notificationsToInsert.push({
           user_id: u.id,
           title: `Auto-Debit Tomorrow: ₦${totalDebitAmount.toLocaleString()}`,
           message: `Your scheduled auto-debit for "${group.name}" is tomorrow (${formattedDueDate}). This includes your base contribution of ₦${group.contribution_amount.toLocaleString()} plus a ${feePct}% platform fee (₦${feeAmount.toLocaleString()}). Please ensure your account is funded.`,
           type: "warning",
         });
 
-        // Email notification (1 day before auto debit)
+        // Queue email notification for concurrent execution (P5 fix)
         if (userEmail && userEmail.includes("@")) {
-          try {
-            await sendPreDebitReminderEmail({
+          emailPromises.push(
+            sendPreDebitReminderEmail({
               to: userEmail,
               userName,
               groupName: group.name,
               amount: totalDebitAmount,
               dueDate: formattedDueDate,
               frequency: group.frequency || "monthly",
-            });
-          } catch (emailErr) {
-            console.warn(`Failed sending pre-debit email to ${userEmail}:`, emailErr);
-          }
+            }).catch(err => console.warn(`Failed sending pre-debit email to ${userEmail}:`, err))
+          );
         }
 
         groupRemindedMembers.push(userName);
         totalReminded++;
+      }
+
+      if (notificationsToInsert.length > 0) {
+        await supabase.from("notifications").insert(notificationsToInsert);
+      }
+      
+      if (emailPromises.length > 0) {
+        await Promise.allSettled(emailPromises);
       }
 
       results.push({
