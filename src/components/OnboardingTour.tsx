@@ -5,21 +5,24 @@ import { Joyride, STATUS } from "react-joyride";
 import type { Step, EventData } from "react-joyride";
 
 export function OnboardingTour() {
-  const [run, setRun] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Only run tour if they haven't seen it yet
+  const [run, setRun] = useState(() => {
+    if (typeof window === "undefined") return false;
     const hasSeenTour = localStorage.getItem("ajose_onboarding_tour");
     if (!hasSeenTour) {
-      setRun(true);
-      // Set the flag immediately when the tour starts. 
-      // If we wait for the callback and they navigate away midway, it will replay next time!
       localStorage.setItem("ajose_onboarding_tour", "true");
+      return true;
     }
-    
+    return false;
+  });
+  const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== "undefined") {
-      setIsMobile(window.innerWidth < 768);
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
       const handleResize = () => setIsMobile(window.innerWidth < 768);
       window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);

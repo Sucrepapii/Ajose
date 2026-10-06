@@ -11,6 +11,13 @@ import { Browser } from "@capacitor/browser";
 
 import Image from "next/image";
 
+interface VerifiedGroupInfo {
+  name?: string;
+  contribution_amount?: number | string;
+  frequency?: string;
+  [key: string]: unknown;
+}
+
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -18,45 +25,40 @@ export default function SignupPage() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [verifiedGroup, setVerifiedGroup] = useState<any | null>(null);
+  const [verifiedGroup, setVerifiedGroup] = useState<VerifiedGroupInfo | null>(null);
 
   // Form State
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    password: "",
-    bvn: "",
-    nin: "",
-    inviteCode: ""
-  });
-
-  // Auto-detect invite code from URL parameters (?next=/invite/..., ?code=..., ?invite=...)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    const directCode = params.get("code") || params.get("invite");
-    const nextParam = params.get("next");
-    let initialCode = directCode || "";
-
-    if (!initialCode && nextParam && nextParam.includes("/invite/")) {
-      const parts = nextParam.split("/invite/");
-      if (parts[1]) {
-        initialCode = parts[1].split("?")[0].split("/")[0].trim();
+  const [formData, setFormData] = useState(() => {
+    let initialCode = "";
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const directCode = params.get("code") || params.get("invite");
+      const nextParam = params.get("next");
+      initialCode = directCode || "";
+      if (!initialCode && nextParam && nextParam.includes("/invite/")) {
+        const parts = nextParam.split("/invite/");
+        if (parts[1]) {
+          initialCode = parts[1].split("?")[0].split("/")[0].trim();
+        }
       }
     }
-
-    if (initialCode) {
-      setFormData(prev => ({ ...prev, inviteCode: initialCode }));
-    }
-  }, []);
+    return {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      password: "",
+      bvn: "",
+      nin: "",
+      inviteCode: initialCode
+    };
+  });
 
   // Validate and display group info when inviteCode is provided
   useEffect(() => {
     const raw = formData.inviteCode.trim();
     if (!raw || raw.length < 3) {
-      setVerifiedGroup(null);
+      setVerifiedGroup(prev => (prev === null ? prev : null));
       return;
     }
 

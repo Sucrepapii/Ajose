@@ -35,7 +35,7 @@ export function MobileDashboardHeader({
 
   // Close drawer on route change
   useEffect(() => {
-    setIsOpen(false);
+    setIsOpen(prev => (prev ? false : prev));
   }, [pathname]);
 
   // Prevent background scrolling when mobile menu is open

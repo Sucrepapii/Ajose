@@ -53,9 +53,9 @@ export function AdminAutoLogout() {
     // If the warning modal is currently shown, ignore passive mouse jitters
     // so the admin must consciously click or press a key
     clearAllTimers();
-    setShowWarning(false);
+    setShowWarning(prev => (prev ? false : prev));
     isWarningActiveRef.current = false;
-    setSecondsRemaining(60);
+    setSecondsRemaining(prev => (prev === 60 ? prev : 60));
 
     // 1. Set warning timer (fires at 9 minutes)
     warningTimeoutRef.current = setTimeout(() => {

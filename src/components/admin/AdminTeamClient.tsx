@@ -44,12 +44,12 @@ export function AdminTeamClient({
   // New Admin Form State
   const generatePassword = () => `Ajose${Math.floor(1000 + Math.random() * 9000)}!`;
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     fullName: "",
     email: "",
     role: "Operations Lead" as AdminRole,
     temporaryPassword: generatePassword()
-  });
+  }));
 
   // Newly created credentials state to show in success dialog
   const [createdAdmin, setCreatedAdmin] = useState<AdminUser | null>(null);
