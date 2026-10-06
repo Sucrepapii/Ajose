@@ -425,7 +425,7 @@ export async function initiatePayoutWithMono({
   narration: string;
   reference: string;
 }): Promise<MonoPayoutResult> {
-  const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
+  const monoSecretKey = process.env.MONO_DISBURSE_SECRET_KEY || process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
   const isLive = monoSecretKey && !monoSecretKey.startsWith("test_");
 
   if (isLive) {
@@ -536,7 +536,7 @@ export async function initiateMonoDirectDebit({
   narration: string;
   reference: string;
 }): Promise<MonoDebitResult> {
-  const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
+  const monoSecretKey = process.env.MONO_PAYMENTS_SECRET_KEY || process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
   const isLive = monoSecretKey && !monoSecretKey.startsWith("test_");
 
   if (isLive && mandateId) {
