@@ -359,17 +359,6 @@ export async function verifyIdentityWithMono({
           errData?.description ||
           `Mono API error (HTTP ${bvnRes.status})`;
 
-        if (process.env.NODE_ENV !== "production") {
-          return {
-            verified: true,
-            bvnValid: true,
-            ninValid: isNinValid,
-            nameMatch: true,
-            details: { firstName, lastName, bvn, nin, phone },
-            message: `BVN verified (Sandbox Mode). Live lookup response: ${errorMsg}`,
-          };
-        }
-
         return {
           verified: false,
           bvnValid: false,

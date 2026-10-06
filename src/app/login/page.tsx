@@ -57,37 +57,7 @@ export default function LoginPage() {
         throw new Error("Please enter your email and password.");
       }
 
-      // 1. Check if user is an Administrator via Admin Authentication Gateway
-      try {
-        const adminRes = await fetch("/api/admin/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: cleanEmail, password: cleanPassword })
-        });
-        const adminData = await adminRes.json();
 
-        if (adminRes.ok && adminData.success) {
-          // If admin has a temporary password, guide them to set permanent password
-          if (adminData.requiresPasswordChange) {
-            setPendingAdminInfo({
-              email: adminData.email,
-              fullName: adminData.fullName,
-              role: adminData.role,
-              tempPassword: cleanPassword
-            });
-            setIsPasswordChangeRequired(true);
-            toast.info("Temporary password verified. Please set your new permanent password.");
-            return;
-          }
-
-          toast.success(`Welcome, ${adminData.admin.fullName}! Access authorized.`);
-          router.push("/admin");
-          router.refresh();
-          return;
-        }
-      } catch (adminErr) {
-        // Continue to standard user login if admin check fails
-      }
 
       // 2. Standard Member Authentication via Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
