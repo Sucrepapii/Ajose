@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
       if (dbErr) {
         console.error("Failed to update user profile upon BVN verification:", dbErr);
-        throw new Error("Identity verified, but failed to update profile.");
+        throw new Error("Identity verified, but failed to update profile. Details: " + dbErr.message);
       }
     }
 
