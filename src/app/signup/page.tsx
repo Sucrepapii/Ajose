@@ -252,10 +252,11 @@ export default function SignupPage() {
 
           const { error: upsertError } = await supabase
             .from('users')
-            .upsert(profilePayload);
+            .update(profilePayload)
+            .eq('id', authData.user.id);
 
           if (upsertError) {
-            console.warn("User profile upsert warning:", upsertError.message);
+            console.warn("User profile update warning:", upsertError.message);
           }
 
           // 5. Auto-join group if inviteCode or next parameter contains a group ID
