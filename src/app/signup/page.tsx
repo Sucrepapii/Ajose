@@ -244,8 +244,6 @@ export default function SignupPage() {
             first_name: formData.firstName,
             last_name: formData.lastName,
             phone: formData.phone,
-            bvn: formData.bvn,
-            nin: formData.nin,
             bvn_verified: true,
             nin_verified: true,
             credit_score: 85,

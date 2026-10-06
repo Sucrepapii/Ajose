@@ -83,8 +83,6 @@ export async function POST(req: Request) {
       };
 
       if (phone) updateData.phone = phone;
-      if (bvn) updateData.bvn = bvn;
-      if (nin) updateData.nin = nin;
 
       if (verificationResult.details?.firstName) {
         updateData.first_name = verificationResult.details.firstName;
