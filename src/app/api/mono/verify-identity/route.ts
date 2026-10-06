@@ -3,7 +3,7 @@ import { verifyIdentityWithMono } from "@/utils/mono";
 
 export async function POST(req: Request) {
   try {
-    const { bvn, nin, phone } = await req.json();
+    const { bvn, nin, phone, firstName: bodyFirst, lastName: bodyLast } = await req.json();
 
     if (!bvn) {
       return NextResponse.json(
@@ -16,29 +16,30 @@ export async function POST(req: Request) {
     const supabaseServer = await createClient();
     const { data: { user } } = await supabaseServer.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    let firstName = bodyFirst;
+    let lastName = bodyLast;
 
-    const { createAdminClient } = await import("@/utils/supabase/admin");
-    const supabaseAdmin = createAdminClient();
+    if (user) {
+      const { createAdminClient } = await import("@/utils/supabase/admin");
+      const supabaseAdmin = createAdminClient();
 
-    // Fetch the user's actual registered name to prevent BVN spoofing
-    const { data: profile } = await supabaseAdmin
-      .from('users')
-      .select('first_name, last_name')
-      .eq('id', user.id)
-      .single();
+      const { data: profile } = await supabaseAdmin
+        .from('users')
+        .select('first_name, last_name')
+        .eq('id', user.id)
+        .maybeSingle();
 
-    if (!profile) {
-      return NextResponse.json({ error: "Profile not found." }, { status: 404 });
+      if (profile) {
+        firstName = profile.first_name || firstName;
+        lastName = profile.last_name || lastName;
+      }
     }
 
     const verificationResult = await verifyIdentityWithMono({
       bvn,
       nin,
-      firstName: profile.first_name,
-      lastName: profile.last_name,
+      firstName,
+      lastName,
       phone,
     });
 
@@ -57,17 +58,22 @@ export async function POST(req: Request) {
       );
     }
 
-    const { error: dbErr } = await supabaseAdmin
-      .from('users')
-      .update({
-        phone: phone || "",
-        bvn_verified: true,
-        credit_score: 85,
-      })
-      .eq('id', user.id);
+    if (user) {
+      const { createAdminClient } = await import("@/utils/supabase/admin");
+      const supabaseAdmin = createAdminClient();
 
-    if (dbErr) {
-      throw new Error("Identity verified, but failed to update profile.");
+      const { error: dbErr } = await supabaseAdmin
+        .from('users')
+        .update({
+          phone: phone || "",
+          bvn_verified: true,
+          credit_score: 85,
+        })
+        .eq('id', user.id);
+
+      if (dbErr) {
+        throw new Error("Identity verified, but failed to update profile.");
+      }
     }
 
     return NextResponse.json({

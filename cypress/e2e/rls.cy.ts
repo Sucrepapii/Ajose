@@ -1,5 +1,5 @@
 describe("Row Level Security (RLS) Tests", () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://zivlydwhgofbnhgofbnh.supabase.co";
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://npvwtzmlhpagsdohkuvm.supabase.co";
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "dummy-anon-key";
 
   it("should prevent anonymous access to transactions table", () => {
