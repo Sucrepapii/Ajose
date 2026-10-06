@@ -11,6 +11,10 @@ export async function POST(req: Request) {
       hasLiveMonoSecret: !!process.env.LIVE_MONO_SECRET_KEY,
       hasLiveMonoLookupSecret: !!process.env.LIVE_MONO_LOOKUP_SECRET_KEY,
       nodeEnv: process.env.NODE_ENV,
+      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasServiceRole: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      hasServiceKey: !!process.env.SUPABASE_SERVICE_KEY,
+      serviceRolePrefix: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.substring(0, 15) : null,
     });
 
     if (!bvn) {
@@ -28,10 +32,7 @@ export async function POST(req: Request) {
     let lastName = bodyLast;
 
     if (user) {
-      const { createAdminClient } = await import("@/utils/supabase/admin");
-      const supabaseAdmin = createAdminClient();
-
-      const { data: profile } = await supabaseAdmin
+      const { data: profile } = await supabaseServer
         .from('users')
         .select('first_name, last_name')
         .eq('id', user.id)
@@ -74,9 +75,6 @@ export async function POST(req: Request) {
     }
 
     if (user) {
-      const { createAdminClient } = await import("@/utils/supabase/admin");
-      const supabaseAdmin = createAdminClient();
-
       const updateData: Record<string, any> = {
         bvn_verified: true,
         credit_score: 85,
@@ -91,7 +89,7 @@ export async function POST(req: Request) {
         updateData.last_name = verificationResult.details.lastName;
       }
 
-      const { error: dbErr } = await supabaseAdmin
+      const { error: dbErr } = await supabaseServer
         .from('users')
         .update(updateData)
         .eq('id', user.id);
