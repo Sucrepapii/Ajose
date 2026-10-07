@@ -23,7 +23,7 @@ export async function GET(request: Request) {
           .from("users")
           .select("bvn_verified, phone, status")
           .eq("id", authData.user.id)
-          .single();
+          .maybeSingle();
 
         if (profile?.status === "suspended" || profile?.status === "banned") {
           await supabase.auth.signOut();
