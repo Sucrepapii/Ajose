@@ -5,7 +5,7 @@ import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { ShieldCheck, Fingerprint, Lock, CheckCircle2, Landmark, ArrowRight, Sparkles } from "lucide-react";
+import { ShieldCheck, Fingerprint, Lock, CheckCircle2, Landmark, ArrowRight, Sparkles, X } from "lucide-react";
 
 export function VerifyIdentityClient({ 
   userId, 
@@ -20,7 +20,11 @@ export function VerifyIdentityClient({
   const [isMonoConnecting, setIsMonoConnecting] = useState(false);
   const [bvn, setBvn] = useState("");
 
-  const handleMonoConnect = () => {
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pin, setPin] = useState("");
+  const [isVerifyingPin, setIsVerifyingPin] = useState(false);
+
+  const launchMono = () => {
     const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_fprjgzruanthdmdyckfm";
 
     if (typeof window !== "undefined" && (window as any).Connect) {
@@ -66,6 +70,35 @@ export function VerifyIdentityClient({
     router.push("/dashboard/verify");
   };
 
+  const handleMonoConnectClick = () => {
+    setIsPinModalOpen(true);
+  };
+
+  const verifyPinAndLaunch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pin || pin.length !== 4) return;
+    
+    setIsVerifyingPin(true);
+    try {
+      const res = await fetch("/api/user/pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "verify", pin })
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || "PIN verification failed");
+      
+      setIsPinModalOpen(false);
+      setPin("");
+      launchMono();
+    } catch (err: any) {
+      toast.error(err.message || "Incorrect PIN");
+    } finally {
+      setIsVerifyingPin(false);
+    }
+  };
+
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (bvn.length !== 11) {
@@ -104,7 +137,7 @@ export function VerifyIdentityClient({
         <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <ShieldCheck className="h-10 w-10 text-emerald-400" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Identity &amp; Bank Verified</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">Identity & Bank Verified</h2>
         <p className="text-emerald-400/80 mb-6 max-w-md mx-auto">
           Your identity and direct debit mandate have been verified via Mono Open-Banking. You have full access to Àjọṣe rotational cycles.
         </p>
@@ -125,7 +158,7 @@ export function VerifyIdentityClient({
               <Landmark className="h-6 w-6 text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white mb-1">Verify Identity &amp; Bank</h2>
+              <h2 className="text-xl font-bold text-white mb-1">Verify Identity & Bank</h2>
               <p className="text-zinc-400 text-sm">Required for receiving rotational payouts.</p>
             </div>
           </div>
@@ -136,7 +169,7 @@ export function VerifyIdentityClient({
           <div className="space-y-3">
             <button 
               type="button"
-              onClick={handleMonoConnect}
+              onClick={handleMonoConnectClick}
               disabled={isMonoConnecting}
               className="w-full py-3.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
@@ -196,6 +229,61 @@ export function VerifyIdentityClient({
           </form>
         </div>
       </div>
+
+      {isPinModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center p-4 border-b border-zinc-800">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <Lock className="w-5 h-5" />
+                <h3 className="font-bold text-white">Security Verification</h3>
+              </div>
+              <button 
+                onClick={() => {
+                  setIsPinModalOpen(false);
+                  setPin("");
+                }}
+                className="text-zinc-500 hover:text-white transition-colors p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={verifyPinAndLaunch} className="p-6">
+              <p className="text-zinc-400 text-sm mb-6 text-center">
+                Please enter your 4-digit Transaction Security PIN to authorize bank linkage.
+              </p>
+              
+              <div className="mb-6">
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={4}
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                  className="w-full text-center tracking-[1em] text-3xl font-bold bg-zinc-950 border border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl py-4 text-white outline-none transition-all"
+                  placeholder="••••"
+                  autoFocus
+                  required
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={isVerifyingPin || pin.length !== 4}
+                className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                {isVerifyingPin ? (
+                  <div className="w-5 h-5 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin"></div>
+                ) : (
+                  "Verify & Continue"
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <Script 
         src="https://connect.withmono.com/connect.js" 
