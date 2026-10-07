@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export async function POST(req: Request) {
   try {
-    const { sessionId, otp, bvn } = await req.json();
+    const { sessionId, otp, bvn, phone } = await req.json();
 
     if (!sessionId || !otp) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
@@ -47,8 +47,8 @@ export async function POST(req: Request) {
         last_name: bvnRecord?.last_name || bvnRecord?.lastName,
       };
 
-      if (bvnRecord?.phone_number || bvnRecord?.phone) {
-        updateData.phone = bvnRecord.phone_number || bvnRecord.phone;
+      if (bvnRecord?.phone_number || bvnRecord?.phone || phone) {
+        updateData.phone = bvnRecord.phone_number || bvnRecord.phone || phone;
       }
 
       await supabaseServer.from("users").update(updateData).eq("id", user.id);

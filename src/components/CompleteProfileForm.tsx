@@ -104,7 +104,8 @@ export function CompleteProfileForm({
         body: JSON.stringify({ 
           sessionId, 
           otp: formData.otp, 
-          bvn: formData.bvn 
+          bvn: formData.bvn,
+          phone: formData.phone
         })
       });
       
