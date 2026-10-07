@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { 
   User, 
@@ -105,6 +106,10 @@ export function ProfileSettingsClient({
       if (!res.ok || !data.success) {
         throw new Error(data.message || "Failed to delete account.");
       }
+      
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      
       toast.success("Your account has been deleted.");
       router.push("/signup");
       router.refresh();
