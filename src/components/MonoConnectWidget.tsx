@@ -49,7 +49,7 @@ export function MonoConnectWidget({
   const [selectedBank, setSelectedBank] = useState<typeof BANKS[0] | null>(null);
 
   const handleConnectWithMono = () => {
-    const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "test_pk_dwxofr8xxi2dfheang41";
+    const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_fprjgzruanthdmdyckfm";
 
     if (typeof window !== "undefined" && (window as any).Connect) {
       try {
@@ -417,7 +417,7 @@ export function MonoConnectWidget({
       {/* Official Mono Connect SDK script */}
       <Script 
         src="https://connect.withmono.com/connect.js" 
-        strategy="afterInteractive" 
+        strategy="beforeInteractive" 
       />
     </>
   );
