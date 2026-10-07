@@ -9,15 +9,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "BVN must be exactly 11 digits." }, { status: 400 });
     }
 
-    const monoSecretKey = process.env.MONO_LOOKUP_SECRET_KEY;
+    const monoSecretKey =
+      process.env.MONO_LOOKUP_SECRET_KEY ||
+      process.env.MONO_SECRET_KEY ||
+      process.env.LIVE_MONO_SECRET_KEY;
 
     if (!monoSecretKey) {
-      const keys = Object.keys(process.env).filter(k => k.includes('MONO'));
-      return NextResponse.json({ 
-        error: "Mono configuration error.", 
-        foundKeys: keys,
-        hasKey: !!process.env.MONO_LOOKUP_SECRET_KEY
-      }, { status: 500 });
+      return NextResponse.json({ error: "Mono configuration error." }, { status: 500 });
     }
 
     const response = await fetch("https://api.withmono.com/v2/lookup/bvn/initiate", {
