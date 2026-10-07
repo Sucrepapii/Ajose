@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 
 export async function POST(req: Request) {
   try {
@@ -35,6 +36,7 @@ export async function POST(req: Request) {
     }
 
     // Success! Update Supabase Profile
+    const adminClient = await createAdminClient();
     const supabaseServer = await createClient();
     const { data: { user } } = await supabaseServer.auth.getUser();
 
@@ -51,7 +53,10 @@ export async function POST(req: Request) {
         updateData.phone = bvnRecord.phone_number || bvnRecord.phone || phone;
       }
 
-      await supabaseServer.from("users").update(updateData).eq("id", user.id);
+      const { error: updateError } = await adminClient.from("users").update(updateData).eq("id", user.id);
+      if (updateError) {
+        console.error("Failed to update user profile after BVN check:", updateError);
+      }
     }
 
     return NextResponse.json({
