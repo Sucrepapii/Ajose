@@ -60,6 +60,7 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from 'sonner';
+import Script from 'next/script';
 
 import { CapacitorListener } from "@/components/CapacitorListener";
 
@@ -73,6 +74,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <Script src="https://connect.withmono.com/connect.js" strategy="beforeInteractive" />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-white text-zinc-950">
         <CapacitorListener />
         {children}
