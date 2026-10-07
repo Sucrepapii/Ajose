@@ -118,6 +118,29 @@ export default function SignupPage() {
     }
   };
 
+  const handleAppleSignup = async () => {
+    try {
+      const redirectTo = isNative 
+        ? 'ajose://login-callback' 
+        : `${window.location.origin}/auth/callback`;
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo,
+          skipBrowserRedirect: isNative,
+        },
+      });
+      if (error) throw error;
+
+      if (isNative && data?.url) {
+        await Browser.open({ url: data.url });
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to sign up with Apple.");
+    }
+  };
+
   const handleNext = async () => {
     if (step === 1) {
       if (!formData.email || !formData.phone || !formData.firstName || !formData.lastName) {
@@ -404,7 +427,7 @@ export default function SignupPage() {
                 <button 
                   type="button"
                   onClick={handleGoogleSignup}
-                  className="w-full py-3.5 px-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer"
+                  className="w-full py-3.5 px-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer mb-3"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -413,6 +436,17 @@ export default function SignupPage() {
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                   </svg>
                   Continue with Google
+                </button>
+
+                <button 
+                  type="button"
+                  onClick={handleAppleSignup}
+                  className="w-full py-3.5 px-4 bg-black hover:bg-gray-900 text-white font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.05 20.28c-.98.95-2.05 1.8-3.08 1.8-.95 0-1.25-.57-2.66-.57-1.4 0-1.76.55-2.66.57-1.07.03-2.28-.95-3.3-1.96-2.05-2.07-3.72-5.91-3.72-9.61 0-4.04 2.6-6.15 5.25-6.15 1.33 0 2.53.86 3.37.86.81 0 2.22-1 3.73-1 1.5 0 2.82.64 3.65 1.7-3.39 2.03-2.82 6.55.6 7.82-.77 2.07-1.93 4.32-3.18 6.54zm-2.92-15.69c.56-1.12.87-2.45.67-3.71-1.12.18-2.66.96-3.47 2.02-.7.91-1.12 2.31-.91 3.63 1.25.1 2.76-.75 3.71-1.94z"/>
+                  </svg>
+                  Continue with Apple
                 </button>
 
                 <div className="flex items-center gap-4">
