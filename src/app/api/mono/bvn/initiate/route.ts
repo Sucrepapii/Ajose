@@ -12,7 +12,12 @@ export async function POST(req: Request) {
     const monoSecretKey = process.env.MONO_LOOKUP_SECRET_KEY;
 
     if (!monoSecretKey) {
-      return NextResponse.json({ error: "Mono configuration error." }, { status: 500 });
+      const keys = Object.keys(process.env).filter(k => k.includes('MONO'));
+      return NextResponse.json({ 
+        error: "Mono configuration error.", 
+        foundKeys: keys,
+        hasKey: !!process.env.MONO_LOOKUP_SECRET_KEY
+      }, { status: 500 });
     }
 
     const response = await fetch("https://api.withmono.com/v2/lookup/bvn/initiate", {
