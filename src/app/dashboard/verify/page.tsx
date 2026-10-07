@@ -32,12 +32,19 @@ export default async function VerifyPage() {
   } else {
     const { data: profile, error } = await supabase
       .from('users')
-      .select('phone, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled, has_pin')
+      .select('phone, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
       .eq('id', user.id)
       .maybeSingle();
 
+    if (error) {
+      console.error("Error fetching profile on verify page:", error);
+    }
+
     isVerified = Boolean(profile?.bvn_verified && profile?.bank_name);
-    currentProfile = profile;
+    currentProfile = {
+      ...profile,
+      has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash)
+    };
   }
 
   return (
