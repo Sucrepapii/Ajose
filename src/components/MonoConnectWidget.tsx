@@ -14,7 +14,8 @@ import {
   ArrowRight, 
   RefreshCw,
   Activity,
-  AlertCircle
+  AlertCircle,
+  X
 } from "lucide-react";
 
 const BANKS = [
@@ -39,6 +40,7 @@ export function MonoConnectWidget({
     last_name?: string;
     bvn_verified?: boolean;
     auto_sweep_enabled?: boolean;
+    has_pin?: boolean;
   } | null;
 }) {
   const router = useRouter();
@@ -48,7 +50,13 @@ export function MonoConnectWidget({
   const [step, setStep] = useState<"select" | "login" | "loading" | "success">("select");
   const [selectedBank, setSelectedBank] = useState<typeof BANKS[0] | null>(null);
 
-  const handleConnectWithMono = () => {
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pinModalMode, setPinModalMode] = useState<"verify" | "set">("verify");
+  const [pin, setPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [isVerifyingPin, setIsVerifyingPin] = useState(false);
+
+  const launchMono = () => {
     const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_fprjgzruanthdmdyckfm";
 
     if (typeof window !== "undefined" && (window as any).Connect) {
@@ -88,6 +96,62 @@ export function MonoConnectWidget({
 
     // If Connect script is not loaded yet (e.g. adblock or bad connection)
     toast.error("Connecting to secure banking partner... Please try clicking again in a few seconds.");
+  };
+
+  const handleMonoConnectClick = () => {
+    setPin("");
+    setConfirmPin("");
+    if (profile?.has_pin) {
+      setPinModalMode("verify");
+    } else {
+      setPinModalMode("set");
+    }
+    setIsPinModalOpen(true);
+  };
+
+  const verifyPinAndLaunch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pin || pin.length !== 4) return;
+    
+    if (pinModalMode === "set") {
+      if (!confirmPin || confirmPin.length !== 4) {
+        toast.error("Please confirm your PIN.");
+        return;
+      }
+      if (pin !== confirmPin) {
+        toast.error("PINs do not match. Please verify.");
+        return;
+      }
+    }
+
+    setIsVerifyingPin(true);
+    try {
+      const payload = pinModalMode === "set" 
+        ? { action: "set", pin, confirmPin }
+        : { action: "verify", pin };
+
+      const res = await fetch("/api/user/pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || `PIN ${pinModalMode === "set" ? "creation" : "verification"} failed`);
+      
+      if (pinModalMode === "set") {
+        toast.success("Transaction Security PIN created successfully!");
+      }
+
+      setIsPinModalOpen(false);
+      setPin("");
+      setConfirmPin("");
+      launchMono();
+    } catch (err: any) {
+      toast.error(err.message || (pinModalMode === "set" ? "Failed to set PIN" : "Incorrect PIN"));
+    } finally {
+      setIsVerifyingPin(false);
+    }
   };
   
   const handleSelectBank = (bank: typeof BANKS[0]) => {
@@ -215,7 +279,7 @@ export function MonoConnectWidget({
             </div>
 
             <button 
-              onClick={handleConnectWithMono}
+              onClick={handleMonoConnectClick}
               className="px-5 py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
             >
               <RefreshCw className="h-3.5 w-3.5 text-[#C5A059]" />
@@ -271,7 +335,7 @@ export function MonoConnectWidget({
             </div>
 
             <button 
-              onClick={handleConnectWithMono}
+              onClick={handleMonoConnectClick}
               className="px-6 py-3.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0 text-sm"
             >
               <Lock className="h-4 w-4" />
@@ -410,6 +474,84 @@ export function MonoConnectWidget({
                 <Lock className="h-3 w-3 text-green-600" /> Protected by bank-level 256-bit encryption.
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {isPinModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center p-5 border-b border-gray-100">
+              <div className="flex items-center gap-2 text-[#0B3022]">
+                <Lock className="w-5 h-5 text-[#C5A059]" />
+                <h3 className="font-bold text-sm">Security Verification</h3>
+              </div>
+              <button 
+                onClick={() => {
+                  setIsPinModalOpen(false);
+                  setPin("");
+                  setConfirmPin("");
+                }}
+                className="text-gray-400 hover:text-gray-700 transition-colors p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={verifyPinAndLaunch} className="p-6 bg-[#FDFBF7]">
+              <p className="text-gray-500 text-xs mb-6 text-center font-medium">
+                {pinModalMode === "verify" 
+                  ? "Please enter your 4-digit Transaction Security PIN to authorize bank linkage."
+                  : "For security, please create a 4-digit Transaction PIN to protect your settlement account."}
+              </p>
+              
+              <div className="space-y-4 mb-6">
+                <div>
+                  {pinModalMode === "set" && <label className="block text-xs font-bold text-gray-700 mb-1.5 text-center">Enter New PIN</label>}
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                    className="w-full text-center tracking-[1em] text-3xl font-bold bg-white border border-gray-300 focus:border-[#0B3022] focus:ring-1 focus:ring-[#0B3022] rounded-xl py-4 text-[#1F2937] outline-none transition-all"
+                    placeholder="••••"
+                    autoFocus
+                    required
+                  />
+                </div>
+                
+                {pinModalMode === "set" && (
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 text-center">Confirm New PIN</label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={4}
+                      value={confirmPin}
+                      onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                      className="w-full text-center tracking-[1em] text-3xl font-bold bg-white border border-gray-300 focus:border-[#0B3022] focus:ring-1 focus:ring-[#0B3022] rounded-xl py-4 text-[#1F2937] outline-none transition-all"
+                      placeholder="••••"
+                      required
+                    />
+                  </div>
+                )}
+              </div>
+              
+              <button
+                type="submit"
+                disabled={isVerifyingPin || pin.length !== 4 || (pinModalMode === "set" && confirmPin.length !== 4)}
+                className="w-full bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm shadow-md"
+              >
+                {isVerifyingPin ? (
+                  <div className="w-5 h-5 border-2 border-[#C5A059]/30 border-t-[#C5A059] rounded-full animate-spin"></div>
+                ) : (
+                  pinModalMode === "verify" ? "Verify & Continue" : "Create PIN & Continue"
+                )}
+              </button>
+            </form>
           </div>
         </div>
       )}

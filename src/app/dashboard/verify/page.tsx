@@ -23,7 +23,8 @@ export default async function VerifyPage() {
         account_name: "Adewale Adeyemi",
         bvn_verified: true,
         nin_verified: true,
-        auto_sweep_enabled: true
+        auto_sweep_enabled: true,
+        has_pin: true
       };
     } else {
       redirect("/login");
@@ -31,7 +32,7 @@ export default async function VerifyPage() {
   } else {
     const { data: profile, error } = await supabase
       .from('users')
-      .select('phone, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
+      .select('phone, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled, has_pin')
       .eq('id', user.id)
       .maybeSingle();
 
