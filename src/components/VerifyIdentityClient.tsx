@@ -25,7 +25,7 @@ export function VerifyIdentityClient({
   const [isVerifyingPin, setIsVerifyingPin] = useState(false);
 
   const launchMono = () => {
-    const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_fprjgzruanthdmdyckfm";
+    const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_t1zbb1s1lakxunvxd82e";
 
     if (typeof window !== "undefined" && (window as any).Connect) {
       try {
