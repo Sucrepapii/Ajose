@@ -27,6 +27,11 @@ export function AutoLogout() {
       clearTimeout(timeoutRef.current);
     }
     timeoutRef.current = setTimeout(() => {
+      if (typeof window !== "undefined" && (window as any)._isMonoActive) {
+        // If Mono is open, simply reset the timer and don't log out
+        resetTimer();
+        return;
+      }
       handleLogout();
     }, TIMEOUT_MS);
   }, [handleLogout]);

@@ -57,6 +57,7 @@ export function MonoConnectWidget({
         const monoInstance = new (window as any).Connect({
           key: monoPublicKey,
           onSuccess: async ({ code }: { code: string }) => {
+            (window as any)._isMonoActive = false;
             toast.loading("Re-verifying bank account via Mono...", { id: "mono-linking" });
             try {
               const res = await fetch("/api/mono/exchange-token", {
@@ -76,10 +77,14 @@ export function MonoConnectWidget({
             }
           },
           onClose: () => {
+            (window as any)._isMonoActive = false;
             console.log("Mono widget closed");
           },
           onEvent: (eventName: string, data: any) => {
             console.log("[Mono Event]", eventName, data);
+            if (eventName === "OPENED") (window as any)._isMonoActive = true;
+            if (eventName === "EXIT") (window as any)._isMonoActive = false;
+            
             if (eventName === "ERROR" || eventName === "INSTITUTION_FAILED") {
               toast.error("Bank connection error. Check console for details.");
             }

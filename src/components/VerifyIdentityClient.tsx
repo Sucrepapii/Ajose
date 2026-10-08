@@ -32,6 +32,7 @@ export function VerifyIdentityClient({
         const monoInstance = new (window as any).Connect({
           key: monoPublicKey,
           onSuccess: async ({ code }: { code: string }) => {
+            (window as any)._isMonoActive = false;
             setIsMonoConnecting(true);
             toast.loading("Verifying BVN & identity via Mono...", { id: "mono-verify" });
             try {
@@ -54,10 +55,14 @@ export function VerifyIdentityClient({
             }
           },
           onClose: () => {
+            (window as any)._isMonoActive = false;
             console.log("Mono widget closed");
           },
           onEvent: (eventName: string, data: any) => {
             console.log("[Mono Event]", eventName, data);
+            if (eventName === "OPENED") (window as any)._isMonoActive = true;
+            if (eventName === "EXIT") (window as any)._isMonoActive = false;
+            
             if (eventName === "ERROR" || eventName === "INSTITUTION_FAILED") {
               toast.error("Bank connection error. Check console for details.");
             }
