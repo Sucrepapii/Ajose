@@ -53,9 +53,9 @@ export async function POST(req: NextRequest) {
       const detailsData = await detailsRes.json();
       const acc = detailsData.data || detailsData.account || detailsData;
       
-      accountName = acc.name || acc.accountName;
-      accountNumber = acc.accountNumber;
-      bankName = acc.institution?.name;
+      accountName = acc.name || acc.accountName || acc.account_name || "Verified User";
+      accountNumber = acc.accountNumber || acc.account_number;
+      bankName = acc.institution?.name || acc.bank?.name || acc.institution?.bankName || acc.institution?.bank_name || acc.bank || "Verified Bank";
 
       if (!accountNumber) {
         throw new Error("Account number could not be retrieved from Mono.");
