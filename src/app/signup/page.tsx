@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock, Users } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock, Users, Mail, Phone } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
 
@@ -27,7 +27,13 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [verifiedGroup, setVerifiedGroup] = useState<VerifiedGroupInfo | null>(null);
 
-  // Form State
+  // BVN OTP Flow States
+  const [bvnStep, setBvnStep] = useState<"INITIATE" | "SELECT_METHOD" | "VERIFY_OTP">("INITIATE");
+  const [sessionId, setSessionId] = useState("");
+  const [methods, setMethods] = useState<{method: string, hint: string}[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState("");
+  const [otp, setOtp] = useState("");
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -341,6 +347,150 @@ export default function SignupPage() {
     }
   };
 
+
+
+  const handleRequestOtp = async (method: string) => {
+    setIsSubmitting(true);
+    const toastId = toast.loading(`Sending OTP via ${method.replace("_", " ")}...`);
+    setSelectedMethod(method);
+
+    try {
+      const res = await fetch("/api/mono/bvn/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, method })
+      });
+      
+      const result = await res.json();
+      
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to send OTP.");
+      }
+
+      setBvnStep("VERIFY_OTP");
+      toast.success(result.message || "OTP sent successfully!", { id: toastId });
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send OTP.", { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleVerifyOtpAndRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp) {
+      toast.error("Please enter the OTP.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const toastId = toast.loading("Verifying identity and creating account...");
+
+    try {
+      // 1. Verify OTP with Mono
+      const res = await fetch("/api/mono/bvn/details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          sessionId, 
+          otp, 
+          bvn: formData.bvn,
+          phone: formData.phone
+        })
+      });
+      
+      const result = await res.json();
+      
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to verify OTP.");
+      }
+
+      // 2. OTP verified! Now create the Supabase account
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            phone: formData.phone
+          }
+        }
+      });
+
+      if (authError) throw authError;
+      
+      if (authData.user) {
+        const profilePayload = {
+          id: authData.user.id,
+          email: formData.email,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          phone: formData.phone,
+          bvn_verified: true,
+          nin_verified: true,
+          credit_score: 85,
+          auto_sweep_enabled: true
+        };
+
+        const { error: upsertError } = await supabase
+          .from('users')
+          .update(profilePayload)
+          .eq('id', authData.user.id);
+
+        if (upsertError) {
+          console.warn("User profile update warning:", upsertError.message);
+        }
+
+        let targetGroupId = formData.inviteCode.trim();
+        let nextUrlParams: URLSearchParams | null = null;
+        if (!targetGroupId && typeof window !== "undefined") {
+          const searchParams = new URLSearchParams(window.location.search);
+          const nextParam = searchParams.get('next');
+          if (nextParam && nextParam.includes('/invite/')) {
+            const parts = nextParam.split('/invite/');
+            if (parts[1]) {
+              const subParts = parts[1].split('?');
+              targetGroupId = subParts[0];
+              if (subParts[1]) {
+                nextUrlParams = new URLSearchParams(subParts[1]);
+              }
+            }
+          }
+        }
+
+        if (targetGroupId) {
+          try {
+            const token = authData?.session?.access_token;
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+            await fetch('/api/groups/join', {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({
+                groupId: targetGroupId,
+                userId: authData.user.id,
+                groupName: nextUrlParams?.get('name') ? decodeURIComponent(nextUrlParams.get('name')!) : undefined,
+                contributionAmount: nextUrlParams?.get('amount') ? parseInt(nextUrlParams.get('amount')!, 10) : undefined,
+                frequency: nextUrlParams?.get('freq') || undefined,
+                maxMembers: nextUrlParams?.get('members') ? parseInt(nextUrlParams.get('members')!, 10) : undefined,
+                minCreditScore: nextUrlParams?.get('score') ? parseInt(nextUrlParams.get('score')!, 10) : undefined
+              })
+            });
+          } catch (joinErr) {
+            console.error("Auto group join error on signup:", joinErr);
+          }
+        }
+      }
+
+      setStep(3); // Success Screen
+      toast.success("Account created! Please check your email.", { id: toastId });
+    } catch (err: any) {
+      toast.error(err.message || "Verification failed.", { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
@@ -650,3 +800,4 @@ export default function SignupPage() {
     </div>
   );
 }
+
