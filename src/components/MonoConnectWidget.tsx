@@ -368,11 +368,6 @@ export function MonoConnectWidget({
         </div>
       )}
 
-      {/* Official Mono Connect SDK script */}
-      <Script 
-        src="https://connect.withmono.com/connect.js" 
-        strategy="beforeInteractive" 
-      />
     </>
   );
 }
