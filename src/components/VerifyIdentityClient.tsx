@@ -55,6 +55,12 @@ export function VerifyIdentityClient({
           },
           onClose: () => {
             console.log("Mono widget closed");
+          },
+          onEvent: (eventName: string, data: any) => {
+            console.log("[Mono Event]", eventName, data);
+            if (eventName === "ERROR" || eventName === "INSTITUTION_FAILED") {
+              toast.error("Bank connection error. Check console for details.");
+            }
           }
         });
         monoInstance.setup();
