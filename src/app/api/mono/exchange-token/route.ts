@@ -16,7 +16,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Authorization code is required" }, { status: 400 });
     }
 
-    const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
+    const monoSecretKey = process.env.MONO_SECRET_KEY;
+    if (!monoSecretKey) {
+      console.error("MONO_SECRET_KEY is missing in environment variables.");
+      return NextResponse.json({ error: "Server misconfiguration. Please contact support." }, { status: 500 });
+    }
 
     // 1. Exchange code for Account ID
     const authRes = await fetch("https://api.withmono.com/v2/accounts/auth", {
@@ -53,9 +57,9 @@ export async function POST(req: NextRequest) {
       const detailsData = await detailsRes.json();
       const acc = detailsData.data || detailsData.account || detailsData;
       
-      accountName = acc.name || acc.accountName || acc.account_name || "Verified User";
-      accountNumber = acc.accountNumber || acc.account_number;
-      bankName = acc.institution?.name || acc.bank?.name || acc.institution?.bankName || acc.institution?.bank_name || acc.bank || "Verified Bank";
+      accountName = acc.name || acc.accountName;
+      accountNumber = acc.accountNumber;
+      bankName = acc.institution?.name;
 
       if (!accountNumber) {
         throw new Error("Account number could not be retrieved from Mono.");
