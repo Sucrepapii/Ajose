@@ -52,7 +52,7 @@ export function MonoConnectWidget({
   const launchMono = () => {
     const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_t1zbb1s1lakxunvxd82e";
 
-    if (typeof window !== "undefined" && (window as any).Connect) {
+    const initMono = () => {
       try {
         const monoInstance = new (window as any).Connect({
           key: monoPublicKey,
@@ -87,14 +87,29 @@ export function MonoConnectWidget({
         });
         monoInstance.setup();
         monoInstance.open();
-        return;
       } catch (err) {
         console.warn("Mono Connect initiation fallback:", err);
       }
-    }
+    };
 
-    // If Connect script is not loaded yet (e.g. adblock or bad connection)
-    toast.error("Connecting to secure banking partner... Please try clicking again in a few seconds.");
+    if (typeof window !== "undefined") {
+      if ((window as any).Connect) {
+        initMono();
+      } else {
+        toast.loading("Loading secure banking partner...", { id: "mono-loading" });
+        const script = document.createElement("script");
+        script.src = "https://connect.mono.co/v2/connect.js";
+        script.onload = () => {
+          toast.dismiss("mono-loading");
+          initMono();
+        };
+        script.onerror = () => {
+          toast.dismiss("mono-loading");
+          toast.error("Failed to load banking module. Please check your internet connection.");
+        };
+        document.body.appendChild(script);
+      }
+    }
   };
 
   const handleMonoConnectClick = () => {

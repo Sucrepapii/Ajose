@@ -27,7 +27,7 @@ export function VerifyIdentityClient({
   const launchMono = () => {
     const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_t1zbb1s1lakxunvxd82e";
 
-    if (typeof window !== "undefined" && (window as any).Connect) {
+    const initMono = () => {
       try {
         const monoInstance = new (window as any).Connect({
           key: monoPublicKey,
@@ -65,15 +65,30 @@ export function VerifyIdentityClient({
         });
         monoInstance.setup();
         monoInstance.open();
-        return;
       } catch (err) {
         console.warn("Mono connect initiation error:", err);
       }
-    }
+    };
 
-    // Fallback if Connect script not loaded
-    toast.info("Opening bank identity verification...");
-    router.push("/dashboard/verify");
+    if (typeof window !== "undefined") {
+      if ((window as any).Connect) {
+        initMono();
+      } else {
+        toast.loading("Loading secure banking partner...", { id: "mono-loading" });
+        const script = document.createElement("script");
+        script.src = "https://connect.mono.co/v2/connect.js";
+        script.onload = () => {
+          toast.dismiss("mono-loading");
+          initMono();
+        };
+        script.onerror = () => {
+          toast.dismiss("mono-loading");
+          toast.info("Opening bank identity verification...");
+          router.push("/dashboard/verify");
+        };
+        document.body.appendChild(script);
+      }
+    }
   };
 
   const handleMonoConnectClick = () => {
