@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co https://api.withmono.com https://connect.withmono.com;
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co https://api.withmono.com https://connect.withmono.com https://connect.mono.co;
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: https://ajose.ng;
     font-src 'self';
-    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.withmono.com;
-    frame-src 'self' https://connect.withmono.com;
+    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.withmono.com https://api.mono.co https://connect.mono.co;
+    frame-src 'self' https://connect.withmono.com https://connect.mono.co;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
