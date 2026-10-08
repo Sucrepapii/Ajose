@@ -18,12 +18,7 @@ import {
   X
 } from "lucide-react";
 
-const BANKS = [
-  { id: "gtb", name: "Guaranty Trust Bank (GTB)", color: "#E35205" },
-  { id: "zenith", name: "Zenith Bank", color: "#E00000" },
-  { id: "access", name: "Access Bank", color: "#FF6600" },
-  { id: "uba", name: "United Bank for Africa", color: "#C00000" },
-];
+
 
 export function MonoConnectWidget({ 
   userId, 
@@ -46,9 +41,7 @@ export function MonoConnectWidget({
   const router = useRouter();
   const supabase = createClient();
   
-  const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState<"select" | "login" | "loading" | "success">("select");
-  const [selectedBank, setSelectedBank] = useState<typeof BANKS[0] | null>(null);
+
 
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pinModalMode, setPinModalMode] = useState<"verify" | "set">("verify");
@@ -157,57 +150,6 @@ export function MonoConnectWidget({
       toast.error(err.message || (pinModalMode === "set" ? "Failed to set PIN" : "Incorrect PIN"));
     } finally {
       setIsVerifyingPin(false);
-    }
-  };
-  
-  const handleSelectBank = (bank: typeof BANKS[0]) => {
-    setSelectedBank(bank);
-    setStep("login");
-  };
-
-  const handleSimulateLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep("loading");
-
-    // Simulate network delay and processing (2 seconds)
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    try {
-      const { data: userProfile } = await supabase
-        .from('users')
-        .select('first_name, last_name')
-        .eq('id', userId)
-        .maybeSingle();
-
-      const accountName = userProfile && userProfile.first_name 
-        ? `${userProfile.first_name} ${userProfile.last_name || ''}`.trim() 
-        : profile?.account_name || 'Ajo Verified Member';
-
-      const generatedNuban = '0' + Math.floor(Math.random() * 900000000 + 100000000).toString();
-
-      const { error } = await supabase
-        .from('users')
-        .update({ 
-          bvn_verified: true,
-          bank_name: selectedBank?.name,
-          account_number: generatedNuban,
-          account_name: accountName
-        })
-        .eq('id', userId);
-
-      if (error) throw error;
-      
-      setStep("success");
-      toast.success("Bank re-verified successfully! Updated as your settlement account.");
-      
-      setTimeout(() => {
-        setIsOpen(false);
-        router.refresh();
-      }, 1500);
-
-    } catch (err: any) {
-      toast.error(err.message || "Failed to link bank.");
-      setStep("login");
     }
   };
 
@@ -351,138 +293,7 @@ export function MonoConnectWidget({
         </div>
       )}
 
-      {/* Simulated Mono Bank Connector Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-            
-            {/* Header */}
-            <div className="p-5 border-b border-gray-100 flex items-center justify-between shrink-0 bg-[#FDFBF7]">
-              <div className="flex items-center gap-2 text-[#0B3022] font-bold text-sm">
-                <ShieldCheck className="h-5 w-5 text-[#0B3022]" />
-                Mono Secure Open-Banking
-              </div>
-              <button 
-                onClick={() => setIsOpen(false)}
-                disabled={step === "loading"}
-                className="text-gray-400 hover:text-gray-700 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
-              </button>
-            </div>
 
-            {/* Content Area */}
-            <div className="p-6 overflow-y-auto flex-1">
-              
-              {step === "select" && (
-                <div className="space-y-4 animate-in slide-in-from-right-4">
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-bold text-[#0B3022] mb-1">Select your Bank</h3>
-                    <p className="text-xs text-gray-500 font-medium">Choose your commercial bank to re-verify your settlement account.</p>
-                  </div>
-                  <div className="space-y-2">
-                    {BANKS.map(bank => (
-                      <button 
-                        key={bank.id}
-                        onClick={() => handleSelectBank(bank)}
-                        className="w-full p-3.5 border border-gray-200 rounded-xl flex items-center justify-between hover:border-[#0B3022] hover:bg-gray-50 transition-all group bg-white"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center" style={{ color: bank.color }}>
-                            <Building className="h-4 w-4" />
-                          </div>
-                          <span className="font-bold text-[#1F2937] text-xs">{bank.name}</span>
-                        </div>
-                        <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#0B3022] transition-colors" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {step === "login" && selectedBank && (
-                <div className="space-y-4 animate-in slide-in-from-right-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <button onClick={() => setStep("select")} className="text-xs text-[#0B3022] font-bold hover:underline">← Back to Banks</button>
-                  </div>
-                  <div className="text-center mb-6">
-                    <div className="mx-auto w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mb-3 border border-gray-200" style={{ color: selectedBank.color }}>
-                      <Building className="h-7 w-7" />
-                    </div>
-                    <h3 className="text-base font-bold text-[#1F2937] mb-1">Log in to {selectedBank.name}</h3>
-                    <p className="text-[11px] text-gray-500 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-center justify-center gap-1 font-medium">
-                      <Lock className="h-3 w-3 text-[#0B3022]" /> 256-Bit Encrypted &amp; Secured by Mono
-                    </p>
-                  </div>
-                  
-                  <form onSubmit={handleSimulateLogin} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">Internet Banking ID / Account Number</label>
-                      <input 
-                        type="text" 
-                        required
-                        className="w-full px-3.5 py-2.5 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B3022] transition-all text-[#1F2937] text-xs"
-                        placeholder="e.g. 0123456789"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">Password / Mobile PIN</label>
-                      <input 
-                        type="password" 
-                        required
-                        className="w-full px-3.5 py-2.5 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B3022] transition-all text-[#1F2937] text-xs"
-                        placeholder="••••••••"
-                      />
-                    </div>
-                    <button 
-                      type="submit"
-                      className="w-full py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-white font-bold rounded-xl transition-all shadow-md mt-2 text-xs"
-                    >
-                      Authenticate &amp; Re-verify
-                    </button>
-                  </form>
-                </div>
-              )}
-
-              {step === "loading" && (
-                <div className="py-12 flex flex-col items-center justify-center text-center animate-in zoom-in duration-300 space-y-5">
-                  <div className="relative w-16 h-16">
-                    <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
-                    <div className="absolute inset-0 border-4 border-[#0B3022] border-t-transparent rounded-full animate-spin"></div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <ShieldCheck className="h-6 w-6 text-[#C5A059]" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-[#0B3022] mb-1">Establishing Connection...</h3>
-                    <p className="text-xs text-gray-500 font-medium">Verifying BVN identity and updating settlement account via Mono.</p>
-                  </div>
-                </div>
-              )}
-
-              {step === "success" && (
-                <div className="py-12 flex flex-col items-center justify-center text-center animate-in zoom-in duration-300 space-y-4">
-                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center border border-green-200 text-green-600">
-                    <CheckCircle2 className="h-8 w-8" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-[#0B3022] mb-1">Bank Linked Successfully!</h3>
-                    <p className="text-xs text-gray-500 font-medium">Your new settlement account is active and verified.</p>
-                  </div>
-                </div>
-              )}
-
-            </div>
-            
-            {/* Footer */}
-            <div className="p-3.5 bg-gray-50 border-t border-gray-200 text-center shrink-0">
-              <p className="text-[11px] text-gray-500 font-medium flex items-center justify-center gap-1">
-                <Lock className="h-3 w-3 text-green-600" /> Protected by bank-level 256-bit encryption.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {isPinModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
