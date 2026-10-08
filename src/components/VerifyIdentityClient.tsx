@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Script from "next/script";
+import Connect from "@mono.co/connect.js";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -27,53 +27,48 @@ export function VerifyIdentityClient({
   const launchMono = () => {
     const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_t1zbb1s1lakxunvxd82e";
 
-    if (typeof window !== "undefined" && (window as any).Connect) {
-      try {
-        const monoInstance = new (window as any).Connect({
-          key: monoPublicKey,
-          onSuccess: async ({ code }: { code: string }) => {
-            setIsMonoConnecting(true);
-            toast.loading("Verifying BVN & identity via Mono...", { id: "mono-verify" });
-            try {
-              const res = await fetch("/api/mono/exchange-token", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code })
-              });
-              const data = await res.json();
-              if (res.ok) {
-                toast.success(`Identity and ${data.bankName || "Bank"} verified via Mono!`, { id: "mono-verify" });
-                router.refresh();
-              } else {
-                throw new Error(data.error || "Verification failed");
-              }
-            } catch (err: any) {
-              toast.error(err.message || "Failed to verify bank account.", { id: "mono-verify" });
-            } finally {
-              setIsMonoConnecting(false);
+    try {
+      const monoInstance = new Connect({
+        key: monoPublicKey,
+        onSuccess: async ({ code }: { code: string }) => {
+          setIsMonoConnecting(true);
+          toast.loading("Verifying BVN & identity via Mono...", { id: "mono-verify" });
+          try {
+            const res = await fetch("/api/mono/exchange-token", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ code })
+            });
+            const data = await res.json();
+            if (res.ok) {
+              toast.success(`Identity and ${data.bankName || "Bank"} verified via Mono!`, { id: "mono-verify" });
+              router.refresh();
+            } else {
+              throw new Error(data.error || "Verification failed");
             }
-          },
-          onClose: () => {
-            console.log("Mono widget closed");
-          },
-          onEvent: (eventName: string, data: any) => {
-            console.log("[Mono Event]", eventName, data);
-            if (eventName === "ERROR" || eventName === "INSTITUTION_FAILED") {
-              toast.error("Bank connection error. Check console for details.");
-            }
+          } catch (err: any) {
+            toast.error(err.message || "Failed to verify bank account.", { id: "mono-verify" });
+          } finally {
+            setIsMonoConnecting(false);
           }
-        });
-        monoInstance.setup();
-        monoInstance.open();
-        return;
-      } catch (err) {
-        console.warn("Mono connect initiation error:", err);
-      }
+        },
+        onClose: () => {
+          console.log("Mono widget closed");
+        },
+        onEvent: (eventName: string, data: any) => {
+          console.log("[Mono Event]", eventName, data);
+          if (eventName === "ERROR" || eventName === "INSTITUTION_FAILED") {
+            toast.error("Bank connection error. Check console for details.");
+          }
+        }
+      });
+      monoInstance.setup();
+      monoInstance.open();
+    } catch (err) {
+      console.warn("Mono connect initiation error:", err);
+      toast.info("Opening bank identity verification...");
+      router.push("/dashboard/verify");
     }
-
-    // Fallback if Connect script not loaded
-    toast.info("Opening bank identity verification...");
-    router.push("/dashboard/verify");
   };
 
   const handleMonoConnectClick = () => {
@@ -291,10 +286,7 @@ export function VerifyIdentityClient({
         </div>
       )}
 
-      <Script 
-        src="https://connect.withmono.com/connect.js" 
-        strategy="lazyOnload" 
-      />
+
     </>
   );
 }
