@@ -75,6 +75,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        <Script src="https://connect.mono.co/v2/connect.js" strategy="beforeInteractive" />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-white text-zinc-950">
         <CapacitorListener />
