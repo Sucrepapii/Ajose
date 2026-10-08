@@ -21,44 +21,47 @@ interface VerifiedGroupInfo {
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
-  const isNative = Capacitor.isNativePlatform();
+
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [verifiedGroup, setVerifiedGroup] = useState<VerifiedGroupInfo | null>(null);
 
   // Form State
-  const [formData, setFormData] = useState(() => {
-    let initialCode = "";
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+    bvn: "",
+    nin: "",
+    inviteCode: ""
+  });
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const directCode = params.get("code") || params.get("invite");
       const nextParam = params.get("next");
-      initialCode = directCode || "";
+      let initialCode = directCode || "";
       if (!initialCode && nextParam && nextParam.includes("/invite/")) {
         const parts = nextParam.split("/invite/");
         if (parts[1]) {
           initialCode = parts[1].split("?")[0].split("/")[0].trim();
         }
       }
+      if (initialCode) {
+        setFormData(prev => ({ ...prev, inviteCode: initialCode }));
+      }
     }
-    return {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      password: "",
-      bvn: "",
-      nin: "",
-      inviteCode: initialCode
-    };
-  });
+  }, []);
 
   // Validate and display group info when inviteCode is provided
   useEffect(() => {
     const raw = formData.inviteCode.trim();
     if (!raw || raw.length < 3) {
-      setVerifiedGroup(prev => (prev === null ? prev : null));
+      setVerifiedGroup(null);
       return;
     }
 
@@ -97,6 +100,7 @@ export default function SignupPage() {
 
   const handleGoogleSignup = async () => {
     try {
+      const isNative = Capacitor.isNativePlatform();
       const redirectTo = isNative 
         ? 'ajose://login-callback' 
         : `${window.location.origin}/auth/callback`;
@@ -120,6 +124,7 @@ export default function SignupPage() {
 
   const handleAppleSignup = async () => {
     try {
+      const isNative = Capacitor.isNativePlatform();
       const redirectTo = isNative 
         ? 'ajose://login-callback' 
         : `${window.location.origin}/auth/callback`;

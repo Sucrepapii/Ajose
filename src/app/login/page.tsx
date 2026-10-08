@@ -22,8 +22,6 @@ export default function LoginPage() {
   const supabase = createClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const isNative = Capacitor.isNativePlatform();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -100,8 +98,11 @@ export default function LoginPage() {
         throw new Error("Your account has been suspended by compliance administration. Please contact support@ajose.ng for review.");
       }
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const nextUrl = urlParams.get("next");
+      let nextUrl: string | null = null;
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        nextUrl = urlParams.get("next");
+      }
 
       const isSuper = Boolean(profile?.is_super_admin) || 
         ["samuel@paylodeservices.com", "kemi@ajose.ng", "operations@ajose.ng", "compliance@ajose.ng"].includes(cleanEmail.toLowerCase());
@@ -129,6 +130,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
+      const isNative = Capacitor.isNativePlatform();
       const redirectTo = isNative 
         ? 'ajose://login-callback' 
         : `${window.location.origin}/auth/callback`;
@@ -152,6 +154,7 @@ export default function LoginPage() {
 
   const handleAppleLogin = async () => {
     try {
+      const isNative = Capacitor.isNativePlatform();
       const redirectTo = isNative 
         ? 'ajose://login-callback' 
         : `${window.location.origin}/auth/callback`;
