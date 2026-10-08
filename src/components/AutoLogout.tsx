@@ -22,14 +22,14 @@ export function AutoLogout() {
     }
   }, [router, supabase.auth]);
 
-  const resetTimer = useCallback(() => {
+  const resetTimer = useCallback(function resetTimerCallback() {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
     timeoutRef.current = setTimeout(() => {
       if (typeof window !== "undefined" && (window as any)._isMonoActive) {
         // If Mono is open, simply reset the timer and don't log out
-        resetTimer();
+        resetTimerCallback();
         return;
       }
       handleLogout();
