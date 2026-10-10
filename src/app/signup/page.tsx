@@ -33,6 +33,8 @@ export default function SignupPage() {
   const [methods, setMethods] = useState<{method: string, hint: string}[]>([]);
   const [selectedMethod, setSelectedMethod] = useState("");
   const [otp, setOtp] = useState("");
+  const [alternatePhone, setAlternatePhone] = useState("");
+  const [countdown, setCountdown] = useState(0);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -99,6 +101,14 @@ export default function SignupPage() {
       clearTimeout(timer);
     };
   }, [formData.inviteCode]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(prev => prev - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -253,10 +263,19 @@ export default function SignupPage() {
           }
 
           setSessionId(initData.sessionId);
-          const deliveryMethods = initData.methods && initData.methods.length > 0 
+          const rawMethods = initData.methods && initData.methods.length > 0 
             ? initData.methods 
             : [{ method: "phone", hint: formData.phone || "BVN registered line" }];
+          
+          const deliveryMethods = [...rawMethods];
+          if (!deliveryMethods.some((m: any) => m.method === "alternate_phone")) {
+            deliveryMethods.push({
+              method: "alternate_phone",
+              hint: formData.phone || "Send to current / alternate phone number"
+            });
+          }
           setMethods(deliveryMethods);
+          setAlternatePhone(formData.phone || "");
           setBvnStep("SELECT_METHOD");
           toast.success("BVN found! Choose where to receive your OTP.", { id: monoToastId });
         } catch (err: any) {
@@ -268,16 +287,31 @@ export default function SignupPage() {
     }
   };
 
-  const handleRequestOtp = async (method: string) => {
+  const handleRequestOtp = async (method: string, customPhone?: string) => {
     setIsSubmitting(true);
     const toastId = toast.loading(`Sending OTP via ${method.replace("_", " ")}...`);
     setSelectedMethod(method);
 
     try {
+      const payload: { sessionId: string; method: string; phone_number?: string } = {
+        sessionId,
+        method
+      };
+
+      if (method === "alternate_phone") {
+        const phoneToSend = customPhone || alternatePhone || formData.phone;
+        if (!phoneToSend) {
+          toast.error("Please enter a phone number to receive the OTP.", { id: toastId });
+          setIsSubmitting(false);
+          return;
+        }
+        payload.phone_number = phoneToSend;
+      }
+
       const res = await fetch("/api/mono/bvn/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, method })
+        body: JSON.stringify(payload)
       });
       
       const result = await res.json();
@@ -287,12 +321,94 @@ export default function SignupPage() {
       }
 
       setBvnStep("VERIFY_OTP");
+      setCountdown(60);
       toast.success(result.message || "OTP sent successfully!", { id: toastId });
     } catch (err: any) {
       toast.error(err.message || "Failed to send OTP.", { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const completeAccountRegistration = async (verifiedFirst: string, verifiedLast: string, toastId: string | number) => {
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: {
+          first_name: verifiedFirst,
+          last_name: verifiedLast,
+          phone: formData.phone
+        }
+      }
+    });
+
+    if (authError) throw authError;
+
+    if (authData.user) {
+      const profilePayload = {
+        id: authData.user.id,
+        email: formData.email,
+        first_name: verifiedFirst,
+        last_name: verifiedLast,
+        phone: formData.phone,
+        bvn_verified: true,
+        nin_verified: true,
+        credit_score: 85,
+        auto_sweep_enabled: true
+      };
+
+      const { error: upsertError } = await supabase
+        .from('users')
+        .upsert(profilePayload);
+
+      if (upsertError) {
+        console.warn("User profile update warning:", upsertError.message);
+      }
+
+      let targetGroupId = formData.inviteCode.trim();
+      let nextUrlParams: URLSearchParams | null = null;
+      if (!targetGroupId && typeof window !== "undefined") {
+        const searchParams = new URLSearchParams(window.location.search);
+        const nextParam = searchParams.get('next');
+        if (nextParam && nextParam.includes('/invite/')) {
+          const parts = nextParam.split('/invite/');
+          if (parts[1]) {
+            const subParts = parts[1].split('?');
+            targetGroupId = subParts[0];
+            if (subParts[1]) {
+              nextUrlParams = new URLSearchParams(subParts[1]);
+            }
+          }
+        }
+      }
+
+      if (targetGroupId) {
+        try {
+          const token = authData?.session?.access_token;
+          const headers: Record<string, string> = { "Content-Type": "application/json" };
+          if (token) headers["Authorization"] = `Bearer ${token}`;
+          await fetch('/api/groups/join', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              groupId: targetGroupId,
+              userId: authData.user.id,
+              groupName: nextUrlParams?.get('name') ? decodeURIComponent(nextUrlParams.get('name')!) : undefined,
+              contributionAmount: nextUrlParams?.get('amount') ? parseInt(nextUrlParams.get('amount')!, 10) : undefined,
+              frequency: nextUrlParams?.get('freq') || undefined,
+              maxMembers: nextUrlParams?.get('members') ? parseInt(nextUrlParams.get('members')!, 10) : undefined,
+              minCreditScore: nextUrlParams?.get('score') ? parseInt(nextUrlParams.get('score')!, 10) : undefined
+            })
+          });
+        } catch (joinErr) {
+          console.error("Auto group join error on signup:", joinErr);
+        }
+      }
+    }
+
+    setStep(3); // Success Screen
+    toast.success("Account created! Please check your email for confirmation.", { id: toastId });
   };
 
   const handleVerifyOtpAndRegister = async (e?: React.FormEvent) => {
@@ -328,87 +444,43 @@ export default function SignupPage() {
       const verifiedFirst = bvnDetails?.first_name || bvnDetails?.firstName || formData.firstName;
       const verifiedLast = bvnDetails?.last_name || bvnDetails?.lastName || formData.lastName;
 
-      // 2. OTP verified! Now create the Supabase account
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            first_name: verifiedFirst,
-            last_name: verifiedLast,
-            phone: formData.phone
-          }
-        }
+      await completeAccountRegistration(verifiedFirst, verifiedLast, toastId);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to verify OTP.", { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDirectNameMatchVerify = async () => {
+    setIsSubmitting(true);
+    const toastId = toast.loading("Verifying identity via BVN bank records...");
+
+    try {
+      const res = await fetch("/api/mono/verify-identity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bvn: formData.bvn,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone
+        })
       });
 
-      if (authError) throw authError;
-      
-      if (authData.user) {
-        const profilePayload = {
-          id: authData.user.id,
-          email: formData.email,
-          first_name: verifiedFirst,
-          last_name: verifiedLast,
-          phone: formData.phone,
-          bvn_verified: true,
-          nin_verified: true,
-          credit_score: 85,
-          auto_sweep_enabled: true
-        };
+      const result = await res.json();
 
-        const { error: upsertError } = await supabase
-          .from('users')
-          .upsert(profilePayload);
-
-        if (upsertError) {
-          console.warn("User profile update warning:", upsertError.message);
-        }
-
-        let targetGroupId = formData.inviteCode.trim();
-        let nextUrlParams: URLSearchParams | null = null;
-        if (!targetGroupId && typeof window !== "undefined") {
-          const searchParams = new URLSearchParams(window.location.search);
-          const nextParam = searchParams.get('next');
-          if (nextParam && nextParam.includes('/invite/')) {
-            const parts = nextParam.split('/invite/');
-            if (parts[1]) {
-              const subParts = parts[1].split('?');
-              targetGroupId = subParts[0];
-              if (subParts[1]) {
-                nextUrlParams = new URLSearchParams(subParts[1]);
-              }
-            }
-          }
-        }
-
-        if (targetGroupId) {
-          try {
-            const token = authData?.session?.access_token;
-            const headers: Record<string, string> = { "Content-Type": "application/json" };
-            if (token) headers["Authorization"] = `Bearer ${token}`;
-            await fetch('/api/groups/join', {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({
-                groupId: targetGroupId,
-                userId: authData.user.id,
-                groupName: nextUrlParams?.get('name') ? decodeURIComponent(nextUrlParams.get('name')!) : undefined,
-                contributionAmount: nextUrlParams?.get('amount') ? parseInt(nextUrlParams.get('amount')!, 10) : undefined,
-                frequency: nextUrlParams?.get('freq') || undefined,
-                maxMembers: nextUrlParams?.get('members') ? parseInt(nextUrlParams.get('members')!, 10) : undefined,
-                minCreditScore: nextUrlParams?.get('score') ? parseInt(nextUrlParams.get('score')!, 10) : undefined
-              })
-            });
-          } catch (joinErr) {
-            console.error("Auto group join error on signup:", joinErr);
-          }
-        }
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Direct BVN verification failed. Please try with OTP.");
       }
 
-      setStep(3); // Success Screen
-      toast.success("Account created! Please check your email for confirmation.", { id: toastId });
+      const verifiedDetails = result.details;
+      const verifiedFirst = verifiedDetails?.firstName || formData.firstName;
+      const verifiedLast = verifiedDetails?.lastName || formData.lastName;
+
+      await completeAccountRegistration(verifiedFirst, verifiedLast, toastId);
     } catch (err: any) {
-      toast.error(err.message || "Verification failed.", { id: toastId });
+      toast.error(err.message || "Failed to verify identity via BVN.", { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
@@ -714,30 +786,91 @@ export default function SignupPage() {
                     </div>
 
                     <div className="space-y-3">
-                      {methods.map((m, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          disabled={isSubmitting}
-                          onClick={() => handleRequestOtp(m.method)}
-                          className="w-full p-4 border border-gray-200 hover:border-[#D4AF37] bg-white hover:bg-emerald-50/40 rounded-xl transition-all text-left flex items-center justify-between group shadow-xs cursor-pointer disabled:opacity-50"
-                        >
-                          <div className="flex items-center gap-3.5">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#0B402B] flex items-center justify-center group-hover:scale-105 transition-transform">
-                              {m.method.includes("email") ? <Mail className="w-5 h-5" /> : <Phone className="w-5 h-5" />}
+                      {methods.map((m, idx) => {
+                        const isAlternate = m.method === "alternate_phone";
+                        if (isAlternate) {
+                          return (
+                            <div 
+                              key={idx}
+                              className="p-4 border-2 border-emerald-500/40 bg-emerald-50/50 rounded-xl space-y-3 shadow-xs"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-[#0B402B] flex items-center justify-center shrink-0">
+                                  <Phone className="w-5 h-5" />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-bold text-gray-900 text-sm">Send to Alternate Phone Number</p>
+                                  <p className="text-xs text-gray-500">Receive OTP SMS on another active SIM card</p>
+                                </div>
+                              </div>
+
+                              <div className="flex gap-2">
+                                <input
+                                  type="tel"
+                                  value={alternatePhone}
+                                  onChange={(e) => setAlternatePhone(e.target.value)}
+                                  placeholder="e.g. 08012345678"
+                                  className="flex-1 px-3.5 py-2.5 text-sm bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B402B]"
+                                />
+                                <button
+                                  type="button"
+                                  disabled={isSubmitting || !alternatePhone}
+                                  onClick={() => handleRequestOtp("alternate_phone", alternatePhone)}
+                                  className="px-4 py-2.5 bg-[#0B402B] hover:bg-[#072a1c] text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap"
+                                >
+                                  Send OTP →
+                                </button>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-bold text-gray-900 text-sm capitalize">
-                                {m.method === "phone" ? "SMS to Mobile Phone" : m.method === "email" ? "Email Address" : m.method.replace("_", " ")}
-                              </p>
-                              <p className="text-xs text-gray-500 mt-0.5 font-mono">{m.hint}</p>
+                          );
+                        }
+
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            disabled={isSubmitting}
+                            onClick={() => handleRequestOtp(m.method)}
+                            className="w-full p-4 border border-gray-200 hover:border-[#D4AF37] bg-white hover:bg-emerald-50/40 rounded-xl transition-all text-left flex items-center justify-between group shadow-xs cursor-pointer disabled:opacity-50"
+                          >
+                            <div className="flex items-center gap-3.5">
+                              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#0B402B] flex items-center justify-center group-hover:scale-105 transition-transform">
+                                {m.method.includes("email") ? <Mail className="w-5 h-5" /> : <Phone className="w-5 h-5" />}
+                              </div>
+                              <div>
+                                <p className="font-bold text-gray-900 text-sm capitalize">
+                                  {m.method === "phone" ? "SMS to Primary BVN Phone" : m.method === "email" ? "Email Address" : m.method.replace("_", " ")}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-0.5 font-mono">{m.hint}</p>
+                              </div>
                             </div>
-                          </div>
-                          <span className="text-xs font-bold text-[#0B402B] bg-[#D4AF37]/20 px-3 py-1.5 rounded-lg group-hover:bg-[#D4AF37] transition-colors">
-                            Send OTP →
-                          </span>
-                        </button>
-                      ))}
+                            <span className="text-xs font-bold text-[#0B402B] bg-[#D4AF37]/20 px-3 py-1.5 rounded-lg group-hover:bg-[#D4AF37] transition-colors">
+                              Send OTP →
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Fallback Option */}
+                    <div className="mt-4 p-4 rounded-xl bg-amber-50/80 border border-amber-200/80 text-left">
+                      <div className="flex items-start gap-2.5">
+                        <span className="text-base leading-none">💡</span>
+                        <div className="flex-1">
+                          <p className="text-xs font-bold text-amber-950 mb-1">SMS Delayed or Network Issues?</p>
+                          <p className="text-xs text-amber-900 leading-relaxed mb-3">
+                            Nigerian telcos often delay financial SMS due to network congestion or active Do-Not-Disturb (DND). You can verify instantly with your BVN name record without waiting for an OTP.
+                          </p>
+                          <button
+                            type="button"
+                            disabled={isSubmitting}
+                            onClick={handleDirectNameMatchVerify}
+                            className="w-full py-2.5 px-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+                          >
+                            <ShieldCheck className="w-4 h-4" /> Verify Instantly with BVN Name Match (No SMS)
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="pt-2">
@@ -762,7 +895,7 @@ export default function SignupPage() {
                       </div>
                       <h2 className="text-2xl font-bold text-gray-900 mb-2">Enter Verification Code</h2>
                       <p className="text-gray-500 text-sm">
-                        Enter the OTP sent via <strong className="text-gray-800">{selectedMethod === "phone" ? "SMS" : selectedMethod}</strong>.
+                        Enter the OTP sent via <strong className="text-gray-800">{selectedMethod === "phone" ? "SMS" : selectedMethod.replace("_", " ")}</strong>.
                       </p>
                     </div>
 
@@ -803,14 +936,18 @@ export default function SignupPage() {
                       </div>
 
                       <div className="flex items-center justify-between pt-2 text-xs">
-                        <button
-                          type="button"
-                          onClick={() => handleRequestOtp(selectedMethod)}
-                          disabled={isSubmitting}
-                          className="text-[#0B402B] font-bold hover:underline cursor-pointer"
-                        >
-                          Resend Code
-                        </button>
+                        {countdown > 0 ? (
+                          <span className="text-gray-400 font-medium">Resend Code in {countdown}s</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleRequestOtp(selectedMethod)}
+                            disabled={isSubmitting}
+                            className="text-[#0B402B] font-bold hover:underline cursor-pointer"
+                          >
+                            Resend Code
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={() => setBvnStep("SELECT_METHOD")}
@@ -818,6 +955,18 @@ export default function SignupPage() {
                           className="text-gray-500 hover:text-gray-900 cursor-pointer"
                         >
                           Choose different method
+                        </button>
+                      </div>
+
+                      {/* Fallback button directly on VERIFY_OTP */}
+                      <div className="pt-2 border-t border-gray-100">
+                        <button
+                          type="button"
+                          disabled={isSubmitting}
+                          onClick={handleDirectNameMatchVerify}
+                          className="w-full py-2.5 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-amber-700" /> OTP not arriving? Verify instantly with Bank Name Match
                         </button>
                       </div>
                     </form>

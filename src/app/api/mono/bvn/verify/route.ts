@@ -22,9 +22,27 @@ export async function POST(req: Request) {
     }
 
     const payload: any = { method };
-    if (method === "alternate_phone" && phone_number) {
-      payload.phone_number = phone_number;
+    if (method === "alternate_phone") {
+      if (!phone_number) {
+        return NextResponse.json(
+          { error: "Phone number is required when using an alternate phone." },
+          { status: 400 }
+        );
+      }
+      let clean = String(phone_number).replace(/\D/g, "");
+      if (clean.startsWith("234") && clean.length >= 13) {
+        clean = "0" + clean.slice(-10);
+      } else if (clean.length === 10) {
+        clean = "0" + clean;
+      }
+      payload.phone_number = clean;
     }
+
+    console.log("[Mono Verify Request]", {
+      sessionId,
+      method,
+      payload,
+    });
 
     const response = await fetch("https://api.withmono.com/v2/lookup/bvn/verify", {
       method: "POST",
@@ -37,6 +55,7 @@ export async function POST(req: Request) {
     });
 
     const data = await response.json();
+    console.log("[Mono Verify Response]", { status: response.status, data });
 
     if (!response.ok || data.status !== "successful") {
       return NextResponse.json(
