@@ -13,7 +13,8 @@ import {
   AlertTriangle, 
   X,
   Landmark,
-  Sparkles
+  Sparkles,
+  Lock
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -53,6 +54,8 @@ export default function CreateGroupPage() {
     adminTenderAgreed: false
   });
 
+  const [isBankVerified, setIsBankVerified] = useState(false);
+
   // Preload user's existing bank details if they connected with Mono previously
   useEffect(() => {
     async function loadAdminBankProfile() {
@@ -61,21 +64,28 @@ export default function CreateGroupPage() {
 
       const { data: profile } = await supabase
         .from('users')
-        .select('bank_name, account_number, account_name, first_name, last_name')
+        .select('bank_name, account_number, account_name, first_name, last_name, bvn_verified')
         .eq('id', user.id)
         .single();
 
       if (profile) {
+        const hasVerified = Boolean(
+          profile.account_number && 
+          (profile.bvn_verified || profile.bank_name)
+        );
+        setIsBankVerified(hasVerified);
         setFormData(prev => ({
           ...prev,
-          adminBankName: prev.adminBankName || profile.bank_name || "",
-          adminAccountNumber: prev.adminAccountNumber || profile.account_number || "",
-          adminAccountName: prev.adminAccountName || profile.account_name || `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || ""
+          adminBankName: profile.bank_name || prev.adminBankName || "",
+          adminAccountNumber: profile.account_number || prev.adminAccountNumber || "",
+          adminAccountName: profile.account_name || `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || prev.adminAccountName || ""
         }));
       }
     }
     loadAdminBankProfile();
   }, [supabase]);
+
+  const isVerifiedBank = isBankVerified || Boolean(formData.adminAccountNumber && formData.adminBankName);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
@@ -433,15 +443,19 @@ export default function CreateGroupPage() {
               </div>
 
               {/* Admin Tendered Settlement Account (Req 7) */}
-              <div className="space-y-4 p-5 rounded-xl border border-emerald-500/30 bg-emerald-50/20">
+              <div className={`space-y-4 p-5 rounded-xl border transition-all ${
+                isVerifiedBank 
+                  ? "border-emerald-500/25 bg-gray-50/70" 
+                  : "border-emerald-500/30 bg-emerald-50/20"
+              }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-[#0B3022]">
                     <Landmark className="h-5 w-5 text-emerald-700" />
                     <h3 className="text-sm font-bold">Admin Tendered Settlement Bank Account</h3>
                   </div>
-                  {formData.adminAccountNumber ? (
-                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
-                      <ShieldCheck className="h-3 w-3 text-emerald-600" /> Pre-filled from Mono
+                  {isVerifiedBank ? (
+                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 shadow-2xs">
+                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Verified via Mono (Locked)
                     </span>
                   ) : (
                     <Link href="/dashboard/verify" className="text-xs text-emerald-700 hover:underline font-bold">
@@ -450,51 +464,112 @@ export default function CreateGroupPage() {
                   )}
                 </div>
                 <p className="text-xs text-[#1F2937]/70 leading-relaxed font-medium">
-                  Tender the official bank account for this group. Contributions will be paid into this account, and automated debits will disburse turn payouts from this account.
+                  {isVerifiedBank ? (
+                    <>
+                      This official settlement account is verified via Mono Open-Banking and locked to your profile for security and compliance. Turn disbursements and automated debits are routed through this account.
+                    </>
+                  ) : (
+                    <>
+                      Tender the official bank account for this group. Contributions will be paid into this account, and automated debits will disburse turn payouts from this account.
+                    </>
+                  )}
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-[#0B3022]">Settlement Bank Name</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-[#0B3022]">Settlement Bank Name</label>
+                      {isVerifiedBank && (
+                        <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+                          <Lock className="h-2.5 w-2.5 text-gray-400" /> Verified
+                        </span>
+                      )}
+                    </div>
                     <input 
                       name="adminBankName"
                       value={formData.adminBankName}
                       onChange={handleChange}
-                      list="banks-list"
+                      disabled={isVerifiedBank}
+                      readOnly={isVerifiedBank}
+                      list={isVerifiedBank ? undefined : "banks-list"}
                       placeholder="e.g. Guaranty Trust Bank"
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-medium"
+                      className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                        isVerifiedBank 
+                          ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none" 
+                          : "bg-white text-[#1F2937] border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                      }`}
                     />
-                    <datalist id="banks-list">
-                      {COMMON_BANKS.map(b => (
-                        <option key={b} value={b} />
-                      ))}
-                    </datalist>
+                    {!isVerifiedBank && (
+                      <datalist id="banks-list">
+                        {COMMON_BANKS.map(b => (
+                          <option key={b} value={b} />
+                        ))}
+                      </datalist>
+                    )}
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-[#0B3022]">10-Digit NUBAN Account Number</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-[#0B3022]">10-Digit NUBAN Account Number</label>
+                      {isVerifiedBank && (
+                        <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+                          <Lock className="h-2.5 w-2.5 text-gray-400" /> Verified
+                        </span>
+                      )}
+                    </div>
                     <input 
                       name="adminAccountNumber"
                       value={formData.adminAccountNumber}
                       onChange={handleChange}
+                      disabled={isVerifiedBank}
+                      readOnly={isVerifiedBank}
                       type="text"
                       maxLength={10}
                       placeholder="0123456789"
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1F2937] font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-medium"
+                      className={`w-full rounded-lg px-3 py-2 text-sm font-mono font-bold transition-colors ${
+                        isVerifiedBank 
+                          ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none tracking-wider" 
+                          : "bg-white text-[#1F2937] border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                      }`}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0B3022]">Settlement Account Holder Name</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-[#0B3022]">Settlement Account Holder Name</label>
+                    {isVerifiedBank && (
+                      <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+                        <Lock className="h-2.5 w-2.5 text-gray-400" /> Verified
+                      </span>
+                    )}
+                  </div>
                   <input 
                     name="adminAccountName"
                     value={formData.adminAccountName}
                     onChange={handleChange}
+                    disabled={isVerifiedBank}
+                    readOnly={isVerifiedBank}
                     placeholder="Full Account Name as registered with bank"
-                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-medium"
+                    className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                      isVerifiedBank 
+                        ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none" 
+                        : "bg-white text-[#1F2937] border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    }`}
                   />
                 </div>
+
+                {isVerifiedBank && (
+                  <div className="flex items-center justify-between pt-1 text-[11px] text-gray-500">
+                    <span className="flex items-center gap-1.5">
+                      <Lock className="h-3 w-3 text-gray-400" />
+                      Locked to prevent tampering. Payouts and debits use this account.
+                    </span>
+                    <Link href="/dashboard/settings" className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline">
+                      Manage bank in Settings &rarr;
+                    </Link>
+                  </div>
+                )}
 
                 {/* Auto-Debit Mandate Authorization Checkbox */}
                 <div className="pt-2 border-t border-emerald-500/20">
