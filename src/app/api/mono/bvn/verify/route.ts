@@ -8,6 +8,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
+    if (sessionId.startsWith("ses_sim_") && process.env.NODE_ENV !== "production") {
+      return NextResponse.json({
+        success: true,
+        message: "OTP sent successfully! (Use Test OTP: 123456)"
+      });
+    }
+
     const monoSecretKey = process.env.MONO_LOOKUP_SECRET_KEY || process.env.MONO_SECRET_KEY;
 
     if (!monoSecretKey) {
@@ -45,6 +52,6 @@ export async function POST(req: Request) {
 
   } catch (err: any) {
     console.error("BVN Verify Error:", err);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Internal server error." }, { status: 500 });
   }
 }

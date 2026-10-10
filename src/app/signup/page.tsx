@@ -199,155 +199,74 @@ export default function SignupPage() {
         setIsSubmitting(false);
       }
     } else if (step === 2) {
-      if (!formData.password || !formData.bvn) {
-        toast.error("Password and BVN are required.");
-        return;
-      }
-
-      if (formData.bvn.length !== 11) {
-        toast.error("BVN must be exactly 11 numeric digits.");
-        return;
-      }
-      
-      setIsSubmitting(true);
-      const monoToastId = toast.loading("Checking identity uniqueness...");
-
-      try {
-        // 1. Pre-flight duplicate check for Phone, Email, and BVN
-        const dupRes = await fetch("/api/auth/check-duplicates", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: formData.email,
-            phone: formData.phone,
-            bvn: formData.bvn,
-            ...(formData.nin ? { nin: formData.nin } : {})
-          })
-        });
-
-        const dupData = await dupRes.json();
-        if (!dupRes.ok || dupData.exists) {
-          toast.error(dupData.error || "An account with these identity details already exists.", { id: monoToastId });
-          setIsSubmitting(false);
+      if (bvnStep === "INITIATE") {
+        if (!formData.password || !formData.bvn) {
+          toast.error("Password and BVN are required.");
           return;
         }
 
-        toast.loading("Verifying BVN via Mono Identity API...", { id: monoToastId });
-
-        // 2. Verify BVN with Mono API
-        const verifyRes = await fetch("/api/mono/verify-identity", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            bvn: formData.bvn,
-            ...(formData.nin ? { nin: formData.nin } : {}),
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phone: formData.phone
-          })
-        });
-
-        const verifyData = await verifyRes.json();
-        if (!verifyRes.ok || !verifyData.success) {
-          throw new Error(verifyData.error || "Mono identity check failed.");
+        if (formData.password.length < 6) {
+          toast.error("Password must be at least 6 characters.");
+          return;
         }
 
-        toast.success("Identity verified via Mono!", { id: monoToastId });
-
-        // 3. Register user in Supabase
-
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-          options: {
-            data: {
-              first_name: formData.firstName,
-              last_name: formData.lastName,
-              phone: formData.phone
-            }
-          }
-        });
-
-        if (authError) throw authError;
-        
-        // 4. Update user profile with verified status, phone, and initial credit score
-        if (authData.user) {
-          const profilePayload = {
-            id: authData.user.id,
-            email: formData.email,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            phone: formData.phone,
-            bvn_verified: true,
-            nin_verified: true,
-            credit_score: 85,
-            auto_sweep_enabled: true
-          };
-
-          const { error: upsertError } = await supabase
-            .from('users')
-            .update(profilePayload)
-            .eq('id', authData.user.id);
-
-          if (upsertError) {
-            console.warn("User profile update warning:", upsertError.message);
-          }
-
-          // 5. Auto-join group if inviteCode or next parameter contains a group ID
-          let targetGroupId = formData.inviteCode.trim();
-          let nextUrlParams: URLSearchParams | null = null;
-          if (!targetGroupId && typeof window !== "undefined") {
-            const searchParams = new URLSearchParams(window.location.search);
-            const nextParam = searchParams.get('next');
-            if (nextParam && nextParam.includes('/invite/')) {
-              const parts = nextParam.split('/invite/');
-              if (parts[1]) {
-                const subParts = parts[1].split('?');
-                targetGroupId = subParts[0];
-                if (subParts[1]) {
-                  nextUrlParams = new URLSearchParams(subParts[1]);
-                }
-              }
-            }
-          }
-
-          if (targetGroupId) {
-            try {
-              const token = authData?.session?.access_token;
-              const headers: Record<string, string> = { "Content-Type": "application/json" };
-              if (token) {
-                headers["Authorization"] = `Bearer ${token}`;
-              }
-              await fetch('/api/groups/join', {
-                method: 'POST',
-                headers,
-                body: JSON.stringify({
-                  groupId: targetGroupId,
-                  userId: authData.user.id,
-                  groupName: nextUrlParams?.get('name') ? decodeURIComponent(nextUrlParams.get('name')!) : undefined,
-                  contributionAmount: nextUrlParams?.get('amount') ? parseInt(nextUrlParams.get('amount')!, 10) : undefined,
-                  frequency: nextUrlParams?.get('freq') || undefined,
-                  maxMembers: nextUrlParams?.get('members') ? parseInt(nextUrlParams.get('members')!, 10) : undefined,
-                  minCreditScore: nextUrlParams?.get('score') ? parseInt(nextUrlParams.get('score')!, 10) : undefined
-                })
-              });
-            } catch (joinErr) {
-              console.error("Auto group join error on signup:", joinErr);
-            }
-          }
+        if (formData.bvn.length !== 11) {
+          toast.error("BVN must be exactly 11 numeric digits.");
+          return;
         }
 
-        setStep(3); // Success Screen
-        toast.success("Account created! Please check your email.");
-      } catch (err: any) {
-        toast.error(err.message || "Failed to create account. Try again.", { id: monoToastId });
-      } finally {
-        setIsSubmitting(false);
+        setIsSubmitting(true);
+        const monoToastId = toast.loading("Checking identity uniqueness...");
+
+        try {
+          // 1. Pre-flight duplicate check for Phone, Email, and BVN
+          const dupRes = await fetch("/api/auth/check-duplicates", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: formData.email,
+              phone: formData.phone,
+              bvn: formData.bvn,
+              ...(formData.nin ? { nin: formData.nin } : {})
+            })
+          });
+
+          const dupData = await dupRes.json();
+          if (!dupRes.ok || dupData.exists) {
+            toast.error(dupData.error || "An account with these identity details already exists.", { id: monoToastId });
+            setIsSubmitting(false);
+            return;
+          }
+
+          toast.loading("Initiating BVN verification via Mono...", { id: monoToastId });
+
+          // 2. Initiate BVN lookup via Mono API
+          const initRes = await fetch("/api/mono/bvn/initiate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bvn: formData.bvn })
+          });
+
+          const initData = await initRes.json();
+          if (!initRes.ok || !initData.success) {
+            throw new Error(initData.error || "Failed to initiate BVN verification.");
+          }
+
+          setSessionId(initData.sessionId);
+          const deliveryMethods = initData.methods && initData.methods.length > 0 
+            ? initData.methods 
+            : [{ method: "phone", hint: formData.phone || "BVN registered line" }];
+          setMethods(deliveryMethods);
+          setBvnStep("SELECT_METHOD");
+          toast.success("BVN found! Choose where to receive your OTP.", { id: monoToastId });
+        } catch (err: any) {
+          toast.error(err.message || "Failed to initiate BVN verification. Please check your BVN and try again.", { id: monoToastId });
+        } finally {
+          setIsSubmitting(false);
+        }
       }
     }
   };
-
-
 
   const handleRequestOtp = async (method: string) => {
     setIsSubmitting(true);
@@ -376,8 +295,8 @@ export default function SignupPage() {
     }
   };
 
-  const handleVerifyOtpAndRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerifyOtpAndRegister = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!otp) {
       toast.error("Please enter the OTP.");
       return;
@@ -405,14 +324,18 @@ export default function SignupPage() {
         throw new Error(result.error || "Failed to verify OTP.");
       }
 
+      const bvnDetails = result.details;
+      const verifiedFirst = bvnDetails?.first_name || bvnDetails?.firstName || formData.firstName;
+      const verifiedLast = bvnDetails?.last_name || bvnDetails?.lastName || formData.lastName;
+
       // 2. OTP verified! Now create the Supabase account
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
+            first_name: verifiedFirst,
+            last_name: verifiedLast,
             phone: formData.phone
           }
         }
@@ -424,8 +347,8 @@ export default function SignupPage() {
         const profilePayload = {
           id: authData.user.id,
           email: formData.email,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
+          first_name: verifiedFirst,
+          last_name: verifiedLast,
           phone: formData.phone,
           bvn_verified: true,
           nin_verified: true,
@@ -435,8 +358,7 @@ export default function SignupPage() {
 
         const { error: upsertError } = await supabase
           .from('users')
-          .update(profilePayload)
-          .eq('id', authData.user.id);
+          .upsert(profilePayload);
 
         if (upsertError) {
           console.warn("User profile update warning:", upsertError.message);
@@ -484,14 +406,25 @@ export default function SignupPage() {
       }
 
       setStep(3); // Success Screen
-      toast.success("Account created! Please check your email.", { id: toastId });
+      toast.success("Account created! Please check your email for confirmation.", { id: toastId });
     } catch (err: any) {
       toast.error(err.message || "Verification failed.", { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
   };
+
   const handleBack = () => {
+    if (step === 2) {
+      if (bvnStep === "VERIFY_OTP") {
+        setBvnStep("SELECT_METHOD");
+        return;
+      }
+      if (bvnStep === "SELECT_METHOD") {
+        setBvnStep("INITIATE");
+        return;
+      }
+    }
     if (step > 1) setStep(step - 1);
   };
 
@@ -568,7 +501,7 @@ export default function SignupPage() {
             <div className="mb-6 sm:mb-8 flex justify-center">
               <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white shadow-xs border border-gray-200">
                 <span className="text-xs sm:text-sm font-semibold text-[#D4AF37]">
-                  Step {step} of 2: {step === 1 ? "Profile Setup" : "Security & Identity"}
+                  Step {step} of 2: {step === 1 ? "Profile Setup" : bvnStep === "INITIATE" ? "Security & Identity" : bvnStep === "SELECT_METHOD" ? "Select OTP Method" : "Verify OTP"}
                 </span>
               </div>
             </div>
@@ -686,81 +619,213 @@ export default function SignupPage() {
 
             {step === 2 && (
               <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Security & Identity</h2>
-                  <p className="text-gray-500">Secure your account and verify your identity.</p>
-                </div>
-
-                {/* Mono Identity Verification Banner */}
-                <div className="p-4 rounded-xl bg-[#0B402B]/5 border border-[#0B402B]/15 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#0B402B] flex items-center justify-center text-[#D4AF37] shrink-0 shadow-sm">
-                    <ShieldCheck className="w-5 h-5" />
-                  </div>
-                  <div className="text-left flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-xs font-bold text-[#0B402B] uppercase tracking-wider">Mono Identity Check</span>
-                      <span className="px-2 py-0.5 text-[10px] font-extrabold bg-[#D4AF37] text-[#0B402B] rounded-full">BVN VERIFIED</span>
-                    </div>
-                    <p className="text-xs text-gray-600 leading-snug">
-                      Your 11-digit Bank Verification Number (BVN) is checked instantly via Mono Open-Banking Identity API.
-                    </p>
-                  </div>
-                </div>
                 
-                <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Create Password</label>
-                    <div className="relative">
-                      <input 
-                        name="password" value={formData.password} onChange={handleChange} 
-                        type={showPassword ? "text" : "password"} placeholder="••••••••" 
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                {/* SUB-STEP 1: INITIATE (Password & BVN) */}
+                {bvnStep === "INITIATE" && (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    <div className="text-center mb-6">
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Security & Identity</h2>
+                      <p className="text-gray-500">Create your password and provide your 11-digit BVN.</p>
+                    </div>
+
+                    {/* Mono Identity Verification Banner */}
+                    <div className="p-4 rounded-xl bg-[#0B402B]/5 border border-[#0B402B]/15 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#0B402B] flex items-center justify-center text-[#D4AF37] shrink-0 shadow-sm">
+                        <ShieldCheck className="w-5 h-5" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-xs font-bold text-[#0B402B] uppercase tracking-wider">Mono Bank Verification</span>
+                          <span className="px-2 py-0.5 text-[10px] font-extrabold bg-[#D4AF37] text-[#0B402B] rounded-full">OTP SECURED</span>
+                        </div>
+                        <p className="text-xs text-gray-600 leading-snug">
+                          A secure One-Time Password (OTP) will be dispatched to your BVN-registered phone line or email to verify your identity.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Create Password</label>
+                        <div className="relative">
+                          <input 
+                            name="password" value={formData.password} onChange={handleChange} 
+                            type={showPassword ? "text" : "password"} placeholder="••••••••" 
+                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                          >
+                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between items-center mb-1.5">
+                          <label className="block text-sm font-bold text-gray-700">Bank Verification Number (BVN)</label>
+                          {formData.bvn.length === 11 && (
+                            <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5" /> 11 Digits Ready
+                            </span>
+                          )}
+                        </div>
+                        <input 
+                          name="bvn" value={formData.bvn} onChange={handleChange} 
+                          type="text" placeholder="Enter your 11-digit BVN" maxLength={11}
+                          className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.bvn.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
+                        />
+                        <p className="text-xs text-gray-500 mt-1.5">
+                          💡 Don&apos;t know your BVN? Dial <strong className="text-[#0B402B] font-mono">*565*0#</strong> on your registered bank phone line.
+                        </p>
+                      </div>
+                    </form>
+
+                    <div className="flex gap-4 pt-4">
+                      <button onClick={handleBack} disabled={isSubmitting} className="px-5 py-4 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+                        <ArrowLeft className="h-5 w-5" />
+                      </button>
+                      <button 
+                        onClick={handleNext}
+                        disabled={isSubmitting || formData.bvn.length !== 11}
+                        className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center cursor-pointer"
                       >
-                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        {isSubmitting ? (
+                          <div className="w-5 h-5 border-2 border-[#0B402B] border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          "Verify BVN & Get OTP"
+                        )}
                       </button>
                     </div>
                   </div>
+                )}
 
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <label className="block text-sm font-bold text-gray-700">Bank Verification Number (BVN)</label>
-                      {formData.bvn.length === 11 && (
-                        <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> 11 Digits Ready
-                        </span>
-                      )}
+                {/* SUB-STEP 2: SELECT OTP METHOD */}
+                {bvnStep === "SELECT_METHOD" && (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    <div className="text-center mb-6">
+                      <div className="w-12 h-12 bg-emerald-50 text-[#0B402B] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-emerald-200">
+                        <ShieldCheck className="w-6 h-6" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Select OTP Delivery Method</h2>
+                      <p className="text-gray-500 text-sm">Where should Mono send your verification code?</p>
                     </div>
-                    <input 
-                      name="bvn" value={formData.bvn} onChange={handleChange} 
-                      type="text" placeholder="Enter your 11-digit BVN" maxLength={11}
-                      className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.bvn.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
-                    />
-                    <p className="text-xs text-gray-500 mt-1.5">
-                      💡 Don&apos;t know your BVN? Dial <strong className="text-[#0B402B] font-mono">*565*0#</strong> on your registered bank phone line.
-                    </p>
-                  </div>
-                </form>
 
-                <div className="flex gap-4 pt-4">
-                  <button onClick={handleBack} disabled={isSubmitting} className="px-5 py-4 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors">
-                    <ArrowLeft className="h-5 w-5" />
-                  </button>
-                  <button 
-                    onClick={handleNext}
-                    disabled={isSubmitting}
-                    className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center"
-                  >
-                    {isSubmitting ? <div className="w-5 h-5 border-2 border-[#0B402B] border-t-transparent rounded-full animate-spin"></div> : "Create Your Account"}
-                  </button>
-                </div>
+                    <div className="space-y-3">
+                      {methods.map((m, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          disabled={isSubmitting}
+                          onClick={() => handleRequestOtp(m.method)}
+                          className="w-full p-4 border border-gray-200 hover:border-[#D4AF37] bg-white hover:bg-emerald-50/40 rounded-xl transition-all text-left flex items-center justify-between group shadow-xs cursor-pointer disabled:opacity-50"
+                        >
+                          <div className="flex items-center gap-3.5">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#0B402B] flex items-center justify-center group-hover:scale-105 transition-transform">
+                              {m.method.includes("email") ? <Mail className="w-5 h-5" /> : <Phone className="w-5 h-5" />}
+                            </div>
+                            <div>
+                              <p className="font-bold text-gray-900 text-sm capitalize">
+                                {m.method === "phone" ? "SMS to Mobile Phone" : m.method === "email" ? "Email Address" : m.method.replace("_", " ")}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-0.5 font-mono">{m.hint}</p>
+                            </div>
+                          </div>
+                          <span className="text-xs font-bold text-[#0B402B] bg-[#D4AF37]/20 px-3 py-1.5 rounded-lg group-hover:bg-[#D4AF37] transition-colors">
+                            Send OTP →
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setBvnStep("INITIATE")}
+                        disabled={isSubmitting}
+                        className="w-full py-3 text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <ArrowLeft className="w-4 h-4" /> Change BVN or Password
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUB-STEP 3: VERIFY OTP */}
+                {bvnStep === "VERIFY_OTP" && (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    <div className="text-center mb-6">
+                      <div className="w-12 h-12 bg-emerald-50 text-[#0B402B] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-emerald-200">
+                        <Lock className="w-6 h-6" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Enter Verification Code</h2>
+                      <p className="text-gray-500 text-sm">
+                        Enter the OTP sent via <strong className="text-gray-800">{selectedMethod === "phone" ? "SMS" : selectedMethod}</strong>.
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleVerifyOtpAndRegister} className="space-y-5">
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 text-center mb-2">6-Digit One-Time Password</label>
+                        <input 
+                          type="text"
+                          required
+                          maxLength={6}
+                          placeholder="••••••"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                          className="w-full py-3.5 px-4 text-center text-3xl tracking-[0.4em] font-mono font-bold bg-gray-50 border border-gray-300 focus:border-[#0B402B] focus:ring-1 focus:ring-[#0B402B] rounded-xl text-[#0B402B] focus:outline-none transition-colors"
+                        />
+                      </div>
+
+                      <div className="flex gap-4 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setBvnStep("SELECT_METHOD")}
+                          disabled={isSubmitting}
+                          className="px-5 py-4 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                        >
+                          <ArrowLeft className="h-5 w-5" />
+                        </button>
+                        <button 
+                          type="submit"
+                          disabled={isSubmitting || otp.length < 4}
+                          className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center cursor-pointer shadow-sm"
+                        >
+                          {isSubmitting ? (
+                            <div className="w-5 h-5 border-2 border-[#0B402B] border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            "Verify & Complete Sign Up"
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 text-xs">
+                        <button
+                          type="button"
+                          onClick={() => handleRequestOtp(selectedMethod)}
+                          disabled={isSubmitting}
+                          className="text-[#0B402B] font-bold hover:underline cursor-pointer"
+                        >
+                          Resend Code
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBvnStep("SELECT_METHOD")}
+                          disabled={isSubmitting}
+                          className="text-gray-500 hover:text-gray-900 cursor-pointer"
+                        >
+                          Choose different method
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
                 
                 <p className="mt-4 text-center text-xs text-gray-500">
-                  By signing up, you agree to our <Link href="#" className="underline hover:text-gray-800">Terms of Service</Link>.
+                  By signing up, you agree to our <Link href="/terms" className="underline hover:text-gray-800">Terms of Service</Link>.
                 </p>
               </div>
             )}
