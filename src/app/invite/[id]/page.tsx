@@ -376,6 +376,56 @@ export default function InvitePage(props: {
   const minScoreRequired = group?.min_credit_score || 0;
   const isScoreTooLow = effectiveCreditScore < minScoreRequired;
 
+  // Dynamically compute duration and frequency labels matching the ajo type (daily, weekly, monthly)
+  const rawFreq = (group?.frequency || urlFreq || "monthly").toLowerCase();
+  const totalRounds = group?.max_members || 6;
+
+  const getCycleDurationLabel = (rounds: number, freq: string) => {
+    switch (freq) {
+      case "daily":
+        return `${rounds}-Day`;
+      case "weekly":
+        return `${rounds}-Week`;
+      case "biweekly":
+        return `${rounds * 2}-Week`;
+      case "monthly":
+      default:
+        return `${rounds}-Month`;
+    }
+  };
+
+  const getFrequencyLabel = (freq: string) => {
+    switch (freq) {
+      case "daily":
+        return "daily";
+      case "weekly":
+        return "weekly";
+      case "biweekly":
+        return "bi-weekly";
+      case "monthly":
+      default:
+        return "monthly";
+    }
+  };
+
+  const getCycleDurationSummary = (rounds: number, freq: string) => {
+    switch (freq) {
+      case "daily":
+        return `${rounds} Round${rounds === 1 ? "" : "s"} (${rounds} Day${rounds === 1 ? "" : "s"})`;
+      case "weekly":
+        return `${rounds} Round${rounds === 1 ? "" : "s"} (${rounds} Week${rounds === 1 ? "" : "s"})`;
+      case "biweekly":
+        return `${rounds} Round${rounds === 1 ? "" : "s"} (${rounds * 2} Weeks)`;
+      case "monthly":
+      default:
+        return `${rounds} Round${rounds === 1 ? "" : "s"} (${rounds} Month${rounds === 1 ? "" : "s"})`;
+    }
+  };
+
+  const cycleDurationLabel = getCycleDurationLabel(totalRounds, rawFreq);
+  const frequencyLabel = getFrequencyLabel(rawFreq);
+  const cycleDurationSummary = getCycleDurationSummary(totalRounds, rawFreq);
+
   return (
     <div className="min-h-screen flex bg-[#FAFAFA] font-sans">
       
@@ -475,14 +525,14 @@ export default function InvitePage(props: {
                   <CalendarDays className="h-4 w-4 text-[#0B402B]" />
                   <span className="font-medium">Contribution Frequency</span>
                 </div>
-                <span className="font-bold text-gray-900 capitalize">{group?.frequency || 'monthly'}</span>
+                <span className="font-bold text-gray-900 capitalize">{frequencyLabel}</span>
               </div>
               <div className="flex items-center justify-between py-1 border-t border-gray-200/60 pt-3">
                 <div className="flex items-center gap-2.5 text-gray-600 text-sm">
                   <Users className="h-4 w-4 text-[#0B402B]" />
                   <span className="font-medium">Cycle Duration</span>
                 </div>
-                <span className="font-bold text-gray-900">{group?.max_members || 6} Rounds</span>
+                <span className="font-bold text-gray-900">{cycleDurationSummary}</span>
               </div>
               <div className="flex items-center justify-between py-1 border-t border-gray-200/60 pt-3">
                 <div className="flex items-center gap-2.5 text-gray-600 text-sm">
@@ -607,12 +657,12 @@ export default function InvitePage(props: {
                   <span className="text-xs font-mono font-bold uppercase text-emerald-400 tracking-wider">Step {modalStep} of 2</span>
                   <span className="text-zinc-600">•</span>
                   <span className="text-xs text-zinc-400">
-                    {modalStep === 1 ? "Circle Anonymity & Privacy" : "Standing Debit Mandate"}
+                    {modalStep === 1 ? "Circle Anonymity & Privacy" : `${cycleDurationLabel} Standing Mandate`}
                   </span>
                 </div>
                 <h2 className="text-xl font-bold text-white mt-1">
                   {modalStep === 1 && "Privacy & Anonymity Preferences"}
-                  {modalStep === 2 && "Standing Direct Debit Mandate"}
+                  {modalStep === 2 && `${cycleDurationLabel} Standing Direct Debit Mandate`}
                 </h2>
               </div>
               <button 
@@ -707,7 +757,7 @@ export default function InvitePage(props: {
                     <div className="flex items-start gap-2">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">1</div>
                       <p>
-                        <strong>{group?.max_members || 6}-Month Standing Direct Debit Mandate:</strong> You authorize continuous automated direct debits of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> on each scheduled cycle turn.
+                        <strong>{cycleDurationLabel} Standing Direct Debit Mandate:</strong> You authorize continuous automated direct debits of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> on each scheduled {frequencyLabel} cycle turn.
                       </p>
                     </div>
 
@@ -736,7 +786,7 @@ export default function InvitePage(props: {
                         className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
                       />
                       <span className="text-xs text-zinc-300">
-                        I authorize the <strong>{group?.max_members || 6}-month standing direct debit mandate</strong> for my scheduled contributions in {group?.name}.
+                        I authorize the <strong>{cycleDurationLabel.toLowerCase()} standing direct debit mandate</strong> for my scheduled contributions in {group?.name}.
                       </span>
                     </label>
                   </div>
@@ -843,7 +893,7 @@ export default function InvitePage(props: {
                   2. Continuous Direct Debit Mandate
                 </div>
                 <p>
-                  By joining this Àjọṣe, you authorize an automated direct debit mandate on your linked primary bank account. On each contribution due date, the agreed amount of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> will be automatically swept into the Admin's settlement account.
+                  By joining this Àjọṣe, you authorize an automated direct debit mandate on your linked primary bank account. On each {frequencyLabel} contribution due date, the agreed amount of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> will be automatically swept into the Admin's settlement account.
                 </p>
               </div>
 
