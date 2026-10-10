@@ -4,6 +4,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "How It Works | Àjọṣe",
   description: "Learn how to use Àjọṣe to create, join, and manage your cooperative rotational contribution groups with complete transparency and security.",
+  alternates: {
+    canonical: "/how-it-works",
+  },
 };
 
 export default function HowItWorksPage() {

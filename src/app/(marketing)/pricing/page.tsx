@@ -7,6 +7,9 @@ import { MemberFeeCalculator } from "@/components/MemberFeeCalculator";
 export const metadata: Metadata = {
   title: "Simple, Transparent Pricing | Àjọṣe",
   description: "No hidden fees, no subscriptions. Select the schedule that works best for your circle: Monthly at 2% (capped at ₦10k), Weekly at ₦300/tx, and Daily at ₦100/tx.",
+  alternates: {
+    canonical: "/pricing",
+  },
 };
 
 export default function PricingPage() {

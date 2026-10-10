@@ -4,6 +4,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Features | Àjọṣe",
   description: "Discover the powerful features of Àjọṣe that make rotational contributions secure, automated, and effortless.",
+  alternates: {
+    canonical: "/features",
+  },
 };
 
 export default function FeaturesPage() {

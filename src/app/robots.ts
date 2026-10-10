@@ -5,7 +5,20 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard/', '/admin/', '/api/'], // Blocks Google from indexing private dashboard/admin pages
+      disallow: [
+        '/dashboard',
+        '/dashboard/*',
+        '/admin',
+        '/admin/*',
+        '/api',
+        '/api/*',
+        '/auth',
+        '/auth/*',
+        '/invite',
+        '/invite/*',
+        '/forgot-password',
+        '/reset-password',
+      ],
     },
     sitemap: 'https://ajose.ng/sitemap.xml',
   }

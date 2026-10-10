@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service | Àjọṣe",
+  description: "Read the commercial Terms of Service and contractual guidelines governing the use of the Àjọṣe rotational thrift platform.",
+  alternates: {
+    canonical: "/terms",
+  },
+};
+
 export default function TermsOfServicePage() {
   return (
     <main className="flex-1 bg-[#FDFBF7] text-[#1F2937] py-24 md:py-32">

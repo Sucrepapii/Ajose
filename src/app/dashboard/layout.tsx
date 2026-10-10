@@ -17,6 +17,14 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { AutoLogout } from "@/components/AutoLogout";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function DashboardLayout({
   children,

@@ -4,6 +4,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Security & Trust | Àjọṣe",
   description: "Learn how Àjọṣe protects your contributions with bank-grade encryption, BVN verification, and the Ajo Credit Penalty System.",
+  alternates: {
+    canonical: "/security",
+  },
 };
 
 export default function SecurityPage() {

@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cookie Policy | Àjọṣe",
+  description: "Learn how Àjọṣe uses strictly necessary and security cookies across our digital platform.",
+  alternates: {
+    canonical: "/cookies",
+  },
+};
+
 export default function CookiePolicyPage() {
   return (
     <main className="flex-1 bg-[#FDFBF7] text-[#1F2937] py-24 md:py-32">

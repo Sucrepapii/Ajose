@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Àjọṣe",
+  description: "Read the Privacy Policy of Àjọṣe detailing NDPA compliance, open banking data protection, and secure data handling.",
+  alternates: {
+    canonical: "/privacy",
+  },
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <main className="flex-1 bg-[#FDFBF7] text-[#1F2937] py-24 md:py-32">

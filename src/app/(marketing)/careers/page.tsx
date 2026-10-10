@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Careers | Àjọṣe",
+  description: "Join the team modernizing rotational contributions and open finance in Africa.",
+  alternates: {
+    canonical: "/careers",
+  },
+};
+
 export default function CareersPage() {
   return (
     <main className="flex-1 container mx-auto px-4 py-32 max-w-4xl min-h-screen">

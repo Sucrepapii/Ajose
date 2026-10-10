@@ -7,7 +7,11 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Àjọṣe Platform Operations | Super Admin Desk",
-  description: "Executive operations backoffice for monitoring Ajo groups, Mono sweeps, turn disbursements, and platform revenue."
+  description: "Executive operations backoffice for monitoring Ajo groups, Mono sweeps, turn disbursements, and platform revenue.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function AdminDashboardLayout({

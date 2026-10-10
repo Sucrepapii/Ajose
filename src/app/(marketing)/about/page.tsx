@@ -1,4 +1,13 @@
 import { Users, Target, ShieldCheck, Sparkles, HeartHandshake } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us | Àjọṣe",
+  description: "Learn about the mission, philosophy, and team behind Àjọṣe — bringing institutional trust and automation to rotational contributions.",
+  alternates: {
+    canonical: "/about",
+  },
+};
 
 export default function AboutPage() {
   return (

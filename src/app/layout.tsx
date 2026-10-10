@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || 
     (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'https://ajose.ng')
   ),
+  alternates: {
+    canonical: "/",
+  },
   title: "Àjọṣe — Turn by turn, no wahala.",
   description: "Ajose is the digital platform that runs your Ajo group — collecting contributions, tracking every round, and making sure everyone gets their turn.",
   keywords: ["Ajo", "Esusu", "Osusu", "Rotational Contribution", "Nigeria Fintech", "Group Contribution", "Ajose"],

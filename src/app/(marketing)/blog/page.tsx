@@ -5,6 +5,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Blog | Àjọṣe",
   description: "Insights, news, and best practices on rotational contributions, personal finance, and the future of open banking.",
+  alternates: {
+    canonical: "/blog",
+  },
 };
 
 const POSTS = [
