@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -9,13 +9,19 @@ import { ShieldCheck, Fingerprint, Lock, CheckCircle2, Landmark, ArrowRight, Spa
 
 export function VerifyIdentityClient({ 
   userId, 
-  isVerified 
+  isVerified: initialIsVerified 
 }: { 
   userId: string;
   isVerified: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const [verified, setVerified] = useState(initialIsVerified);
+
+  useEffect(() => {
+    setVerified(initialIsVerified);
+  }, [initialIsVerified]);
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMonoConnecting, setIsMonoConnecting] = useState(false);
   const [bvn, setBvn] = useState("");
@@ -43,6 +49,7 @@ export function VerifyIdentityClient({
               });
               const data = await res.json();
               if (res.ok) {
+                setVerified(true);
                 toast.success(`Identity and ${data.bankName || "Bank"} verified via Mono!`, { id: "mono-verify" });
                 router.refresh();
               } else {
@@ -148,6 +155,7 @@ export function VerifyIdentityClient({
 
       if (error) throw error;
 
+      setVerified(true);
       toast.success("Identity verified successfully!");
       router.refresh();
     } catch (err: any) {
@@ -157,7 +165,7 @@ export function VerifyIdentityClient({
     }
   };
 
-  if (isVerified) {
+  if (verified) {
     return (
       <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-8 text-center animate-in zoom-in duration-300">
         <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">

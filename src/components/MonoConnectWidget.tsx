@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -18,12 +18,10 @@ import {
   X
 } from "lucide-react";
 
-
-
 export function MonoConnectWidget({ 
   userId, 
-  isVerified,
-  profile
+  isVerified: initialIsVerified,
+  profile: initialProfile
 }: { 
   userId: string;
   isVerified: boolean;
@@ -41,7 +39,13 @@ export function MonoConnectWidget({
   const router = useRouter();
   const supabase = createClient();
   
+  const [profile, setProfile] = useState(initialProfile);
+  const [isVerified, setIsVerified] = useState(initialIsVerified);
 
+  useEffect(() => {
+    setProfile(initialProfile);
+    setIsVerified(initialIsVerified);
+  }, [initialProfile, initialIsVerified]);
 
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pinModalMode, setPinModalMode] = useState<"verify" | "set">("verify");
@@ -58,7 +62,7 @@ export function MonoConnectWidget({
           key: monoPublicKey,
           onSuccess: async ({ code }: { code: string }) => {
             (window as any)._isMonoActive = false;
-            toast.loading("Re-verifying bank account via Mono...", { id: "mono-linking" });
+            toast.loading("Updating verified settlement account...", { id: "mono-linking" });
             try {
               const res = await fetch("/api/mono/exchange-token", {
                 method: "POST",
@@ -67,7 +71,15 @@ export function MonoConnectWidget({
               });
               const data = await res.json();
               if (res.ok) {
-                toast.success(`Connected ${data.bankName || "Bank"} successfully as your verified settlement account!`, { id: "mono-linking" });
+                setProfile(prev => ({
+                  ...prev,
+                  bank_name: data.bankName,
+                  account_number: data.accountNumber,
+                  account_name: data.accountName,
+                  bvn_verified: true,
+                }));
+                setIsVerified(true);
+                toast.success(`Connected ${data.bankName || "Bank"} (${data.accountNumber}) as your verified settlement account!`, { id: "mono-linking" });
                 router.refresh();
               } else {
                 throw new Error(data.error || "Failed to link account");
