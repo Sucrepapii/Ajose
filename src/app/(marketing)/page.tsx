@@ -180,7 +180,7 @@ export default function Home() {
                 variants={fadeIn}
                 className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl"
               >
-                Run your Ajo. Track every round. Trust every naira. Ditch messy WhatsApp groups and handwritten ledgers for an automated, transparent contribution platform built for Nigeria.
+                Run your Ajo. Track every round. Trust every naira. Ditch messy WhatsApp groups and handwritten ledgers for an automated, transparent contribution platform built for Nigerians.
               </motion.p>
               
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4">
