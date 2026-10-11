@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import QRCode from "qrcode";
 import { 
   Share2, 
   MessageCircle, 
@@ -13,7 +14,8 @@ import {
   X, 
   Send,
   Download,
-  Users
+  Users,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -46,22 +48,50 @@ export function OrganizerShareKitModal({
   const [activeTab, setActiveTab] = useState<"whatsapp" | "qr">("whatsapp");
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedMessage, setCopiedMessage] = useState(false);
+  const [isOpeningWhatsApp, setIsOpeningWhatsApp] = useState(false);
+  const [isDownloadingQr, setIsDownloadingQr] = useState(false);
 
-  // Generate Invite URL
-  const getInviteUrl = () => {
-    if (typeof window === "undefined") return "";
-    const baseUrl = window.location.origin;
-    const params = new URLSearchParams();
-    if (groupName) params.set("name", groupName);
-    if (amount) params.set("amount", amount.toString());
-    if (frequency) params.set("freq", frequency);
-    if (maxMembers) params.set("members", maxMembers.toString());
-    if (minScore) params.set("score", minScore.toString());
-    const qs = params.toString();
-    return `${baseUrl}/invite/${groupId}${qs ? `?${qs}` : ""}`;
-  };
+  // Invite URL and Local QR Code state
+  const [inviteUrl, setInviteUrl] = useState("");
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState("");
+  const [isGeneratingQr, setIsGeneratingQr] = useState(true);
 
-  const inviteUrl = getInviteUrl();
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const baseUrl = window.location.origin;
+      const params = new URLSearchParams();
+      if (groupName) params.set("name", groupName);
+      if (amount) params.set("amount", amount.toString());
+      if (frequency) params.set("freq", frequency);
+      if (maxMembers) params.set("members", maxMembers.toString());
+      if (minScore) params.set("score", minScore.toString());
+      const qs = params.toString();
+      const generatedUrl = `${baseUrl}/invite/${groupId}${qs ? `?${qs}` : ""}`;
+      setInviteUrl(generatedUrl);
+
+      // Generate local QR code
+      setIsGeneratingQr(true);
+      QRCode.toDataURL(generatedUrl, {
+        width: 360,
+        margin: 2,
+        color: {
+          dark: "#0B3022",
+          light: "#FFFFFF"
+        }
+      })
+        .then((url) => {
+          setQrCodeDataUrl(url);
+        })
+        .catch((err) => {
+          console.error("Local QR generation failed, fallback:", err);
+          setQrCodeDataUrl(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(generatedUrl)}`);
+        })
+        .finally(() => {
+          setIsGeneratingQr(false);
+        });
+    }
+  }, [groupId, groupName, amount, frequency, maxMembers, minScore]);
+
   const openSlots = Math.max(0, maxMembers - joinedCount);
   const totalPool = amount * maxMembers;
   const adminCommissionAmount = Math.round((adminCommissionPct / 100) * totalPool);
@@ -105,12 +135,31 @@ ${inviteUrl}`;
   };
 
   const handleOpenWhatsApp = () => {
+    setIsOpeningWhatsApp(true);
     const msg = formatWhatsAppMessage();
     const encoded = encodeURIComponent(msg);
     window.open(`https://wa.me/?text=${encoded}`, "_blank");
+    setTimeout(() => setIsOpeningWhatsApp(false), 1500);
   };
 
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(inviteUrl)}`;
+  const handleDownloadQr = () => {
+    if (!qrCodeDataUrl) return;
+    setIsDownloadingQr(true);
+    try {
+      const a = document.createElement("a");
+      a.href = qrCodeDataUrl;
+      const safeName = (groupName || "ajose-circle").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      a.download = `ajose-${safeName}-qr.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      toast.success("QR Pass downloaded!");
+    } catch (e) {
+      toast.error("Download failed. You can right click or long press to save image.");
+    } finally {
+      setTimeout(() => setIsDownloadingQr(false), 1200);
+    }
+  };
 
   return (
     <>
@@ -243,10 +292,20 @@ ${inviteUrl}`;
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <button
                       onClick={handleOpenWhatsApp}
-                      className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm cursor-pointer"
+                      disabled={isOpeningWhatsApp}
+                      className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm cursor-pointer disabled:opacity-70"
                     >
-                      <Send className="h-4 w-4" />
-                      <span>Share on WhatsApp</span>
+                      {isOpeningWhatsApp ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Opening WhatsApp...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4" />
+                          <span>Share on WhatsApp</span>
+                        </>
+                      )}
                     </button>
 
                     <button
@@ -276,13 +335,24 @@ ${inviteUrl}`;
                     Have members scan this code with their smartphone camera at meetings, market stalls, or events to join instantly.
                   </p>
 
-                  <div className="inline-block p-4 bg-white rounded-3xl border-2 border-[#C5A059]/40 shadow-lg mx-auto">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={qrCodeUrl} 
-                      alt={`QR code for ${groupName}`} 
-                      className="w-40 h-40 sm:w-48 sm:h-48 mx-auto rounded-xl"
-                    />
+                  <div className="inline-block p-4 bg-white rounded-3xl border-2 border-[#C5A059]/40 shadow-lg mx-auto min-w-[200px]">
+                    {isGeneratingQr ? (
+                      <div className="w-44 h-44 sm:w-52 sm:h-52 flex flex-col items-center justify-center gap-2 text-xs text-gray-500">
+                        <Loader2 className="w-8 h-8 text-[#0B3022] animate-spin" />
+                        <span className="font-medium">Generating QR Pass...</span>
+                      </div>
+                    ) : qrCodeDataUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img 
+                        src={qrCodeDataUrl} 
+                        alt={`QR code for ${groupName}`} 
+                        className="w-44 h-44 sm:w-52 sm:h-52 mx-auto rounded-xl object-contain shadow-xs"
+                      />
+                    ) : (
+                      <div className="w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center text-xs text-red-500 font-medium">
+                        Unable to generate QR code
+                      </div>
+                    )}
                     <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-center gap-1.5 text-xs font-bold text-[#0B3022]">
                       <ShieldCheck className="w-4 h-4 text-emerald-600" />
                       <span>Àjọṣe Verified Circle</span>
@@ -311,15 +381,23 @@ ${inviteUrl}`;
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
-                    <a
-                      href={qrCodeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full py-2.5 px-5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                    <button
+                      onClick={handleDownloadQr}
+                      disabled={isDownloadingQr || isGeneratingQr || !qrCodeDataUrl}
+                      className="w-full py-2.5 px-5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
-                      <Download className="h-3.5 w-3.5" />
-                      <span>Save QR Image</span>
-                    </a>
+                      {isDownloadingQr ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <span>Saving QR Image...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-3.5 w-3.5" />
+                          <span>Save QR Image</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               )}

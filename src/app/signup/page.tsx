@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock, Users, Mail, Phone } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock, Users, Mail, Phone, Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
 
@@ -24,6 +24,10 @@ export default function SignupPage() {
 
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [requestingMethod, setRequestingMethod] = useState<string | null>(null);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
+  const [isNavigatingLogin, setIsNavigatingLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [verifiedGroup, setVerifiedGroup] = useState<VerifiedGroupInfo | null>(null);
 
@@ -115,6 +119,7 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = async () => {
+    setIsGoogleLoading(true);
     try {
       const isNative = Capacitor.isNativePlatform();
       const redirectTo = isNative 
@@ -135,10 +140,13 @@ export default function SignupPage() {
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to sign up with Google.");
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
   const handleAppleSignup = async () => {
+    setIsAppleLoading(true);
     try {
       const isNative = Capacitor.isNativePlatform();
       const redirectTo = isNative 
@@ -159,6 +167,8 @@ export default function SignupPage() {
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to sign up with Apple.");
+    } finally {
+      setIsAppleLoading(false);
     }
   };
 
@@ -289,6 +299,7 @@ export default function SignupPage() {
 
   const handleRequestOtp = async (method: string, customPhone?: string) => {
     setIsSubmitting(true);
+    setRequestingMethod(method);
     const toastId = toast.loading(`Sending OTP via ${method.replace("_", " ")}...`);
     setSelectedMethod(method);
 
@@ -303,6 +314,7 @@ export default function SignupPage() {
         if (!phoneToSend) {
           toast.error("Please enter a phone number to receive the OTP.", { id: toastId });
           setIsSubmitting(false);
+          setRequestingMethod(null);
           return;
         }
         payload.phone_number = phoneToSend;
@@ -327,6 +339,7 @@ export default function SignupPage() {
       toast.error(err.message || "Failed to send OTP.", { id: toastId });
     } finally {
       setIsSubmitting(false);
+      setRequestingMethod(null);
     }
   };
 
@@ -454,6 +467,7 @@ export default function SignupPage() {
 
   const handleDirectNameMatchVerify = async () => {
     setIsSubmitting(true);
+    setRequestingMethod("name_match");
     const toastId = toast.loading("Verifying identity via BVN bank records...");
 
     try {
@@ -483,6 +497,7 @@ export default function SignupPage() {
       toast.error(err.message || "Failed to verify identity via BVN.", { id: toastId });
     } finally {
       setIsSubmitting(false);
+      setRequestingMethod(null);
     }
   };
 
@@ -586,27 +601,37 @@ export default function SignupPage() {
 
                 <button 
                   type="button"
+                  disabled={isGoogleLoading || isAppleLoading || isSubmitting}
                   onClick={handleGoogleSignup}
-                  className="w-full py-3.5 px-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer mb-3"
+                  className="w-full py-3.5 px-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer mb-3 disabled:opacity-70"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                  </svg>
-                  Continue with Google
+                  {isGoogleLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
+                  ) : (
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                  )}
+                  <span>{isGoogleLoading ? "Connecting to Google..." : "Continue with Google"}</span>
                 </button>
 
                 <button 
                   type="button"
+                  disabled={isGoogleLoading || isAppleLoading || isSubmitting}
                   onClick={handleAppleSignup}
-                  className="w-full py-3.5 px-4 bg-black hover:bg-gray-900 text-white font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer"
+                  className="w-full py-3.5 px-4 bg-black hover:bg-gray-900 text-white font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer disabled:opacity-70"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.05 20.28c-.98.95-2.05 1.8-3.08 1.8-.95 0-1.25-.57-2.66-.57-1.4 0-1.76.55-2.66.57-1.07.03-2.28-.95-3.3-1.96-2.05-2.07-3.72-5.91-3.72-9.61 0-4.04 2.6-6.15 5.25-6.15 1.33 0 2.53.86 3.37.86.81 0 2.22-1 3.73-1 1.5 0 2.82.64 3.65 1.7-3.39 2.03-2.82 6.55.6 7.82-.77 2.07-1.93 4.32-3.18 6.54zm-2.92-15.69c.56-1.12.87-2.45.67-3.71-1.12.18-2.66.96-3.47 2.02-.7.91-1.12 2.31-.91 3.63 1.25.1 2.76-.75 3.71-1.94z"/>
-                  </svg>
-                  Continue with Apple
+                  {isAppleLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-white" />
+                  ) : (
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.05 20.28c-.98.95-2.05 1.8-3.08 1.8-.95 0-1.25-.57-2.66-.57-1.4 0-1.76.55-2.66.57-1.07.03-2.28-.95-3.3-1.96-2.05-2.07-3.72-5.91-3.72-9.61 0-4.04 2.6-6.15 5.25-6.15 1.33 0 2.53.86 3.37.86.81 0 2.22-1 3.73-1 1.5 0 2.82.64 3.65 1.7-3.39 2.03-2.82 6.55.6 7.82-.77 2.07-1.93 4.32-3.18 6.54zm-2.92-15.69c.56-1.12.87-2.45.67-3.71-1.12.18-2.66.96-3.47 2.02-.7.91-1.12 2.31-.91 3.63 1.25.1 2.76-.75 3.71-1.94z"/>
+                    </svg>
+                  )}
+                  <span>{isAppleLoading ? "Connecting to Apple..." : "Continue with Apple"}</span>
                 </button>
 
                 <div className="flex items-center gap-4">
@@ -678,9 +703,17 @@ export default function SignupPage() {
                 <div className="pt-4">
                   <button 
                     onClick={handleNext}
-                    className="w-full py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
+                    disabled={isSubmitting}
+                    className="w-full py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer"
                   >
-                    Continue to Security
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin text-[#0B402B]" />
+                        <span>Verifying details...</span>
+                      </>
+                    ) : (
+                      "Continue to Security"
+                    )}
                   </button>
                   <div className="mt-6 text-center text-lg text-gray-700 font-medium bg-gray-50 py-3 rounded-lg border border-gray-100">
                     Already have an account? <Link href="/login" className="text-[#0B402B] font-extrabold hover:underline">Log In here</Link>
@@ -762,10 +795,13 @@ export default function SignupPage() {
                       <button 
                         onClick={handleNext}
                         disabled={isSubmitting || formData.bvn.length !== 11}
-                        className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center cursor-pointer"
+                        className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer"
                       >
                         {isSubmitting ? (
-                          <div className="w-5 h-5 border-2 border-[#0B402B] border-t-transparent rounded-full animate-spin"></div>
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin text-[#0B402B]" />
+                            <span>Checking BVN with Mono...</span>
+                          </>
                         ) : (
                           "Verify BVN & Get OTP"
                         )}
@@ -816,9 +852,16 @@ export default function SignupPage() {
                                   type="button"
                                   disabled={isSubmitting || !alternatePhone}
                                   onClick={() => handleRequestOtp("alternate_phone", alternatePhone)}
-                                  className="px-4 py-2.5 bg-[#0B402B] hover:bg-[#072a1c] text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap"
+                                  className="px-4 py-2.5 bg-[#0B402B] hover:bg-[#072a1c] text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
                                 >
-                                  Send OTP →
+                                  {isSubmitting && requestingMethod === "alternate_phone" ? (
+                                    <>
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                                      <span>Sending...</span>
+                                    </>
+                                  ) : (
+                                    <span>Send OTP →</span>
+                                  )}
                                 </button>
                               </div>
                             </div>
@@ -844,8 +887,15 @@ export default function SignupPage() {
                                 <p className="text-xs text-gray-500 mt-0.5 font-mono">{m.hint}</p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-[#0B402B] bg-[#D4AF37]/20 px-3 py-1.5 rounded-lg group-hover:bg-[#D4AF37] transition-colors">
-                              Send OTP →
+                            <span className="text-xs font-bold text-[#0B402B] bg-[#D4AF37]/20 px-3 py-1.5 rounded-lg group-hover:bg-[#D4AF37] transition-colors flex items-center gap-1.5">
+                              {isSubmitting && requestingMethod === m.method ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0B402B]" />
+                                  <span>Sending...</span>
+                                </>
+                              ) : (
+                                <span>Send OTP →</span>
+                              )}
                             </span>
                           </button>
                         );
@@ -867,7 +917,17 @@ export default function SignupPage() {
                             onClick={handleDirectNameMatchVerify}
                             className="w-full py-2.5 px-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
                           >
-                            <ShieldCheck className="w-4 h-4" /> Verify Instantly with BVN Name Match (No SMS)
+                            {isSubmitting && requestingMethod === "name_match" ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                                <span>Verifying BVN Bank Records...</span>
+                              </>
+                            ) : (
+                              <>
+                                <ShieldCheck className="w-4 h-4" />
+                                <span>Verify Instantly with BVN Name Match (No SMS)</span>
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
@@ -925,10 +985,13 @@ export default function SignupPage() {
                         <button 
                           type="submit"
                           disabled={isSubmitting || otp.length < 4}
-                          className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center cursor-pointer shadow-sm"
+                          className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer shadow-sm"
                         >
-                          {isSubmitting ? (
-                            <div className="w-5 h-5 border-2 border-[#0B402B] border-t-transparent rounded-full animate-spin"></div>
+                          {isSubmitting && requestingMethod !== "name_match" ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin text-[#0B402B]" />
+                              <span>Verifying &amp; Registering...</span>
+                            </>
                           ) : (
                             "Verify & Complete Sign Up"
                           )}
@@ -966,7 +1029,17 @@ export default function SignupPage() {
                           onClick={handleDirectNameMatchVerify}
                           className="w-full py-2.5 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                         >
-                          <ShieldCheck className="w-3.5 h-3.5 text-amber-700" /> OTP not arriving? Verify instantly with Bank Name Match
+                          {isSubmitting && requestingMethod === "name_match" ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-700" />
+                              <span>Verifying Bank Name Match...</span>
+                            </>
+                          ) : (
+                            <>
+                              <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+                              <span>OTP not arriving? Verify instantly with Bank Name Match</span>
+                            </>
+                          )}
                         </button>
                       </div>
                     </form>
@@ -991,7 +1064,9 @@ export default function SignupPage() {
                 </p>
 
                 <button 
+                  disabled={isNavigatingLogin}
                   onClick={() => {
+                    setIsNavigatingLogin(true);
                     const searchParams = new URLSearchParams(window.location.search);
                     const nextParam = searchParams.get('next') || (formData.inviteCode ? `/invite/${formData.inviteCode.trim()}` : null);
                     if (nextParam) {
@@ -1000,9 +1075,16 @@ export default function SignupPage() {
                       router.push("/login");
                     }
                   }}
-                  className="w-full max-w-sm mx-auto py-4 px-4 bg-[#0B402B] hover:bg-[#072a1c] text-white font-bold text-lg rounded-lg transition-colors block cursor-pointer"
+                  className="w-full max-w-sm mx-auto py-4 px-4 bg-[#0B402B] hover:bg-[#072a1c] disabled:opacity-75 text-white font-bold text-lg rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  Go to Login
+                  {isNavigatingLogin ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin text-[#C5A059]" />
+                      <span>Opening Login...</span>
+                    </>
+                  ) : (
+                    <span>Go to Login</span>
+                  )}
                 </button>
               </div>
             )}

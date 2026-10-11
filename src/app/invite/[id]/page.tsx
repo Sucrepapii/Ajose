@@ -27,7 +27,8 @@ import {
   Lock,
   Sparkles,
   ArrowLeft,
-  Check
+  Check,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -71,6 +72,9 @@ export default function InvitePage(props: {
 
   const [isLoading, setIsLoading] = useState(!urlGroupName && !urlAmount);
   const [isJoining, setIsJoining] = useState(false);
+  const [isNavigatingSignup, setIsNavigatingSignup] = useState(false);
+  const [isNavigatingLogin, setIsNavigatingLogin] = useState(false);
+  const [isNavigatingDashboard, setIsNavigatingDashboard] = useState(false);
   
   const [user, setUser] = useState<any>(null);
   const [group, setGroup] = useState<any>(initialGroup);
@@ -550,12 +554,26 @@ export default function InvitePage(props: {
                   <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                   You are already an active member of this group
                 </div>
-                <Link 
-                  href={`/dashboard/groups/${groupId}`}
-                  className="block w-full bg-[#0B402B] hover:bg-[#072B1D] text-white font-bold py-4 px-6 rounded-xl transition-colors shadow-md text-center text-base"
+                <button 
+                  disabled={isNavigatingDashboard}
+                  onClick={() => {
+                    setIsNavigatingDashboard(true);
+                    router.push(`/dashboard/groups/${groupId}`);
+                  }}
+                  className="w-full bg-[#0B402B] hover:bg-[#072B1D] disabled:opacity-75 text-white font-bold py-4 px-6 rounded-xl transition-colors shadow-md text-center text-base flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  View Group Dashboard &rarr;
-                </Link>
+                  {isNavigatingDashboard ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin text-[#C5A059]" />
+                      <span>Opening Dashboard...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>View Group Dashboard</span>
+                      <span>&rarr;</span>
+                    </>
+                  )}
+                </button>
               </div>
             ) : user ? (
               <div className="space-y-5 text-left">
@@ -615,25 +633,45 @@ export default function InvitePage(props: {
             ) : (
               <div className="space-y-4">
                 <button 
+                  disabled={isNavigatingSignup || isNavigatingLogin}
                   onClick={() => {
+                    setIsNavigatingSignup(true);
                     const currentQuery = typeof window !== "undefined" ? window.location.search : "";
                     const inviteRedirectPath = `/invite/${groupId}${currentQuery}`;
                     router.push(`/signup?next=${encodeURIComponent(inviteRedirectPath)}`);
                   }}
-                  className="w-full py-4 px-6 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-4 px-6 bg-[#D4AF37] hover:bg-[#c39f2f] disabled:opacity-75 text-[#0B402B] font-bold text-lg rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  Accept Invite &amp; Sign Up
-                  <ArrowRight className="h-5 w-5" />
+                  {isNavigatingSignup ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin text-[#0B402B]" />
+                      <span>Redirecting to Sign Up...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Accept Invite &amp; Sign Up</span>
+                      <ArrowRight className="h-5 w-5" />
+                    </>
+                  )}
                 </button>
                 <button 
+                  disabled={isNavigatingSignup || isNavigatingLogin}
                   onClick={() => {
+                    setIsNavigatingLogin(true);
                     const currentQuery = typeof window !== "undefined" ? window.location.search : "";
                     const inviteRedirectPath = `/invite/${groupId}${currentQuery}`;
                     router.push(`/login?next=${encodeURIComponent(inviteRedirectPath)}`);
                   }}
-                  className="w-full py-3.5 px-6 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-colors cursor-pointer text-base"
+                  className="w-full py-3.5 px-6 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-75 text-gray-700 font-bold rounded-xl transition-colors cursor-pointer text-base flex items-center justify-center gap-2"
                 >
-                  Log In to Join
+                  {isNavigatingLogin ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-gray-600" />
+                      <span>Redirecting to Log In...</span>
+                    </>
+                  ) : (
+                    <span>Log In to Join</span>
+                  )}
                 </button>
                 <p className="text-xs text-gray-500 text-center mt-4 leading-relaxed">
                   🔒 Note: Group membership includes statement verification powered by Mono Open-Banking.
@@ -836,13 +874,13 @@ export default function InvitePage(props: {
                 >
                   {isJoining ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-                      Activating Mandate...
+                      <Loader2 className="w-4 h-4 animate-spin text-zinc-950" />
+                      <span>Activating Mandate &amp; Joining...</span>
                     </>
                   ) : (
                     <>
                       <Check className="h-4 w-4" />
-                      Authorize Mandate &amp; Join Group
+                      <span>Authorize Mandate &amp; Join Group</span>
                     </>
                   )}
                 </button>
