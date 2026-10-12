@@ -281,11 +281,11 @@ export default function SignupPage() {
           if (!deliveryMethods.some((m: any) => m.method === "alternate_phone")) {
             deliveryMethods.push({
               method: "alternate_phone",
-              hint: formData.phone || "Send to current / alternate phone number"
+              hint: "Bank-registered alternate phone"
             });
           }
           setMethods(deliveryMethods);
-          setAlternatePhone(formData.phone || "");
+          setAlternatePhone(""); // Keep clean and empty so user explicitly types their alternate line
           setBvnStep("SELECT_METHOD");
           toast.success("BVN found! Choose where to receive your OTP.", { id: monoToastId });
         } catch (err: any) {
@@ -310,9 +310,9 @@ export default function SignupPage() {
       };
 
       if (method === "alternate_phone") {
-        const phoneToSend = customPhone || alternatePhone || formData.phone;
-        if (!phoneToSend) {
-          toast.error("Please enter a phone number to receive the OTP.", { id: toastId });
+        const phoneToSend = (customPhone || alternatePhone || "").trim();
+        if (!phoneToSend || phoneToSend.length < 10) {
+          toast.error("Please enter the alternate phone number registered on your BVN.", { id: toastId });
           setIsSubmitting(false);
           setRequestingMethod(null);
           return;
@@ -336,7 +336,12 @@ export default function SignupPage() {
       setCountdown(60);
       toast.success(result.message || "OTP sent successfully!", { id: toastId });
     } catch (err: any) {
-      toast.error(err.message || "Failed to send OTP.", { id: toastId });
+      const msg = err.message || "Failed to send OTP.";
+      if (msg.toLowerCase().includes("alternate") && (msg.toLowerCase().includes("not available") || msg.toLowerCase().includes("not found"))) {
+        toast.error("This BVN has no alternate phone registered with the bank. Please select SMS to Primary Phone or verify instantly with BVN Name Match (no SMS needed).", { id: toastId, duration: 6000 });
+      } else {
+        toast.error(msg, { id: toastId });
+      }
     } finally {
       setIsSubmitting(false);
       setRequestingMethod(null);
@@ -828,7 +833,7 @@ export default function SignupPage() {
                           return (
                             <div 
                               key={idx}
-                              className="p-4 border-2 border-emerald-500/40 bg-emerald-50/50 rounded-xl space-y-3 shadow-xs"
+                              className="p-4 border-2 border-emerald-500/40 bg-emerald-50/50 rounded-xl space-y-3.5 shadow-xs"
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-emerald-100 text-[#0B402B] flex items-center justify-center shrink-0">
@@ -836,33 +841,38 @@ export default function SignupPage() {
                                 </div>
                                 <div className="flex-1">
                                   <p className="font-bold text-gray-900 text-sm">Send to Alternate Phone Number</p>
-                                  <p className="text-xs text-gray-500">Receive OTP SMS on another active SIM card</p>
+                                  <p className="text-xs text-gray-500">Must be a secondary phone linked to this BVN with your bank</p>
                                 </div>
                               </div>
 
-                              <div className="flex gap-2">
-                                <input
-                                  type="tel"
-                                  value={alternatePhone}
-                                  onChange={(e) => setAlternatePhone(e.target.value)}
-                                  placeholder="e.g. 08012345678"
-                                  className="flex-1 px-3.5 py-2.5 text-sm bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B402B]"
-                                />
-                                <button
-                                  type="button"
-                                  disabled={isSubmitting || !alternatePhone}
-                                  onClick={() => handleRequestOtp("alternate_phone", alternatePhone)}
-                                  className="px-4 py-2.5 bg-[#0B402B] hover:bg-[#072a1c] text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
-                                >
-                                  {isSubmitting && requestingMethod === "alternate_phone" ? (
-                                    <>
-                                      <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
-                                      <span>Sending...</span>
-                                    </>
-                                  ) : (
-                                    <span>Send OTP →</span>
-                                  )}
-                                </button>
+                              <div className="space-y-2">
+                                <div className="flex gap-2">
+                                  <input
+                                    type="tel"
+                                    value={alternatePhone}
+                                    onChange={(e) => setAlternatePhone(e.target.value)}
+                                    placeholder="Enter bank-registered alternate phone (e.g. 08012345678)"
+                                    className="flex-1 px-3.5 py-2.5 text-sm bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B402B]"
+                                  />
+                                  <button
+                                    type="button"
+                                    disabled={isSubmitting || !alternatePhone}
+                                    onClick={() => handleRequestOtp("alternate_phone", alternatePhone)}
+                                    className="px-4 py-2.5 bg-[#0B402B] hover:bg-[#072a1c] text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
+                                  >
+                                    {isSubmitting && requestingMethod === "alternate_phone" ? (
+                                      <>
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                                        <span>Sending...</span>
+                                      </>
+                                    ) : (
+                                      <span>Send OTP →</span>
+                                    )}
+                                  </button>
+                                </div>
+                                <p className="text-[11px] text-amber-800 bg-amber-50/80 p-2 rounded-lg border border-amber-200/60 leading-relaxed">
+                                  🔒 <strong>CBN Security Rule:</strong> Mono &amp; NIBSS only deliver OTPs to numbers already registered on your BVN at your bank. If no secondary number exists on file, NIBSS returns <em>&quot;Alternate number not available&quot;</em>. In that case, use your <strong>Primary BVN Phone</strong> or <strong>Verify Instantly with BVN Name Match</strong> below.
+                                </p>
                               </div>
                             </div>
                           );

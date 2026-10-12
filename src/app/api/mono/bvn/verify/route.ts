@@ -58,8 +58,16 @@ export async function POST(req: Request) {
     console.log("[Mono Verify Response]", { status: response.status, data });
 
     if (!response.ok || data.status !== "successful") {
+      let errorMsg = data.message || "Failed to send OTP.";
+      if (
+        method === "alternate_phone" && 
+        (errorMsg.toLowerCase().includes("alternate") || errorMsg.toLowerCase().includes("not available"))
+      ) {
+        errorMsg = "Alternate phone number not available on this BVN. Please select SMS to Primary Phone or verify instantly with BVN Name Match.";
+      }
+
       return NextResponse.json(
-        { error: data.message || "Failed to send OTP." },
+        { error: errorMsg },
         { status: response.status === 200 ? 400 : response.status }
       );
     }
