@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowRight, Home, HelpCircle, Sparkles, Shield, User, Globe } from "lucide-react";
+import { Menu, X, ArrowRight, Home, HelpCircle, Sparkles, Shield, User, Globe, Smartphone } from "lucide-react";
 
 
 interface MarketingNavClientProps {
@@ -44,6 +44,10 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
         </Link>
         <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white" href="/#features">
           Features
+        </Link>
+        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white flex items-center gap-1.5" href="/#mobile-app">
+          <span>Mobile App</span>
+          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded-full font-bold">Soon</span>
         </Link>
         <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white" href="/about">
           About
@@ -158,6 +162,17 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
               >
                 <Sparkles className="h-5 w-5 text-[#C5A059]" />
                 <span>Features</span>
+              </Link>
+              <Link
+                href="/#mobile-app"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-white/90 hover:bg-white/10 hover:text-[#C5A059] font-medium transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Smartphone className="h-5 w-5 text-teal-400" />
+                  <span>Mobile App</span>
+                </div>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">Soon</span>
               </Link>
               <Link
                 href="/about"

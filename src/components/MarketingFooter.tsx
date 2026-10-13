@@ -32,6 +32,7 @@ export function MarketingFooter() {
             <h4 className="text-white font-bold mb-5 uppercase tracking-wider text-xs">Product</h4>
             <ul className="space-y-4">
               <li><Link href="/#features" className="text-gray-400 hover:text-[#C5A059] transition-colors">Features</Link></li>
+              <li><Link href="/#mobile-app" className="text-gray-400 hover:text-[#C5A059] transition-colors flex items-center gap-1.5"><span>Mobile App</span><span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded-full font-bold">Soon</span></Link></li>
               <li><Link href="/#how-it-works" className="text-gray-400 hover:text-[#C5A059] transition-colors">How it Works</Link></li>
               <li><Link href="/security" className="text-gray-400 hover:text-[#C5A059] transition-colors">Security</Link></li>
               <li><Link href="/pricing" className="text-gray-400 hover:text-[#C5A059] transition-colors">Pricing</Link></li>

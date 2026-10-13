@@ -7,6 +7,7 @@ import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditC
 import { CountryFlag } from "@/components/CountryFlag";
 import { CommunityTestimonialsCarousel } from "@/components/CommunityTestimonialsCarousel";
 import { InteractiveRevenueCalculator } from "@/components/InteractiveRevenueCalculator";
+import { MobileAppShowcase } from "@/components/MobileAppShowcase";
 
 interface TestimonialItem {
   quote: string;
@@ -1125,6 +1126,9 @@ export default function Home() {
           </div>
         </motion.div>
       </section>
+
+      {/* Mobile App Showcase Section */}
+      <MobileAppShowcase />
 
       {/* Final CTA Banner */}
       <section className="w-full py-20 bg-[#0B3022] relative z-10 overflow-hidden">
