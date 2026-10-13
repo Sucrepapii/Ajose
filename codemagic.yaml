@@ -23,6 +23,12 @@ workflows:
         script: |
           cd ios/App
           xcrun agvtool new-marketing-version 1.0
+      - name: Set build number
+        script: |
+          NEW_BUILD=$((BUILD_NUMBER + 1000))
+          cd ios/App
+          xcrun agvtool new-version -all $NEW_BUILD
+          echo "Build number set to $NEW_BUILD"
       - name: Set up code signing
         script: |
           set -euo pipefail
