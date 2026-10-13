@@ -5,16 +5,36 @@ import { HelpCircle, Mail, MessageSquare, MessageCircle } from "lucide-react";
 export default function SupportPage() {
   const faqs = [
     {
-      q: "How are my contributions secured?",
-      a: "Your contributions are fully secured through non-custodial direct bank sweeps (Mono) and held securely in a regulated PSSP (Paylode) before disbursement. We do not hold your money."
+      q: "Where is our money held, and how do payouts arrive?",
+      a: "Contributions move directly via automated Mono direct-debit sweeps and licensed payment processors into the verified settlement account of the turn recipient. We operate as a non-custodial automated ledger and enforcement platform — we never hold or escrow member funds."
     },
     {
-      q: "What happens if a member misses their turn?",
-      a: "Missed payments incur a strict penalty. The defaulter receives an automated negative credit score, and their BVN/NIN is blacklisted nationwide until they settle their dues with a 15% fine."
+      q: "How does the automated direct-debit (Mono) sweep work?",
+      a: "When you join a circle, you link your commercial bank account via Mono. On your circle's designated sweep dates, the exact contribution is debited automatically. No manual bank transfers, no sending screenshot receipts, and no chasing members."
     },
     {
-      q: "How do payouts work?",
-      a: "When a cycle completes, the collected pool (minus platform fees) is automatically transferred to the current turn's assigned recipient via direct settlement."
+      q: "Why is BVN verification mandatory?",
+      a: "BVN verification ensures identity authenticity, prevents fraud, and guarantees that members only connect bank accounts matching their legal name. It maintains full transparency and trust across all savings circles."
+    },
+    {
+      q: "What happens if a member misses their turn or defaults?",
+      a: "We deploy an automated 4-tier default protection protocol: (1) Smart retry sweeps at 6:00 AM, 12:00 PM, and 6:00 PM WAT; (2) 1-click fallback transfer links sent via SMS and WhatsApp; (3) 15% late settlement penalty with frozen payouts on unresolved defaults; and (4) -50 point deduction on global Ajo Credit Score plus credit blacklisting restrictions."
+    },
+    {
+      q: "When are contribution sweeps collected and payouts disbursed?",
+      a: "Daily Thrift sweeps at 06:00 AM WAT with 24-hr payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles provide a 5-day salary grace window (1st to 5th) to match corporate salary cycles."
+    },
+    {
+      q: "Can diaspora members participate?",
+      a: "Yes! Any Nigerian abroad with a valid Nigerian commercial bank account and a registered BVN can participate seamlessly in Naira circles from anywhere globally."
+    },
+    {
+      q: "What are the commercial platform fees?",
+      a: "Monthly Circles: 2.0% platform fee on successful payouts only (capped strictly at ₦10,000 max, ₦0 per-sweep fee). Weekly Circles: 0% payout fee, flat ₦300 processing fee per sweep. Daily Thrift: 0% payout fee, flat ₦100 processing fee per sweep."
+    },
+    {
+      q: "Can I leave an active circle before rotation finishes?",
+      a: "Once a circle is marked 'Active' by the organizer, the roster is locked. Members who collect early payouts remain contractually bound to complete all remaining contribution cycles."
     }
   ];
 

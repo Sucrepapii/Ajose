@@ -1068,7 +1068,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Accordion Block */}
-      <section className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-t border-gray-200">
+      <section id="faq" className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-t border-gray-200">
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -1077,18 +1077,62 @@ export default function Home() {
           className="container mx-auto px-6 lg:px-12 max-w-3xl"
         >
           <motion.div variants={fadeIn} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] mb-3">Frequently Asked Questions</h2>
+            <p className="text-base text-gray-600 max-w-xl mx-auto">
+              Everything you need to know about automated sweeps, BVN verification, turn payouts, and multi-tier default protection on Àjọṣe.
+            </p>
           </motion.div>
           
           <div className="space-y-4">
             {[
-              { q: "Where does the money go?", a: "The money is collected by the Group Admin. Members pay their contributions directly to the Admin's bank account, and the Admin is responsible for transferring the final pool to the receiver. Àjọṣe simply provides the software to track these payments and turns." },
-              { q: "When are contributions and payouts collected?", a: "Collection schedules are tailored by frequency to align with Nigerian cashflows: Daily groups sweep every morning with 24-hr turn payouts; Weekly groups feature a 2-day grace period (opens Monday, cutoff Tuesday); and Monthly groups feature a 5-day grace period (opens 1st, cutoff and payouts on the 5th) to match monthly salary cycles." },
-              { q: "What happens if someone refuses to pay?", a: "Ajo is built on trust. As an Admin, you should only invite people you trust. If someone misses a payment, the Admin can manually mark them as defaulted on the platform, freezing their payouts and warning the group. Defaulting also incurs a -50 point penalty to their global Ajo Credit Score." },
-              { q: "Can I leave a group before the cycle ends?", a: "Once a group cycle is marked as 'Active' by the Admin, the roster is locked. This ensures that people who have already collected their payout cannot abandon the group before paying back into the pool." },
-              { q: "What is the Ajo Credit Score?", a: "Your Ajo Credit Score is a global metric that tracks your reliability across all groups. You gain points for successful contributions and lose 50 points immediately if you default. A low score will automatically restrict you from joining high-value groups." },
-              { q: "Are there any fees?", a: "Simple, transparent pricing with no hidden fees or subscriptions! Our commercial fees depend on your circle schedule: 📅 Monthly Groups: 2% flat fee deducted only on successful payouts (strictly capped at ₦10,000 max, ₦0 per-transaction fee); 🗓 Weekly Groups: 0% payout fees! Just a flat ₦300 automated processing fee per transaction; 📌 Daily Groups: 0% payout fees! Just a flat ₦100 automated processing fee per transaction. Group Admins may also set an optional management commission percentage, clearly displayed before you join." },
-              { q: "Is my personal data secure?", a: "Yes. All data, including verification details and ledger history, is secured with AES-256 bank-grade encryption and protected by strict security policies." }
+              { 
+                q: "Where is our money held, and how do payouts work?", 
+                a: "Funds move securely through CBN-licensed commercial banking rails directly to the designated settlement recipient (or circle admin) on their scheduled turn date. Àjọṣe operates as a non-custodial automated ledger and enforcement platform — we never hold, pool, or lock member capital in an intermediary escrow." 
+              },
+              { 
+                q: "How does the automated direct-debit (Mono) sweep work?", 
+                a: "When you join a circle, you securely link your verified commercial bank account through CBN-licensed Open-Banking rails (Mono). On scheduled sweep days, the exact contribution is debited automatically from your account. No manual bank transfers, no uploading payment screenshots, and no chasing members." 
+              },
+              { 
+                q: "Why is BVN identity verification required?", 
+                a: "To eliminate fraud, identity theft, and bad actors across circles, every participant must verify their Bank Verification Number (BVN). This authenticates your legal identity, enforces that linked bank accounts match your verified name, and ensures high accountability so all circle members can save with complete peace of mind." 
+              },
+              { 
+                q: "What happens if someone defaults or misses a sweep?", 
+                a: "Àjọṣe enforces a 4-tier default protection protocol: (1) Automated smart retries trigger throughout the day at 6:00 AM, 12:00 PM, and 6:00 PM WAT; (2) Instant 1-click fallback payment links are dispatched via SMS & WhatsApp; (3) Unresolved defaults freeze future payouts and apply a 15% late settlement recovery penalty; and (4) The defaulter incurs an immediate -50 point penalty on their global Ajo Credit Score, with potential nationwide credit restrictions." 
+              },
+              { 
+                q: "When are contributions swept and payouts disbursed?", 
+                a: "Schedules are structured around Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT with rapid 24-hr turn payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off and turn payouts on the 5th) to match corporate salary cycles." 
+              },
+              { 
+                q: "What is the Ajo Credit Score, and how does it work?", 
+                a: "Your Ajo Credit Score (300 to 1,000 points) is a universal reputation metric that tracks your financial reliability across all circles. Timely sweeps elevate you into Platinum/Elite status (unlocking access to high-value circles up to ₦10,000,000+), while defaults immediately cost you 50 points and restrict entry into premium groups." 
+              },
+              { 
+                q: "What are the fees on Àjọṣe?", 
+                a: "Transparent, capped pricing with ₦0 monthly subscriptions: 📅 Monthly Circles: 2.0% platform fee deducted only upon successful payouts (strictly capped at ₦10,000 max, ₦0 per-sweep fee); 🗓 Weekly Circles: 0.0% payout fee with a flat ₦300 automated sweep processing fee per transaction; 📌 Daily Thrift: 0.0% payout fee with a flat ₦100 automated sweep processing fee per transaction. Circle organizers may also set an optional management commission, clearly displayed before you accept an invite." 
+              },
+              { 
+                q: "Can Nigerians in the diaspora participate?", 
+                a: "Yes! Any Nigerian living abroad with an active Nigerian commercial bank account and a valid BVN can join and contribute seamlessly to Naira-denominated circles from anywhere in the world." 
+              },
+              { 
+                q: "Are circles public or private?", 
+                a: "All circles on Àjọṣe are 100% private and invite-only. Participants can only enroll using a unique invitation link or QR code issued by the Circle Organizer through their Organizer Share Kit." 
+              },
+              { 
+                q: "Can I leave a circle before the rotation completes?", 
+                a: "Once a circle is marked 'Active' by the organizer, the rotation roster is contractually locked. This ensures members who receive early turn payouts cannot abandon the group before completing all their required contribution cycles." 
+              },
+              { 
+                q: "Is there a native mobile app available?", 
+                a: "Native iOS and Android mobile apps are currently coming soon (TestFlight and Google Play Beta rollouts are underway). In the meantime, Àjọṣe is fully mobile-optimized as an ultra-fast web app accessible from any browser on your smartphone, and you can easily add it to your home screen." 
+              },
+              { 
+                q: "Is my personal and financial data secure?", 
+                a: "Yes. All ledger histories and participant verifications are encrypted with bank-grade AES-256 encryption. Our banking integrations run exclusively through CBN-licensed Open Banking (Mono) and licensed PSSP partners—we never view or store your banking passwords or PINs." 
+              }
             ].map((faq, i) => (
               <motion.div 
                 variants={fadeIn}
