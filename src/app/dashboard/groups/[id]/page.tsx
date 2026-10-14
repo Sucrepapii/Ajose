@@ -142,14 +142,16 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     tx => tx.status === 'failed' && (tx.type === 'admin_payout_debit' || tx.type === 'payout')
   );
 
-  // The admin manages the group as a trustee; contributing members receive rotational turns
-  const contributingMembers = membersList.filter(m => m.role !== 'admin');
-  const totalPool = group.contribution_amount * contributingMembers.length;
-  const isAdmin = membersList.some(m => m.user_id === user.id && m.role === 'admin') || group.admin_id === user.id;
-
   // Admin Profile & Settlement Bank Account Details
   const adminMembership = membersList.find(m => m.role === 'admin');
   const adminUser = adminMembership?.users;
+  const adminIsContributing = Boolean(adminMembership?.payout_turn && adminMembership.payout_turn > 0);
+
+  // The admin manages the group as a trustee; contributing members receive rotational turns
+  const contributingMembers = membersList.filter(m => m.role !== 'admin' || (m.payout_turn !== null && m.payout_turn !== undefined && m.payout_turn > 0));
+  const totalPool = group.contribution_amount * contributingMembers.length;
+  const isAdmin = membersList.some(m => m.user_id === user.id && m.role === 'admin') || group.admin_id === user.id;
+  const displayContributors = adminIsContributing ? membersList : contributingMembers;
   const adminBankName = adminUser?.bank_name || (adminUser?.account_number ? 'Settlement Bank' : 'Pending Admin Setup');
   const adminRawAcct = adminUser?.account_number || '';
   const adminMaskedAccount = adminRawAcct && adminRawAcct.length >= 6 
@@ -449,10 +451,105 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         </div>
       )}
 
-      {/* Member List Table */}
+      {/* Separate Admin Table Above (If Admin is NOT currently contributing) */}
+      {!adminIsContributing && adminMembership && (
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-emerald-950 to-[#0B3022] text-white">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#C5A059]/20 border border-[#C5A059]/40 flex items-center justify-center text-[#C5A059] shrink-0">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-bold text-white">Circle Organizer &amp; Trustee</h2>
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-[#C5A059] text-[#0B3022] px-2 py-0.5 rounded-full">
+                    Non-Contributing Admin
+                  </span>
+                </div>
+                <p className="text-xs text-emerald-200/80 font-medium">
+                  Manages circle compliance, settlement mandate, and automated payouts without taking a rotational contribution turn.
+                </p>
+              </div>
+            </div>
+
+            <div className="text-xs bg-white/10 border border-white/15 px-3 py-1.5 rounded-lg text-emerald-100 shrink-0 flex items-center gap-1.5 self-start sm:self-auto">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Settlement Account Active</span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50 text-[#1F2937]/50 text-xs font-bold uppercase tracking-wider border-b border-gray-200">
+                  <th className="px-6 py-3.5">Organizer</th>
+                  <th className="px-6 py-3.5">Role &amp; Settlement</th>
+                  <th className="px-6 py-3.5">Verification Status</th>
+                  <th className="px-6 py-3.5">Standing</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                <tr className="hover:bg-gray-50/80 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#0B3022]/10 text-[#0B3022] flex items-center justify-center text-xs font-bold uppercase">
+                        {(adminUser?.first_name || adminUser?.nickname || 'A').charAt(0)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-[#0B3022]">
+                          {`${adminUser?.first_name || ''} ${adminUser?.last_name || ''}`.trim() || adminUser?.nickname || 'Circle Admin'}
+                        </p>
+                        <p className="text-xs text-gray-500 font-medium">
+                          {adminUser?.phone || 'Verified Organizer'}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      <span className="text-xs font-bold bg-[#0B3022] text-[#C5A059] px-2.5 py-1 rounded-full inline-block">
+                        Admin Trustee
+                      </span>
+                      {adminBankName && (
+                        <p className="text-xs text-gray-600 font-medium flex items-center gap-1">
+                          <Building2 className="h-3 w-3 text-gray-400" />
+                          <span>{adminBankName} {adminRawAcct ? `(•••• ${adminRawAcct.slice(-4)})` : ''}</span>
+                        </p>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {adminUser?.bvn_verified ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> Verified BVN
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+                        Pending Verification
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[#0B3022] bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                      Organizer (0 Turns)
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Contributors List Table */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7]">
-          <h2 className="text-lg font-bold text-[#0B3022]">Group Roster ({contributingMembers.length}/{group.max_members})</h2>
+          <div>
+            <h2 className="text-lg font-bold text-[#0B3022]">Contributors Roster ({contributingMembers.length}/{group.max_members})</h2>
+            <p className="text-xs text-[#1F2937]/60 font-medium">
+              Savers actively taking a rotational turn in this circle.
+            </p>
+          </div>
           
           {contributingMembers.length < group.max_members && (
             <CopyInviteButton 
@@ -472,14 +569,14 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-[#1F2937]/50 text-xs font-bold uppercase tracking-wider border-b border-gray-200">
-                <th className="px-6 py-4">Member</th>
+                <th className="px-6 py-4">Contributor</th>
                 <th className="px-6 py-4">Contribution Status</th>
                 <th className="px-6 py-4">Verification Status</th>
                 <th className="px-6 py-4">Standing</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {membersList.map((m) => {
+              {displayContributors.map((m) => {
                 const userProfile = m.users;
                 
                 const realName = `${userProfile?.first_name || ''} ${userProfile?.last_name || ''}`.trim() || `User-${String(m?.user_id || "0000").substring(0, 4)}`;
@@ -535,6 +632,18 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                               </p>
                               {m.status === 'defaulted' ? (
                                 <span className="text-xs text-red-600 font-bold">Cannot process payout while defaulted</span>
+                              ) : unpaidUserIds.length > 0 ? (
+                                <span 
+                                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-lg"
+                                  title="Turn contributions must be debited from members before payout can be disbursed"
+                                >
+                                  <Clock className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                                  <span>
+                                    {paidUserIds.size === 0 
+                                      ? "Awaiting Turn Debits" 
+                                      : `Awaiting Debits (${paidUserIds.size}/${contributingMembers.length} Paid)`}
+                                  </span>
+                                </span>
                               ) : (
                                 <ProcessPayoutClient 
                                   group={group} 
@@ -711,9 +820,9 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
             </tbody>
           </table>
           
-          {membersList.length === 0 && (
+          {displayContributors.length === 0 && (
             <div className="p-8 text-center text-[#1F2937]/50 font-medium">
-              No members found in this group.
+              No contributors have joined this group yet.
             </div>
           )}
         </div>
