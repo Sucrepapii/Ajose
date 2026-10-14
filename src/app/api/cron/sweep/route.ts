@@ -97,7 +97,6 @@ async function handleSweep(req: NextRequest) {
         contribution_amount,
         max_members,
         frequency,
-        current_turn,
         status,
         admin_id
       `)
@@ -126,7 +125,16 @@ async function handleSweep(req: NextRequest) {
 
     // 3. Process each group
     for (const group of activeGroups) {
-      const currentTurn = group.current_turn || 1;
+      // Derive current turn from completed payout transactions if not on group record
+      const { data: payouts } = await supabase
+        .from('transactions')
+        .select('cycle_turn')
+        .eq('group_id', group.id)
+        .eq('type', 'payout')
+        .in('status', ['successful', 'completed']);
+
+      const maxPaidTurn = (payouts || []).reduce((max: number, p: any) => Math.max(max, p.cycle_turn || 0), 0);
+      const currentTurn = (group as any).current_turn || (maxPaidTurn + 1);
 
       // Fetch all members with their user details
       const { data: members, error: membersErr } = await supabase

@@ -494,8 +494,8 @@ export function GroupSettingsClient({
       </div>
 
       {/* Member Management with Add and Remove Controls */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7] flex-wrap gap-4">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FDFBF7] flex-wrap gap-4 rounded-t-2xl">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
               <Users className="h-5 w-5 text-blue-600" />
@@ -525,13 +525,19 @@ export function GroupSettingsClient({
         </div>
 
         <div className="divide-y divide-gray-100">
-          {members.map(m => {
+          {members.map((m, index) => {
             const isTurnAdmin = m.role === 'admin';
             const memberTurn = m.payout_turn;
             const hasAlreadyCollected = !isTurnAdmin && memberTurn < (group.current_turn || 1);
+            const isNearBottom = index >= Math.max(1, members.length - 2);
 
             return (
-              <div key={m.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+              <div 
+                key={m.id} 
+                className={`p-4 flex items-center justify-between hover:bg-gray-50 transition-colors ${
+                  index === members.length - 1 ? 'rounded-b-2xl' : ''
+                } ${openMenuMemberId === m.id ? 'relative z-30' : 'relative z-10'}`}
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-[#0B3022]">
                     {getDisplayName(m).charAt(0).toUpperCase()}
@@ -633,7 +639,9 @@ export function GroupSettingsClient({
                         }}
                       />
 
-                      <div className="absolute right-0 top-9 z-40 w-48 bg-white border border-gray-200 rounded-xl shadow-xl py-1 text-left animate-in fade-in zoom-in-95 duration-100">
+                      <div className={`absolute right-0 z-50 w-52 bg-white border border-gray-200 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 ${
+                        isNearBottom ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
+                      }`}>
                         <div className="px-3 py-1.5 border-b border-gray-100 mb-1">
                           <p className="text-[10px] font-mono uppercase tracking-wider text-gray-400">Member</p>
                           <p className="text-xs font-bold text-[#0B3022] truncate">{getDisplayName(m)}</p>

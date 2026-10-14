@@ -23,19 +23,51 @@ async function handlePreDebitReminders(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
+    const specificGroupId = req.nextUrl.searchParams.get("groupId");
+    let isAuthorized = false;
 
-    if (!cronSecret) {
-      return NextResponse.json({ error: "CRON_SECRET is not configured." }, { status: 500 });
+    // 1. Cron Secret Authorization
+    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
+      isAuthorized = true;
+    } else {
+      // Check for authenticated SuperAdmin
+      try {
+        const { getSuperAdminSession } = await import("@/utils/adminAuth");
+        const adminSession = await getSuperAdminSession();
+        if (adminSession.isAuthenticated && adminSession.isSuperAdmin) {
+          isAuthorized = true;
+        }
+      } catch (_) {}
+
+      // Check if caller is the authenticated Admin of this specific circle
+      if (!isAuthorized && specificGroupId) {
+        try {
+          const { createClient } = await import("@/utils/supabase/server");
+          const supabaseUser = await createClient();
+          const { data: { user } } = await supabaseUser.auth.getUser();
+          if (user) {
+            const adminSupabase = createAdminClient();
+            const { data: grp } = await adminSupabase
+              .from("groups")
+              .select("admin_id")
+              .eq("id", specificGroupId)
+              .maybeSingle();
+
+            if (grp && grp.admin_id === user.id) {
+              isAuthorized = true;
+            }
+          }
+        } catch (_) {}
+      }
     }
 
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized cron trigger" }, { status: 401 });
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Unauthorized. Valid cron secret or group admin session required." }, { status: 401 });
     }
 
     const supabase = createAdminClient();
-    const specificGroupId = req.nextUrl.searchParams.get("groupId");
 
-    // Fetch active groups
+    // Fetch active groups (without nonexistent current_turn column)
     let query = supabase
       .from("groups")
       .select(`
@@ -44,7 +76,6 @@ async function handlePreDebitReminders(req: NextRequest) {
         contribution_amount,
         max_members,
         frequency,
-        current_turn,
         status,
         admin_id,
         admin_commission_pct
@@ -83,7 +114,16 @@ async function handlePreDebitReminders(req: NextRequest) {
     });
 
     for (const group of activeGroups) {
-      const currentTurn = group.current_turn || 1;
+      // Derive current turn from completed payout transactions if not on group record
+      const { data: payouts } = await supabase
+        .from('transactions')
+        .select('cycle_turn')
+        .eq('group_id', group.id)
+        .eq('type', 'payout')
+        .in('status', ['successful', 'completed']);
+
+      const maxPaidTurn = (payouts || []).reduce((max: number, p: any) => Math.max(max, p.cycle_turn || 0), 0);
+      const currentTurn = (group as any).current_turn || (maxPaidTurn + 1);
 
       // 1. Fetch contributing members with contact info
       const { data: members, error: membersErr } = await supabase
