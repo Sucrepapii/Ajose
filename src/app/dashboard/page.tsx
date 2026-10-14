@@ -52,7 +52,8 @@ export default async function DashboardOverview() {
         max_members,
         status,
         frequency,
-        admin_commission_pct
+        admin_commission_pct,
+        current_turn
       )
     `)
     .eq('user_id', user.id)
@@ -61,6 +62,24 @@ export default async function DashboardOverview() {
   const adminClient = createAdminClient();
   const activeGroups = memberships || [];
   const userMembershipIds = activeGroups.map(m => m.id);
+  const groupIds = Array.from(new Set(activeGroups.map(m => (m.groups as any)?.id).filter(Boolean)));
+
+  // Calculate contributing member counts for active groups
+  const groupMemberCounts = new Map<string, number>();
+  if (groupIds.length > 0) {
+    const { data: allGroupMemberships } = await adminClient
+      .from('memberships')
+      .select('group_id, role, payout_turn, status')
+      .in('group_id', groupIds)
+      .eq('status', 'active');
+
+    (allGroupMemberships || []).forEach((m: any) => {
+      const isContributing = m.role !== 'admin' || (m.payout_turn !== null && m.payout_turn !== undefined && m.payout_turn > 0);
+      if (isContributing) {
+        groupMemberCounts.set(m.group_id, (groupMemberCounts.get(m.group_id) || 0) + 1);
+      }
+    });
+  }
 
   // Calculate real total saved from successful contribution transactions in the database
   let totalSaved = 0;
@@ -238,8 +257,12 @@ export default async function DashboardOverview() {
             ) : (
               activeGroups.map((membership: any) => {
                 const group = membership.groups;
+                if (!group) return null;
                 const totalPool = group.contribution_amount * group.max_members;
                 const isAdmin = membership.role === 'admin';
+                const currentCount = groupMemberCounts.get(group.id) || 0;
+                const isFull = currentCount >= group.max_members;
+                const isPending = group.status === 'pending';
                 
                 return (
                   <Link key={membership.id} href={`/dashboard/groups/${group.id}`} className="block bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/50 hover:shadow-md transition-all group">
@@ -257,7 +280,14 @@ export default async function DashboardOverview() {
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-[#1F2937]/70 font-medium">{group.max_members} Members • <span className="capitalize">{group.frequency}</span></p>
+                          <p className="text-sm text-[#1F2937]/70 font-medium">
+                            {isPending 
+                              ? `${currentCount} of ${group.max_members} Members` 
+                              : `${group.max_members} Members`} • <span className="capitalize">{group.frequency}</span>
+                            {!isPending && group.current_turn && (
+                              <span className="text-emerald-700 font-semibold"> • Turn {group.current_turn}</span>
+                            )}
+                          </p>
                         </div>
                       </div>
                       <div className="flex flex-row md:flex-col items-center md:items-end justify-between gap-2">
@@ -282,22 +312,53 @@ export default async function DashboardOverview() {
                       </div>
                     </div>
                     
-                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group-hover:bg-[#FDFBF7] transition-colors">
+                    <div className={`rounded-xl p-4 border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
+                      isPending && isFull 
+                        ? 'bg-emerald-50/70 border-emerald-200 group-hover:bg-emerald-50' 
+                        : 'bg-gray-50 border-gray-100 group-hover:bg-[#FDFBF7]'
+                    }`}>
                       <div className="flex items-center gap-2">
-                        {group.status === 'pending' ? (
-                          <>
-                            <AlertCircle className="h-4 w-4 text-[#C5A059]" />
-                            <span className="text-sm text-[#1F2937] font-medium">Awaiting members</span>
-                          </>
+                        {isPending ? (
+                          isFull ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                              <span className="text-sm text-[#0B3022] font-semibold">
+                                Roster Full ({currentCount}/{group.max_members})
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle className="h-4 w-4 text-[#C5A059]" />
+                              <span className="text-sm text-[#1F2937] font-medium">
+                                Awaiting members ({currentCount}/{group.max_members})
+                              </span>
+                            </>
+                          )
                         ) : (
                           <>
                             <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                            <span className="text-sm text-[#1F2937] font-medium">Your turn: <strong className="text-[#0B3022]">Cycle {membership.payout_turn}</strong></span>
+                            <span className="text-sm text-[#1F2937] font-medium">
+                              {isAdmin && !membership.payout_turn ? (
+                                <>Circle Trustee • <strong className="text-[#0B3022]">Turn {group.current_turn || 1}</strong></>
+                              ) : (
+                                <>Your turn: <strong className="text-[#0B3022]">Cycle {membership.payout_turn}</strong></>
+                              )}
+                            </span>
                           </>
                         )}
                       </div>
-                      <div className="text-sm font-bold text-[#1F2937]/50 uppercase tracking-wide flex items-center gap-2 group-hover:text-[#C5A059] transition-colors">
-                        {group.status === 'pending' ? 'Starts when full' : `Status: ${membership.status}`}
+                      <div className={`text-sm font-bold uppercase tracking-wide flex items-center gap-2 transition-colors ${
+                        isPending && isFull ? 'text-emerald-700 group-hover:text-emerald-800' : 'text-[#1F2937]/50 group-hover:text-[#C5A059]'
+                      }`}>
+                        {isPending ? (
+                          isFull ? (
+                            isAdmin ? 'Launch Cycle →' : 'Ready to Start'
+                          ) : (
+                            `Needs ${group.max_members - currentCount} more`
+                          )
+                        ) : (
+                          `Status: ${membership.status}`
+                        )}
                         <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity -ml-1 group-hover:ml-0" />
                       </div>
                     </div>

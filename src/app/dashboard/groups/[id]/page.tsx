@@ -370,6 +370,42 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         />
       )}
 
+      {/* Pending status banner for non-admin members */}
+      {group.status === 'pending' && !isAdmin && (
+        <div className={`border rounded-2xl p-5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm ${
+          contributingMembers.length >= group.max_members
+            ? "bg-emerald-50/70 border-emerald-200"
+            : "bg-amber-50/60 border-amber-200"
+        }`}>
+          <div className="flex items-start sm:items-center gap-3">
+            {contributingMembers.length >= group.max_members ? (
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5 sm:mt-0" />
+            ) : (
+              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
+            )}
+            <div>
+              <p className="text-sm font-bold text-[#0B3022]">
+                {contributingMembers.length >= group.max_members 
+                  ? "Circle Roster is Complete" 
+                  : `Awaiting Members (${contributingMembers.length}/${group.max_members} Joined)`}
+              </p>
+              <p className="text-xs text-[#1F2937]/70 font-medium">
+                {contributingMembers.length >= group.max_members
+                  ? "All member slots are filled! The Circle Trustee is preparing to officially launch Round 1."
+                  : `Waiting for ${group.max_members - contributingMembers.length} more member${group.max_members - contributingMembers.length > 1 ? 's' : ''} to join before the trustee launches Round 1.`}
+              </p>
+            </div>
+          </div>
+          <span className={`text-xs font-bold px-3 py-1 rounded-full self-start sm:self-auto shrink-0 ${
+            contributingMembers.length >= group.max_members
+              ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+              : "bg-amber-100 text-amber-800 border border-amber-300"
+          }`}>
+            {contributingMembers.length >= group.max_members ? "Ready for Trustee to Start" : `${group.max_members - contributingMembers.length} Slot(s) Open`}
+          </span>
+        </div>
+      )}
+
       {/* REQ 7: Admin Tendered Settlement Account & Pass-Through Card (Visible to ALL members) */}
       <div className="bg-white border border-emerald-500/20 rounded-2xl p-6 shadow-sm relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
