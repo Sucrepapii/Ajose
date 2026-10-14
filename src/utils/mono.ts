@@ -538,8 +538,8 @@ export async function initiateMonoDirectDebit({
         },
         body: JSON.stringify({
           amount: Math.round(amount * 100), // in kobo
-          description: narration,
-          reference,
+          narration: narration && narration.length >= 10 ? narration : `Àjọṣe Auto-Debit Contribution`,
+          reference: reference.replace(/[^a-zA-Z0-9]/g, "").slice(0, 24),
         }),
       });
 

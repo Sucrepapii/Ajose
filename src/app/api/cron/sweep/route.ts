@@ -85,8 +85,8 @@ async function handleSweep(req: NextRequest) {
     }
 
     const supabase = createAdminClient();
-    const monoSecretKey = process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
-    const isSandbox = !process.env.MONO_SECRET_KEY || monoSecretKey.startsWith("test_");
+    const monoSecretKey = process.env.MONO_PAYMENTS_SECRET_KEY || process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
+    const isSandbox = !monoSecretKey || monoSecretKey.startsWith("test_");
 
     // 2. Fetch active groups
     let query = supabase
@@ -168,22 +168,26 @@ async function handleSweep(req: NextRequest) {
         continue;
       }
 
-      // Fetch existing transactions for this turn
-      const { data: existingTxs } = await supabase
-        .from("transactions")
-        .select("user_id, status, type")
-        .eq("group_id", group.id)
-        .eq("cycle_turn", currentTurn)
-        .eq("type", "contribution");
+      // Fetch existing transactions for this turn using valid schema (membership_id)
+      const memberIds = members.map(m => m.id);
+      const { data: existingTxs } = memberIds.length > 0
+        ? await supabase
+            .from("transactions")
+            .select("membership_id, status, type")
+            .in("membership_id", memberIds)
+            .eq("cycle_turn", currentTurn)
+            .eq("type", "contribution")
+        : { data: [] };
 
-      const paidUserIds = new Set(
+      const paidMembershipIds = new Set(
         (existingTxs || [])
           .filter((tx) => 
+            tx.status === "successful" || 
             tx.status === "completed" || 
             tx.status === "pending_confirmation" || 
             tx.status === "pending"
           )
-          .map((tx) => tx.user_id)
+          .map((tx) => tx.membership_id)
       );
 
       const groupSummary = {
@@ -205,7 +209,7 @@ async function handleSweep(req: NextRequest) {
           : "Member";
 
         // Check if already paid for this round
-        if (paidUserIds.has(member.user_id)) {
+        if (paidMembershipIds.has(member.id)) {
           groupSummary.skippedAlreadyPaid++;
           groupSummary.details.push({
             userId: member.user_id,
@@ -216,7 +220,7 @@ async function handleSweep(req: NextRequest) {
         }
 
         // Non-Contributing Trustee: Admin organizes the group and manages the pool; they do not pay.
-        if (member.role === "admin") {
+        if (member.role === "admin" && (member.payout_turn === null || member.payout_turn === undefined)) {
           groupSummary.adminHandling = "Admin is non-contributing trustee (skipped from collection)";
           groupSummary.details.push({
             userId: member.user_id,
@@ -232,67 +236,70 @@ async function handleSweep(req: NextRequest) {
         const automationFee = isDaily ? 100 : isWeekly ? 300 : 0;
         const totalDebitAmount = (group.contribution_amount || 0) + automationFee;
 
-        const failedAttempts = (existingTxs || []).filter(tx => tx.user_id === member.user_id && tx.status === "failed").length;
-        const reference = `ajose_sweep_${group.id}_turn${currentTurn}_${member.user_id}_attempt${failedAttempts + 1}`;
+        // Mono references must be alphanumeric and <= 24 characters
+        const rawRef = `swp${Date.now().toString().slice(-8)}${Math.random().toString(36).substring(2, 6)}`;
+        const reference = rawRef.replace(/[^a-zA-Z0-9]/g, "").slice(0, 24);
         let debitSuccess = false;
         let debitMessage = "";
 
-        if (!isSandbox) {
+        // Resolve member mandate ID: check database record, then Supabase Auth user_metadata
+        let mandateId = (member as any).mono_mandate_id || (userProfile as any)?.mono_mandate_id;
+        if (!mandateId && member.user_id) {
+          try {
+            const { data: authUser } = await supabase.auth.admin.getUserById(member.user_id);
+            mandateId = authUser?.user?.user_metadata?.mono_mandate_id;
+          } catch (_) {}
+        }
+
+        const isTestCircle = (group.name || "").toLowerCase().includes("test");
+        const allowSimulation = isSandbox || (isTestCircle && (process.env.PAYMENTS_MODE === "sandbox" || process.env.NODE_ENV !== "production"));
+
+        if (mandateId) {
           // LIVE MONO DIRECT DEBIT CALL
           try {
-            // In a production setup, member.mono_mandate_id is passed
-            const mandateId = (member as any).mono_mandate_id || (userProfile as any)?.mono_mandate_id;
+            console.log(`[Sweep] Initiating live Mono debit for member ${member.user_id} with mandate ${mandateId}, amount: ₦${totalDebitAmount}`);
+            const debitRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}/debit`, {
+              method: "POST",
+              headers: {
+                "mono-sec-key": monoSecretKey,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                amount: Math.round(totalDebitAmount * 100), // kobo
+                narration: `Àjọṣe Contribution Turn ${currentTurn} - ${group.name.slice(0, 15)}`,
+                reference
+              })
+            });
 
-            if (mandateId) {
-              const debitRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}/debit`, {
-                method: "POST",
-                headers: {
-                  "mono-sec-key": monoSecretKey,
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                  amount: totalDebitAmount * 100, // kobo
-                  description: `Àjọṣe Contribution: ${group.name} (Round ${currentTurn})`,
-                  reference
-                })
-              });
-
-              const debitData = await debitRes.json();
-              if (debitRes.ok && debitData.status !== "failed") {
-                debitSuccess = true;
-                debitMessage = "Debit initiated via Mono mandate.";
-              } else {
-                debitSuccess = false;
-                debitMessage = debitData.message || "Mono debit declined by bank.";
-              }
+            const debitData = await debitRes.json();
+            console.log(`[Sweep] Mono debit response:`, debitRes.status, debitData);
+            if (debitRes.ok && debitData.status !== "failed") {
+              debitSuccess = true;
+              debitMessage = "Debit initiated via Mono mandate.";
             } else {
               debitSuccess = false;
-              debitMessage = "No active Mono mandate found for member.";
+              debitMessage = debitData.message || "Mono debit declined by bank.";
             }
           } catch (err: any) {
             debitSuccess = false;
             debitMessage = err.message || "Mono connection error.";
           }
+        } else if (allowSimulation) {
+          // Simulation / Test fallback for test circles in development
+          debitSuccess = true;
+          debitMessage = "Auto-debit successfully swept (Test Mode).";
         } else {
-          if (process.env.PAYMENTS_MODE === "sandbox" && process.env.NODE_ENV !== "production") {
-            // SANDBOX / SIMULATION MODE
-            debitSuccess = true;
-            debitMessage = "Auto-debit successfully swept via Mono sandbox mandate.";
-          } else {
-            debitSuccess = false;
-            debitMessage = "Mono API Error. Live configuration required.";
-          }
+          debitSuccess = false;
+          debitMessage = "No active Mono mandate authorized for member.";
         }
 
-        // Record the transaction result in the ledger
+        // Record the transaction result in the ledger using valid database schema
         if (debitSuccess) {
           await supabase.from("transactions").insert({
-            group_id: group.id,
-            user_id: member.user_id,
+            membership_id: member.id,
             amount: totalDebitAmount,
             type: "contribution",
-            status: (isSandbox && process.env.PAYMENTS_MODE === "sandbox") ? "completed" : "pending",
-            description: `Auto-debit sweep via Mono for Turn ${currentTurn} (${reference})`,
+            status: "successful",
             cycle_turn: currentTurn
           });
 
@@ -308,19 +315,17 @@ async function handleSweep(req: NextRequest) {
           groupSummary.details.push({
             userId: member.user_id,
             name: displayName,
-            status: isSandbox ? "completed" : "initiated",
+            status: "successful",
             reference,
             message: debitMessage
           });
         } else {
           // Log failed debit so group has transparency
           await supabase.from("transactions").insert({
-            group_id: group.id,
-            user_id: member.user_id,
+            membership_id: member.id,
             amount: totalDebitAmount,
             type: "contribution",
             status: "failed",
-            description: `Auto-debit failed for Turn ${currentTurn}: ${debitMessage}`,
             cycle_turn: currentTurn
           });
 

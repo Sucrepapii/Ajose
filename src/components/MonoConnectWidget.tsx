@@ -19,6 +19,8 @@ import {
   RefreshCw,
   Activity,
   AlertCircle,
+  Sparkles,
+  ExternalLink,
   X
 } from "lucide-react";
 
@@ -38,6 +40,9 @@ export function MonoConnectWidget({
     bvn_verified?: boolean;
     auto_sweep_enabled?: boolean;
     has_pin?: boolean;
+    mono_mandate_id?: string;
+    mono_mandate_status?: string;
+    mono_mandate_url?: string;
   } | null;
 }) {
   const router = useRouter();
@@ -46,10 +51,107 @@ export function MonoConnectWidget({
   const [profile, setProfile] = useState(initialProfile);
   const [isVerified, setIsVerified] = useState(initialIsVerified);
 
+  const [mandateStatus, setMandateStatus] = useState<string>(
+    initialProfile?.mono_mandate_status || "not_initiated"
+  );
+  const [mandateId, setMandateId] = useState<string>(
+    initialProfile?.mono_mandate_id || ""
+  );
+  const [mandateUrl, setMandateUrl] = useState<string>(
+    initialProfile?.mono_mandate_url || ""
+  );
+  const [isInitiatingMandate, setIsInitiatingMandate] = useState(false);
+  const [isCheckingMandate, setIsCheckingMandate] = useState(false);
+
   useEffect(() => {
     setProfile(initialProfile);
     setIsVerified(initialIsVerified);
+    if (initialProfile?.mono_mandate_status) {
+      setMandateStatus(initialProfile.mono_mandate_status);
+    }
+    if (initialProfile?.mono_mandate_id) {
+      setMandateId(initialProfile.mono_mandate_id);
+    }
+    if (initialProfile?.mono_mandate_url) {
+      setMandateUrl(initialProfile.mono_mandate_url);
+    }
   }, [initialProfile, initialIsVerified]);
+
+  const handleAuthorizeMandate = async () => {
+    setIsInitiatingMandate(true);
+    const toastId = toast.loading("Connecting to Mono Mandate engine...");
+    try {
+      const res = await fetch("/api/mono/mandate/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 400 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to initiate mandate");
+
+      setMandateId(data.mandateId);
+      setMandateUrl(data.monoUrl);
+      setMandateStatus("awaiting_authorization");
+
+      toast.success("Opening Mono hosted authorization window...", { id: toastId });
+
+      window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
+
+      pollMandateStatus(data.mandateId);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to initiate mandate", { id: toastId });
+    } finally {
+      setIsInitiatingMandate(false);
+    }
+  };
+
+  const pollMandateStatus = (mId: string) => {
+    setIsCheckingMandate(true);
+    let attempts = 0;
+    const interval = setInterval(async () => {
+      attempts++;
+      try {
+        const res = await fetch(`/api/mono/mandate/status?mandateId=${encodeURIComponent(mId)}`);
+        const data = await res.json();
+        if (data.approved || data.readyToDebit) {
+          clearInterval(interval);
+          setIsCheckingMandate(false);
+          setMandateStatus("approved");
+          toast.success("🎉 NIBSS Direct Debit Mandate authorized successfully!", {
+            duration: 6000
+          });
+          router.refresh();
+          return;
+        }
+      } catch (_) {}
+
+      if (attempts >= 30) {
+        clearInterval(interval);
+        setIsCheckingMandate(false);
+      }
+    }, 3000);
+  };
+
+  const checkMandateNow = async () => {
+    if (!mandateId) return;
+    setIsCheckingMandate(true);
+    const toastId = toast.loading("Checking NIBSS mandate status with Mono...");
+    try {
+      const res = await fetch(`/api/mono/mandate/status?mandateId=${encodeURIComponent(mandateId)}`);
+      const data = await res.json();
+      if (data.approved || data.readyToDebit) {
+        setMandateStatus("approved");
+        toast.success("✓ Mandate is ACTIVE and authorized for automated sweeps!", { id: toastId });
+        router.refresh();
+      } else {
+        toast.info(`Status: ${data.status || "Awaiting bank approval"}. Please complete authorization in Mono.`, { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Could not check mandate status", { id: toastId });
+    } finally {
+      setIsCheckingMandate(false);
+    }
+  };
 
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pinModalMode, setPinModalMode] = useState<"verify" | "set">("verify");
@@ -270,9 +372,15 @@ export function MonoConnectWidget({
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 flex items-center gap-1.5 whitespace-nowrap">
-                <ShieldCheck className="h-4 w-4 text-emerald-700" /> Mandate Active
-              </span>
+              {mandateStatus === "approved" ? (
+                <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 flex items-center gap-1.5 whitespace-nowrap">
+                  <ShieldCheck className="h-4 w-4 text-emerald-700" /> Mandate Active
+                </span>
+              ) : (
+                <span className="text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-300 flex items-center gap-1.5 whitespace-nowrap">
+                  <AlertCircle className="h-4 w-4 text-amber-700" /> Mandate Pending
+                </span>
+              )}
               <span className="text-[10px] font-mono font-bold text-zinc-600 bg-gray-100 px-2.5 py-1 rounded-full border border-gray-200">
                 MONO SECURED
               </span>
@@ -309,11 +417,80 @@ export function MonoConnectWidget({
 
             <div className="flex justify-between items-center">
               <span className="text-[#1F2937]/70 font-medium">DirectPay Auto-Debit Mandate</span>
-              <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-                <Activity className="h-4 w-4" /> Active Settlement Payout Destination
-              </span>
+              {mandateStatus === "approved" ? (
+                <span className="text-emerald-700 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4" /> Authorized via NIBSS e-Mandate
+                </span>
+              ) : (
+                <span className="text-amber-700 font-semibold flex items-center gap-1.5">
+                  <AlertCircle className="h-4 w-4" /> Awaiting Bank Authorization
+                </span>
+              )}
             </div>
           </div>
+
+          {/* Mandate Authorization Banner */}
+          {mandateStatus !== "approved" && (
+            <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/80 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
+              <div className="space-y-1 max-w-lg">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  <h4 className="text-sm font-bold text-[#0B3022]">
+                    {mandateId ? "Finish Bank Mandate Authorization" : "Authorize Live Direct Debit Mandate"}
+                  </h4>
+                </div>
+                <p className="text-xs text-[#1F2937]/80 leading-relaxed font-medium">
+                  {mandateId 
+                    ? "Your mandate was initiated on Mono. Click below to open the bank authorization screen or check verification status."
+                    : "Authorize automated contribution sweeps from this verified bank account so your circle payments process without manual transfer delays."}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                {mandateUrl && (
+                  <a
+                    href={mandateUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    <span>Authorize on Mono</span>
+                  </a>
+                )}
+
+                {mandateId ? (
+                  <button
+                    onClick={checkMandateNow}
+                    disabled={isCheckingMandate}
+                    className="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-[#0B3022] font-bold rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    <RefreshCw className={`h-3.5 w-3.5 text-[#C5A059] ${isCheckingMandate ? "animate-spin" : ""}`} />
+                    <span>{isCheckingMandate ? "Verifying..." : "Check Status"}</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleAuthorizeMandate}
+                    disabled={isInitiatingMandate}
+                    className="px-5 py-3 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {isInitiatingMandate ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin text-[#C5A059]" />
+                        <span>Connecting to Mono...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="h-4 w-4 text-[#C5A059]" />
+                        <span>Authorize Mandate</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Actions & Re-verification */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">

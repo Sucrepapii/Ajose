@@ -29,6 +29,7 @@ import { FlagMemberClient } from "@/components/FlagMemberClient";
 import { SendRemindersClient } from "@/components/SendRemindersClient";
 import { TriggerSweepClient } from "@/components/TriggerSweepClient";
 import { ConfirmTransferClient } from "@/components/ConfirmTransferClient";
+import { AuthorizeGroupMandateClient } from "@/components/AuthorizeGroupMandateClient";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -88,6 +89,26 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     .order('joined_at', { ascending: true });
 
   const membersList = members || [];
+
+  // Fetch mandate metadata for all members
+  const memberMandateMap = new Map<string, { mandateId: string | null; mandateStatus: string; mandateUrl: string | null }>();
+  await Promise.all(
+    membersList.map(async (m) => {
+      try {
+        const { data: authData } = await adminClient.auth.admin.getUserById(m.user_id);
+        memberMandateMap.set(m.user_id, {
+          mandateId: authData?.user?.user_metadata?.mono_mandate_id || null,
+          mandateStatus: authData?.user?.user_metadata?.mono_mandate_status || "not_initiated",
+          mandateUrl: authData?.user?.user_metadata?.mono_mandate_url || null
+        });
+      } catch (_) {}
+    })
+  );
+
+  const currentUserMembership = membersList.find(m => m.user_id === user.id);
+  const currentUserMandate = memberMandateMap.get(user.id);
+  const isContributingMember = currentUserMembership && (currentUserMembership.role !== 'admin' || (currentUserMembership.payout_turn && currentUserMembership.payout_turn > 0));
+  const showMemberMandateBanner = isContributingMember && group.status === 'active' && currentUserMandate?.mandateStatus !== 'approved';
 
   // Map memberships to user IDs
   const membershipIds = membersList.map(m => m.id);
@@ -266,6 +287,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                 pendingCount={unpaidUserIds.length}
                 amount={group.contribution_amount}
                 frequency={group.frequency}
+                pendingMandateCount={contributingMembers.filter(m => memberMandateMap.get(m.user_id)?.mandateStatus !== 'approved').length}
               />
               <SendRemindersClient 
                 unpaidUserIds={unpaidUserIds} 
@@ -333,6 +355,21 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
             </div>
           </div>
         </div>
+      )}
+
+      {/* Action Required: Direct Debit Mandate Banner for Contributing Member */}
+      {showMemberMandateBanner && (
+        <AuthorizeGroupMandateClient 
+          groupId={groupId}
+          groupName={group.name}
+          contributionAmount={group.contribution_amount}
+          userId={user.id}
+          initialMandateId={currentUserMandate?.mandateId}
+          initialMandateStatus={currentUserMandate?.mandateStatus}
+          initialMandateUrl={currentUserMandate?.mandateUrl}
+          bankName={currentUserMembership?.users?.bank_name}
+          accountNumber={currentUserMembership?.users?.account_number}
+        />
       )}
 
       {/* Top Stats */}
@@ -817,15 +854,57 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                       })()}
                     </td>
                     <td className="px-6 py-4">
-                      {userProfile?.bvn_verified ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> Verified BVN
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-full">
-                          Unverified
-                        </span>
-                      )}
+                      <div className="space-y-1.5">
+                        {userProfile?.bvn_verified ? (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-2.5 py-0.5 rounded-full">
+                            <CheckCircle2 className="h-3 w-3 text-green-600" /> Verified BVN
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-gray-500 bg-gray-100 border border-gray-200 px-2.5 py-0.5 rounded-full">
+                            Unverified
+                          </span>
+                        )}
+
+                        {m.role !== 'admin' && (() => {
+                          const memMandate = memberMandateMap.get(m.user_id);
+                          if (memMandate?.mandateStatus === 'approved') {
+                            return (
+                              <div>
+                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
+                                  <ShieldCheck className="h-3 w-3 text-emerald-600" /> Mandate Active
+                                </span>
+                              </div>
+                            );
+                          }
+                          if (memMandate?.mandateStatus === 'awaiting_authorization') {
+                            return (
+                              <div className="flex items-center gap-1.5">
+                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
+                                  <Clock className="h-3 w-3 text-amber-600" /> Mandate Pending
+                                </span>
+                                {isAdmin && memMandate?.mandateUrl && (
+                                  <a
+                                    href={memMandate.mandateUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[10px] text-amber-700 hover:underline font-bold"
+                                    title="Open hosted authorization link"
+                                  >
+                                    Authorize Link ↗
+                                  </a>
+                                )}
+                              </div>
+                            );
+                          }
+                          return (
+                            <div>
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-zinc-600 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">
+                                <AlertCircle className="h-3 w-3 text-zinc-500" /> Mandate Needed
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">

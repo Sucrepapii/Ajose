@@ -43,7 +43,10 @@ export default async function VerifyPage() {
     isVerified = Boolean(profile?.bvn_verified && profile?.bank_name);
     currentProfile = {
       ...profile,
-      has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash)
+      has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash),
+      mono_mandate_id: user.user_metadata?.mono_mandate_id,
+      mono_mandate_status: user.user_metadata?.mono_mandate_status,
+      mono_mandate_url: user.user_metadata?.mono_mandate_url,
     };
   }
 

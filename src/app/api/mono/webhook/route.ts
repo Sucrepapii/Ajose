@@ -224,6 +224,54 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true, status: "failure_recorded" });
     }
 
+    // 3. Handle Mandate Approval / Activation
+    if (
+      event === "mandate.approved" ||
+      event === "mandate.authorized" ||
+      event === "mandate.activated" ||
+      event === "mono.events.mandate.approved"
+    ) {
+      const mandateId = data.id || data.mandate_id;
+      const ref = data.reference;
+
+      console.log(`[Mono Webhook] Mandate approved: ${mandateId}, reference: ${ref}`);
+
+      // Search and update user auth metadata
+      try {
+        const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
+        const matchedUser = (usersList?.users || []).find((u) => 
+          u.user_metadata?.mono_mandate_id === mandateId ||
+          (ref && u.user_metadata?.mono_mandate_reference === ref)
+        );
+
+        if (matchedUser) {
+          await supabase.auth.admin.updateUserById(matchedUser.id, {
+            user_metadata: {
+              ...matchedUser.user_metadata,
+              mono_mandate_id: mandateId,
+              mono_mandate_status: "approved",
+              mono_mandate_approved: true,
+              mono_mandate_ready_to_debit: true,
+              mono_mandate_approved_at: new Date().toISOString()
+            }
+          });
+          console.log(`[Mono Webhook] User ${matchedUser.id} mandate successfully activated!`);
+
+          // Send in-app notification to member
+          await supabase.from("notifications").insert({
+            user_id: matchedUser.id,
+            title: "✓ Bank Mandate Approved",
+            message: "Your NIBSS Direct Debit Mandate has been approved and activated for automated Àjọṣe contributions.",
+            type: "success"
+          });
+        }
+      } catch (mandateErr) {
+        console.error("[Mono Webhook] Error saving mandate approval:", mandateErr);
+      }
+
+      return NextResponse.json({ received: true, status: "mandate_approved" });
+    }
+
     // Default response for other events (e.g. mandate status changes)
     return NextResponse.json({ received: true, event });
 

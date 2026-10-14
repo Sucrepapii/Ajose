@@ -12,6 +12,7 @@ interface TriggerSweepClientProps {
   pendingCount: number;
   amount: number;
   frequency?: string;
+  pendingMandateCount?: number;
 }
 
 export function TriggerSweepClient({
@@ -21,6 +22,7 @@ export function TriggerSweepClient({
   pendingCount,
   amount,
   frequency = "monthly",
+  pendingMandateCount = 0,
 }: TriggerSweepClientProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -126,6 +128,18 @@ export function TriggerSweepClient({
                 Clicking execute will trigger Mono Direct Debit pulls for all <strong>{pendingCount} pending members</strong> who have not yet cleared their Turn {currentTurn} contribution.
               </p>
             </div>
+
+            {pendingMandateCount > 0 && (
+              <div className="bg-amber-50 border border-amber-300 rounded-2xl p-3.5 text-xs text-amber-900 space-y-1 shadow-xs">
+                <div className="font-bold flex items-center gap-1.5 text-amber-800">
+                  <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                  <span>{pendingMandateCount} Member(s) Awaiting Mandate Authorization</span>
+                </div>
+                <p className="text-[11px] text-amber-700 leading-normal">
+                  Members who haven&apos;t authorized their direct debit mandate will be skipped or declined by the bank. You can view each member&apos;s mandate status in the roster below.
+                </p>
+              </div>
+            )}
 
             {/* Sweep Breakdown Details */}
             <div className="bg-gray-50 rounded-2xl p-4 space-y-2.5 border border-gray-100 text-xs">
