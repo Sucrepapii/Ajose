@@ -10,7 +10,6 @@ workflows:
     environment:
       groups:
         - ajose-signing
-        - apple_credentials
       vars:
         APP_STORE_APPLE_ID: 6815151482
         BUNDLE_ID: ng.ajose.app
@@ -42,10 +41,11 @@ workflows:
             --certificate /tmp/signing/signing.p12 \
             --certificate-password codemagic
 
-          # Fetch provisioning profile (cert key already in keychain — no --create needed)
+          # Fetch/create provisioning profile (cert key is in keychain — no new cert created)
           printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
+            --create \
             --key-id TH9U3Q6N34 \
             --issuer-id b7d9e967-a2df-47e8-82a2-29287c37db11 \
             --private-key @file:/tmp/asc_key.p8
