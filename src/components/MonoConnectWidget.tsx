@@ -319,7 +319,7 @@ export function MonoConnectWidget({
               className="px-6 py-3.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0 text-sm"
             >
               <Lock className="h-4 w-4" />
-              Connect with Mono
+              Link Bank Account
             </button>
           </div>
         </div>
