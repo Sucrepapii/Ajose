@@ -33,12 +33,18 @@ workflows:
         script: |
           set -euo pipefail
           keychain initialize
+          mkdir -p /tmp/signing
 
           printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
+
+          # Generate a fresh distribution key so fetch-signing-files creates a new
+          # cert rather than failing on an existing cert whose private key is absent.
+          openssl genrsa -out /tmp/signing/cert_key.pem 2048
 
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
+            --certificate-key @file:/tmp/signing/cert_key.pem \
             --key-id TH9U3Q6N34 \
             --issuer-id b7d9e967-a2df-47e8-82a2-29287c37db11 \
             --private-key @file:/tmp/asc_key.p8
