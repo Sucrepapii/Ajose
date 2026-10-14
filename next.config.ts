@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
+            value: 'camera=(self "https://connect.withmono.com" "https://connect.mono.co"), microphone=(), geolocation=()',
           }
         ],
       },

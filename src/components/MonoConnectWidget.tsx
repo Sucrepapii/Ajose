@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { 
-  Landmark, 
+  Landmark,
+  Smartphone,
+  QrCode,
+  Copy,
+  Check, 
   ShieldCheck, 
   Lock, 
   Building, 
@@ -52,12 +56,74 @@ export function MonoConnectWidget({
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
   const [isVerifyingPin, setIsVerifyingPin] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [mobileVerifyUrl, setMobileVerifyUrl] = useState("https://ajose.ng/dashboard/verify");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setMobileVerifyUrl(`${window.location.origin}/dashboard/verify`);
+    }
+  }, []);
+
+  // Listen for real-time verification updates if user verifies on phone
+  useEffect(() => {
+    if (!userId || isVerified || userId === "demo-user") return;
+
+    const channel = supabase
+      .channel(`user-verify-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "users",
+          filter: `id=eq.${userId}`,
+        },
+        (payload) => {
+          if (payload.new && payload.new.bvn_verified && payload.new.bank_name) {
+            setProfile((prev) => ({
+              ...prev,
+              bank_name: payload.new.bank_name,
+              account_number: payload.new.account_number,
+              account_name: payload.new.account_name,
+              bvn_verified: true,
+            }));
+            setIsVerified(true);
+            toast.success("Bank account verified successfully from your mobile phone!", {
+              id: "mobile-verified",
+            });
+            router.refresh();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, isVerified, supabase, router]);
 
   const launchMono = () => {
     const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_t1zbb1s1lakxunvxd82e";
 
     const initMono = () => {
       try {
+        // Automatically ensure any injected Mono iframe has camera & media permissions
+        if (typeof document !== "undefined") {
+          const observer = new MutationObserver(() => {
+            const iframes = document.querySelectorAll('iframe[src*="mono.co"], iframe[src*="withmono.com"]');
+            iframes.forEach((iframe) => {
+              const currentAllow = iframe.getAttribute("allow") || "";
+              if (!currentAllow.includes("camera")) {
+                iframe.setAttribute(
+                  "allow",
+                  "camera *; microphone *; autoplay *; clipboard-read; clipboard-write; fullscreen"
+                );
+              }
+            });
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+        }
         const monoInstance = new (window as any).Connect({
           key: monoPublicKey,
           onSuccess: async ({ code }: { code: string }) => {
@@ -308,10 +374,58 @@ export function MonoConnectWidget({
             </ul>
           </div>
 
+          {/* Mobile QR Verification Card (Recommended for Laptops & Desktops) */}
+          <div className="bg-[#0B3022] text-white p-5 sm:p-6 rounded-2xl border border-[#C5A059]/40 shadow-lg flex flex-col md:flex-row items-center gap-5">
+            <div className="bg-white p-2.5 rounded-xl shrink-0 shadow-md flex items-center justify-center">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&margin=6&data=${encodeURIComponent(mobileVerifyUrl)}`}
+                alt="Scan to verify on mobile"
+                className="w-28 h-28 sm:w-32 sm:h-32 rounded-lg"
+              />
+            </div>
+
+            <div className="flex-1 space-y-2 text-center md:text-left">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C5A059]/20 border border-[#C5A059]/40 text-[#C5A059] text-[11px] font-bold uppercase tracking-wider">
+                <Smartphone className="w-3.5 h-3.5" />
+                <span>Recommended: Finish on Mobile</span>
+              </div>
+              <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                Scan with your phone camera for instant verification
+              </h4>
+              <p className="text-xs text-gray-300 leading-relaxed font-normal">
+                Laptop webcams often fail lighting or permission checks. Scan this QR code with your phone to use your front camera — takes under 15 seconds and automatically updates this screen!
+              </p>
+              <div className="pt-1 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(mobileVerifyUrl);
+                    setCopiedLink(true);
+                    toast.success("Verification link copied to clipboard!");
+                    setTimeout(() => setCopiedLink(false), 2500);
+                  }}
+                  className="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-xs font-semibold text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                >
+                  {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedLink ? "Link Copied!" : "Copy Mobile Link"}</span>
+                </button>
+                <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  Auto-syncs live with this screen
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-            <div className="flex items-center gap-2 text-xs text-[#1F2937]/70 font-medium">
-              <Lock className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-              <span>Protected by bank-level 256-bit encryption. Credentials are never stored.</span>
+            <div className="space-y-1 max-w-sm">
+              <div className="flex items-center gap-2 text-xs text-[#1F2937]/70 font-medium">
+                <Lock className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>Protected by bank-level 256-bit encryption.</span>
+              </div>
+              <p className="text-[11px] text-[#1F2937]/60">
+                Prefer to stay on laptop? Make sure to click <strong>&quot;Allow&quot;</strong> when your browser prompts for Camera access.
+              </p>
             </div>
 
             <button 
@@ -319,7 +433,7 @@ export function MonoConnectWidget({
               className="px-6 py-3.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0 text-sm"
             >
               <Lock className="h-4 w-4" />
-              Link Bank Account
+              Link on this Device
             </button>
           </div>
         </div>
