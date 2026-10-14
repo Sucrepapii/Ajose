@@ -49,7 +49,7 @@ workflows:
             --issuer-id b7d9e967-a2df-47e8-82a2-29287c37db11 \
             --private-key @file:/tmp/asc_key.p8
 
-          xcode-project use-profiles --export-method app-store
+          xcode-project use-profiles
       - name: Build & sign IPA
         script: |
           set -eo pipefail
