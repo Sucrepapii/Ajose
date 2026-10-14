@@ -52,8 +52,7 @@ export default async function DashboardOverview() {
         max_members,
         status,
         frequency,
-        admin_commission_pct,
-        current_turn
+        admin_commission_pct
       )
     `)
     .eq('user_id', user.id)
@@ -284,9 +283,7 @@ export default async function DashboardOverview() {
                             {isPending 
                               ? `${currentCount} of ${group.max_members} Members` 
                               : `${group.max_members} Members`} • <span className="capitalize">{group.frequency}</span>
-                            {!isPending && group.current_turn && (
-                              <span className="text-emerald-700 font-semibold"> • Turn {group.current_turn}</span>
-                            )}
+
                           </p>
                         </div>
                       </div>
