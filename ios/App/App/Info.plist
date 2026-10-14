@@ -77,6 +77,17 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+		<key>NSCameraUsageDescription</key>
+	<string>Ajose requires camera access for identity and facial verification with your bank.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Ajose requires photo library access to upload identity documents and payment receipts.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Ajose requires microphone access for identity verification calls.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>
