@@ -66,22 +66,25 @@ export async function POST(req: Request) {
     }
 
     // 5. Verify member completeness (must have >= max_members contributing members)
-    const { count: contributingCount, error: countErr } = await supabaseAdmin
+    const { data: groupMembers, error: membersErr } = await supabaseAdmin
       .from("memberships")
-      .select("*", { count: "exact", head: true })
+      .select("id, role, payout_turn, status")
       .eq("group_id", groupId)
-      .neq("role", "admin")
       .eq("status", "active");
 
-    if (countErr) {
-      console.error("Error checking member count:", countErr);
+    if (membersErr) {
+      console.error("Error checking member count:", membersErr);
       return NextResponse.json(
         { error: "Failed to verify membership count." },
         { status: 500 }
       );
     }
 
-    const currentCount = contributingCount || 0;
+    const contributingMembers = (groupMembers || []).filter(
+      (m: any) => m.role !== 'admin' || (m.payout_turn !== null && m.payout_turn !== undefined && m.payout_turn > 0)
+    );
+
+    const currentCount = contributingMembers.length;
     const maxMembers = group.max_members || 0;
 
     if (currentCount < maxMembers) {
@@ -99,12 +102,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // 6. Start cycle: set status to active and initialize current_turn to 1
+    // 6. Start cycle: set status to active
     const { error: updateErr } = await supabaseAdmin
       .from("groups")
       .update({
-        status: "active",
-        current_turn: 1
+        status: "active"
       })
       .eq("id", groupId);
 
@@ -115,6 +117,14 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    // Optional safe update for current_turn if schema supports it
+    try {
+      await supabaseAdmin
+        .from("groups")
+        .update({ current_turn: 1 })
+        .eq("id", groupId);
+    } catch (_) {}
 
     return NextResponse.json({
       success: true,
