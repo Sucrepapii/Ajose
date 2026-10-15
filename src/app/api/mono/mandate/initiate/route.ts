@@ -69,14 +69,17 @@ export async function POST(req: NextRequest) {
     if (groupId) {
       const { data: group } = await adminClient
         .from("groups")
-        .select("name, contribution_amount")
+        .select("name, contribution_amount, frequency")
         .eq("id", groupId)
         .maybeSingle();
 
       if (group) {
         groupName = group.name;
+        const isDaily = group.frequency === "daily";
+        const isWeekly = group.frequency === "weekly";
+        const autoFee = isDaily ? 100 : isWeekly ? 300 : 0;
         if (group.contribution_amount && !customAmount) {
-          mandateAmountNaira = group.contribution_amount;
+          mandateAmountNaira = group.contribution_amount + autoFee;
         }
       }
     }

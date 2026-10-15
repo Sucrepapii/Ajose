@@ -234,7 +234,7 @@ async function handleSweep(req: NextRequest) {
         const isDaily = group.frequency === "daily";
         const isWeekly = group.frequency === "weekly";
         const automationFee = isDaily ? 100 : isWeekly ? 300 : 0;
-        const totalDebitAmount = (group.contribution_amount || 0) + automationFee;
+        let totalDebitAmount = (group.contribution_amount || 0) + automationFee;
 
         // Mono references must be alphanumeric and <= 24 characters
         const rawRef = `swp${Date.now().toString().slice(-8)}${Math.random().toString(36).substring(2, 6)}`;
@@ -258,7 +258,7 @@ async function handleSweep(req: NextRequest) {
           // LIVE MONO DIRECT DEBIT CALL
           try {
             console.log(`[Sweep] Initiating live Mono debit for member ${member.user_id} with mandate ${mandateId}, amount: ₦${totalDebitAmount}`);
-            const debitRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}/debit`, {
+            let debitRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}/debit`, {
               method: "POST",
               headers: {
                 "mono-sec-key": monoSecretKey,
@@ -271,8 +271,29 @@ async function handleSweep(req: NextRequest) {
               })
             });
 
-            const debitData = await debitRes.json();
+            let debitData = await debitRes.json();
             console.log(`[Sweep] Mono debit response:`, debitRes.status, debitData);
+
+            // Auto-heal / Fallback: if the mandate was authorized only for the base contribution amount without automation fee
+            if (!debitRes.ok && (debitData?.message || "").toLowerCase().includes("debit limit") && totalDebitAmount > group.contribution_amount) {
+              console.log(`[Sweep] Debit limit exceeded for mandate ${mandateId}. Retrying with base contribution amount ₦${group.contribution_amount}...`);
+              totalDebitAmount = group.contribution_amount;
+              debitRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}/debit`, {
+                method: "POST",
+                headers: {
+                  "mono-sec-key": monoSecretKey,
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  amount: Math.round(totalDebitAmount * 100),
+                  narration: `Àjọṣe Contribution Turn ${currentTurn} - ${group.name.slice(0, 15)}`,
+                  reference: `${reference}b`.slice(0, 24)
+                })
+              });
+              debitData = await debitRes.json();
+              console.log(`[Sweep] Retry with base amount response:`, debitRes.status, debitData);
+            }
+
             if (debitRes.ok && debitData.status !== "failed") {
               debitSuccess = true;
               debitMessage = "Debit initiated via Mono mandate.";
