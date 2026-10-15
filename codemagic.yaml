@@ -5,8 +5,6 @@ workflows:
     name: Ajose iOS
     max_build_duration: 60
     instance_type: mac_mini_m1
-    integrations:
-      app_store_connect: Ajose ASC Key
     environment:
       groups:
         - ajose-signing
@@ -32,39 +30,25 @@ workflows:
       - name: Set up code signing
         script: |
           set -euo pipefail
-          mkdir -p /tmp/signing
-
-          # Decode P12 (cert + private key)
-          printf '%s' "$CM_P12_BASE64" | base64 -d > /tmp/signing/signing.p12
-
-          # Install pre-generated provisioning profile (no ASC API call needed)
-          PROFILES_DIR=~/Library/MobileDevice/Provisioning\ Profiles
-          mkdir -p "$PROFILES_DIR"
-          printf '%s' "$CM_AJOSE_PROFILE_B64" | base64 -d > "$PROFILES_DIR/ajose-appstore.mobileprovision"
-          echo "=== Provisioning profile installed ==="
-
           keychain initialize
-          keychain add-certificates \
-            --certificate /tmp/signing/signing.p12 \
-            --certificate-password codemagic
+          printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create \
+            --key-id TH9U3Q6N34 \
+            --issuer-id b7d9e967-a2df-47e8-82a2-29287c37db11 \
+            --private-key @file:/tmp/asc_key.p8
+          keychain add-certificates
           xcode-project use-profiles
       - name: Build & sign IPA
         script: |
           set -eo pipefail
-          cd ios/App
-          xcodebuild \
-            -project App.xcodeproj \
-            -scheme App \
-            -sdk iphoneos \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
-            -archivePath $CM_BUILD_DIR/App.xcarchive \
-            archive | xcpretty
-          xcodebuild \
-            -exportArchive \
-            -archivePath $CM_BUILD_DIR/App.xcarchive \
-            -exportPath $CM_BUILD_DIR/ipa \
-            -exportOptionsPlist /Users/builder/export_options.plist | xcpretty
+          xcode-project build-ipa \
+            --workspace ios/App/App.xcworkspace \
+            --scheme App \
+            --config Release \
+            --archive-directory $CM_BUILD_DIR/xcarchive \
+            --ipa-directory $CM_BUILD_DIR/ipa
       - name: Upload to TestFlight
         script: |
           IPA=$(find "$CM_BUILD_DIR/ipa" -name "*.ipa" | head -1)
@@ -84,7 +68,7 @@ workflows:
           exit $UPLOAD_EXIT
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
+      - $CM_BUILD_DIR/xcarchive/*.xcarchive
       - /tmp/asc_upload.log
 
   # ── Android ───────────────────────────────────────────────────────────────
