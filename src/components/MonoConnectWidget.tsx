@@ -245,9 +245,15 @@ export function MonoConnectWidget({
                   account_number: data.accountNumber,
                   account_name: data.accountName,
                   bvn_verified: true,
+                  mono_mandate_id: undefined,
+                  mono_mandate_status: "not_initiated",
+                  mono_mandate_url: undefined
                 }));
+                setMandateId("");
+                setMandateStatus("not_initiated");
+                setMandateUrl("");
                 setIsVerified(true);
-                toast.success(`Connected ${data.bankName || "Bank"} (${data.accountNumber}) as your verified settlement account!`, { id: "mono-linking" });
+                toast.success(`Connected ${data.bankName || "Bank"} (${data.accountNumber})! Please authorize your new direct debit mandate.`, { id: "mono-linking", duration: 6000 });
                 router.refresh();
               } else {
                 throw new Error(data.error || "Failed to link account");

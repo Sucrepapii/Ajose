@@ -142,14 +142,24 @@ export async function POST(req: NextRequest) {
       })
       .eq("id", user.id);
 
-    // 4. Ensure Supabase Auth metadata stays free of stale bank fields
+    // 4. Update Supabase Auth metadata: clear old bank fields and reset mandate
+    // Because NIBSS e-mandates are tied to a specific bank account, changing banks
+    // automatically invalidates any old mandate so the user can authorize a fresh one seamlessly.
     try {
       const adminSupabase = createAdminClient();
       await adminSupabase.auth.admin.updateUserById(user.id, {
         user_metadata: {
+          ...user.user_metadata,
           bank_name: null,
           account_number: null,
-          account_name: null
+          account_name: null,
+          mono_mandate_id: null,
+          mono_mandate_status: "not_initiated",
+          mono_mandate_url: null,
+          mono_mandate_reference: null,
+          mono_mandate_bank: bankName,
+          mono_mandate_account: accountNumber,
+          mono_mandate_reset_at: new Date().toISOString()
         }
       });
     } catch (metaErr) {
