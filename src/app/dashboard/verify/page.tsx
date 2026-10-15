@@ -42,9 +42,9 @@ export default async function VerifyPage() {
     }
 
     isVerified = Boolean(profile?.bvn_verified && profile?.bank_name);
-    let mandateId = user.user_metadata?.mono_mandate_id;
+    const mandateId = user.user_metadata?.mono_mandate_id;
     let mandateStatus = user.user_metadata?.mono_mandate_status;
-    let mandateUrl = user.user_metadata?.mono_mandate_url;
+    const mandateUrl = user.user_metadata?.mono_mandate_url;
 
     const monoSecretKey = process.env.MONO_PAYMENTS_SECRET_KEY || process.env.MONO_SECRET_KEY;
     if (mandateId && mandateStatus !== "approved" && monoSecretKey) {

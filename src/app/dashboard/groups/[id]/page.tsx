@@ -98,9 +98,9 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     membersList.map(async (m) => {
       try {
         const { data: authData } = await adminClient.auth.admin.getUserById(m.user_id);
-        let mandateId = authData?.user?.user_metadata?.mono_mandate_id || null;
+        const mandateId = authData?.user?.user_metadata?.mono_mandate_id || null;
         let mandateStatus = authData?.user?.user_metadata?.mono_mandate_status || "not_initiated";
-        let mandateUrl = authData?.user?.user_metadata?.mono_mandate_url || null;
+        const mandateUrl = authData?.user?.user_metadata?.mono_mandate_url || null;
 
         // Auto-heal / Live Check: if mandate exists but not marked approved in metadata, verify with Mono live API
         if (mandateId && mandateStatus !== "approved" && monoSecretKey) {
