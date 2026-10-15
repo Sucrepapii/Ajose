@@ -209,7 +209,7 @@ export default function Home() {
               >
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>CBN-Regulated Settlement</strong> via Paylode PSSP</span>
+                  <span><strong>CBN-Regulated T+1 Settlement</strong> via Paylode PSSP</span>
                 </div>
                 <span className="hidden sm:inline text-white/30">•</span>
                 <div className="flex items-center gap-2">
@@ -831,7 +831,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2 text-emerald-800">
                       <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Direct pass-through bank settlement &amp; immutable ledger</span>
+                      <span>Direct pass-through T+1 bank settlement &amp; immutable ledger</span>
                     </div>
                   </div>
 
@@ -1103,7 +1103,7 @@ export default function Home() {
               },
               { 
                 q: "When are contributions swept and payouts disbursed?", 
-                a: "Schedules are structured around Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT with rapid 24-hr turn payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off and turn payouts on the 5th) to match corporate salary cycles." 
+                a: "Schedules are structured around Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT with rapid 24-hr turn payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off and turn payouts on the 5th) to match corporate salary cycles (all disbursements follow a predictable T+1 settlement timeline)." 
               },
               { 
                 q: "What is the Ajo Credit Score, and how does it work?", 

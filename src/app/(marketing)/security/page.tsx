@@ -94,13 +94,13 @@ export default function SecurityPage() {
           </div>
 
           <p className="text-[#1F2937]/90 leading-relaxed font-medium text-base mb-6">
-            <strong>Regulatory Disclosure:</strong> Àjọṣe is a financial technology platform, not a bank. Payment processing, fund settlement, and transactional switching infrastructure are powered by <strong>Paylode Services Limited</strong>, licensed and regulated by the Central Bank of Nigeria (CBN) as a Payment Solution Service Provider (PSSP). Automated direct-debits and banking connectivity are powered by <strong>Mono Open Banking</strong>. All member contributions are held directly within authorized commercial bank accounts.
+            <strong>Regulatory Disclosure:</strong> Àjọṣe is a financial technology platform, not a bank. Payment processing, fund settlement, and transactional switching infrastructure are powered by <strong>Paylode Services Limited</strong>, licensed and regulated by the Central Bank of Nigeria (CBN) as a Payment Solution Service Provider (PSSP) with automated T+1 settlement. Automated direct-debits and banking connectivity are powered by <strong>Mono Open Banking</strong>. All member contributions are held directly within authorized commercial bank accounts.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-gray-100 text-xs font-mono">
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              Paylode (CBN Licensed PSSP)
+              Paylode (CBN Licensed PSSP · T+1)
             </span>
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-medium">
               <span className="w-2 h-2 rounded-full bg-blue-500" />
