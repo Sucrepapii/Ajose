@@ -86,20 +86,63 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
       )
     `)
     .eq('group_id', groupId)
+    .order('payout_turn', { ascending: true, nullsFirst: false })
     .order('joined_at', { ascending: true });
 
   const membersList = members || [];
 
-  // Fetch mandate metadata for all members
+  // Fetch mandate metadata for all members with live Mono auto-sync fallback
+  const monoSecretKey = process.env.MONO_PAYMENTS_SECRET_KEY || process.env.MONO_SECRET_KEY;
   const memberMandateMap = new Map<string, { mandateId: string | null; mandateStatus: string; mandateUrl: string | null }>();
   await Promise.all(
     membersList.map(async (m) => {
       try {
         const { data: authData } = await adminClient.auth.admin.getUserById(m.user_id);
+        let mandateId = authData?.user?.user_metadata?.mono_mandate_id || null;
+        let mandateStatus = authData?.user?.user_metadata?.mono_mandate_status || "not_initiated";
+        let mandateUrl = authData?.user?.user_metadata?.mono_mandate_url || null;
+
+        // Auto-heal / Live Check: if mandate exists but not marked approved in metadata, verify with Mono live API
+        if (mandateId && mandateStatus !== "approved" && monoSecretKey) {
+          try {
+            const monoRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}`, {
+              headers: {
+                "mono-sec-key": monoSecretKey,
+                "accept": "application/json"
+              },
+              next: { revalidate: 30 }
+            });
+            if (monoRes.ok) {
+              const resJson = await monoRes.json();
+              const mandate = resJson?.data;
+              const isApproved = Boolean(
+                mandate?.approved ||
+                mandate?.ready_to_debit ||
+                mandate?.status === "approved" ||
+                mandate?.status === "active"
+              );
+              if (isApproved) {
+                mandateStatus = "approved";
+                // Background sync into Supabase Auth user_metadata
+                adminClient.auth.admin.updateUserById(m.user_id, {
+                  user_metadata: {
+                    ...authData?.user?.user_metadata,
+                    mono_mandate_id: mandateId,
+                    mono_mandate_status: "approved",
+                    mono_mandate_approved: true,
+                    mono_mandate_ready_to_debit: true,
+                    mono_mandate_approved_at: new Date().toISOString()
+                  }
+                }).catch(() => {});
+              }
+            }
+          } catch (_) {}
+        }
+
         memberMandateMap.set(m.user_id, {
-          mandateId: authData?.user?.user_metadata?.mono_mandate_id || null,
-          mandateStatus: authData?.user?.user_metadata?.mono_mandate_status || "not_initiated",
-          mandateUrl: authData?.user?.user_metadata?.mono_mandate_url || null
+          mandateId,
+          mandateStatus,
+          mandateUrl
         });
       } catch (_) {}
     })
@@ -172,7 +215,16 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
   const contributingMembers = membersList.filter(m => m.role !== 'admin' || (m.payout_turn !== null && m.payout_turn !== undefined && m.payout_turn > 0));
   const totalPool = group.contribution_amount * contributingMembers.length;
   const isAdmin = membersList.some(m => m.user_id === user.id && m.role === 'admin') || group.admin_id === user.id;
-  const displayContributors = adminIsContributing ? membersList : contributingMembers;
+  const rawContributors = adminIsContributing ? membersList : contributingMembers;
+  // Contributors ordered strictly by rotational turn (Turn 1, Turn 2, Turn 3...), unassigned at end
+  const displayContributors = [...rawContributors].sort((a, b) => {
+    const turnA = typeof a.payout_turn === 'number' && a.payout_turn > 0 ? a.payout_turn : 999999;
+    const turnB = typeof b.payout_turn === 'number' && b.payout_turn > 0 ? b.payout_turn : 999999;
+    if (turnA !== turnB) {
+      return turnA - turnB;
+    }
+    return new Date(a.joined_at || 0).getTime() - new Date(b.joined_at || 0).getTime();
+  });
   const adminBankName = adminUser?.bank_name || (adminUser?.account_number ? 'Settlement Bank' : 'Pending Admin Setup');
   const adminRawAcct = adminUser?.account_number || '';
   const adminMaskedAccount = adminRawAcct && adminRawAcct.length >= 6 
@@ -642,6 +694,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-[#1F2937]/50 text-xs font-bold uppercase tracking-wider border-b border-gray-200">
+                <th className="px-6 py-4">Turn</th>
                 <th className="px-6 py-4">Contributor</th>
                 <th className="px-6 py-4">Contribution Status</th>
                 <th className="px-6 py-4">Verification Status</th>
@@ -679,6 +732,24 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
 
                 return (
                   <tr key={m.id} className={`transition-colors ${m.status === 'defaulted' ? 'bg-red-50' : isTurn ? 'bg-[#FDFBF7]' : 'hover:bg-gray-50'}`}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {m.payout_turn ? (
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                          isTurn 
+                            ? "bg-[#0B3022] text-[#C5A059] shadow-sm border border-[#C5A059]/40" 
+                            : "bg-[#0B3022]/5 text-[#0B3022] border border-[#0B3022]/10"
+                        }`}>
+                          <span>Turn {m.payout_turn}</span>
+                          {isTurn && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse" title="Receives Payout Next" />
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400 font-medium italic">
+                          {m.role === 'admin' ? 'Admin Trustee' : 'Unassigned'}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold uppercase ${m.status === 'defaulted' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'}`}>

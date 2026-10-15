@@ -52,6 +52,7 @@ export default async function GroupSettingsPage(props: { params: Promise<{ id: s
       )
     `)
     .eq('group_id', groupId)
+    .order('payout_turn', { ascending: true, nullsFirst: false })
     .order('joined_at', { ascending: true });
 
   const membersList = members || [];

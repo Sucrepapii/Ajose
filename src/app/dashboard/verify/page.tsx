@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { redirect } from "next/navigation";
 import { MonoConnectWidget } from "@/components/MonoConnectWidget";
 import { CompleteProfileForm } from "@/components/CompleteProfileForm";
@@ -41,12 +42,53 @@ export default async function VerifyPage() {
     }
 
     isVerified = Boolean(profile?.bvn_verified && profile?.bank_name);
+    let mandateId = user.user_metadata?.mono_mandate_id;
+    let mandateStatus = user.user_metadata?.mono_mandate_status;
+    let mandateUrl = user.user_metadata?.mono_mandate_url;
+
+    const monoSecretKey = process.env.MONO_PAYMENTS_SECRET_KEY || process.env.MONO_SECRET_KEY;
+    if (mandateId && mandateStatus !== "approved" && monoSecretKey) {
+      try {
+        const monoRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}`, {
+          headers: {
+            "mono-sec-key": monoSecretKey,
+            "accept": "application/json"
+          },
+          next: { revalidate: 30 }
+        });
+        if (monoRes.ok) {
+          const resJson = await monoRes.json();
+          const mandate = resJson?.data;
+          const isApproved = Boolean(
+            mandate?.approved ||
+            mandate?.ready_to_debit ||
+            mandate?.status === "approved" ||
+            mandate?.status === "active"
+          );
+          if (isApproved) {
+            mandateStatus = "approved";
+            const adminClient = createAdminClient();
+            adminClient.auth.admin.updateUserById(user.id, {
+              user_metadata: {
+                ...user.user_metadata,
+                mono_mandate_id: mandateId,
+                mono_mandate_status: "approved",
+                mono_mandate_approved: true,
+                mono_mandate_ready_to_debit: true,
+                mono_mandate_approved_at: new Date().toISOString()
+              }
+            }).catch(() => {});
+          }
+        }
+      } catch (_) {}
+    }
+
     currentProfile = {
       ...profile,
       has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash),
-      mono_mandate_id: user.user_metadata?.mono_mandate_id,
-      mono_mandate_status: user.user_metadata?.mono_mandate_status,
-      mono_mandate_url: user.user_metadata?.mono_mandate_url,
+      mono_mandate_id: mandateId,
+      mono_mandate_status: mandateStatus,
+      mono_mandate_url: mandateUrl,
     };
   }
 

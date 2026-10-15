@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -71,15 +71,21 @@ export function GroupSettingsClient({
   const [isUpdatingCapacity, setIsUpdatingCapacity] = useState(false);
   const [openMenuMemberId, setOpenMenuMemberId] = useState<string | null>(null);
 
+  const [currentMembers, setCurrentMembers] = useState<Member[]>(members);
+
+  useEffect(() => {
+    setCurrentMembers(members);
+  }, [members]);
+
   // Strict Admin Verification
-  const isAdmin = members.some(m => m.user_id === currentUserId && m.role === 'admin') || group.admin_id === currentUserId;
+  const isAdmin = currentMembers.some(m => m.user_id === currentUserId && m.role === 'admin') || group.admin_id === currentUserId;
 
   // Find admin profile for settlement account
-  const adminMember = members.find(m => m.role === 'admin');
+  const adminMember = currentMembers.find(m => m.role === 'admin');
   const adminProfile = adminMember?.users;
 
   // Contributing members & open turn slots
-  const contributingMembers = members.filter(m => m.payout_turn !== null);
+  const contributingMembers = currentMembers.filter(m => m.payout_turn !== null);
   const occupiedTurns = new Set(contributingMembers.map(m => m.payout_turn));
   const openTurns: number[] = [];
   for (let i = 1; i <= group.max_members; i++) {
@@ -87,6 +93,16 @@ export function GroupSettingsClient({
       openTurns.push(i);
     }
   }
+
+  // Sort members strictly by rotational turn (Turn 1, Turn 2, Turn 3...), unassigned at end
+  const sortedMembers = [...currentMembers].sort((a, b) => {
+    const turnA = typeof a.payout_turn === 'number' && a.payout_turn > 0 ? a.payout_turn : 999999;
+    const turnB = typeof b.payout_turn === 'number' && b.payout_turn > 0 ? b.payout_turn : 999999;
+    if (turnA !== turnB) {
+      return turnA - turnB;
+    }
+    return new Date(a.joined_at || 0).getTime() - new Date(b.joined_at || 0).getTime();
+  });
 
   // Determine user display name
   const getDisplayName = (m: Member) => {
@@ -114,6 +130,21 @@ export function GroupSettingsClient({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to update slot.");
 
+      // Optimistic update of local members state so the arrangement re-sorts INSTANTLY
+      const newTurnNum = parseInt(targetSlot);
+      setCurrentMembers(prev => {
+        const oldTurn = editingSlotMember.payout_turn;
+        return prev.map(m => {
+          if (m.id === editingSlotMember.id) {
+            return { ...m, payout_turn: newTurnNum };
+          }
+          if (m.payout_turn === newTurnNum) {
+            return { ...m, payout_turn: oldTurn };
+          }
+          return m;
+        });
+      });
+
       toast.success(data.message || "Member slot updated successfully!");
       setEditingSlotMember(null);
       router.refresh();
@@ -138,6 +169,13 @@ export function GroupSettingsClient({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to update admin participation.");
+
+      setCurrentMembers(prev => prev.map(m => {
+        if (m.role === 'admin') {
+          return { ...m, payout_turn: slotNumber };
+        }
+        return m;
+      }));
 
       toast.success(data.message || "Admin participation updated.");
       setEditingSlotMember(null);
@@ -263,6 +301,10 @@ export function GroupSettingsClient({
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to remove member.");
+
+      if (memberToRemove) {
+        setCurrentMembers(prev => prev.filter(m => m.id !== memberToRemove.id));
+      }
 
       toast.success(data.message || "Member removed successfully.");
       setMemberToRemove(null);
@@ -525,17 +567,17 @@ export function GroupSettingsClient({
         </div>
 
         <div className="divide-y divide-gray-100">
-          {members.map((m, index) => {
+          {sortedMembers.map((m, index) => {
             const isTurnAdmin = m.role === 'admin';
             const memberTurn = m.payout_turn;
             const hasAlreadyCollected = !isTurnAdmin && memberTurn < (group.current_turn || 1);
-            const isNearBottom = index >= Math.max(1, members.length - 2);
+            const isNearBottom = index >= Math.max(1, sortedMembers.length - 2);
 
             return (
               <div 
                 key={m.id} 
                 className={`p-4 flex items-center justify-between hover:bg-gray-50 transition-colors ${
-                  index === members.length - 1 ? 'rounded-b-2xl' : ''
+                  index === sortedMembers.length - 1 ? 'rounded-b-2xl' : ''
                 } ${openMenuMemberId === m.id ? 'relative z-30' : 'relative z-10'}`}
               >
                 <div className="flex items-center gap-3">
@@ -1072,7 +1114,7 @@ export function GroupSettingsClient({
                 >
                   <option value="" disabled>-- Select a slot --</option>
                   {Array.from({ length: group.max_members }, (_, i) => i + 1).map(turnNum => {
-                    const occupant = members.find(m => m.payout_turn === turnNum);
+                    const occupant = currentMembers.find(m => m.payout_turn === turnNum);
                     const isCurrent = editingSlotMember.payout_turn === turnNum;
                     const isOccupiedByOther = occupant && occupant.id !== editingSlotMember.id;
                     const alreadyPaid = isLocked && occupant && turnNum < (group.current_turn || 1);
