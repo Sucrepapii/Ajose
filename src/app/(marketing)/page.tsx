@@ -209,12 +209,12 @@ export default function Home() {
               >
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>CBN-Regulated T+1 Settlement</strong> via Paylode PSSP</span>
+                  <span><strong>CBN-Regulated Settlement</strong> via Paylode PSSP</span>
                 </div>
                 <span className="hidden sm:inline text-white/30">•</span>
                 <div className="flex items-center gap-2">
                   <Lock className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>Mono Open Banking</strong> (NDPR Compliant)</span>
+                  <span><strong>Mono Direct Debit</strong> &amp; <strong>T+1 Auto-Disburse</strong></span>
                 </div>
                 <span className="hidden sm:inline text-white/30">•</span>
                 <div className="flex items-center gap-2">
@@ -368,8 +368,8 @@ export default function Home() {
             {[
               { icon: Users, title: "Create Group", desc: "Set the contribution rules and invite trusted peers." },
               { icon: CheckSquare, title: "Members Join", desc: "System assigns turns and locks the roster when active." },
-              { icon: CreditCard, title: "Contribute", desc: "Members pay their share directly to the Admin." },
-              { icon: Landmark, title: "Payout", desc: "Admin routes the pooled funds to the receiving member." }
+              { icon: CreditCard, title: "Direct Debit", desc: "Automated sweeps collect contributions effortlessly on schedule." },
+              { icon: Landmark, title: "T+1 Payout", desc: "Mono auto-disburses pooled funds directly to the turn recipient." }
             ].map((step, i) => (
               <motion.div 
                 variants={fadeIn} 
@@ -701,14 +701,14 @@ export default function Home() {
                         desc: "Get large capital multiplier on your assigned turn",
                         whatsapp: { text: "High Default Risk", sub: "People vanish after collecting", status: "warn" },
                         fintech: { text: "No (Solo Only)", sub: "Save alone with zero leverage", status: "bad" },
-                        ajose: { text: "Automated & Enforced", sub: "Guaranteed turns with identity locks", status: "good" }
+                        ajose: { text: "Mono Auto-Disburse (T+1)", sub: "Guaranteed turns with automated payout", status: "good" }
                       },
                       {
                         title: "Automated Bank Sweeps",
                         desc: "Morning direct-debit on contribution date",
                         whatsapp: { text: "Manual Transfers", sub: "Fake receipt screenshots & drama", status: "bad" },
                         fintech: { text: "Automated Debit", sub: "Debited into company omnibus pool", status: "neutral" },
-                        ajose: { text: "Direct Open-Banking", sub: "Automated via Mono (NIBSS rail)", status: "good" }
+                        ajose: { text: "Mono Direct Debit", sub: "Automated sweeps via NIBSS rail", status: "good" }
                       },
                       {
                         title: "Defaulter Protection",
@@ -831,7 +831,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2 text-emerald-800">
                       <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Direct pass-through T+1 bank settlement &amp; immutable ledger</span>
+                      <span>Mono automated Direct Debit sweeps &amp; T+1 auto-disburse</span>
                     </div>
                   </div>
 
@@ -1087,11 +1087,11 @@ export default function Home() {
             {[
               { 
                 q: "Where is our money held, and how do payouts work?", 
-                a: "Funds move securely through CBN-licensed commercial banking rails directly to the designated settlement recipient (or circle admin) on their scheduled turn date. Àjọṣe operates as a non-custodial automated ledger and enforcement platform — we never hold, pool, or lock member capital in an intermediary escrow." 
+                a: "Funds move securely through CBN-licensed commercial banking rails directly to the designated settlement recipient (or circle admin) on their scheduled turn date via Mono auto-disbursement (T+1). Àjọṣe operates as a non-custodial automated ledger and enforcement platform — we never hold, pool, or lock member capital in an intermediary escrow." 
               },
               { 
                 q: "How does the automated direct-debit (Mono) sweep work?", 
-                a: "When you join a circle, you securely link your verified commercial bank account through CBN-licensed Open-Banking rails (Mono). On scheduled sweep days, the exact contribution is debited automatically from your account. No manual bank transfers, no uploading payment screenshots, and no chasing members." 
+                a: "When you join a circle, you securely link your verified commercial bank account through CBN-licensed Open-Banking rails (Mono). On scheduled sweep days, the exact contribution is debited automatically from your account via Mono Open-Banking. No manual bank transfers, no uploading payment screenshots, and no chasing members." 
               },
               { 
                 q: "Why is BVN identity verification required?", 
@@ -1103,7 +1103,7 @@ export default function Home() {
               },
               { 
                 q: "When are contributions swept and payouts disbursed?", 
-                a: "Schedules are structured around Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT with rapid 24-hr turn payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off and turn payouts on the 5th) to match corporate salary cycles (all disbursements follow a predictable T+1 settlement timeline)." 
+                a: "Schedules are structured around Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT with rapid 24-hr turn payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off and turn payouts on the 5th) to match corporate salary cycles (payouts are routed directly to the recipient via Mono auto-disburse on a T+1 timeline)." 
               },
               { 
                 q: "What is the Ajo Credit Score, and how does it work?", 

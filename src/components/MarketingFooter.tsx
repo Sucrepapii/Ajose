@@ -78,11 +78,15 @@ export function MarketingFooter() {
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                Paylode (CBN PSSP · T+1)
+                Paylode (CBN PSSP)
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono text-[11px] font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                 Mono Direct Debit
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-400 font-mono text-[11px] font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                Mono T+1 Auto-Disburse
               </span>
             </div>
           </div>
