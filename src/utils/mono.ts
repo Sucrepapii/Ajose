@@ -419,40 +419,111 @@ export async function initiatePayoutWithMono({
 
   if (isLive) {
     try {
-      const response = await fetch("https://api.withmono.com/v1/payments/transfers", {
+      // 1. Resolve active Mono Disburse Source Account
+      let sourceAccountId = process.env.MONO_DISBURSE_SOURCE_ACCOUNT_ID;
+
+      if (!sourceAccountId) {
+        try {
+          const accRes = await fetch("https://api.withmono.com/v3/payments/disburse/source-accounts", {
+            headers: {
+              "mono-sec-key": monoSecretKey,
+              "Accept": "application/json"
+            }
+          });
+          if (accRes.ok) {
+            const accData = await accRes.json();
+            const accounts = accData?.data?.accounts || accData?.accounts || [];
+            if (accounts.length > 0) {
+              sourceAccountId = accounts[0].id || accounts[0]._id;
+            }
+          }
+        } catch (fetchAccErr) {
+          console.warn("Could not query Mono source-accounts:", fetchAccErr);
+        }
+      }
+
+      if (!sourceAccountId) {
+        return {
+          success: false,
+          source: "mono_api",
+          payoutId: reference,
+          reference,
+          amount,
+          message: "No active Source Account linked on Mono Disburse. To disburse automatically via Mono, please connect a source bank account in your Mono Dashboard (Disburse > Source Accounts). In the meantime, you can transfer directly via your bank app and click 'Mark Transferred via Bank App'."
+        };
+      }
+
+      // 2. Mono v3 requires clean alphanumeric references (no hyphens/underscores)
+      const cleanBatchRef = reference.replace(/[^a-zA-Z0-9]/g, "").slice(0, 30) || `payout${Date.now()}`;
+      const cleanItemRef = `${cleanBatchRef}item1`.slice(0, 30);
+      const cleanNarration = (narration || "Ajose Rotational Payout").slice(0, 100);
+
+      const response = await fetch("https://api.withmono.com/v3/payments/disburse/disbursements", {
         method: "POST",
         headers: {
           "mono-sec-key": monoSecretKey,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({
-          amount: amount * 100, // in kobo
-          narration,
-          destination: {
-            type: "bank_account",
-            account_number: recipientAccountNumber,
-            bank_code: recipientBankCode
-          },
-          reference
+          reference: cleanBatchRef,
+          source: "mandate",
+          account: sourceAccountId,
+          type: "instant",
+          total_amount: Math.round(amount * 100), // in kobo
+          description: cleanNarration,
+          distribution: [
+            {
+              reference: cleanItemRef,
+              account: {
+                account_number: recipientAccountNumber,
+                bank_code: recipientBankCode
+              },
+              amount: Math.round(amount * 100), // in kobo
+              narration: cleanNarration
+            }
+          ]
         })
       });
 
       if (response.ok) {
         const data = await response.json();
+        const payoutId = data?.data?.id || data?.id || cleanBatchRef;
         return {
           success: true,
           source: "mono_api",
-          payoutId: data.id || data.data?.id || reference,
+          payoutId,
           reference,
           amount,
-          message: `Payout of ₦${amount.toLocaleString()} disbursed via Mono to ${recipientAccountNumber}.`
+          message: `Payout of ₦${amount.toLocaleString()} successfully queued via Mono to ${recipientAccountNumber}.`
         };
       } else {
-        const errData = await response.json();
-        console.warn("Mono Payout API error:", errData);
+        const errData = await response.json().catch(() => null);
+        console.warn("Mono Disburse API error:", errData);
+        const detailedError =
+          errData?.message ||
+          (Array.isArray(errData?.errors) ? errData.errors.map((e: any) => `${e.field ? e.field + ': ' : ''}${e.message}`).join(", ") : null) ||
+          `Mono Disburse error (HTTP ${response.status})`;
+
+        return {
+          success: false,
+          source: "mono_api",
+          payoutId: reference,
+          reference,
+          amount,
+          message: detailedError
+        };
       }
-    } catch (err) {
-      console.error("Mono Payout network error:", err);
+    } catch (err: any) {
+      console.error("Mono Payout network exception:", err);
+      return {
+        success: false,
+        source: "mono_api",
+        payoutId: reference,
+        reference,
+        amount,
+        message: err?.message || "Network error connecting to Mono Disburse API."
+      };
     }
   }
 
@@ -474,10 +545,9 @@ export async function initiatePayoutWithMono({
     payoutId: reference,
     reference,
     amount,
-    message: "Failed to process Mono payout. API error."
+    message: "Failed to process Mono payout. Live secret key missing or invalid."
   };
 }
-
 /**
  * Maps Nigerian commercial and digital banks to their official 3-digit CBN / NIP routing codes.
  */
