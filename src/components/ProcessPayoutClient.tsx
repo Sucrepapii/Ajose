@@ -98,8 +98,8 @@ export function ProcessPayoutClient({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          accountNumber: "9024129891",
-          bankCode: "305" // OPay
+          accountNumber: "0453548568",
+          bankCode: "035" // Wema Bank
         })
       });
       const data = await res.json();
@@ -389,10 +389,10 @@ export function ProcessPayoutClient({
                       className="text-xs font-bold text-emerald-900 hover:text-emerald-950 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-emerald-100/80 hover:bg-emerald-200 border border-emerald-300 transition-all cursor-pointer shadow-xs disabled:opacity-50"
                     >
                       <Sparkles className="h-4 w-4 text-emerald-700" />
-                      {isConnectingSource ? "Generating Activation Link..." : "⚡ Activate Autonomous Payouts (Zero Clicks)"}
+                      {isConnectingSource ? "Generating Activation Link..." : "⚡ Activate Autonomous Payouts (Wema Bank)"}
                     </button>
                     <p className="text-[10px] text-emerald-800/80 text-center leading-tight">
-                      Links your OPay mandate once so Àjọṣe autonomously sweeps &amp; disburses directly to winners without you transferring manually.
+                      Links your Wema Bank mandate once so Àjọṣe autonomously sweeps &amp; disburses directly to winners without you transferring manually.
                     </p>
 
                     <button 
