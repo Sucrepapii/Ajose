@@ -12,8 +12,7 @@ import {
   ShieldCheck, 
   Zap, 
   CalendarCheck, 
-  Sparkles,
-  CreditCard
+  Sparkles
 } from "lucide-react";
 
 type Member = any;
@@ -39,6 +38,7 @@ export function ProcessPayoutClient({
   const [isOpen, setIsOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSimulatingFailure, setIsSimulatingFailure] = useState(false);
+  const [isConnectingSource, setIsConnectingSource] = useState(false);
 
   if (!isAdmin || !receivingMember) return null;
 
@@ -86,8 +86,6 @@ export function ProcessPayoutClient({
     ? 0 
     : Math.min(10000, Math.round((effectiveFeePct / 100) * totalPool));
   const payoutAmount = Math.max(0, totalPool - adminFee - platformFee);
-
-  const [isConnectingSource, setIsConnectingSource] = useState(false);
 
   // 1-Click Connect Mono Disburse Source Mandate for Hands-Free Autonomous Payouts
   const handleConnectDisburseSource = async () => {
