@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -39,6 +39,24 @@ export function ProcessPayoutClient({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSimulatingFailure, setIsSimulatingFailure] = useState(false);
   const [isConnectingSource, setIsConnectingSource] = useState(false);
+  const [sourceAccount, setSourceAccount] = useState<any>(null);
+  const [loadingSource, setLoadingSource] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      let active = true;
+      fetch("/api/admin/mono/disburse-source")
+        .then((r) => r.json())
+        .then((d) => {
+          if (active && d.accounts && d.accounts.length > 0) {
+            setSourceAccount(d.accounts[0]);
+          }
+        })
+        .catch(() => {})
+        .finally(() => { if (active) setLoadingSource(false); });
+      return () => { active = false; };
+    }
+  }, [isOpen]);
 
   if (!isAdmin || !receivingMember) return null;
 
@@ -378,20 +396,53 @@ export function ProcessPayoutClient({
                     </button>
                   </div>
 
-                  {/* 1-Click Autonomous Payout Activation */}
-                  <div className="pt-2 border-t border-gray-200/80 flex flex-col gap-1 bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-200/60">
-                    <button
-                      type="button"
-                      onClick={handleConnectDisburseSource}
-                      disabled={isConnectingSource}
-                      className="text-xs font-bold text-emerald-900 hover:text-emerald-950 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-emerald-100/80 hover:bg-emerald-200 border border-emerald-300 transition-all cursor-pointer shadow-xs disabled:opacity-50"
-                    >
-                      <Sparkles className="h-4 w-4 text-emerald-700" />
-                      {isConnectingSource ? "Generating Activation Link..." : "⚡ Activate Autonomous Payouts (Wema Bank)"}
-                    </button>
-                    <p className="text-[10px] text-emerald-800/80 text-center leading-tight">
-                      Links your Wema Bank mandate once so Àjọṣe autonomously sweeps &amp; disburses directly to winners without you transferring manually.
-                    </p>
+                  {/* Autonomous Payout Source Account Status Card */}
+                  <div className="pt-2 border-t border-gray-200/80 flex flex-col gap-1.5 bg-emerald-50/70 p-3 rounded-xl border border-emerald-200">
+                    {sourceAccount ? (
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-emerald-900 uppercase tracking-wider flex items-center gap-1">
+                            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Disburse Funding Source
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${sourceAccount.ready_to_debit ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-amber-100 text-amber-800 border border-amber-300"}`}>
+                            {sourceAccount.ready_to_debit ? "✓ Ready to Debit" : "Pending ₦50 Mandate"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[#0B3022]">Wema Bank • {sourceAccount.account_number}</span>
+                          {!sourceAccount.ready_to_debit && (
+                            <a
+                              href="https://authorise.mono.co/RD2109336683"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-[11px] transition-colors shadow-xs"
+                            >
+                              Authorize Mandate →
+                            </a>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-emerald-800/80 leading-tight">
+                          {sourceAccount.ready_to_debit 
+                            ? "Autonomous disbursements active. Outbound transfers pull directly from this account." 
+                            : "Click Authorize Mandate above to complete the ₦50 authorization on your Wema app."}
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={handleConnectDisburseSource}
+                          disabled={isConnectingSource || loadingSource}
+                          className="text-xs font-bold text-emerald-900 hover:text-emerald-950 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-emerald-100/80 hover:bg-emerald-200 border border-emerald-300 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                        >
+                          <Sparkles className="h-4 w-4 text-emerald-700" />
+                          {isConnectingSource ? "Generating Activation Link..." : "⚡ Activate Autonomous Payouts (Wema Bank)"}
+                        </button>
+                        <p className="text-[10px] text-emerald-800/80 text-center leading-tight">
+                          Links your Wema Bank mandate once so Àjọṣe autonomously sweeps &amp; disburses directly to winners without you transferring manually.
+                        </p>
+                      </>
+                    )}
 
                     <button 
                       onClick={() => setIsOpen(false)}
