@@ -87,6 +87,38 @@ export function ProcessPayoutClient({
     : Math.min(10000, Math.round((effectiveFeePct / 100) * totalPool));
   const payoutAmount = Math.max(0, totalPool - adminFee - platformFee);
 
+  const [isConnectingSource, setIsConnectingSource] = useState(false);
+
+  // 1-Click Connect Mono Disburse Source Mandate for Hands-Free Autonomous Payouts
+  const handleConnectDisburseSource = async () => {
+    setIsConnectingSource(true);
+    const toastId = toast.loading("Generating Mono Disburse Mandate activation link...");
+    try {
+      const res = await fetch("/api/admin/mono/disburse-source", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accountNumber: "9024129891",
+          bankCode: "305" // OPay
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to generate mandate link");
+      }
+      if (data.activationUrl) {
+        toast.success("Opening Mono authorization widget! Complete the ₦50 test transfer to activate zero-click payouts.", { id: toastId, duration: 6000 });
+        window.open(data.activationUrl, "_blank");
+      } else {
+        toast.error("Could not retrieve mandate activation URL.", { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to connect disburse source.", { id: toastId });
+    } finally {
+      setIsConnectingSource(false);
+    }
+  };
+
   // Execute Payout (either automated via Mono or manual direct bank transfer by admin)
   const handleProcessPayout = async (method: "mono" | "manual_bank_transfer" = "mono") => {
     setIsProcessing(true);
@@ -346,6 +378,22 @@ export function ProcessPayoutClient({
                       <Zap className="h-3.5 w-3.5 text-[#C5A059]" />
                       Auto-Debit via Mono Instead
                     </button>
+                  </div>
+
+                  {/* 1-Click Autonomous Payout Activation */}
+                  <div className="pt-2 border-t border-gray-200/80 flex flex-col gap-1 bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-200/60">
+                    <button
+                      type="button"
+                      onClick={handleConnectDisburseSource}
+                      disabled={isConnectingSource}
+                      className="text-xs font-bold text-emerald-900 hover:text-emerald-950 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-emerald-100/80 hover:bg-emerald-200 border border-emerald-300 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                    >
+                      <Sparkles className="h-4 w-4 text-emerald-700" />
+                      {isConnectingSource ? "Generating Activation Link..." : "⚡ Activate Autonomous Payouts (Zero Clicks)"}
+                    </button>
+                    <p className="text-[10px] text-emerald-800/80 text-center leading-tight">
+                      Links your OPay mandate once so Àjọṣe autonomously sweeps &amp; disburses directly to winners without you transferring manually.
+                    </p>
 
                     <button 
                       onClick={() => setIsOpen(false)}

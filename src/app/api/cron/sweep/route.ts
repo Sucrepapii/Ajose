@@ -125,17 +125,6 @@ async function handleSweep(req: NextRequest) {
 
     // 3. Process each group
     for (const group of activeGroups) {
-      // Derive current turn from completed payout transactions if not on group record
-      const { data: payouts } = await supabase
-        .from('transactions')
-        .select('cycle_turn')
-        .eq('group_id', group.id)
-        .eq('type', 'payout')
-        .in('status', ['successful', 'completed']);
-
-      const maxPaidTurn = (payouts || []).reduce((max: number, p: any) => Math.max(max, p.cycle_turn || 0), 0);
-      const currentTurn = (group as any).current_turn || (maxPaidTurn + 1);
-
       // Fetch all members with their user details
       const { data: members, error: membersErr } = await supabase
         .from("memberships")
@@ -168,8 +157,19 @@ async function handleSweep(req: NextRequest) {
         continue;
       }
 
-      // Fetch existing transactions for this turn using valid schema (membership_id)
+      // Derive current turn from completed payout transactions using valid membership_id schema
       const memberIds = members.map(m => m.id);
+      const { data: payouts } = memberIds.length > 0
+        ? await supabase
+            .from("transactions")
+            .select("cycle_turn")
+            .in("membership_id", memberIds)
+            .eq("type", "payout")
+            .eq("status", "successful")
+        : { data: [] };
+
+      const maxPaidTurn = (payouts || []).reduce((max: number, p: any) => Math.max(max, p.cycle_turn || 0), 0);
+      const currentTurn = (group as any).current_turn || (maxPaidTurn + 1);
       const { data: existingTxs } = memberIds.length > 0
         ? await supabase
             .from("transactions")
@@ -377,6 +377,83 @@ async function handleSweep(req: NextRequest) {
           });
         }
       }));
+
+      // 4. AUTONOMOUS AUTO-DISBURSE (Zero-Click Autonomous Ajo)
+      try {
+        const activeContributors = members.filter(m => m.status === 'active' && m.payout_turn !== null);
+        const { data: turnContributions } = await supabase
+          .from("transactions")
+          .select("membership_id")
+          .in("membership_id", memberIds)
+          .eq("cycle_turn", currentTurn)
+          .eq("type", "contribution")
+          .eq("status", "successful");
+
+        const paidMemberIds = new Set((turnContributions || []).map((t: any) => t.membership_id));
+        const allTurnContributorsPaid = activeContributors.length > 0 && activeContributors.every(m => paidMemberIds.has(m.id));
+
+        if (allTurnContributorsPaid) {
+          const alreadyPaidOut = (payouts || []).some((p: any) => p.cycle_turn === currentTurn);
+          if (!alreadyPaidOut) {
+            const recipientMember = members.find(m => m.payout_turn === currentTurn);
+            const recipientUser = recipientMember?.users as any;
+            if (recipientMember && recipientUser && recipientUser.account_number) {
+              const { initiatePayoutWithMono, getBankCode } = await import("@/utils/mono");
+              const totalPool = (group.contribution_amount || 0) * (group.max_members || 1);
+              const adminFee = Math.round((((group as any).admin_commission_pct || 0) / 100) * totalPool);
+              const netPayoutAmount = Math.max(0, totalPool - adminFee);
+              const payoutRef = `ajose_auto_turn${currentTurn}_${Date.now()}`;
+
+              console.log(`[Sweep Autonomous] All members contributed for Turn ${currentTurn} in ${group.name}. Attempting automated Mono disbursement of ₦${netPayoutAmount} to ${recipientUser.first_name}...`);
+              const autoPayoutResult = await initiatePayoutWithMono({
+                recipientAccountNumber: recipientUser.account_number,
+                recipientBankCode: getBankCode(recipientUser.bank_name),
+                amount: netPayoutAmount,
+                narration: `Àjọṣe Turn ${currentTurn} Auto-Payout (${group.name})`,
+                reference: payoutRef
+              });
+
+              if (autoPayoutResult.success) {
+                const nextTurn = currentTurn + 1;
+                const isCompleted = nextTurn > (group.max_members || 1);
+                await supabase.from("groups").update({
+                  current_turn: nextTurn,
+                  ...(isCompleted ? { status: "completed" } : {})
+                }).eq("id", group.id);
+
+                await supabase.from("transactions").insert({
+                  membership_id: recipientMember.id,
+                  amount: netPayoutAmount,
+                  type: "payout",
+                  status: "successful",
+                  cycle_turn: currentTurn
+                });
+
+                await supabase.from("notifications").insert({
+                  user_id: recipientUser.id,
+                  title: `🎉 Turn ${currentTurn} Payout Received! ₦${netPayoutAmount.toLocaleString()}`,
+                  message: `Your rotational payout for Turn ${currentTurn} in ${group.name} was autonomously disbursed via Mono to your ${recipientUser.bank_name || 'bank'} account.`,
+                  type: "success"
+                });
+
+                groupSummary.details.push({
+                  autoPayout: "successful",
+                  recipient: `${recipientUser.first_name} ${recipientUser.last_name || ""}`,
+                  amount: netPayoutAmount,
+                  nextTurn
+                });
+              } else {
+                console.log(`[Sweep Autonomous] Auto-disburse skipped: ${autoPayoutResult.message}`);
+                groupSummary.details.push({
+                  autoPayoutNotice: autoPayoutResult.message
+                });
+              }
+            }
+          }
+        }
+      } catch (autoErr: any) {
+        console.warn("[Sweep Autonomous] Auto-disburse check error:", autoErr?.message);
+      }
 
       sweepResults.push(groupSummary);
     }
