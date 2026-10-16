@@ -85,25 +85,33 @@ export async function POST(req: Request) {
     const receiverName = `${receiverUser.first_name || ""} ${receiverUser.last_name || ""}`.trim() || receiverUser.nickname || `Member #${turn}`;
 
     // 5b. Verify that all contributing members have been debited / paid before allowing disbursement
-    const { data: turnContributions } = await supabaseAdmin
-      .from("transactions")
-      .select("user_id, status")
-      .eq("group_id", groupId)
-      .eq("cycle_turn", turn)
-      .eq("type", "contribution")
-      .in("status", ["successful", "completed"]);
-
-    const paidMemberIds = new Set((turnContributions || []).map((t: any) => t.user_id));
-
     const { data: activeContributingMembers } = await supabaseAdmin
       .from("memberships")
-      .select("user_id, role, payout_turn, status")
+      .select("id, user_id, role, payout_turn, status")
       .eq("group_id", groupId)
       .eq("status", "active")
       .not("payout_turn", "is", null);
 
+    const contributingMemberIds = (activeContributingMembers || []).map((m: any) => m.id);
+
+    const { data: turnContributions, error: contribErr } = contributingMemberIds.length > 0
+      ? await supabaseAdmin
+          .from("transactions")
+          .select("membership_id, status")
+          .in("membership_id", contributingMemberIds)
+          .eq("cycle_turn", turn)
+          .eq("type", "contribution")
+          .eq("status", "successful")
+      : { data: [], error: null };
+
+    if (contribErr) {
+      console.warn("Notice checking turn contributions:", contribErr);
+    }
+
+    const paidMembershipIds = new Set((turnContributions || []).map((t: any) => t.membership_id));
+
     const unpaidContributors = (activeContributingMembers || []).filter(
-      (m: any) => !paidMemberIds.has(m.user_id)
+      (m: any) => !paidMembershipIds.has(m.id)
     );
 
     if (unpaidContributors.length > 0) {
