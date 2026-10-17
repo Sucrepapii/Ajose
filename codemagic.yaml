@@ -29,7 +29,8 @@ workflows:
             --certificate-key @env:CM_CERTIFICATE_PRIVATE_KEY \
             --issuer-id b7d9e967-a2df-47e8-82a2-29287c37db11 \
             --key-id TH9U3Q6N34 \
-            --private-key @file:/tmp/asc_key.p8
+            --private-key @file:/tmp/asc_key.p8 \
+            --create
           keychain add-certificates
           xcode-project use-profiles
       - name: Set marketing version
