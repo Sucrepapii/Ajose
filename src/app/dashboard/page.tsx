@@ -63,21 +63,45 @@ export default async function DashboardOverview() {
   const userMembershipIds = activeGroups.map(m => m.id);
   const groupIds = Array.from(new Set(activeGroups.map(m => (m.groups as any)?.id).filter(Boolean)));
 
-  // Calculate contributing member counts for active groups
+  // Calculate contributing member counts and derive real active turns for active groups
   const groupMemberCounts = new Map<string, number>();
+  const groupMaxPaidTurns = new Map<string, number>();
+
   if (groupIds.length > 0) {
     const { data: allGroupMemberships } = await adminClient
       .from('memberships')
-      .select('group_id, role, payout_turn, status')
+      .select('id, group_id, role, payout_turn, status')
       .in('group_id', groupIds)
       .eq('status', 'active');
 
-    (allGroupMemberships || []).forEach((m: any) => {
+    const memToGroup = new Map<string, string>();
+    const allMemIds = (allGroupMemberships || []).map((m: any) => {
+      memToGroup.set(m.id, m.group_id);
       const isContributing = m.role !== 'admin' || (m.payout_turn !== null && m.payout_turn !== undefined && m.payout_turn > 0);
       if (isContributing) {
         groupMemberCounts.set(m.group_id, (groupMemberCounts.get(m.group_id) || 0) + 1);
       }
+      return m.id;
     });
+
+    if (allMemIds.length > 0) {
+      const { data: payoutTxs } = await adminClient
+        .from('transactions')
+        .select('membership_id, cycle_turn')
+        .in('membership_id', allMemIds)
+        .eq('type', 'payout')
+        .eq('status', 'successful');
+
+      (payoutTxs || []).forEach((tx: any) => {
+        const gId = memToGroup.get(tx.membership_id);
+        if (gId) {
+          const currentMax = groupMaxPaidTurns.get(gId) || 0;
+          if (tx.cycle_turn > currentMax) {
+            groupMaxPaidTurns.set(gId, tx.cycle_turn);
+          }
+        }
+      });
+    }
   }
 
   // Calculate real total saved from successful contribution transactions in the database
@@ -334,13 +358,39 @@ export default async function DashboardOverview() {
                         ) : (
                           <>
                             <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                            <span className="text-sm text-[#1F2937] font-medium">
-                              {isAdmin && !membership.payout_turn ? (
-                                <>Circle Trustee • <strong className="text-[#0B3022]">Turn {group.current_turn || 1}</strong></>
-                              ) : (
-                                <>Your turn: <strong className="text-[#0B3022]">Cycle {membership.payout_turn}</strong></>
-                              )}
-                            </span>
+                            {(() => {
+                              const maxPaid = groupMaxPaidTurns.get(group.id) || 0;
+                              const derivedTurn = maxPaid + 1;
+                              const isCompleted = derivedTurn > (group.max_members || 1);
+
+                              if (isCompleted) {
+                                return (
+                                  <span className="text-sm font-bold text-emerald-800 flex items-center gap-1.5">
+                                    <span>🎉 All {group.max_members} Turns Completed</span>
+                                  </span>
+                                );
+                              }
+
+                              if (isAdmin && !membership.payout_turn) {
+                                return (
+                                  <span className="text-sm text-[#1F2937] font-medium flex items-center gap-2 flex-wrap">
+                                    <span className="text-[11px] font-bold uppercase tracking-wider bg-[#0B3022]/10 text-[#0B3022] px-2 py-0.5 rounded-md">
+                                      Circle Trustee
+                                    </span>
+                                    <span className="text-gray-300">•</span>
+                                    <span>Active Turn: <strong className="text-[#0B3022]">Turn {derivedTurn} of {group.max_members}</strong></span>
+                                  </span>
+                                );
+                              }
+
+                              return (
+                                <span className="text-sm text-[#1F2937] font-medium flex items-center gap-2 flex-wrap">
+                                  <span>Your Turn: <strong className="text-[#0B3022]">Turn {membership.payout_turn}</strong></span>
+                                  <span className="text-gray-300">•</span>
+                                  <span className="text-xs text-[#1F2937]/70">Now on: <strong className="text-[#0B3022]">Turn {derivedTurn}</strong></span>
+                                </span>
+                              );
+                            })()}
                           </>
                         )}
                       </div>
@@ -353,9 +403,12 @@ export default async function DashboardOverview() {
                           ) : (
                             `Needs ${group.max_members - currentCount} more`
                           )
-                        ) : (
-                          `Status: ${membership.status}`
-                        )}
+                        ) : (() => {
+                          const maxPaid = groupMaxPaidTurns.get(group.id) || 0;
+                          const derivedTurn = maxPaid + 1;
+                          const isCompleted = derivedTurn > (group.max_members || 1);
+                          return isCompleted ? 'Completed' : `Turn ${derivedTurn} Active`;
+                        })()}
                         <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity -ml-1 group-hover:ml-0" />
                       </div>
                     </div>
