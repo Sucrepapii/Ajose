@@ -10,9 +10,6 @@ workflows:
     environment:
       groups:
         - ajose-signing
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: ng.ajose.app
       vars:
         APP_STORE_APPLE_ID: 6815151482
         BUNDLE_ID: ng.ajose.app
@@ -22,6 +19,20 @@ workflows:
         script: npm ci
       - name: Sync Capacitor
         script: npx cap sync ios
+      - name: Set up code signing
+        script: |
+          set -eo pipefail
+          printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
+          keychain initialize
+          app-store-connect fetch-signing-files ng.ajose.app \
+            --type IOS_APP_STORE \
+            --certificate-key @env:CM_CERTIFICATE_PRIVATE_KEY \
+            --issuer-id b7d9e967-a2df-47e8-82a2-29287c37db11 \
+            --key-id TH9U3Q6N34 \
+            --private-key @file:/tmp/asc_key.p8 \
+            --save
+          keychain add-certificates
+          xcode-project use-profiles
       - name: Set marketing version
         script: |
           cd ios/App
