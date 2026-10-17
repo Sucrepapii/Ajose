@@ -16,6 +16,7 @@ import { MobileDashboardHeader } from "@/components/MobileDashboardHeader";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { AutoLogout } from "@/components/AutoLogout";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { PushNotificationManager } from "@/components/PushNotificationManager";
 import Image from "next/image";
 import type { Metadata } from "next";
 
@@ -58,6 +59,7 @@ export default async function DashboardLayout({
     <div className="min-h-screen bg-[#FDFBF7] flex flex-col md:flex-row font-sans text-[#1F2937] relative">
       <AutoLogout />
       <OnboardingTour />
+      <PushNotificationManager userId={user.id} />
       {/* Sidebar for Desktop */}
       <aside className="w-64 bg-[#0B3022] border-r border-[#0B3022]/10 hidden md:flex flex-col shadow-xl z-50 relative">
         <div className="h-20 flex items-center px-6 border-b border-white/10">

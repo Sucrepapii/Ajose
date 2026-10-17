@@ -379,10 +379,13 @@ export function ProcessPayoutClient({
                   <button 
                     onClick={() => handleProcessPayout("manual_bank_transfer")}
                     disabled={isProcessing || isSimulatingFailure}
-                    className="w-full px-4 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-full px-4 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-md flex flex-col items-center justify-center gap-0.5 cursor-pointer disabled:opacity-50"
                   >
-                    <CheckCircle2 className="h-4 w-4 text-[#C5A059]" />
-                    Mark Transferred via Bank App (Admin-Directed)
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="h-4 w-4 text-[#C5A059]" />
+                      <span>Mark Transferred via Bank App (Admin-Directed)</span>
+                    </div>
+                    <span className="text-[10px] text-white/70 font-normal">🤝 2-Way Handshake: Requires member receipt confirmation</span>
                   </button>
 
                   <div className="flex gap-2">

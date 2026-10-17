@@ -30,6 +30,7 @@ import { SendRemindersClient } from "@/components/SendRemindersClient";
 import { TriggerSweepClient } from "@/components/TriggerSweepClient";
 import { ConfirmTransferClient } from "@/components/ConfirmTransferClient";
 import { AuthorizeGroupMandateClient } from "@/components/AuthorizeGroupMandateClient";
+import { PayoutHandshakeClient } from "@/components/PayoutHandshakeClient";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -187,6 +188,11 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
     txList
       .filter(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && (tx.status === 'successful' || tx.status === 'completed'))
       .map(tx => tx.user_id)
+  );
+
+  // Pending 2-way payout handshake awaiting recipient confirmation
+  const pendingPayoutTx = txList.find(
+    tx => tx.cycle_turn === currentTurn && tx.type === 'payout' && tx.status === 'pending'
   );
 
   // Pending manual bank transfers awaiting admin confirmation
@@ -364,6 +370,23 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
         </div>
       </div>
 
+
+      {/* 2-Way Payout Handshake Card (When Admin has marked Turn transferred and awaiting member receipt confirmation) */}
+      {pendingPayoutTx && (
+        <PayoutHandshakeClient 
+          groupId={groupId}
+          groupName={group.name}
+          turn={currentTurn}
+          transactionId={pendingPayoutTx.id}
+          amount={pendingPayoutTx.amount}
+          recipientUserId={receivingMember?.user_id || ''}
+          recipientName={receivingMemberProfileName}
+          recipientBankName={receivingMember?.users?.bank_name}
+          recipientAccountNumber={receivingMember?.users?.account_number}
+          currentUserId={user.id}
+          isAdmin={isAdmin}
+        />
+      )}
 
       {/* Pending Manual Bank Transfers Alert for Admin */}
       {isAdmin && pendingTransactions.length > 0 && (

@@ -44,9 +44,23 @@ export function NotificationBell({ userId }: { userId: string }) {
       }
     };
     
+    // Real-time listener for incoming push / in-app notifications
+    const handleIncomingNotif = (e: Event) => {
+      const customEvent = e as CustomEvent<Notification>;
+      if (customEvent.detail) {
+        setNotifications((prev) => {
+          if (prev.some(n => n.id === customEvent.detail.id)) return prev;
+          return [customEvent.detail, ...prev];
+        });
+      }
+    };
+
+    window.addEventListener("ajose:new-notification", handleIncomingNotif);
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("ajose:new-notification", handleIncomingNotif);
     };
   }, [userId, supabase]);
 

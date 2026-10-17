@@ -55,19 +55,32 @@ export async function POST(req: Request) {
     const { data: existingPayouts } = memberIds.length > 0
       ? await supabaseAdmin
           .from("transactions")
-          .select("cycle_turn")
+          .select("cycle_turn, status")
           .in("membership_id", memberIds)
           .eq("type", "payout")
-          .eq("status", "successful")
       : { data: [] };
 
-    const paidTurns = new Set((existingPayouts || []).map((t: any) => t.cycle_turn));
+    const paidTurns = new Set(
+      (existingPayouts || [])
+        .filter((t: any) => t.status === "successful")
+        .map((t: any) => t.cycle_turn)
+    );
     const highestPaidTurn = paidTurns.size > 0 ? Math.max(...Array.from(paidTurns)) : 0;
 
     // The turn to disburse MUST be the next unpaid turn
     const turn = currentTurn && currentTurn > highestPaidTurn 
       ? currentTurn 
       : (highestPaidTurn + 1);
+
+    // Check if there is already a pending handshake payout for this turn
+    const existingPending = (existingPayouts || []).find(
+      (t: any) => t.cycle_turn === turn && t.status === "pending"
+    );
+    if (existingPending) {
+      return NextResponse.json({
+        error: `Turn ${turn} payout is already marked as transferred and is awaiting member confirmation handshake.`
+      }, { status: 400 });
+    }
 
     // 5. Find the turn collector
     const { data: receivingMembership } = await supabaseAdmin
@@ -120,12 +133,7 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // 5. Calculate payout amounts based on group frequency & admin volume tier:
-    // Volume Tier:
-    // - Manage > 10 circles: 1.0% platform fee
-    // - Manage 6 - 10 circles: 1.5% platform fee
-    // - Standard (<= 5 circles): 2.0% platform fee
-    // - Weekly & Daily Groups: 0% payout fee! (Flat automation fee was applied per transaction)
+    // 6. Calculate payout amounts based on group frequency & admin volume tier:
     const isWeekly = group.frequency === "weekly";
     const isDaily = group.frequency === "daily";
     const totalPool = (group.contribution_amount || 50000) * (group.max_members || 1);
@@ -133,24 +141,20 @@ export async function POST(req: Request) {
     const adminFee = Math.round((adminCommissionPct / 100) * totalPool);
 
     let effectiveFeePct = 2.0;
-    let volumeDiscountTier = "Standard (2%)";
 
     if (!isWeekly && !isDaily) {
-      // 1. Check for SuperAdmin VIP custom rate override in Admin's auth metadata
       let hasCustomFee = false;
       try {
         const { data: adminAuth } = await supabaseAdmin.auth.admin.getUserById(group.admin_id);
         const customFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
         if (typeof customFee === "number" && customFee >= 0) {
           effectiveFeePct = customFee;
-          volumeDiscountTier = `SuperAdmin VIP Custom Rate (${customFee.toFixed(1)}%)`;
           hasCustomFee = true;
         }
       } catch (authErr) {
         console.warn("Could not check admin auth for custom fee override:", authErr);
       }
 
-      // 2. If no custom override, apply automatic volume discount tier based on circle count
       if (!hasCustomFee) {
         const { count: adminGroupCount } = await supabaseAdmin
           .from("groups")
@@ -160,10 +164,8 @@ export async function POST(req: Request) {
         const totalCircles = adminGroupCount || 1;
         if (totalCircles > 10) {
           effectiveFeePct = 1.0;
-          volumeDiscountTier = "Power Organizer (>10 Circles: 1.0%)";
         } else if (totalCircles >= 6) {
           effectiveFeePct = 1.5;
-          volumeDiscountTier = "Pro Organizer (6-10 Circles: 1.5%)";
         }
       }
     }
@@ -179,36 +181,89 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // 6. Execute disbursement:
-    // - If method === "manual_bank_transfer": Admin transferred directly on chosen day
-    // - Otherwise: Execute disbursement via Mono Payout API
-    const payoutRef = `ajose_payout_${groupId}_turn${turn}_${receiverUser.id}_${Date.now()}`;
-    let monoResult: { success: boolean; message?: string; reference: string; source: string };
-
+    // 7. Execute disbursement:
+    // CASE A: MANUAL BANK TRANSFER (2-Way Handshake Mode)
+    // If the Admin transfers directly from their bank app, the payout transaction is set to 'pending'
+    // and requires the recipient's explicit confirmation handshake before the turn advances!
     if (method === "manual_bank_transfer") {
-      monoResult = {
-        success: true,
-        reference: `admin_direct_${Date.now()}`,
-        source: "admin_manual_transfer",
-        message: `Payout of ₦${netPayoutAmount.toLocaleString()} marked as transferred directly by Admin to ${receiverName}.`
-      };
-    } else {
-      const result = await initiatePayoutWithMono({
-        recipientAccountNumber: receiverUser.account_number,
-        recipientBankCode: getBankCode(receiverUser.bank_name),
-        amount: netPayoutAmount,
-        narration: `Àjọṣe Turn ${turn} Payout (${group.name})`,
-        reference: payoutRef
-      });
+      // Clear prior failed transactions for this turn
+      try {
+        await supabaseAdmin
+          .from("transactions")
+          .delete()
+          .eq("membership_id", receivingMembership.id)
+          .eq("cycle_turn", turn)
+          .eq("status", "failed");
+      } catch (_) {}
 
-      if (!result.success) {
-        return NextResponse.json({ error: `Mono Payout failed: ${result.message}` }, { status: 502 });
+      // Insert pending payout transaction (2-way handshake)
+      const { data: newTx, error: txInsertErr } = await supabaseAdmin.from("transactions").insert({
+        membership_id: receivingMembership.id,
+        amount: netPayoutAmount,
+        type: "payout",
+        status: "pending",
+        cycle_turn: turn
+      }).select().single();
+
+      if (txInsertErr) {
+        console.warn("Could not insert pending payout transaction:", txInsertErr);
       }
 
-      monoResult = result;
+      // Send real-time in-app & push notification to the receiving member
+      await supabaseAdmin.from("notifications").insert({
+        user_id: receiverUser.id,
+        title: `🔔 Action Required: Confirm Turn ${turn} Payout`,
+        message: `Admin marked ₦${netPayoutAmount.toLocaleString()} as transferred to your bank account (${receiverUser.bank_name || 'Bank'} • ${receiverUser.account_number || ''}). Please check your bank and confirm receipt in your dashboard.`,
+        type: "warning"
+      });
+
+      // Dispatch notification email via Resend
+      if (receiverUser?.email) {
+        try {
+          const { sendEmail } = await import("@/utils/resend");
+          const { getPayoutReceivedEmailTemplate } = await import("@/utils/emailTemplates");
+          await sendEmail({
+            to: receiverUser.email,
+            subject: `Action Required: Confirm Turn ${turn} Payout (₦${netPayoutAmount.toLocaleString()}) - ${group.name}`,
+            html: getPayoutReceivedEmailTemplate({
+              userName: receiverName,
+              groupName: group.name,
+              amount: netPayoutAmount,
+              turnNumber: turn,
+            }),
+          });
+        } catch (emailErr) {
+          console.warn("Could not dispatch payout notification email:", emailErr);
+        }
+      }
+
+      return NextResponse.json({
+        success: true,
+        requiresConfirmation: true,
+        message: `Turn ${turn} payout of ₦${netPayoutAmount.toLocaleString()} marked as transferred! Recipient (${receiverName}) has been sent an instant push alert to confirm receipt.`,
+        netPayoutAmount,
+        transactionId: newTx?.id,
+        turn,
+        source: "admin_manual_transfer"
+      });
     }
 
-    // 7. Advance group turn in DB if column exists
+    // CASE B: AUTONOMOUS MONO DISBURSE (Code-as-Law Mode)
+    // Automated via Mono Disburse API with verified interbank NIP settlement
+    const payoutRef = `ajose_payout_${groupId}_turn${turn}_${receiverUser.id}_${Date.now()}`;
+    const result = await initiatePayoutWithMono({
+      recipientAccountNumber: receiverUser.account_number,
+      recipientBankCode: getBankCode(receiverUser.bank_name),
+      amount: netPayoutAmount,
+      narration: `Àjọṣe Turn ${turn} Payout (${group.name})`,
+      reference: payoutRef
+    });
+
+    if (!result.success) {
+      return NextResponse.json({ error: `Mono Payout failed: ${result.message}` }, { status: 502 });
+    }
+
+    // Advance group turn in DB
     const nextTurn = turn + 1;
     const isCompleted = nextTurn > (group.max_members || 1);
     try {
@@ -221,7 +276,7 @@ export async function POST(req: Request) {
         .eq("id", groupId);
     } catch (_) {}
 
-    // 8. Delete prior failed transactions for this turn
+    // Delete prior failed transactions for this turn
     try {
       await supabaseAdmin
         .from("transactions")
@@ -231,7 +286,7 @@ export async function POST(req: Request) {
         .eq("status", "failed");
     } catch (_) {}
 
-    // 9. Record Payout transaction in ledger (valid schema: membership_id, amount, type, status, cycle_turn)
+    // Record Payout transaction in ledger as successful
     const { error: txInsertErr } = await supabaseAdmin.from("transactions").insert({
       membership_id: receivingMembership.id,
       amount: netPayoutAmount,
@@ -244,7 +299,7 @@ export async function POST(req: Request) {
       console.warn("Could not insert payout transaction:", txInsertErr);
     }
 
-    // 10. Notify receiving member (in-app)
+    // Notify receiving member (in-app & push)
     await supabaseAdmin.from("notifications").insert({
       user_id: receiverUser.id,
       title: `🎉 Payout Received! ₦${netPayoutAmount.toLocaleString()}`,
@@ -252,7 +307,7 @@ export async function POST(req: Request) {
       type: "success"
     });
 
-    // 11. Dispatch Payout Notification Email via Resend
+    // Dispatch Payout Notification Email via Resend
     if (receiverUser?.email) {
       try {
         const { sendEmail } = await import("@/utils/resend");
@@ -277,8 +332,8 @@ export async function POST(req: Request) {
       message: `🎉 Turn ${turn} payout of ₦${netPayoutAmount.toLocaleString()} successfully disbursed via Mono to ${receiverName}!`,
       netPayoutAmount,
       nextTurn,
-      reference: monoResult.reference,
-      source: monoResult.source
+      reference: result.reference,
+      source: result.source
     });
 
   } catch (err: any) {
