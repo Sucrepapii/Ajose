@@ -36,7 +36,6 @@ workflows:
           printf '%s' "$CM_ASC_KEY_B64" | base64 -d > /tmp/asc_key.p8
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
-            --create \
             --key-id TH9U3Q6N34 \
             --issuer-id b7d9e967-a2df-47e8-82a2-29287c37db11 \
             --private-key @file:/tmp/asc_key.p8
