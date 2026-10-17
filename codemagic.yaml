@@ -19,10 +19,6 @@ workflows:
         script: npm ci
       - name: Sync Capacitor
         script: npx cap sync ios
-      - name: Install CocoaPods
-        script: |
-          cd ios/App
-          pod install
       - name: Set up code signing
         script: |
           set -eo pipefail
@@ -51,7 +47,7 @@ workflows:
         script: |
           set -eo pipefail
           xcode-project build-ipa \
-            --workspace ios/App/App.xcworkspace \
+            --workspace ios/App/App.xcodeproj/project.xcworkspace \
             --scheme App \
             --config Release \
             --archive-directory $CM_BUILD_DIR/xcarchive \
