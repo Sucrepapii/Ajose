@@ -62,13 +62,14 @@ export async function POST(req: NextRequest) {
 
       // Find the pending transaction by reference or update latest
       if (reference) {
-        // Attempt to update transaction status
+        // Attempt to update transaction status if not already completed
         const { data: updatedTx, error: txErr } = await supabase
           .from("transactions")
           .update({
             status: "completed",
             description: `Auto-debit cleared via Mono (Ref: ${reference})`
           })
+          .neq("status", "completed")
           .ilike("description", `%${reference}%`)
           .select("group_id, cycle_turn, user_id, amount")
           .maybeSingle();
@@ -104,6 +105,20 @@ export async function POST(req: NextRequest) {
           const allCleared = contributingMembers.length > 0 && contributingMembers.every((m) => completedUserIds.has(m.user_id));
 
           if (allCleared && group) {
+            // Idempotency: Verify that payout for this turn hasn't already been triggered
+            const { data: existingPayout } = await supabase
+              .from("transactions")
+              .select("id, status")
+              .eq("group_id", group_id)
+              .eq("cycle_turn", cycle_turn)
+              .eq("type", "payout")
+              .maybeSingle();
+
+            if (existingPayout) {
+              console.log(`[Webhook] Payout for group ${group_id} turn ${cycle_turn} already recorded (${existingPayout.status}). Skipping duplicate.`);
+              return NextResponse.json({ received: true, status: "payout_already_processed" });
+            }
+
             // Additive Fee Model: Members pay the platform fee on top of their debit.
             // So we pay out exactly 100% of the guaranteed savings pot!
             const platformFeePct = group.admin_commission_pct || 0;

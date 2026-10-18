@@ -122,6 +122,8 @@ async function handleSweep(req: NextRequest) {
     }
 
     const sweepResults: any[] = [];
+    const adminFeeCache = new Map<string, number | null>();
+    const memberUserCache = new Map<string, any>();
 
     // 3. Process each group
     for (const group of activeGroups) {
@@ -157,16 +159,21 @@ async function handleSweep(req: NextRequest) {
         continue;
       }
 
-      // Fetch group admin custom fee override if configured (stored in auth user_metadata)
+      // Fetch group admin custom fee override if configured (cached to avoid N+1 auth calls)
       let adminCustomFeePct: number | null = null;
       if (group.admin_id) {
-        try {
-          const { data: adminAuth } = await supabase.auth.admin.getUserById(group.admin_id);
-          const authFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
-          if (typeof authFee === "number" && authFee >= 0) {
-            adminCustomFeePct = authFee;
+        if (adminFeeCache.has(group.admin_id)) {
+          adminCustomFeePct = adminFeeCache.get(group.admin_id) ?? null;
+        } else {
+          try {
+            const { data: adminAuth } = await supabase.auth.admin.getUserById(group.admin_id);
+            const authFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
+            adminCustomFeePct = typeof authFee === "number" && authFee >= 0 ? authFee : null;
+            adminFeeCache.set(group.admin_id, adminCustomFeePct);
+          } catch {
+            adminFeeCache.set(group.admin_id, null);
           }
-        } catch {}
+        }
       }
 
       // Derive current turn from completed payout transactions using valid membership_id schema
@@ -247,13 +254,20 @@ async function handleSweep(req: NextRequest) {
           const isDaily = group.frequency === "daily";
           const isWeekly = group.frequency === "weekly";
 
-          // Resolve member auth user_metadata for custom fee or mandate ID
+          // Resolve member auth user_metadata for custom fee or mandate ID (cached)
           let memberAuthUser: any = null;
           if (member.user_id) {
-            try {
-              const { data: authUser } = await supabase.auth.admin.getUserById(member.user_id);
-              memberAuthUser = authUser?.user;
-            } catch {}
+            if (memberUserCache.has(member.user_id)) {
+              memberAuthUser = memberUserCache.get(member.user_id);
+            } else {
+              try {
+                const { data: authUser } = await supabase.auth.admin.getUserById(member.user_id);
+                memberAuthUser = authUser?.user ?? null;
+                memberUserCache.set(member.user_id, memberAuthUser);
+              } catch {
+                memberUserCache.set(member.user_id, null);
+              }
+            }
           }
 
           // Resolve monthly fee percentage: configured on user, or on group admin, or default 2%

@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import fs from "fs";
 import path from "path";
 
@@ -31,14 +31,22 @@ function getServiceRoleKey(): string {
   return "INVALID_SERVICE_KEY_PLEASE_CONFIGURE_ENV";
 }
 
-export function createAdminClient() {
+let cachedAdminClient: SupabaseClient | null = null;
+
+export function createAdminClient(): SupabaseClient {
+  if (cachedAdminClient) {
+    return cachedAdminClient;
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://npvwtzmlhpagsdohkuvm.supabase.co";
   const serviceRoleKey = getServiceRoleKey();
   
-  return createClient(supabaseUrl, serviceRoleKey, {
+  cachedAdminClient = createClient(supabaseUrl, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
     }
   });
+
+  return cachedAdminClient;
 }
