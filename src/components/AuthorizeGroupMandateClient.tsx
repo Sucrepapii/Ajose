@@ -18,6 +18,8 @@ interface AuthorizeGroupMandateClientProps {
   groupId: string;
   groupName: string;
   contributionAmount: number;
+  frequency?: string;
+  customFeePct?: number | null;
   userId: string;
   initialMandateId?: string | null;
   initialMandateStatus?: string | null;
@@ -30,6 +32,8 @@ export function AuthorizeGroupMandateClient({
   groupId,
   groupName,
   contributionAmount,
+  frequency = "monthly",
+  customFeePct,
   userId,
   initialMandateId,
   initialMandateStatus,
@@ -38,6 +42,12 @@ export function AuthorizeGroupMandateClient({
   accountNumber
 }: AuthorizeGroupMandateClientProps) {
   const router = useRouter();
+
+  const isDaily = frequency === "daily";
+  const isWeekly = frequency === "weekly";
+  const feePct = typeof customFeePct === "number" && customFeePct >= 0 ? customFeePct : 2.0;
+  const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round((contributionAmount * feePct) / 100);
+  const totalDebitPerTurn = contributionAmount + automationFee;
 
   const [mandateId, setMandateId] = useState(initialMandateId || "");
   const [mandateStatus, setMandateStatus] = useState(initialMandateStatus || "not_initiated");
@@ -59,8 +69,7 @@ export function AuthorizeGroupMandateClient({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          groupId,
-          amount: contributionAmount
+          groupId
         })
       });
 
@@ -147,14 +156,19 @@ export function AuthorizeGroupMandateClient({
                 ⚡ Action Required: Circle Mandate
               </span>
               <span className="text-xs font-bold text-[#0B3022]">
-                ₦{contributionAmount.toLocaleString()} Auto-Debit
+                ₦{totalDebitPerTurn.toLocaleString()} Auto-Debit
+                {automationFee > 0 && (
+                  <span className="text-[11px] font-medium text-amber-800 ml-1">
+                    (₦{contributionAmount.toLocaleString()} contribution + ₦{automationFee} fee)
+                  </span>
+                )}
               </span>
             </div>
             <h3 className="text-base sm:text-lg font-bold text-[#0B3022]">
               Authorize Direct Debit for {groupName}
             </h3>
             <p className="text-xs text-[#1F2937]/80 leading-relaxed font-medium">
-              This circle is active! To ensure your contributions process automatically on your turn without manual transfer delays, please authorize your NIBSS direct debit mandate with Mono Open-Banking.
+              This circle is active! Mono will automatically debit <strong>₦{totalDebitPerTurn.toLocaleString()}</strong> ({automationFee > 0 ? `₦${contributionAmount.toLocaleString()} contribution + ₦${automationFee} automation charge` : "direct contribution"}) on your scheduled turn so your payout rounds run smoothly without manual bank transfer delays.
             </p>
             {bankName && accountNumber && (
               <p className="text-[11px] text-[#1F2937]/60 font-mono pt-0.5">
@@ -200,7 +214,7 @@ export function AuthorizeGroupMandateClient({
               ) : (
                 <>
                   <ShieldCheck className="h-4 w-4 text-[#C5A059]" />
-                  <span>Authorize Mandate (₦{contributionAmount.toLocaleString()})</span>
+                  <span>Authorize Mandate (₦{totalDebitPerTurn.toLocaleString()}/{frequency || "turn"})</span>
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}

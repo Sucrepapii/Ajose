@@ -134,46 +134,14 @@ export async function POST(req: Request) {
     }
 
     // 6. Calculate payout amounts based on group frequency & admin volume tier:
-    const isWeekly = group.frequency === "weekly";
-    const isDaily = group.frequency === "daily";
+    // Platform fee is ₦0 across all frequencies at payout time because platform charges 
+    // are collected incrementally during auto-debit (Daily: ₦100, Weekly: ₦300, Monthly: 2% / custom rate),
+    // ensuring the turn collector receives 100% of their savings pot complete!
     const totalPool = (group.contribution_amount || 50000) * (group.max_members || 1);
     const adminCommissionPct = group.admin_commission_pct || 0;
     const adminFee = Math.round((adminCommissionPct / 100) * totalPool);
-
-    let effectiveFeePct = 2.0;
-
-    if (!isWeekly && !isDaily) {
-      let hasCustomFee = false;
-      try {
-        const { data: adminAuth } = await supabaseAdmin.auth.admin.getUserById(group.admin_id);
-        const customFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
-        if (typeof customFee === "number" && customFee >= 0) {
-          effectiveFeePct = customFee;
-          hasCustomFee = true;
-        }
-      } catch (authErr) {
-        console.warn("Could not check admin auth for custom fee override:", authErr);
-      }
-
-      if (!hasCustomFee) {
-        const { count: adminGroupCount } = await supabaseAdmin
-          .from("groups")
-          .select("id", { count: "exact", head: true })
-          .eq("admin_id", group.admin_id);
-
-        const totalCircles = adminGroupCount || 1;
-        if (totalCircles > 10) {
-          effectiveFeePct = 1.0;
-        } else if (totalCircles >= 6) {
-          effectiveFeePct = 1.5;
-        }
-      }
-    }
-
-    const platformFee = (isWeekly || isDaily) 
-      ? 0 
-      : Math.min(10000, Math.round((effectiveFeePct / 100) * totalPool));
-    const netPayoutAmount = Math.max(0, totalPool - adminFee - platformFee);
+    const platformFee = 0;
+    const netPayoutAmount = Math.max(0, totalPool - adminFee);
 
     if (!receiverUser.account_number && method !== "manual_bank_transfer") {
       return NextResponse.json({ 

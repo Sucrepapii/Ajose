@@ -26,6 +26,7 @@ export function MakeContributionClient({
   amount, 
   currentTurn,
   frequency = "monthly",
+  customFeePct,
   adminBankDetails,
   pendingTransaction
 }: { 
@@ -34,6 +35,7 @@ export function MakeContributionClient({
   amount: number; 
   currentTurn: number; 
   frequency?: string;
+  customFeePct?: number | null;
   adminBankDetails?: {
     bankName?: string;
     accountNumber?: string;
@@ -53,10 +55,11 @@ export function MakeContributionClient({
   // Pricing Model Fee Breakdown:
   // - Daily: ₦100 automation fee
   // - Weekly: ₦300 automation fee
-  // - Monthly: ₦0 per-tx fee (2% at payout)
+  // - Monthly: 2% (or custom rate) platform fee taken at auto-debit (0% at payout)
   const isDaily = frequency === "daily";
   const isWeekly = frequency === "weekly";
-  const automationFee = isDaily ? 100 : isWeekly ? 300 : 0;
+  const feePct = typeof customFeePct === "number" && customFeePct >= 0 ? customFeePct : 2.0;
+  const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round((amount * feePct) / 100);
   const totalAmountDue = amount + automationFee;
 
   // Manual Transfer Form State

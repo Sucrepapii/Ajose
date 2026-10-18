@@ -100,10 +100,11 @@ export function ProcessPayoutClient({
     }
   }
 
-  const platformFee = (isWeekly || isDaily) 
-    ? 0 
-    : Math.min(10000, Math.round((effectiveFeePct / 100) * totalPool));
-  const payoutAmount = Math.max(0, totalPool - adminFee - platformFee);
+  // Platform fee is ₦0 across all frequencies at payout time because platform charges 
+  // are collected incrementally during auto-debit (Daily: ₦100, Weekly: ₦300, Monthly: 2% / custom rate),
+  // ensuring the turn collector receives 100% of their savings pot complete!
+  const platformFee = 0;
+  const payoutAmount = Math.max(0, totalPool - adminFee);
 
   // 1-Click Connect Mono Disburse Source Mandate for Hands-Free Autonomous Payouts
   const handleConnectDisburseSource = async () => {
@@ -312,7 +313,7 @@ export function ProcessPayoutClient({
                       : `Platform Fee (${effectiveFeePct}% capped at ₦10,000)`}
                   </span>
                   <span className={platformFee > 0 ? "font-bold text-red-600" : "font-bold text-emerald-700"}>
-                    {platformFee > 0 ? `-₦${platformFee.toLocaleString()} (${effectiveFeePct}%)` : "₦0 (0% Payout Fee)"}
+                    {platformFee > 0 ? `-₦${platformFee.toLocaleString()} (${effectiveFeePct}%)` : "₦0 (0% Payout Fee • Collected at Auto-Debit)"}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs border-t border-gray-200 pt-2 font-bold">

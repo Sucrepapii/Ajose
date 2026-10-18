@@ -12,6 +12,7 @@ interface TriggerSweepClientProps {
   pendingCount: number;
   amount: number;
   frequency?: string;
+  customFeePct?: number | null;
   pendingMandateCount?: number;
 }
 
@@ -22,6 +23,7 @@ export function TriggerSweepClient({
   pendingCount,
   amount,
   frequency = "monthly",
+  customFeePct,
   pendingMandateCount = 0,
 }: TriggerSweepClientProps) {
   const router = useRouter();
@@ -30,7 +32,8 @@ export function TriggerSweepClient({
 
   const isDaily = frequency === "daily";
   const isWeekly = frequency === "weekly";
-  const automationFee = isDaily ? 100 : isWeekly ? 300 : 0;
+  const feePct = typeof customFeePct === "number" && customFeePct >= 0 ? customFeePct : 2.0;
+  const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round((amount * feePct) / 100);
   const totalPerMember = amount + automationFee;
 
   const handleExecuteSweep = async () => {
@@ -148,13 +151,15 @@ export function TriggerSweepClient({
                 <span className="font-bold text-[#0B3022]">{pendingCount} members</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Base Contribution</span>
+                <span className="text-gray-500">Ajo Base Contribution</span>
                 <span className="font-bold text-[#0B3022]">₦{amount.toLocaleString()}</span>
               </div>
               {automationFee > 0 && (
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-gray-500">Mono Automation Fee ({isDaily ? "Daily" : "Weekly"})</span>
-                  <span className="font-semibold text-[#C5A059]">+₦{automationFee}</span>
+                  <span className="text-gray-500">
+                    Platform Fee ({isDaily ? "Daily (₦100)" : isWeekly ? "Weekly (₦300)" : `Monthly (${feePct}%)`})
+                  </span>
+                  <span className="font-semibold text-[#C5A059]">+₦{automationFee.toLocaleString()}</span>
                 </div>
               )}
               <div className="flex justify-between items-center border-t border-gray-200 pt-2 font-bold">

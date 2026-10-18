@@ -141,13 +141,29 @@ async function handlePreDebitReminders(req: NextRequest) {
             last_name,
             nickname,
             phone,
-            auto_sweep_enabled
+            auto_sweep_enabled,
+            custom_platform_fee_pct
           )
         `)
         .eq("group_id", group.id)
         .eq("status", "active");
 
       if (membersErr || !members) continue;
+
+      // Fetch group admin custom fee override if configured
+      let adminCustomFeePct: number | null = null;
+      if (group.admin_id) {
+        try {
+          const { data: adminUser } = await supabase
+            .from("users")
+            .select("custom_platform_fee_pct")
+            .eq("id", group.admin_id)
+            .maybeSingle();
+          if (typeof adminUser?.custom_platform_fee_pct === "number" && adminUser.custom_platform_fee_pct >= 0) {
+            adminCustomFeePct = adminUser.custom_platform_fee_pct;
+          }
+        } catch (_) {}
+      }
 
       // 2. Fetch existing completed contributions for this turn
       const memberIds = members.map((m: any) => m.id);
@@ -181,15 +197,24 @@ async function handlePreDebitReminders(req: NextRequest) {
         const userName = `${u.first_name || ""} ${u.last_name || ""}`.trim() || u.nickname || "Valued Member";
         const userEmail = u.email;
 
-        const feePct = group.admin_commission_pct || 0;
-        const feeAmount = (group.contribution_amount * feePct) / 100;
-        const totalDebitAmount = group.contribution_amount + feeAmount;
+        const isDaily = group.frequency === "daily";
+        const isWeekly = group.frequency === "weekly";
+
+        let feePct = 2.0;
+        if (typeof u.custom_platform_fee_pct === "number" && u.custom_platform_fee_pct >= 0) {
+          feePct = u.custom_platform_fee_pct;
+        } else if (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) {
+          feePct = adminCustomFeePct;
+        }
+
+        const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round(((group.contribution_amount || 0) * feePct) / 100);
+        const totalDebitAmount = (group.contribution_amount || 0) + automationFee;
 
         // Queue in-app notification for bulk insert
         notificationsToInsert.push({
           user_id: u.id,
           title: `Auto-Debit Tomorrow: ₦${totalDebitAmount.toLocaleString()}`,
-          message: `Your scheduled auto-debit for "${group.name}" is tomorrow (${formattedDueDate}). This includes your base contribution of ₦${group.contribution_amount.toLocaleString()} plus a ${feePct}% platform fee (₦${feeAmount.toLocaleString()}). Please ensure your account is funded.`,
+          message: `Your scheduled auto-debit of ₦${totalDebitAmount.toLocaleString()} (₦${(group.contribution_amount || 0).toLocaleString()} contribution${automationFee > 0 ? ` + ₦${automationFee} automation charge` : ""}) for "${group.name}" is tomorrow (${formattedDueDate}). Please ensure your account is funded.`,
           type: "warning",
         });
 

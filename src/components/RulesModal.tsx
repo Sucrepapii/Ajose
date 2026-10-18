@@ -80,8 +80,8 @@ export function RulesModal() {
                 </h3>
                 <p>Transparent fee rules depending on your chosen group schedule:</p>
                 <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1.5 mt-1">
-                  <li><strong>Monthly Groups:</strong> 2% platform fee (strictly capped at ₦10,000 maximum) deducted only on successful payouts. ₦0 per-transaction fee.</li>
-                  <li><strong>Weekly Groups:</strong> 0% payout fee! Flat ₦300 automated processing fee per transaction to secure and auto-verify contributions via Mono open banking.</li>
+                  <li><strong>Monthly Groups:</strong> 0% payout fee! 2% platform fee (or custom admin rate) included at auto-debit so turn collectors receive 100% of their savings pot complete.</li>
+                  <li><strong>Weekly Groups:</strong> 0% payout fee! Flat ₦300 automated processing fee per transaction.</li>
                   <li><strong>Daily Groups:</strong> 0% payout fee! Flat ₦100 automated processing fee per transaction.</li>
                   <li><strong>Admin Commission:</strong> The customized percentage determined by the Admin upon group creation to compensate for management and trust.</li>
                 </ul>

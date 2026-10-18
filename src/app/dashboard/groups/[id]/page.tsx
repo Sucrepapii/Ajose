@@ -345,6 +345,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                 pendingCount={unpaidUserIds.length}
                 amount={group.contribution_amount}
                 frequency={group.frequency}
+                customFeePct={customPlatformFeePct}
                 pendingMandateCount={contributingMembers.filter(m => memberMandateMap.get(m.user_id)?.mandateStatus !== 'approved').length}
               />
               <SendRemindersClient 
@@ -438,6 +439,8 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           groupId={groupId}
           groupName={group.name}
           contributionAmount={group.contribution_amount}
+          frequency={group.frequency}
+          customFeePct={customPlatformFeePct}
           userId={user.id}
           initialMandateId={currentUserMandate?.mandateId}
           initialMandateStatus={currentUserMandate?.mandateStatus}
@@ -537,7 +540,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                 </span>
               </div>
               <p className="text-[#1F2937]/70 text-xs leading-relaxed font-medium max-w-2xl">
-                Àjọṣe is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn's recipient (minus {group.admin_commission_pct}% admin cut and 2% platform fee capped at ₦10,000).
+                Àjọṣe is not a bank. We do not hold pooled money. All contributions flow directly into this tendered account and are auto-debited to each turn&apos;s recipient (100% complete pot, minus only {group.admin_commission_pct}% admin cut if configured). Platform protection fees are handled upfront at auto-debit.
               </p>
               
               <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">
@@ -884,6 +887,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                                     amount={group.contribution_amount} 
                                     currentTurn={currentTurn} 
                                     frequency={group.frequency}
+                                    customFeePct={customPlatformFeePct}
                                     adminBankDetails={{
                                       bankName: adminBankName,
                                       accountNumber: adminRawAcct,
@@ -911,6 +915,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                                     amount={group.contribution_amount} 
                                     currentTurn={currentTurn} 
                                     frequency={group.frequency}
+                                    customFeePct={customPlatformFeePct}
                                     adminBankDetails={{
                                       bankName: adminBankName,
                                       accountNumber: adminRawAcct,
@@ -931,6 +936,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                               amount={group.contribution_amount} 
                               currentTurn={currentTurn} 
                               frequency={group.frequency}
+                              customFeePct={customPlatformFeePct}
                               adminBankDetails={{
                                 bankName: adminBankName,
                                 accountNumber: adminRawAcct,
