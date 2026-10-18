@@ -37,7 +37,7 @@ async function handlePreDebitReminders(req: NextRequest) {
         if (adminSession.isAuthenticated && adminSession.isSuperAdmin) {
           isAuthorized = true;
         }
-      } catch (_) {}
+      } catch {}
 
       // Check if caller is the authenticated Admin of this specific circle
       if (!isAuthorized && specificGroupId) {
@@ -57,7 +57,7 @@ async function handlePreDebitReminders(req: NextRequest) {
               isAuthorized = true;
             }
           }
-        } catch (_) {}
+        } catch {}
       }
     }
 
@@ -162,7 +162,7 @@ async function handlePreDebitReminders(req: NextRequest) {
           if (typeof adminUser?.custom_platform_fee_pct === "number" && adminUser.custom_platform_fee_pct >= 0) {
             adminCustomFeePct = adminUser.custom_platform_fee_pct;
           }
-        } catch (_) {}
+        } catch {}
       }
 
       // 2. Fetch existing completed contributions for this turn

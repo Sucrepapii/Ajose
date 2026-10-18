@@ -1,16 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { 
   ShieldCheck, 
-  AlertCircle, 
-  Sparkles, 
   ArrowRight, 
   RefreshCw, 
   ExternalLink,
-  CheckCircle2,
   Lock
 } from "lucide-react";
 
@@ -34,7 +31,7 @@ export function AuthorizeGroupMandateClient({
   contributionAmount,
   frequency = "monthly",
   customFeePct,
-  userId,
+  userId: _userId,
   initialMandateId,
   initialMandateStatus,
   initialMandateUrl,
@@ -112,7 +109,7 @@ export function AuthorizeGroupMandateClient({
           router.refresh();
           return;
         }
-      } catch (_) {}
+      } catch {}
 
       if (attempts >= 30) {
         clearInterval(interval);

@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
                 feePct = authFee;
               }
             }
-          } catch (_) {}
+          } catch {}
         }
 
         const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round(((group.contribution_amount || 400) * feePct) / 100);

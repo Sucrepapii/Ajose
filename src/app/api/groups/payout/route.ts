@@ -141,7 +141,7 @@ export async function POST(req: Request) {
     const adminCommissionPct = group.admin_commission_pct || 0;
     const adminFee = Math.round((adminCommissionPct / 100) * totalPool);
     const platformFee = 0;
-    const netPayoutAmount = Math.max(0, totalPool - adminFee);
+    const netPayoutAmount = Math.max(0, totalPool - adminFee - platformFee);
 
     if (!receiverUser.account_number && method !== "manual_bank_transfer") {
       return NextResponse.json({ 
@@ -162,7 +162,7 @@ export async function POST(req: Request) {
           .eq("membership_id", receivingMembership.id)
           .eq("cycle_turn", turn)
           .eq("status", "failed");
-      } catch (_) {}
+      } catch {}
 
       // Insert pending payout transaction (2-way handshake)
       const { data: newTx, error: txInsertErr } = await supabaseAdmin.from("transactions").insert({
@@ -242,7 +242,7 @@ export async function POST(req: Request) {
           ...(isCompleted ? { status: "completed" } : {})
         })
         .eq("id", groupId);
-    } catch (_) {}
+    } catch {}
 
     // Delete prior failed transactions for this turn
     try {
@@ -252,7 +252,7 @@ export async function POST(req: Request) {
         .eq("membership_id", receivingMembership.id)
         .eq("cycle_turn", turn)
         .eq("status", "failed");
-    } catch (_) {}
+    } catch {}
 
     // Record Payout transaction in ledger as successful
     const { error: txInsertErr } = await supabaseAdmin.from("transactions").insert({

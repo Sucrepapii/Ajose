@@ -56,7 +56,7 @@ async function handleSweep(req: NextRequest) {
         if (adminSession.isAuthenticated && adminSession.isSuperAdmin) {
           isAuthorized = true;
         }
-      } catch (_) {}
+      } catch {}
 
       // Check if caller is the authenticated Admin of this specific circle
       if (!isAuthorized && specificGroupId) {
@@ -76,7 +76,7 @@ async function handleSweep(req: NextRequest) {
               isAuthorized = true;
             }
           }
-        } catch (_) {}
+        } catch {}
       }
     }
 
@@ -176,7 +176,7 @@ async function handleSweep(req: NextRequest) {
               adminCustomFeePct = authFee;
             }
           }
-        } catch (_) {}
+        } catch {}
       }
 
       // Derive current turn from completed payout transactions using valid membership_id schema
@@ -280,7 +280,7 @@ async function handleSweep(req: NextRequest) {
             try {
               const { data: authUser } = await supabase.auth.admin.getUserById(member.user_id);
               mandateId = authUser?.user?.user_metadata?.mono_mandate_id;
-            } catch (_) {}
+            } catch {}
           }
 
           const isTestCircle = (group.name || "").toLowerCase().includes("test");
@@ -290,7 +290,7 @@ async function handleSweep(req: NextRequest) {
             // LIVE MONO DIRECT DEBIT CALL
             try {
               console.log(`[Sweep] Initiating live Mono debit for member ${displayName} (${member.user_id}) with mandate ${mandateId}, amount: ₦${totalDebitAmount} (₦${group.contribution_amount} ajo + ₦${automationFee} charge)`);
-              let debitRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}/debit`, {
+              const debitRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}/debit`, {
                 method: "POST",
                 headers: {
                   "mono-sec-key": monoSecretKey,
@@ -347,7 +347,7 @@ async function handleSweep(req: NextRequest) {
                     });
                     const fallbackBody = await fallbackRes.text();
                     let fallbackData: any = {};
-                    try { fallbackData = JSON.parse(fallbackBody); } catch (_) {}
+                    try { fallbackData = JSON.parse(fallbackBody); } catch {}
                     if (fallbackRes.ok && fallbackData.status !== "failed" && !fallbackData.error) {
                       debitSuccess = true;
                       totalDebitAmount = group.contribution_amount;
@@ -356,7 +356,7 @@ async function handleSweep(req: NextRequest) {
                       rawErr = fallbackData.error || fallbackData.message || rawErr;
                       debitMessage = rawErr;
                     }
-                  } catch (_) {}
+                  } catch {}
                 }
 
                 // If still failed and debit limit is exhausted, provide actionable message

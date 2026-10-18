@@ -94,7 +94,7 @@ export async function POST(req: Request) {
           ...(isCompleted ? { status: "completed" } : {})
         })
         .eq("id", groupId);
-    } catch (_) {}
+    } catch {}
 
     // 3. Award trust & credit score boost (+10 points)
     const recipientUser = recipientMembership.users;
@@ -106,7 +106,7 @@ export async function POST(req: Request) {
         .from("users")
         .update({ credit_score: Math.min(100, currentScore + 10) })
         .eq("id", recipientMembership.user_id);
-    } catch (_) {}
+    } catch {}
 
     // 4. Send real-time notifications to Admin, Recipient, and Group
     const notificationsToInsert = [

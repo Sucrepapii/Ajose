@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Zap, Loader2, X, ShieldCheck, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Zap, Loader2, X, ShieldCheck, AlertTriangle } from "lucide-react";
 
 interface TriggerSweepClientProps {
   groupId: string;

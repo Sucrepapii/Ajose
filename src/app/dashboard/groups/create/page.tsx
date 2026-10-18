@@ -208,10 +208,10 @@ export default function CreateGroupPage() {
   // - Weekly Groups: 0% payout fees! Flat ₦300 automated processing fee per transaction.
   // - Daily Groups: 0% payout fees! Flat ₦100 automated processing fee per transaction.
   const platformFee = 0; // 0% at payout across all frequencies!
-  const automationFeePerTx = isDaily ? 100 : isWeekly ? 300 : Math.round(cont * 0.02);
+  const automationFeePerTx = isDaily ? 100 : isWeekly ? 300 : isMonthly ? Math.round(cont * 0.02) : 0;
   const commPctNumber = parseFloat(formData.adminCommission) || 0;
   const adminFee = totalPool * (commPctNumber / 100);
-  const collectorReceives = Math.max(0, totalPool - adminFee);
+  const collectorReceives = Math.max(0, totalPool - adminFee - platformFee);
 
   return (
     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">

@@ -124,7 +124,7 @@ export async function POST(req: Request) {
         .from("groups")
         .update({ current_turn: 1 })
         .eq("id", groupId);
-    } catch (_) {}
+    } catch {}
 
     return NextResponse.json({
       success: true,
