@@ -123,7 +123,7 @@ export function MobileAppShowcase() {
 
                 // Google Play / Android APK
                 <a
-                  href="https://play.google.com/store/apps/details?id=com.ajose.app" // OR APK direct download: "/downloads/ajose.apk"
+                  href="https://play.google.com/store/apps/details?id=com.ajose.ng" // OR APK direct download: "/downloads/ajose.apk"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white shadow-xl transition-all hover:scale-105 active:scale-95 group"

@@ -225,7 +225,7 @@ export function OrganizerEarningsCalculator({
               {/* Result Card */}
               <div className="bg-gradient-to-br from-[#0B3022] to-[#124230] rounded-2xl p-5 text-white shadow-lg space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                  <span className="text-xs text-white/70 font-medium">Estimated Monthly Earnings</span>
+                  <span className="text-xs text-white/70 font-medium">Illustrative Monthly Commission (Example)</span>
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${currentTier.badge}`}>
                     {currentTier.name}
                   </span>
@@ -237,7 +237,7 @@ export function OrganizerEarningsCalculator({
                     <span className="text-xs text-white/70 font-normal ml-1.5">/ cycle volume</span>
                   </div>
                   <p className="text-xs text-emerald-300 font-medium mt-1">
-                    ~₦{annualCommission.toLocaleString()} projected annual revenue
+                    ~₦{annualCommission.toLocaleString()} illustrative annual estimate*
                   </p>
                 </div>
 
@@ -251,6 +251,10 @@ export function OrganizerEarningsCalculator({
                     <strong className="text-[#C5A059]">{currentTier.discount}</strong>
                   </div>
                 </div>
+
+                <p className="text-[10px] text-white/50 italic leading-tight text-center pt-1">
+                  *Illustrative simulation only, not a guaranteed return or income claim. Actual earnings depend on circle size, member counts, and the commission percentage set by the organizer.
+                </p>
               </div>
 
             </div>

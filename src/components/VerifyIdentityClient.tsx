@@ -218,7 +218,7 @@ export function VerifyIdentityClient({
               )}
             </button>
             <p className="text-[11px] text-zinc-500 text-center flex items-center justify-center gap-1">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" /> Bank-grade 256-bit encryption. Mono verifies your BVN automatically.
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" /> AES-256 encryption &amp; NDPR-compliant security. Mono verifies your BVN automatically.
             </p>
           </div>
 

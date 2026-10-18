@@ -60,8 +60,6 @@ export function CommunityTestimonialsCarousel({ testimonials }: CommunityTestimo
     return [...baseItems, ...baseItems, ...baseItems];
   }, [baseItems]);
 
-  const singleSetCount = baseItems.length;
-
   // Sync reactive pause state with internal refs
   const updatePauseState = useCallback(() => {
     const shouldPause =

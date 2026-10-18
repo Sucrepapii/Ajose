@@ -180,7 +180,7 @@ export function InteractiveRevenueCalculator({
             </div>
 
             <span className="text-xs uppercase tracking-wider text-white/70 font-semibold block mb-1">
-              Estimated Monthly Organizer Earnings
+              Illustrative Monthly Commission (Example Only)
             </span>
 
             <div className="text-4xl sm:text-5xl font-black text-[#C5A059] tracking-tight my-2">
@@ -189,7 +189,7 @@ export function InteractiveRevenueCalculator({
             </div>
 
             <p className="text-xs font-bold text-emerald-300 mb-6">
-              ~₦{annualCommission.toLocaleString()} projected annual run-rate
+              ~₦{annualCommission.toLocaleString()} illustrative annual estimate*
             </p>
 
             <div className="bg-white/10 rounded-2xl p-4 text-xs space-y-2 mb-6 text-left">
@@ -219,6 +219,9 @@ export function InteractiveRevenueCalculator({
             
             <p className="text-[11px] text-white/60">
               No subscription fee &bull; Free to create &bull; Automated settlement
+            </p>
+            <p className="text-[10px] text-white/40 italic leading-tight text-center pt-1">
+              *Illustrative simulation only, not a guaranteed return or income claim. Actual earnings depend on circle size, member counts, and the commission percentage set by the organizer.
             </p>
           </div>
 

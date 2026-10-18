@@ -19,13 +19,14 @@ export const viewport: Viewport = {
   themeColor: "#0B3022",
 };
 
+const rawBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'https://ajose.ng');
+const siteUrl = rawBaseUrl.includes("ajose.ng") ? "https://ajose.ng" : rawBaseUrl;
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || 
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'https://ajose.ng')
-  ),
+  metadataBase: new URL(siteUrl),
   alternates: {
-    canonical: "/",
+    canonical: siteUrl,
   },
   title: "Àjọṣe — Turn by turn, no wahala.",
   description: "Ajose is the digital platform that runs your Ajo group — collecting contributions, tracking every round, and making sure everyone gets their turn.",
@@ -77,7 +78,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <Script src="https://connect.mono.co/v2/connect.js" strategy="beforeInteractive" />
+      <head>
+        <Script src="https://connect.mono.co/v2/connect.js" strategy="beforeInteractive" />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-white text-zinc-950">
         <CapacitorListener />
         {children}

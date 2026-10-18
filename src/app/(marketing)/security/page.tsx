@@ -20,7 +20,7 @@ export default function SecurityPage() {
             Institutional-Grade <span className="text-[#C5A059]">Security</span>
           </h1>
           <p className="text-xl text-[#1F2937]/80 leading-relaxed max-w-3xl mx-auto font-medium">
-            Your contributions are protected by rigorous identity verification, an immutable ledger system, and strict credit penalty enforcement.
+            Your contributions are protected by verified BVN identity checks, an audited transaction ledger, and automated circle default protections.
           </p>
         </div>
 

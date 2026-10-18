@@ -1,23 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check, Star, X, ShieldAlert, Smartphone, LineChart, Percent, LayoutDashboard, History, Quote, Globe } from "lucide-react";
+import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditCard, Landmark, ChevronDown, Activity, Check, ShieldAlert, Smartphone, LayoutDashboard, History, Building2, Briefcase, GraduationCap, HeartHandshake } from "lucide-react";
 import { CountryFlag } from "@/components/CountryFlag";
-import { CommunityTestimonialsCarousel } from "@/components/CommunityTestimonialsCarousel";
 import { InteractiveRevenueCalculator } from "@/components/InteractiveRevenueCalculator";
 import { MobileAppShowcase } from "@/components/MobileAppShowcase";
-
-interface TestimonialItem {
-  quote: string;
-  author: string;
-  role: string;
-  rating?: number;
-  country?: string;
-  countryCode?: string;
-  location?: string;
-}
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -38,92 +27,6 @@ export default function Home() {
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [activeShowcase, setActiveShowcase] = useState(0);
-
-  const [communityTestimonials, setCommunityTestimonials] = useState<TestimonialItem[]>([
-    {
-      quote: "Finally, a way to do Ajo without the endless WhatsApp arguments. The automated turns feature is a lifesaver.",
-      author: "Bisi A.",
-      role: "Group Admin",
-      rating: 5,
-      country: "Nigeria",
-      countryCode: "NG",
-      location: "Lagos, Nigeria"
-    },
-    {
-      quote: "I love the transparency. Being able to see exactly who has paid and who is next builds so much trust.",
-      author: "Emeka O.",
-      role: "Member",
-      rating: 5,
-      country: "Nigeria",
-      countryCode: "NG",
-      location: "Enugu, Nigeria"
-    },
-    {
-      quote: "We moved our alumni contribution group here. The dashboard makes managing millions of Naira completely stress-free.",
-      author: "Tola F.",
-      role: "Alumni President",
-      rating: 5,
-      country: "Nigeria",
-      countryCode: "NG",
-      location: "Ibadan, Nigeria"
-    },
-    {
-      quote: "The Open-Banking auto-debit has completely transformed our medical diaspora monthly pool. Payouts arrive directly without delay.",
-      author: "Dr. Kunle A.",
-      role: "Diaspora Circle Lead",
-      rating: 5,
-      country: "United Kingdom",
-      countryCode: "GB",
-      location: "London, UK"
-    },
-    {
-      quote: "We run our cross-border tech founders Susu on Àjọṣe. The ledger accuracy and payout countdown give everybody peace of mind.",
-      author: "Kwame M.",
-      role: "Susu Circle Organizer",
-      rating: 5,
-      country: "Ghana",
-      countryCode: "GH",
-      location: "Accra, Ghana"
-    },
-    {
-      quote: "Our Nigerian-American family pool has 12 members across 4 states. Everyone knows their turn date and nobody has to chase cousin payments.",
-      author: "Chinwe & Chidi N.",
-      role: "Family Circle Admins",
-      rating: 5,
-      country: "United States",
-      countryCode: "US",
-      location: "Atlanta, GA"
-    },
-    {
-      quote: "Running our civil service thrift pool used to take hours of manual bank confirmation. Àjọṣe automated the entire verification cycle.",
-      author: "Fatima Y.",
-      role: "Cooperative Lead",
-      rating: 5,
-      country: "Nigeria",
-      countryCode: "NG",
-      location: "Abuja, Nigeria"
-    },
-    {
-      quote: "We organize our quarterly business expansion circle from Ontario. The automated bank debits and transparent ledgers are exactly what we needed to trust the platform.",
-      author: "David O.",
-      role: "Business Circle Member",
-      rating: 5,
-      country: "Canada",
-      countryCode: "CA",
-      location: "Toronto, Canada"
-    }
-  ]);
-
-  useEffect(() => {
-    fetch("/api/feedback?featured=true")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.testimonials && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
-          setCommunityTestimonials(data.testimonials);
-        }
-      })
-      .catch((err) => console.warn("Dynamic testimonials fetch fallback:", err));
-  }, []);
 
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
@@ -275,7 +178,10 @@ export default function Home() {
 
                 <div className="bg-[#0B3022] rounded-xl p-6 border border-[#0B3022] shadow-inner text-white flex flex-col justify-between">
                   <div>
-                    <h3 className="text-gray-300 font-medium text-sm mb-1">Admin Projected Earnings</h3>
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="text-gray-300 font-medium text-sm">Organizer Commission</h3>
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-[#C5A059]/20 text-[#C5A059] px-2 py-0.5 rounded-full border border-[#C5A059]/30">Example</span>
+                    </div>
                     <motion.p 
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -285,8 +191,9 @@ export default function Home() {
                       ₦450,000
                     </motion.p>
                   </div>
-                  <div className="mt-6 pt-4 border-t border-white/20">
-                    <p className="text-sm text-gray-200">Across 3 active groups managed</p>
+                  <div className="mt-4 pt-3 border-t border-white/20 space-y-1">
+                    <p className="text-xs text-gray-200">Illustrative example across 3 circles at 5% rate*</p>
+                    <p className="text-[10px] text-gray-400 italic leading-tight">*Example simulation only. Actual organizer earnings depend on circle size and organizer terms.</p>
                   </div>
                 </div>
               </div>
@@ -419,7 +326,7 @@ export default function Home() {
               {/* Feature Tab Selectors */}
               <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-white/60 border border-gray-200 mb-6">
                 {[
-                  { title: "Immutable Records", icon: ShieldCheck },
+                  { title: "Audited Records", icon: ShieldCheck },
                   { title: "Automated Turns", icon: Rocket },
                   { title: "Admin Control", icon: Lock }
                 ].map((feature, i) => (
@@ -455,12 +362,12 @@ export default function Home() {
                       {[
                         {
                           icon: ShieldCheck,
-                          title: "Immutable Records",
+                          title: "Audited Records",
                           tagline: "Total transparency for every member.",
                           points: [
-                            "Tamper-proof contribution logging",
+                            "Cryptographically verified contribution logging",
                             "Real-time Open-Banking payment verification",
-                            "Permanent, downloadable ledger audit history"
+                            "Exportable, transparent ledger history"
                           ]
                         },
                         {
@@ -470,7 +377,7 @@ export default function Home() {
                           points: [
                             "Fair, randomized or custom member sequencing",
                             "Automatic turn assignment & morning sweeps",
-                            "Instant fallback alerts & countdown timers"
+                            "Automated reminder alerts & countdown timers"
                           ]
                         },
                         {
@@ -478,8 +385,8 @@ export default function Home() {
                           title: "Admin Control",
                           tagline: "Total authority to protect the group.",
                           points: [
-                            "Freeze defaulting members with credit penalty",
-                            "One-click fund disbursement confirmation",
+                            "Enforce circle rules with Trust Score penalties",
+                            "Two-way payout confirmation handshake",
                             "Modify active rosters securely before round starts"
                           ]
                         }
@@ -505,7 +412,7 @@ export default function Home() {
 
                           <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
                             <span>Turn by turn, guaranteed.</span>
-                            <span className="font-semibold text-[#0B3022]">Bank-grade automation</span>
+                            <span className="font-semibold text-[#0B3022]">Automated direct debit</span>
                           </div>
                         </div>
                       ))}
@@ -561,7 +468,7 @@ export default function Home() {
                       <div className="w-3 h-3 rounded-full bg-amber-500" />
                       <div className="w-3 h-3 rounded-full bg-emerald-500" />
                     </div>
-                    <span className="text-[11px] font-mono text-gray-400">ajose.app/dashboard</span>
+                    <span className="text-[11px] font-mono text-gray-400">ajose.ng/dashboard</span>
                   </div>
 
                   <AnimatePresence mode="wait">
@@ -715,7 +622,7 @@ export default function Home() {
                         desc: "Sanctions when a member misses their turn payment",
                         whatsapp: { text: "None (Endless Wahala)", sub: "Damaged relationships & lost money", status: "bad" },
                         fintech: { text: "N/A", sub: "No peer group accountability", status: "neutral" },
-                        ajose: { text: "Credit Score Penalty", sub: "Nationwide blacklist & 15% fine", status: "good" }
+                        ajose: { text: "Platform Trust Penalty", sub: "Circle suspension & agreed late fee", status: "good" }
                       },
                       {
                         title: "Fund Custody & Safety",
@@ -882,8 +789,8 @@ export default function Home() {
                     <li className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full bg-[#0B3022] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
                       <div>
-                        <h4 className="font-bold text-sm text-[#0B3022]">Credit Bureau Score Degradation</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">The defaulter&rsquo;s Ajo Credit Score drops by -10 points and automatically freezes them from joining other circles nationwide.</p>
+                        <h4 className="font-bold text-sm text-[#0B3022]">Trust Score Reduction &amp; Circle Restriction</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">The defaulter&rsquo;s Àjọṣe Trust Score is penalized, freezing them from joining or creating other circles on the platform.</p>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
@@ -896,8 +803,8 @@ export default function Home() {
                     <li className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full bg-[#0B3022] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
                       <div>
-                        <h4 className="font-bold text-sm text-[#0B3022]">15% Penalty Redistribution</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">Late settlement penalties (15%) are distributed directly to compensate the affected circle members.</p>
+                        <h4 className="font-bold text-sm text-[#0B3022]">Circle-Agreed Late Fee Compensation</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Organizer-defined late settlement fees are applied and distributed directly to compensate the affected circle turn recipient.</p>
                       </div>
                     </li>
                   </ol>
@@ -934,9 +841,9 @@ export default function Home() {
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto text-center">
             {[
-              { icon: ShieldAlert, title: "Bank-Grade Security", desc: "Your data is secured with AES-256 encryption, the same standard used by leading banks worldwide." },
-              { icon: Lock, title: "Automated Fraud Prevention", desc: "Our built-in Ajo Credit Score automatically flags and prevents habitual defaulters from joining new groups." },
-              { icon: Smartphone, title: "100% Mobile Ready", desc: "Manage your group from anywhere. No need to carry laptops or physical ledgers." }
+              { icon: ShieldAlert, title: "AES-256 Data Protection", desc: "Your data and payment commands are secured with AES-256 encryption and powered by licensed CBN Open Banking partners (Mono)." },
+              { icon: Lock, title: "Default Prevention Protocols", desc: "Our built-in Àjọṣe Trust Score and BVN identity verification screen participants before they join trusted circles." },
+              { icon: Smartphone, title: "100% Mobile Ready", desc: "Manage your group from anywhere on any phone. No need to carry paper ledgers or cash envelopes." }
             ].map((item, i) => (
               <motion.div variants={fadeIn} key={i} className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 rounded-full bg-[#C5A059]/10 flex items-center justify-center mb-6 border border-[#C5A059]/20">
@@ -1010,60 +917,84 @@ export default function Home() {
                 <CountryFlag code="KE" size="xs" />
               </div>
               <span className="text-xs font-bold text-[#0B3022] tracking-wide">
-                Built for Nigerians at Home &amp; Diaspora Circles
+                Built for Circles at Home &amp; Across the Diaspora
               </span>
             </div>
 
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">
-              Loved by Communities
+              Designed for How Communities Save
             </h2>
             <p className="text-[#1F2937]/80 max-w-2xl mx-auto text-base sm:text-lg">
-              From Lagos and London to Accra and Atlanta, hear how circle organizers and savers manage their rotations with trust and zero wahala.
+              From family circles and diaspora savings to alumni funds and workplace thrift pools, Àjọṣe removes manual tracking, awkward WhatsApp follow-ups, and settlement delays.
             </p>
           </motion.div>
           
-          {/* Interactive Community Testimonials Carousel: Pause on Hover (Desktop), Pause on Tap, Native Touch Swipe/Scroll (Mobile) */}
-          {communityTestimonials.length > 2 ? (
-            <CommunityTestimonialsCarousel testimonials={communityTestimonials} />
-          ) : (
-            /* Classic Static Grid for <= 2 items */
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {communityTestimonials.map((testimonial, i) => (
-                <motion.div 
-                  variants={fadeIn}
-                  key={i} 
-                  className="bg-[#FDFBF7] p-8 rounded-2xl shadow-md border border-[#C5A059]/25 flex flex-col justify-between hover:shadow-xl hover:border-[#C5A059]/60 transition-all duration-300"
-                  whileHover={{ y: -5, boxShadow: "0px 12px 35px rgba(0,0,0,0.06)" }}
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-3 mb-6">
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star key={star} className="w-4 h-4 fill-[#C5A059] text-[#C5A059]" />
-                        ))}
-                      </div>
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0B3022]/5 border border-[#0B3022]/10 text-xs font-semibold text-[#0B3022]">
-                        <CountryFlag code={testimonial.countryCode || "NG"} size="xs" />
-                        <span>{testimonial.location || testimonial.country || "Nigeria"}</span>
-                      </div>
+          {/* Real Community Use Cases Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {[
+              {
+                icon: HeartHandshake,
+                category: "Family & Diaspora",
+                title: "Cross-Border Family Circles",
+                desc: "Keep family savings coordinated across London, Atlanta, Toronto, and Lagos. Members contribute via secure Open Banking while turn recipients collect their pot directly in Naira.",
+                highlight: "Zero Remittance Hassle"
+              },
+              {
+                icon: Briefcase,
+                category: "Workplace & Office",
+                title: "Salary-Aligned Thrift",
+                desc: "Synchronize monthly rotations with payday. Automated direct debits ensure colleagues never miss a contribution, keeping workplace relationships free of financial friction.",
+                highlight: "Payday Direct Debit"
+              },
+              {
+                icon: GraduationCap,
+                category: "Alumni & Friends",
+                title: "High-Volume Capital Pools",
+                desc: "Manage high-value pots with total accountability. A transparent live roster and 2-way payout handshake ensure everyone sees who has contributed before the turn advances.",
+                highlight: "Two-Way Handshake"
+              },
+              {
+                icon: Building2,
+                category: "Markets & Co-ops",
+                title: "Daily & Weekly Thrift",
+                desc: "High-frequency micro-rotations built for traders and cooperative members. Automated morning sweeps with flat ₦100 or ₦300 fees eliminate cash handling risks.",
+                highlight: "Flat ₦100/₦300 Sweeps"
+              }
+            ].map((useCase, idx) => (
+              <motion.div
+                variants={fadeIn}
+                key={idx}
+                className="bg-[#FDFBF7] p-6 rounded-2xl shadow-md border border-[#C5A059]/30 flex flex-col justify-between hover:shadow-xl hover:border-[#C5A059]/80 transition-all duration-300"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-[#0B3022] flex items-center justify-center text-[#C5A059] shadow-xs">
+                      <useCase.icon className="w-5 h-5" />
                     </div>
-                    <p className="text-[#1F2937]/90 text-lg leading-relaxed mb-8 italic">
-                      &ldquo;{testimonial.quote}&rdquo;
-                    </p>
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-[#0B3022]/5 text-[#0B3022] px-2.5 py-1 rounded-full border border-[#0B3022]/10">
+                      {useCase.category}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-                    <div className="w-12 h-12 rounded-full bg-[#0B3022] flex items-center justify-center text-white font-bold text-lg">
-                      {testimonial.author ? testimonial.author[0] : "A"}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-[#0B3022]">{testimonial.author}</h4>
-                      <p className="text-sm text-[#1F2937]/60">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+
+                  <h3 className="text-base sm:text-lg font-bold text-[#0B3022] mb-2 leading-snug">
+                    {useCase.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#1F2937]/75 leading-relaxed mb-4">
+                    {useCase.desc}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-[#C5A059]/20 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#0B3022]">
+                    ✓ {useCase.highlight}
+                  </span>
+                  <Link href="/signup" className="text-[11px] font-bold text-[#C5A059] hover:underline flex items-center gap-0.5">
+                    Start Circle &rarr;
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </section>
 
@@ -1099,7 +1030,7 @@ export default function Home() {
               },
               { 
                 q: "What happens if someone defaults or misses a sweep?", 
-                a: "Àjọṣe enforces a 4-tier default protection protocol: (1) Automated smart retries trigger throughout the day at 6:00 AM, 12:00 PM, and 6:00 PM WAT; (2) Instant 1-click fallback payment links are dispatched via SMS & WhatsApp; (3) Unresolved defaults freeze future payouts and apply a 15% late settlement recovery penalty; and (4) The defaulter incurs an immediate -50 point penalty on their global Ajo Credit Score, with potential nationwide credit restrictions." 
+                a: "Àjọṣe enforces a 4-tier default protection protocol: (1) Automated smart retries trigger throughout the day at 6:00 AM, 12:00 PM, and 6:00 PM WAT; (2) Instant 1-click fallback payment links are dispatched via SMS & WhatsApp; (3) Unresolved defaults freeze future payouts and apply an organizer-configured late settlement fee to compensate the turn recipient; and (4) The defaulter incurs an immediate reduction on their Àjọṣe Trust Score and is restricted from joining other circles until resolved." 
               },
               { 
                 q: "When are contributions swept and payouts disbursed?", 
@@ -1131,7 +1062,7 @@ export default function Home() {
               },
               { 
                 q: "Is my personal and financial data secure?", 
-                a: "Yes. All ledger histories and participant verifications are encrypted with bank-grade AES-256 encryption. Our banking integrations run securely through Open Banking (Mono)—we never view or store your banking passwords or PINs." 
+                a: "Yes. All data and payment communications are encrypted with AES-256 encryption. Our banking integrations run securely through Open Banking (Mono)—we never view or store your banking passwords or PINs, and operations comply with NDPR standards." 
               }
             ].map((faq, i) => (
               <motion.div 

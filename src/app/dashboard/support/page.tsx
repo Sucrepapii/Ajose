@@ -18,7 +18,7 @@ export default function SupportPage() {
     },
     {
       q: "What happens if a member misses their turn or defaults?",
-      a: "We deploy an automated 4-tier default protection protocol: (1) Smart retry sweeps at 6:00 AM, 12:00 PM, and 6:00 PM WAT; (2) 1-click fallback transfer links sent via SMS and WhatsApp; (3) 15% late settlement penalty with frozen payouts on unresolved defaults; and (4) -50 point deduction on global Ajo Credit Score plus credit blacklisting restrictions."
+      a: "We deploy an automated 4-tier default protection protocol: (1) Smart retry sweeps at 6:00 AM, 12:00 PM, and 6:00 PM WAT; (2) 1-click fallback transfer links sent via SMS and WhatsApp; (3) Circle-agreed late fee with frozen payouts on unresolved defaults; and (4) platform Trust Score reduction plus circle restriction until resolved."
     },
     {
       q: "When are contribution sweeps collected and payouts disbursed?",

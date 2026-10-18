@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
       customerPhone = "0" + customerPhone.slice(3);
     }
 
-    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "https://www.ajose.ng";
+    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "https://ajose.ng";
     const redirectUrl = `${origin}/dashboard/groups/${groupId || ""}?mandate=success&ref=${reference}`;
 
     const startDate = new Date().toISOString().split("T")[0];

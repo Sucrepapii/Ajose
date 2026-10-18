@@ -235,9 +235,9 @@ export function AdminDefaultsClient({
               <ShieldAlert className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-sm">Defaulter Enforcement &amp; Bureau Blacklisting</h3>
+              <h3 className="font-bold text-white text-sm">Defaulter Enforcement &amp; Platform Restrictions</h3>
               <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Members who collect rotational funds early and refuse subsequent contributions undergo automated multi-bank recovery sweeps through Mono Open-Banking. Irrecoverable accounts are reported to CRC Credit Bureau &amp; FirstCentral via verified BVN / NIN records.
+                Members who collect rotational funds early and refuse subsequent contributions undergo automated recovery sweeps through Mono Open-Banking. Irrecoverable accounts are penalized with -50 Trust Score and platform-wide circle restrictions.
               </p>
             </div>
           </div>
@@ -397,15 +397,15 @@ export function AdminDefaultsClient({
                 <ShieldAlert className="h-6 w-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-white tracking-tight">Credit Bureau Blacklisting</h3>
+                <h3 className="text-base font-bold text-white tracking-tight">Defaulter Platform Restriction</h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Submit non-compliance default record for <strong className="text-white">{bureauModalTarget.memberName}</strong> to CRC &amp; FirstCentral.
+                  Record permanent non-compliance default for <strong className="text-white">{bureauModalTarget.memberName}</strong> on platform risk registry.
                 </p>
               </div>
             </div>
 
             <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 text-xs text-red-200/90 leading-relaxed">
-              This action reports the default to Nigeria&apos;s national credit infrastructure, restricting credit facilities across commercial banks and fintechs.
+              This action severely penalizes the user&apos;s Àjọṣe Trust Score and restricts them from joining or creating circles on the platform.
             </div>
 
             {/* Double Opt-In Checkbox */}

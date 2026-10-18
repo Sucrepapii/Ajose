@@ -165,7 +165,7 @@ export default function AboutPage() {
               We founded Àjọṣe to banish that shadow for good.
             </p>
             <p>
-              We saw an opportunity to elevate a time-honored tradition by giving it a modern backbone. We didn't come to replace the soul of the circle; we came to fortify it. By weaving in ironclad KYC protocols, we replace blind trust with verifiable identity. By introducing automated, tamper-proof ledgers, we replace the anxiety of manual counting with absolute, real-time clarity. And with seamless, direct bank payouts, we replace the risk of a lost envelope with the certainty of a digital transaction.
+              We saw an opportunity to elevate a time-honored tradition by giving it a modern backbone. We didn't come to replace the soul of the circle; we came to fortify it. By weaving in ironclad KYC protocols, we replace blind trust with verifiable identity. By introducing automated, audited ledgers, we replace the anxiety of manual counting with absolute, real-time clarity. And with seamless, direct bank payouts, we replace the risk of a lost envelope with the certainty of a digital transaction.
             </p>
             <p>
               We are not just building an app; we are building a renaissance in collaborative finance. We are preserving the profound human connection of the circle, while stripping away the fear that has held it back for centuries. Àjọṣe is where ancient tradition meets modern engineering. It is where the collective strength of the community is safeguarded by the unshakeable reliability of code.

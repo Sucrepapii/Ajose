@@ -40,8 +40,8 @@ const POSTS = [
   },
   {
     id: 4,
-    title: "Protecting Your Contribution Pool: The Immutable Ledger",
-    excerpt: "Trust but verify. How Àjọṣe uses immutable ledger technology to ensure no administrator or member can secretly alter the payout history.",
+    title: "Protecting Your Contribution Pool: The Transparent Audited Ledger",
+    excerpt: "Trust but verify. How Àjọṣe uses verifiable ledger architecture to ensure no administrator or member can secretly alter the payout history.",
     date: "Aug 30, 2026",
     category: "Security",
     readTime: "6 min read",

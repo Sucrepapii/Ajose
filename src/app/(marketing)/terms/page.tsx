@@ -56,17 +56,17 @@ export default function TermsOfServicePage() {
             4.2. <strong>Default Remedies:</strong> In the event that a User receives an Ajo Pot disbursement and subsequently fails a scheduled Mono direct debit or attempts to evade repayment, We reserve the right to immediately execute the following legal remedies without further recourse:
           </p>
           <ul className="list-decimal pl-6 space-y-2 mt-2">
-            <li>Immediate and permanent blacklisting from the Platform and affiliated PSSP networks.</li>
-            <li>Reporting of the default and the User's BVN/NIN to the National Credit Identity database and licensed Credit Bureaus in Nigeria.</li>
-            <li>Sharing of the User's identity, transactional data, and mandate records with lawful, licensed debt collection agencies and law enforcement for the purpose of asset recovery and criminal prosecution.</li>
+            <li>Immediate and permanent suspension of the User's account and restriction from participating in future circles on the Platform.</li>
+            <li>Reduction of the User's platform Trust Score and recording of default status on the platform's internal risk registry.</li>
+            <li>Exercising legal recovery remedies in accordance with applicable Nigerian laws and sharing authorized transaction records with lawful collection partners and law enforcement where fraud is suspected.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">5. Mid-Cycle Exits, Cancellation, and 15% Early Departure Fine</h2>
+          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">5. Mid-Cycle Exits, Cancellation, and Agreed Departure Fees</h2>
           <p>
-            5.1. <strong>Pre-Cycle Modifications:</strong> Prior to the formal activation of an Ajo cycle (status: "pending"), the Group Admin may add or remove participants at will, and members may freely opt out without penalty, fine, or credit impact.
+            5.1. <strong>Pre-Cycle Modifications:</strong> Prior to the formal activation of an Ajo cycle (status: "pending"), the Group Admin may adjust member slots, and members may freely opt out without administrative fee or credit impact.
           </p>
           <p>
-            5.2. <strong>Mandatory 15% Exit Fine:</strong> Once an Ajo cycle is launched and active, any member who leaves, requests premature withdrawal, or is removed for non-cooperation disrupts the collective rotational liquidity and is legally subject to an early departure fine of <strong>15% of their scheduled contribution amount</strong>. This fine is strictly apportioned as follows:
+            5.2. <strong>Agreed Administrative Exit Fee:</strong> Once an Ajo cycle is launched and active, any member who leaves, requests premature withdrawal, or is removed for non-cooperation disrupts collective rotational liquidity and agrees to an administrative departure fee of <strong>15% of their scheduled contribution amount</strong> to cover disruption costs. This fee is apportioned as follows:
           </p>
           <ul className="list-disc pl-6 space-y-2 mt-2">
             <li><strong>10% to the Group Admin:</strong> Compensating the Admin trustee for administrative restructuring, managing collection shortfalls, and onboarding a replacement member.</li>
