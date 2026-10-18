@@ -163,7 +163,7 @@ export function InteractiveRevenueCalculator({
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#C5A059] shrink-0" />
-              <span>Zero Cash Handling / Safe Escrow</span>
+              <span>Zero Cash Handling / Automated Payouts</span>
             </div>
           </div>
 
@@ -218,7 +218,7 @@ export function InteractiveRevenueCalculator({
             </Link>
             
             <p className="text-[11px] text-white/60">
-              No subscription fee &bull; Free to create &bull; Zero risk non-custodial
+              No subscription fee &bull; Free to create &bull; Automated settlement
             </p>
           </div>
 

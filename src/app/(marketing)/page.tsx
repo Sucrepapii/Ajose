@@ -104,7 +104,7 @@ export default function Home() {
       location: "Abuja, Nigeria"
     },
     {
-      quote: "We organize our quarterly business expansion circle from Ontario. The non-custodial structure is exactly what we needed to trust the platform.",
+      quote: "We organize our quarterly business expansion circle from Ontario. The automated bank debits and transparent ledgers are exactly what we needed to trust the platform.",
       author: "David O.",
       role: "Business Circle Member",
       rating: 5,
@@ -181,7 +181,7 @@ export default function Home() {
                 variants={fadeIn}
                 className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl"
               >
-                Run your Ajo. Track every round. Trust every naira. Ditch messy WhatsApp groups and handwritten ledgers for an automated, transparent contribution platform built for Nigerians.
+                Àjọṣe helps groups run Ajo (esusu, susu, adashi) without the chasing. Contributions are collected automatically by bank debit through Mono. Once NIBSS settles the funds, the payout is credited to the member whose turn it is. Every round is recorded on a ledger the whole group can see.
               </motion.p>
               
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4">
@@ -209,17 +209,17 @@ export default function Home() {
               >
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>CBN-Regulated Settlement</strong> via Paylode PSSP</span>
+                  <span><strong>Automatic Collection</strong> via Mono</span>
                 </div>
                 <span className="hidden sm:inline text-white/30">•</span>
                 <div className="flex items-center gap-2">
                   <Lock className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>Mono Direct Debit</strong> &amp; <strong>T+1 Auto-Disburse</strong></span>
+                  <span><strong>Automated Payouts</strong> via NIBSS Settlement</span>
                 </div>
                 <span className="hidden sm:inline text-white/30">•</span>
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>100% Non-Custodial</strong> Direct Pass-Through</span>
+                  <span><strong>Doesn&apos;t Hold Onto</strong> Group Funds</span>
                 </div>
               </motion.div>
             </motion.div>
@@ -317,10 +317,10 @@ export default function Home() {
             </div>
             <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm flex flex-col justify-center">
               <span className="block text-lg sm:text-xl font-black text-white font-serif mb-1.5">
-                Direct Bank-to-Bank
+                Automatic Payouts
               </span>
               <span className="text-xs text-gray-300 font-medium leading-relaxed">
-                Àjọṣe never holds your money, funds settle directly to each recipient.
+                Once settled, payouts are credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds.
               </span>
             </div>
             <div className="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm flex flex-col justify-center">
@@ -641,7 +641,7 @@ export default function Home() {
 
                   <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-gray-300">
                     <span>Live Mono Open Banking Feed</span>
-                    <span className="text-[#C5A059] font-bold">100% Non-Custodial</span>
+                    <span className="text-[#C5A059] font-bold">Automated Settlement</span>
                   </div>
                 </div>
               </motion.div>
@@ -722,7 +722,7 @@ export default function Home() {
                         desc: "Where your contributions are held",
                         whatsapp: { text: "Admin Personal Acct", sub: "Risky phone custody with organizer", status: "bad" },
                         fintech: { text: "Corporate Omnibus", sub: "Fintech company holds the funds", status: "neutral" },
-                        ajose: { text: "100% Non-Custodial", sub: "Direct pass-through to collector", status: "good" }
+                        ajose: { text: "Automated Payouts", sub: "Doesn't hold onto group funds", status: "good" }
                       },
                       {
                         title: "Organizer Monetization",
@@ -1087,11 +1087,11 @@ export default function Home() {
             {[
               { 
                 q: "Where is our money held, and how do payouts work?", 
-                a: "Funds move securely through CBN-licensed commercial banking rails directly to the designated settlement recipient (or circle admin) on their scheduled turn date via Mono auto-disbursement (T+1). Àjọṣe operates as a non-custodial automated ledger and enforcement platform — we never hold, pool, or lock member capital in an intermediary escrow." 
+                a: "Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe's wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn't hold onto group funds." 
               },
               { 
                 q: "How does the automated direct-debit (Mono) sweep work?", 
-                a: "When you join a circle, you securely link your verified commercial bank account through CBN-licensed Open-Banking rails (Mono). On scheduled sweep days, the exact contribution is debited automatically from your account via Mono Open-Banking. No manual bank transfers, no uploading payment screenshots, and no chasing members." 
+                a: "When you join a circle, you securely link your verified commercial bank account through Open-Banking rails (Mono). On scheduled sweep days, the exact contribution is debited automatically from your account via Mono. No manual bank transfers, no uploading payment screenshots, and no chasing members." 
               },
               { 
                 q: "Why is BVN identity verification required?", 
@@ -1131,7 +1131,7 @@ export default function Home() {
               },
               { 
                 q: "Is my personal and financial data secure?", 
-                a: "Yes. All ledger histories and participant verifications are encrypted with bank-grade AES-256 encryption. Our banking integrations run exclusively through CBN-licensed Open Banking (Mono) and licensed PSSP partners—we never view or store your banking passwords or PINs." 
+                a: "Yes. All ledger histories and participant verifications are encrypted with bank-grade AES-256 encryption. Our banking integrations run securely through Open Banking (Mono)—we never view or store your banking passwords or PINs." 
               }
             ].map((faq, i) => (
               <motion.div 

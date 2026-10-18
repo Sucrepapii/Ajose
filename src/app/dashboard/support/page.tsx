@@ -6,7 +6,7 @@ export default function SupportPage() {
   const faqs = [
     {
       q: "Where is our money held, and how do payouts arrive?",
-      a: "Contributions move directly via automated Mono direct-debit sweeps and licensed payment processors into the verified settlement account of the turn recipient. We operate as a non-custodial automated ledger and enforcement platform — we never hold or escrow member funds."
+      a: "Contributions are collected automatically by bank debit through Mono. Once NIBSS settles the funds into Àjọṣe's wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn't hold onto group funds."
     },
     {
       q: "How does the automated direct-debit (Mono) sweep work?",

@@ -378,13 +378,13 @@ export default function CreateGroupPage() {
           {step === 2 && (
             <div className="space-y-6 animate-in fade-in duration-300">
               
-              {/* Regulatory Notice Banner */}
+              {/* Platform Notice Banner */}
               <div className="bg-[#0B3022]/5 border border-[#0B3022]/15 rounded-xl p-4 flex gap-3 text-sm text-[#0B3022]">
                 <ShieldCheck className="h-6 w-6 text-[#C5A059] flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <p className="font-bold">Non-Custodial Direct Pass-Through Architecture</p>
+                  <p className="font-bold">Automated Collection &amp; Payout Architecture</p>
                   <p className="text-[#1F2937]/80 text-xs leading-relaxed">
-                    Àjọṣe is a software platform, not a deposit-taking bank. We do not hold pooled money. Each admin tenders a designated settlement bank account. Members' contributions are paid directly into this account, and scheduled payouts are automatically debited from this account to turn beneficiaries.
+                    Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe&apos;s wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds.
                   </p>
                 </div>
               </div>

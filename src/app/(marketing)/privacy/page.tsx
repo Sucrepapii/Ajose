@@ -36,17 +36,17 @@ export default function PrivacyPolicyPage() {
             1.3. <strong>Data Processed:</strong> Upon your explicit digital mandate, we pull and process the following data streams via Mono: financial account metadata, transactional history, and electronic bank statements. We process this data strictly for the purposes of Know Your Customer (KYC) verification, algorithmic risk scoring, and monitoring the disbursement/contribution lifecycle of your Ajo groups.
           </p>
 
-          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">2. NDPA Data Minimization vs. CBN Regulatory Retention</h2>
+          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">2. NDPA Data Minimization vs. Statutory Record Retention</h2>
           <p>
-            2.1. <strong>Statutory Conflict Resolution:</strong> The NDPA 2023 mandates the principle of data minimization and the prompt deletion of personal data when the original purpose of collection has been extinguished. However, operating with our CBN-licensed Payment Solution Service Provider (PSSP) infrastructure partner <strong>Paylode Services Limited</strong>, we are concurrently bound by the Central Bank of Nigeria Anti-Money Laundering and Combating the Financing of Terrorism (AML/CFT) Regulations.
+            2.1. <strong>Statutory Conflict Resolution:</strong> The NDPA 2023 mandates the principle of data minimization and the prompt deletion of personal data when the original purpose of collection has been extinguished. However, under applicable Nigerian financial services and Anti-Money Laundering and Combating the Financing of Terrorism (AML/CFT) regulations, we are concurrently bound by mandatory record retention directives.
           </p>
           <p>
-            2.2. <strong>Retention Period:</strong> In resolving this statutory overlap, we rely on the legal obligation basis for processing under the NDPA. Consequently, regardless of account closure or withdrawal of consent, all financial transaction data, identity verification records (BVN/NIN), and mandate logs shall be securely retained in our encrypted archives for a mandatory, non-negotiable period of <strong>five (5) years</strong> post-transaction, in strict accordance with CBN directives.
+            2.2. <strong>Retention Period:</strong> In resolving this statutory overlap, we rely on the legal obligation basis for processing under the NDPA. Consequently, regardless of account closure or withdrawal of consent, all financial transaction data, identity verification records (BVN/NIN), and mandate logs shall be securely retained in our encrypted archives for a mandatory, non-negotiable period of <strong>five (5) years</strong> post-transaction, in strict accordance with statutory recordkeeping directives.
           </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">3. Lawful Basis and Data Subject Rights</h2>
           <p>
-            3.1. <strong>Processing Basis:</strong> We process your data based on: (a) explicit consent, (b) the performance of a contract (facilitating the Ajo cycle), and (c) compliance with a legal obligation (CBN regulations).
+            3.1. <strong>Processing Basis:</strong> We process your data based on: (a) explicit consent, (b) the performance of a contract (facilitating the Ajo cycle), and (c) compliance with applicable legal obligations.
           </p>
           <p>
             3.2. <strong>Your Rights:</strong> Subject to the limitations set forth in Section 2.2, you retain the statutory right under the NDPA to request access to, rectification of, or restriction of processing concerning your personal data. Formal requests must be directed to our Data Protection Officer (DPO).

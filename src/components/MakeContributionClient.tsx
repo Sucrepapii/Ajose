@@ -266,7 +266,7 @@ export function MakeContributionClient({
                 <Landmark className="h-5 w-5 text-[#0B3022]" />
               </div>
               <h2 className="text-lg font-bold text-[#0B3022]">Contribution Turn {currentTurn}</h2>
-              <p className="text-[#1F2937]/70 text-xs font-medium">Non-Custodial Direct Settlement</p>
+              <p className="text-[#1F2937]/70 text-xs font-medium">Automated Settlement</p>
             </div>
 
             <div className="p-5 overflow-y-auto space-y-4">
@@ -340,7 +340,7 @@ export function MakeContributionClient({
                         <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-start gap-2.5 text-xs text-amber-900 animate-in fade-in">
                           <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                           <p>
-                            <strong>Auto-debit was declined.</strong> Àjọṣe is non-custodial and never holds group pool funds. Please complete your contribution by transferring directly to the <strong>Admin&apos;s Settlement Account</strong> below using your unique narration code.
+                            <strong>Auto-debit was declined.</strong> Àjọṣe doesn&apos;t hold onto group funds. Please complete your contribution by transferring directly to the <strong>Admin&apos;s Settlement Account</strong> below using your unique narration code.
                           </p>
                         </div>
                       )}

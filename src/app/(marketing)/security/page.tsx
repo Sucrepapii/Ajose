@@ -87,32 +87,32 @@ export default function SecurityPage() {
             </div>
             <div>
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#C5A059]">
-                Regulatory Disclosure &amp; Operational Licensing
+                Platform Disclosure &amp; Operational Architecture
               </span>
               <h3 className="text-2xl font-black text-[#0B3022]">Payment Infrastructure &amp; Open Banking Rails</h3>
             </div>
           </div>
 
           <p className="text-[#1F2937]/90 leading-relaxed font-medium text-base mb-6">
-            <strong>Regulatory Disclosure:</strong> Àjọṣe is a financial technology platform, not a bank. Payment processing, fund settlement, and transactional switching infrastructure are powered by <strong>Paylode Services Limited</strong>, licensed and regulated by the Central Bank of Nigeria (CBN) as a Payment Solution Service Provider (PSSP). Automated Direct Debit sweeps and T+1 auto-disbursement payouts are powered by <strong>Mono Open Banking</strong>. All member contributions are held directly within authorized commercial bank accounts.
+            <strong>Platform Disclosure:</strong> Àjọṣe is a financial technology platform, not a bank. Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe&apos;s wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-gray-100 text-xs font-mono">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              Paylode (CBN Licensed PSSP)
-            </span>
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-medium">
               <span className="w-2 h-2 rounded-full bg-blue-500" />
               Mono Direct Debit
             </span>
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              NIBSS Settlement
+            </span>
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-purple-50 text-purple-800 border border-purple-200 font-medium">
               <span className="w-2 h-2 rounded-full bg-purple-500" />
-              Mono T+1 Auto-Disburse
+              Automated Payouts
             </span>
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 font-medium">
               <span className="w-2 h-2 rounded-full bg-amber-500" />
-              Non-Custodial Architecture
+              Transparent Ledger
             </span>
           </div>
         </div>

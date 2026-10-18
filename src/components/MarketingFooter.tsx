@@ -23,7 +23,7 @@ export function MarketingFooter() {
               &ldquo;Turn by turn, no wahala.&rdquo;
             </p>
             <p className="text-gray-300 leading-relaxed max-w-sm">
-              Ajose is the digital platform that runs your Ajo group, collecting contributions, tracking every round, and making sure everyone gets their turn. Turn by turn, no wahala.
+              Àjọṣe is a digital Ajo platform that automates contributions, turns and payouts for savings groups. Turn by turn, no wahala.
             </p>
           </div>
 
@@ -76,17 +76,17 @@ export function MarketingFooter() {
             <p>© {new Date().getFullYear()} Àjọṣe Technologies Ltd. All rights reserved.</p>
             <span className="hidden sm:inline text-white/20">•</span>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                Paylode (CBN PSSP)
-              </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono text-[11px] font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                 Mono Direct Debit
               </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[11px] font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                NIBSS Settlement
+              </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-400 font-mono text-[11px] font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-                Mono T+1 Auto-Disburse
+                Automated Payouts
               </span>
             </div>
           </div>

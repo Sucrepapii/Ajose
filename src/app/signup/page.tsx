@@ -871,7 +871,7 @@ export default function SignupPage() {
                                   </button>
                                 </div>
                                 <p className="text-[11px] text-amber-800 bg-amber-50/80 p-2 rounded-lg border border-amber-200/60 leading-relaxed">
-                                  🔒 <strong>CBN Security Rule:</strong> Mono &amp; NIBSS only deliver OTPs to numbers already registered on your BVN at your bank. If no secondary number exists on file, NIBSS returns <em>&quot;Alternate number not available&quot;</em>. In that case, use your <strong>Primary BVN Phone</strong> or <strong>Verify Instantly with BVN Name Match</strong> below.
+                                  🔒 <strong>NIBSS Security Rule:</strong> Mono &amp; NIBSS only deliver OTPs to numbers already registered on your BVN at your bank. If no secondary number exists on file, NIBSS returns <em>&quot;Alternate number not available&quot;</em>. In that case, use your <strong>Primary BVN Phone</strong> or <strong>Verify Instantly with BVN Name Match</strong> below.
                                 </p>
                               </div>
                             </div>

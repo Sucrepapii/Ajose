@@ -41,10 +41,10 @@ export function RulesModal() {
               <div className="space-y-1.5">
                 <h3 className="font-bold text-[#0B3022] flex items-center gap-2 text-sm">
                   <Landmark className="h-4 w-4 text-[#C5A059]" />
-                  1. Non-Custodial Pass-Through Architecture
+                  1. Automated Collection &amp; Payout Architecture
                 </h3>
                 <p>
-                  Àjọṣe is a licensed technology provider and is <strong>not a commercial deposit bank</strong>. We do not hold user money. Each Admin tenders an authorized settlement bank account. Contributions are deposited directly into this account and rotational payouts are automatically debited from it. If an auto-debit fails, manual bank transfers must be sent directly to the Admin&apos;s settlement account with your unique narration code, never to Àjọṣe.
+                  Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe&apos;s wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds. If an auto-debit fails, manual bank transfers must be sent directly to the Admin&apos;s settlement account with your unique narration code.
                 </p>
               </div>
 

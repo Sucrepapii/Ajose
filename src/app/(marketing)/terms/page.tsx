@@ -25,18 +25,16 @@ export default function TermsOfServicePage() {
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">1. Definitions and Interpretation</h2>
           <ul className="list-disc pl-6 space-y-2">
             <li><strong>"Ajo Pot"</strong> means the collective funds contributed by a group of Users for cyclical disbursement.</li>
-            <li><strong>"CBN"</strong> means the Central Bank of Nigeria.</li>
-            <li><strong>"Paylode"</strong> refers to Paylode Services Limited, the licensed Payment Solution Service Provider (PSSP) powering payment gateways, card debits, switching, and settlement infrastructure for the Platform.</li>
             <li><strong>"Mono"</strong> refers to our integrated open-banking and direct debit infrastructure partner.</li>
-            <li><strong>"PSSP"</strong> means Payment Solution Service Provider licensed and regulated by the Central Bank of Nigeria (CBN).</li>
+            <li><strong>"NIBSS"</strong> means the Nigeria Inter-Bank Settlement System.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">2. Licensing Framework and Operational Capacity</h2>
+          <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">2. Operational Capacity &amp; Settlement Architecture</h2>
           <p>
-            2.1. <strong>Payment Infrastructure &amp; Licensing:</strong> Payment processing, debit switching, card transactions, and automated settlement infrastructure on Àjọṣe are powered by <strong>Paylode Services Limited</strong>, operating under a Payment Solution Service Provider (PSSP) license issued and regulated by the Central Bank of Nigeria (CBN). Ajose Technologies provides non-custodial rotating credit software. We are <strong>not</strong> a licensed commercial bank, nor are we a deposit-taking Mobile Money Operator (MMO).
+            2.1. <strong>Operational Role:</strong> Àjọṣe is a digital platform that automates contributions, turns, and payouts for savings groups. We are <strong>not</strong> a commercial deposit bank, nor do we offer banking services independently.
           </p>
           <p>
-            2.2. <strong>Fund Escrow:</strong> We do not hold, absorb, or leverage User deposits. All customer funds ("Ajo Pots") are securely routed, settled, and escrowed exclusively via regulated commercial partner banks in strict compliance with CBN client-fund segregation guidelines.
+            2.2. <strong>Fund Movement:</strong> Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe&apos;s wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds.
           </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">3. Mono Direct Debit and Mandate Authorization</h2>
@@ -47,7 +45,7 @@ export default function TermsOfServicePage() {
             3.2. <strong>User Liability:</strong> You bear absolute legal and financial liability for any revoked mandates, deliberately emptied bank accounts, or otherwise willfully failed automated debits. The revocation of a Mono mandate while you have an outstanding obligation to an active Ajo cycle constitutes a material breach of this Agreement and prima facie evidence of intent to defraud the group.
           </p>
           <p>
-            3.3. <strong>Failed Auto-Debit Protocol & Non-Custodial Direct Settlement:</strong> In the event that a scheduled automated Mono direct debit sweep fails or is declined by your issuing bank (due to insufficient funds, temporary network downtime, or bank limits), <strong>you must NOT attempt to remit payment to Àjọṣe corporate or central accounts</strong>. Àjọṣe operates strictly as a non-custodial technology platform and does not accept, custody, or escrow group pool deposits. To prevent default penalties and protect your credit score, you must immediately settle the outstanding contribution by initiating a direct bank transfer to the <strong>Circle Admin's Tendered Settlement Account</strong> citing your unique circle Narration Code. Once the deposit matches on the Admin's bank statement via Mono or is confirmed by the Admin, the contribution ledger will be credited.
+            3.3. <strong>Failed Auto-Debit Protocol &amp; Manual Settlement:</strong> In the event that a scheduled automated Mono direct debit sweep fails or is declined by your issuing bank (due to insufficient funds, temporary network downtime, or bank limits), the system will retry debits and send reminder notifications. You may also settle your contribution by initiating a direct transfer to the <strong>Circle Admin&apos;s Settlement Account</strong> citing your unique circle Narration Code. Once the deposit matches on the Admin&apos;s bank statement via Mono or is confirmed by the Admin, the contribution ledger will be credited.
           </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">4. Default, Indemnity, and Recovery Mechanisms</h2>

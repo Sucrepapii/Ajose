@@ -918,10 +918,10 @@ export default function InvitePage(props: {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
                   <ShieldCheck className="h-4 w-4" />
-                  1. Non-Custodial Direct Pass-Through Architecture
+                  1. Automated Collection &amp; Payout Architecture
                 </div>
                 <p>
-                  Àjọṣe operates under Nigerian payment processing frameworks and is <strong>not a commercial deposit bank</strong>. We do not hold, leverage, or escrow pooled funds. All member contributions pass directly through the Group Admin's designated settlement bank account and are automatically debited directly to the receiving member on their scheduled payout turn.
+                  Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe&apos;s wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds.
                 </p>
               </div>
 

@@ -482,7 +482,7 @@ export function GroupSettingsClient({
             </div>
             <div>
               <h2 className="text-lg font-bold text-[#0B3022]">Admin Tendered Settlement Account</h2>
-              <p className="text-[#1F2937]/70 text-xs font-medium">Non-Custodial Pass-Through & Auto-Debit Engine</p>
+              <p className="text-[#1F2937]/70 text-xs font-medium">Automated Settlement &amp; Auto-Debit Engine</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

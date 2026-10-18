@@ -86,9 +86,9 @@ def generate_og_image():
     
     # 5. Three Trust Badges at Bottom
     badges = [
-        "100% Non-Custodial",
+        "Automated Payouts",
         "Mono Open-Banking",
-        "Direct Bank-to-Bank"
+        "Transparent Ledger"
     ]
     badge_x = left_x
     badge_y = 445

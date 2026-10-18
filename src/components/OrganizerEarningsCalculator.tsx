@@ -68,7 +68,7 @@ export function OrganizerEarningsCalculator({
           <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-white/90">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-[#C5A059]" />
-              <span>Direct Bank-to-Bank (Non-Custodial)</span>
+              <span>Automated Collection &amp; Payouts</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-[#C5A059]" />
