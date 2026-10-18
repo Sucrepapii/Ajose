@@ -88,23 +88,15 @@ export async function POST(req: NextRequest) {
 
         // Resolve monthly fee percentage: configured on user, or on group admin, or default 2%
         let feePct = 2.0;
-        if (typeof (profile as any)?.custom_platform_fee_pct === "number" && (profile as any).custom_platform_fee_pct >= 0) {
-          feePct = (profile as any).custom_platform_fee_pct;
+        const profileFee = (profile as any)?.user_metadata?.custom_platform_fee_pct ?? (profile as any)?.custom_platform_fee_pct;
+        if (typeof profileFee === "number" && profileFee >= 0) {
+          feePct = profileFee;
         } else if (group.admin_id) {
           try {
-            const { data: adminUser } = await adminClient
-              .from("users")
-              .select("custom_platform_fee_pct")
-              .eq("id", group.admin_id)
-              .maybeSingle();
-            if (typeof adminUser?.custom_platform_fee_pct === "number" && adminUser.custom_platform_fee_pct >= 0) {
-              feePct = adminUser.custom_platform_fee_pct;
-            } else {
-              const { data: adminAuth } = await adminClient.auth.admin.getUserById(group.admin_id);
-              const authFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
-              if (typeof authFee === "number" && authFee >= 0) {
-                feePct = authFee;
-              }
+            const { data: adminAuth } = await adminClient.auth.admin.getUserById(group.admin_id);
+            const authFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
+            if (typeof authFee === "number" && authFee >= 0) {
+              feePct = authFee;
             }
           } catch {}
         }

@@ -141,8 +141,7 @@ async function handlePreDebitReminders(req: NextRequest) {
             last_name,
             nickname,
             phone,
-            auto_sweep_enabled,
-            custom_platform_fee_pct
+            auto_sweep_enabled
           )
         `)
         .eq("group_id", group.id)
@@ -150,17 +149,14 @@ async function handlePreDebitReminders(req: NextRequest) {
 
       if (membersErr || !members) continue;
 
-      // Fetch group admin custom fee override if configured
+      // Fetch group admin custom fee override if configured (stored in auth user_metadata)
       let adminCustomFeePct: number | null = null;
       if (group.admin_id) {
         try {
-          const { data: adminUser } = await supabase
-            .from("users")
-            .select("custom_platform_fee_pct")
-            .eq("id", group.admin_id)
-            .maybeSingle();
-          if (typeof adminUser?.custom_platform_fee_pct === "number" && adminUser.custom_platform_fee_pct >= 0) {
-            adminCustomFeePct = adminUser.custom_platform_fee_pct;
+          const { data: adminAuth } = await supabase.auth.admin.getUserById(group.admin_id);
+          const authFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
+          if (typeof authFee === "number" && authFee >= 0) {
+            adminCustomFeePct = authFee;
           }
         } catch {}
       }
@@ -201,9 +197,7 @@ async function handlePreDebitReminders(req: NextRequest) {
         const isWeekly = group.frequency === "weekly";
 
         let feePct = 2.0;
-        if (typeof u.custom_platform_fee_pct === "number" && u.custom_platform_fee_pct >= 0) {
-          feePct = u.custom_platform_fee_pct;
-        } else if (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) {
+        if (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) {
           feePct = adminCustomFeePct;
         }
 

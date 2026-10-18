@@ -142,8 +142,7 @@ async function handleSweep(req: NextRequest) {
             bank_name,
             account_number,
             account_name,
-            bvn_verified,
-            custom_platform_fee_pct
+            bvn_verified
           )
         `)
         .eq("group_id", group.id)
@@ -158,23 +157,14 @@ async function handleSweep(req: NextRequest) {
         continue;
       }
 
-      // Fetch group admin custom fee override if configured
+      // Fetch group admin custom fee override if configured (stored in auth user_metadata)
       let adminCustomFeePct: number | null = null;
       if (group.admin_id) {
         try {
-          const { data: adminUser } = await supabase
-            .from("users")
-            .select("custom_platform_fee_pct")
-            .eq("id", group.admin_id)
-            .maybeSingle();
-          if (typeof adminUser?.custom_platform_fee_pct === "number" && adminUser.custom_platform_fee_pct >= 0) {
-            adminCustomFeePct = adminUser.custom_platform_fee_pct;
-          } else {
-            const { data: adminAuth } = await supabase.auth.admin.getUserById(group.admin_id);
-            const authFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
-            if (typeof authFee === "number" && authFee >= 0) {
-              adminCustomFeePct = authFee;
-            }
+          const { data: adminAuth } = await supabase.auth.admin.getUserById(group.admin_id);
+          const authFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;
+          if (typeof authFee === "number" && authFee >= 0) {
+            adminCustomFeePct = authFee;
           }
         } catch {}
       }
@@ -257,10 +247,20 @@ async function handleSweep(req: NextRequest) {
           const isDaily = group.frequency === "daily";
           const isWeekly = group.frequency === "weekly";
 
+          // Resolve member auth user_metadata for custom fee or mandate ID
+          let memberAuthUser: any = null;
+          if (member.user_id) {
+            try {
+              const { data: authUser } = await supabase.auth.admin.getUserById(member.user_id);
+              memberAuthUser = authUser?.user;
+            } catch {}
+          }
+
           // Resolve monthly fee percentage: configured on user, or on group admin, or default 2%
           let feePct = 2.0;
-          if (typeof userProfile?.custom_platform_fee_pct === "number" && userProfile.custom_platform_fee_pct >= 0) {
-            feePct = userProfile.custom_platform_fee_pct;
+          const userMetaFee = memberAuthUser?.user_metadata?.custom_platform_fee_pct;
+          if (typeof userMetaFee === "number" && userMetaFee >= 0) {
+            feePct = userMetaFee;
           } else if (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) {
             feePct = adminCustomFeePct;
           }
@@ -275,13 +275,7 @@ async function handleSweep(req: NextRequest) {
           let debitMessage = "";
 
           // Resolve member mandate ID: check database record, then Supabase Auth user_metadata
-          let mandateId = (member as any).mono_mandate_id || (userProfile as any)?.mono_mandate_id;
-          if (!mandateId && member.user_id) {
-            try {
-              const { data: authUser } = await supabase.auth.admin.getUserById(member.user_id);
-              mandateId = authUser?.user?.user_metadata?.mono_mandate_id;
-            } catch {}
-          }
+          const mandateId = (member as any).mono_mandate_id || (userProfile as any)?.mono_mandate_id || memberAuthUser?.user_metadata?.mono_mandate_id;
 
           const isTestCircle = (group.name || "").toLowerCase().includes("test");
           const allowSimulation = isSandbox || (isTestCircle && (process.env.PAYMENTS_MODE === "sandbox" || process.env.NODE_ENV !== "production"));
