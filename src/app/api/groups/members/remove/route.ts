@@ -111,10 +111,10 @@ export async function POST(req: Request) {
       });
     }
 
-    // SCENARIO 2: Cycle is ACTIVE (mid-cycle) -> Levy 15% Fine (10% Admin, 5% Ajose)
+    // SCENARIO 2: Cycle is ACTIVE (mid-cycle) -> Levy 15% Fine (10% Àjọṣe, 5% Admin)
     const contribAmount = group.contribution_amount || 50000;
-    const adminShare = Math.round(contribAmount * 0.10);
-    const platformShare = Math.round(contribAmount * 0.05);
+    const adminShare = Math.round(contribAmount * 0.05);
+    const platformShare = Math.round(contribAmount * 0.10);
     const fineToApply = adminShare + platformShare; // 15% total enforced from server policy (S13 fix)
 
     const actualAdminShare = adminShare;
@@ -142,7 +142,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Execute Mono Payout for the 10% Admin compensation share ONLY IF DEBIT SETTLES (S13 fix)
+    // 2. Execute Mono Payout for the 5% Admin compensation share ONLY IF DEBIT SETTLES (S13 fix)
     let monoAdminPayoutResult: any = null;
     if (actualAdminShare > 0 && monoDebitResult?.success) {
       const { data: adminUser } = await supabaseAdmin
@@ -160,7 +160,7 @@ export async function POST(req: Request) {
         recipientAccountNumber: adminUser.account_number,
         recipientBankCode: getBankCode(adminUser?.bank_name),
         amount: actualAdminShare,
-        narration: `Àjọṣe Fine: 10% Admin Share (${group.name})`,
+        narration: `Àjọṣe Fine: 5% Admin Share (${group.name})`,
         reference: payoutRef
       });
 
@@ -171,11 +171,11 @@ export async function POST(req: Request) {
         amount: actualAdminShare,
         type: "payout",
         status: monoAdminPayoutResult.success ? "completed" : "pending",
-        description: `Admin 10% departure compensation (₦${actualAdminShare.toLocaleString()}) disbursed via Mono Payout (Ref: ${monoAdminPayoutResult.reference})`
+        description: `Admin 5% departure compensation (₦${actualAdminShare.toLocaleString()}) disbursed via Mono Payout (Ref: ${monoAdminPayoutResult.reference})`
       });
     }
 
-    // 3. Record 5% platform share in ledger
+    // 3. Record 10% platform share in ledger
     if (actualPlatformShare > 0) {
       await supabaseAdmin.from("transactions").insert({
         group_id: groupId,
@@ -183,7 +183,7 @@ export async function POST(req: Request) {
         amount: actualPlatformShare,
         type: "platform_fee",
         status: "completed",
-        description: `Àjọṣe 5% platform handling fee (₦${actualPlatformShare.toLocaleString()}) for Turn ${memberTurn} exit`
+        description: `Àjọṣe 10% platform handling fee (₦${actualPlatformShare.toLocaleString()}) for Turn ${memberTurn} exit`
       });
     }
 
@@ -200,8 +200,8 @@ export async function POST(req: Request) {
 
     // 3. Send notification to user with specific wait-turn / payment terms
     const notifMessage = hasAlreadyCollected
-      ? `You were removed from '${group.name}' after receiving your payout. A 15% breach fine of ₦${fineToApply.toLocaleString()} (10% to Admin, 5% to Àjọṣe) has been levied and your Mono mandate remains active for scheduled collections.`
-      : `You exited '${group.name}' mid-cycle. A 15% departure fine of ₦${fineToApply.toLocaleString()} (10% to Admin, 5% to Àjọṣe) was levied. Per Àjọṣe rules, you must wait until Turn ${memberTurn} to collect your reconciled past contributions minus the fine.`;
+      ? `You were removed from '${group.name}' after receiving your payout. A 15% breach fine of ₦${fineToApply.toLocaleString()} (10% to Àjọṣe, 5% to Admin) has been levied and your Mono mandate remains active for scheduled collections.`
+      : `You exited '${group.name}' mid-cycle. A 15% departure fine of ₦${fineToApply.toLocaleString()} (10% to Àjọṣe, 5% to Admin) was levied. Per Àjọṣe rules, you must wait until Turn ${memberTurn} to collect your reconciled past contributions minus the fine.`;
 
     await supabaseAdmin.from("notifications").insert({
       user_id: targetMember.user_id,
@@ -228,8 +228,8 @@ export async function POST(req: Request) {
       vacatedTurn: memberTurn,
       mustWaitTurn: !hasAlreadyCollected,
       message: hasAlreadyCollected
-        ? `Member removed mid-cycle. 15% fine of ₦${fineToApply.toLocaleString()} levied (10% to Admin, 5% to Àjọṣe). Defaulter owes remaining rounds.`
-        : `Member removed mid-cycle. 15% fine of ₦${fineToApply.toLocaleString()} levied (10% to Admin, 5% to Àjọṣe). Member must wait until Turn ${memberTurn} to collect net funds. Turn ${memberTurn} is now open for replacement.`
+        ? `Member removed mid-cycle. 15% fine of ₦${fineToApply.toLocaleString()} levied (10% to Àjọṣe, 5% to Admin). Defaulter owes remaining rounds.`
+        : `Member removed mid-cycle. 15% fine of ₦${fineToApply.toLocaleString()} levied (10% to Àjọṣe, 5% to Admin). Member must wait until Turn ${memberTurn} to collect net funds. Turn ${memberTurn} is now open for replacement.`
     });
 
   } catch (err: any) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { 
   ShieldAlert, 
   AlertTriangle, 
@@ -14,9 +14,46 @@ import {
   X,
   ShieldCheck,
   Zap,
-  ArrowRight
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  User,
+  Users,
+  Layers
 } from "lucide-react";
 import { toast } from "sonner";
+
+interface DefaulterRecord {
+  id: string;
+  userId: string;
+  memberName: string;
+  email: string;
+  phone: string;
+  groupName: string;
+  amountOwed: number;
+  turn: number;
+  creditScore: number;
+  bankName: string;
+  accountNumber: string;
+  timestamp: string;
+  reference: string;
+}
+
+interface GroupedDefaulter {
+  userId: string;
+  memberName: string;
+  email: string;
+  phone: string;
+  bankName: string;
+  accountNumber: string;
+  creditScore: number;
+  totalAmountOwed: number;
+  failedCount: number;
+  circles: string[];
+  records: DefaulterRecord[];
+  latestTimestamp: string;
+}
 
 interface AdminDefaultsClientProps {
   fines?: any[];
@@ -27,7 +64,9 @@ export function AdminDefaultsClient({
   fines = [],
   defaulters = []
 }: AdminDefaultsClientProps) {
-  const [activeTab, setActiveTab] = useState<"fines" | "defaulters">("fines");
+  const [activeTab, setActiveTab] = useState<"fines" | "defaulters">("defaulters");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedUserIds, setExpandedUserIds] = useState<Set<string>>(new Set());
 
   // In-App Double Opt-in Modals State
   const [sweepModalTarget, setSweepModalTarget] = useState<any | null>(null);
@@ -38,18 +77,92 @@ export function AdminDefaultsClient({
   const [bureauOptInAgreed, setBureauOptInAgreed] = useState(false);
   const [isReporting, setIsReporting] = useState(false);
 
+  // Group Defaulters by User to eliminate duplicate names
+  const groupedDefaulters: GroupedDefaulter[] = useMemo(() => {
+    const map = new Map<string, GroupedDefaulter>();
+
+    for (const d of defaulters) {
+      const key = d.userId || d.email || d.memberName;
+      if (!map.has(key)) {
+        map.set(key, {
+          userId: d.userId || key,
+          memberName: d.memberName || "Member",
+          email: d.email || "",
+          phone: d.phone || "",
+          bankName: d.bankName || "Linked Bank",
+          accountNumber: d.accountNumber || "••••••••••",
+          creditScore: d.creditScore ?? 60,
+          totalAmountOwed: 0,
+          failedCount: 0,
+          circles: [],
+          records: [],
+          latestTimestamp: d.timestamp || ""
+        });
+      }
+
+      const item = map.get(key)!;
+      item.totalAmountOwed += Number(d.amountOwed || 0);
+      item.failedCount += 1;
+      if (d.groupName && !item.circles.includes(d.groupName)) {
+        item.circles.push(d.groupName);
+      }
+      item.records.push(d);
+      if (d.timestamp && (!item.latestTimestamp || new Date(d.timestamp) > new Date(item.latestTimestamp))) {
+        item.latestTimestamp = d.timestamp;
+      }
+    }
+
+    return Array.from(map.values()).sort((a, b) => b.totalAmountOwed - a.totalAmountOwed);
+  }, [defaulters]);
+
+  // Filtered Defaulters based on search query
+  const filteredGroupedDefaulters = useMemo(() => {
+    if (!searchQuery.trim()) return groupedDefaulters;
+    const q = searchQuery.toLowerCase();
+    return groupedDefaulters.filter(g => 
+      g.memberName.toLowerCase().includes(q) ||
+      g.phone.toLowerCase().includes(q) ||
+      g.email.toLowerCase().includes(q) ||
+      g.circles.some(c => c.toLowerCase().includes(q))
+    );
+  }, [groupedDefaulters, searchQuery]);
+
+  // Aggregate Metrics
+  const totalDebt = useMemo(() => {
+    return defaulters.reduce((acc, d) => acc + Number(d.amountOwed || 0), 0);
+  }, [defaulters]);
+
+  const toggleExpand = (userId: string) => {
+    setExpandedUserIds(prev => {
+      const next = new Set(prev);
+      if (next.has(userId)) {
+        next.delete(userId);
+      } else {
+        next.add(userId);
+      }
+      return next;
+    });
+  };
+
+  const expandAll = () => {
+    setExpandedUserIds(new Set(groupedDefaulters.map(g => g.userId)));
+  };
+
+  const collapseAll = () => {
+    setExpandedUserIds(new Set());
+  };
+
   const executeSweepRecovery = async () => {
     if (!sweepModalTarget || !sweepOptInAgreed) return;
 
     setIsSweeping(true);
     const toastId = toast.loading(`Triggering automated Mono sweep for ${sweepModalTarget.memberName}...`);
     try {
-      // Execute live sweep trigger against endpoint
       const res = await fetch("/api/cron/sweep", {
         method: "POST",
         headers: { "Content-Type": "application/json" }
       });
-      const data = await res.json().catch(() => ({}));
+      await res.json().catch(() => ({}));
       
       toast.success(
         `Automated recovery sweep initiated for ${sweepModalTarget.memberName}. Monitored across BVN accounts.`,
@@ -72,7 +185,7 @@ export function AdminDefaultsClient({
     try {
       await new Promise(r => setTimeout(r, 1200));
       toast.success(
-        `Default record for ${bureauModalTarget.memberName} successfully logged with CRC Credit Bureau & FirstCentral.`,
+        `Default record for ${bureauModalTarget.memberName} (₦${(bureauModalTarget.amountOwed || 0).toLocaleString()}) logged with CRC Credit Bureau & FirstCentral.`,
         { id: toastId }
       );
       setBureauModalTarget(null);
@@ -88,31 +201,328 @@ export function AdminDefaultsClient({
     <div className="space-y-6">
       
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 pb-3">
         <button
-          onClick={() => setActiveTab("fines")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === "fines"
-              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+          onClick={() => setActiveTab("defaulters")}
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === "defaulters"
+              ? "bg-red-500/20 text-red-400 border border-red-500/30 shadow-sm"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900"
           }`}
         >
-          15% Exit Fine Breakdown (10% Admin / 5% Àjọṣe) ({fines.length})
+          <ShieldAlert className="w-3.5 h-3.5" />
+          <span>Defaulters &amp; Credit Bureau Desk</span>
+          <span className="px-2 py-0.5 rounded-full text-[10px] bg-red-500/30 text-red-300 font-mono">
+            {groupedDefaulters.length} {groupedDefaulters.length === 1 ? "Member" : "Members"}
+          </span>
         </button>
 
         <button
-          onClick={() => setActiveTab("defaulters")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === "defaulters"
-              ? "bg-red-500/20 text-red-400 border border-red-500/30"
+          onClick={() => setActiveTab("fines")}
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === "fines"
+              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm"
               : "text-zinc-400 hover:text-white hover:bg-zinc-900"
           }`}
         >
-          Defaulters &amp; Credit Bureau Desk ({defaulters.length})
+          <Coins className="w-3.5 h-3.5" />
+          <span>15% Exit Fine Breakdown (10% Àjọṣe • 5% Admin)</span>
+          <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 font-mono">
+            {fines.length}
+          </span>
         </button>
       </div>
 
-      {activeTab === "fines" ? (
+      {activeTab === "defaulters" ? (
+        <div className="space-y-6">
+          
+          {/* Policy Overview Callout */}
+          <div className="bg-[#0C120E] border border-red-500/30 rounded-2xl p-5 flex items-start gap-4 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0 mt-0.5">
+              <ShieldAlert className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-sm">Defaulter Enforcement &amp; Credit Bureau Recovery</h3>
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                Members who collect rotational funds early and miss subsequent contributions undergo automated multi-bank recovery sweeps via Mono Open-Banking. Consolidated accounts can be submitted to CRC Credit Bureau &amp; FirstCentral with platform-wide circle restrictions.
+              </p>
+            </div>
+          </div>
+
+          {/* KPI Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-[#0C120E] border border-zinc-800 rounded-2xl p-4">
+              <div className="flex items-center justify-between text-zinc-400 mb-1">
+                <span className="text-xs font-mono uppercase tracking-wider">Unique Defaulters</span>
+                <Users className="w-4 h-4 text-red-400" />
+              </div>
+              <p className="text-2xl font-black text-white">{groupedDefaulters.length}</p>
+              <p className="text-[11px] text-zinc-500 mt-1">Grouped by verified identity</p>
+            </div>
+
+            <div className="bg-[#0C120E] border border-zinc-800 rounded-2xl p-4">
+              <div className="flex items-center justify-between text-zinc-400 mb-1">
+                <span className="text-xs font-mono uppercase tracking-wider">Total Unrecovered Debt</span>
+                <Coins className="w-4 h-4 text-[#C5A059]" />
+              </div>
+              <p className="text-2xl font-black text-red-400 font-mono">₦{totalDebt.toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-500 mt-1">Sum of all failed debit rounds</p>
+            </div>
+
+            <div className="bg-[#0C120E] border border-zinc-800 rounded-2xl p-4">
+              <div className="flex items-center justify-between text-zinc-400 mb-1">
+                <span className="text-xs font-mono uppercase tracking-wider">Failed Debit Records</span>
+                <Layers className="w-4 h-4 text-amber-400" />
+              </div>
+              <p className="text-2xl font-black text-amber-400 font-mono">{defaulters.length}</p>
+              <p className="text-[11px] text-zinc-500 mt-1">Individual turn collection failures</p>
+            </div>
+          </div>
+
+          {/* Grouped Defaulters Section */}
+          <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+            {/* Header with Search and Expand All */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-800">
+              <div>
+                <h4 className="font-bold text-white text-sm">Grouped Member Default Registry</h4>
+                <p className="text-xs text-zinc-400">
+                  Consolidated by member so debt, circles, and turns are tracked under a single profile.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {groupedDefaulters.length > 0 && (
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                    <button
+                      type="button"
+                      onClick={expandAll}
+                      className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 hover:text-white transition-colors"
+                    >
+                      Expand All
+                    </button>
+                    <span>·</span>
+                    <button
+                      type="button"
+                      onClick={collapseAll}
+                      className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 hover:text-white transition-colors"
+                    >
+                      Collapse All
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Search Input */}
+            {groupedDefaulters.length > 0 && (
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Filter by member name, phone, email, or circle..."
+                  className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-red-500/50"
+                />
+              </div>
+            )}
+
+            {filteredGroupedDefaulters.length === 0 ? (
+              <div className="p-12 text-center space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+                  <ShieldCheck className="h-6 w-6" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white">
+                    {searchQuery ? "No Matching Defaulters Found" : "No Active Defaulters"}
+                  </h4>
+                  <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+                    {searchQuery 
+                      ? "Try searching with a different name, phone, or circle keyword."
+                      : "Live system audit reports 100% scheduled debit clearing health. No accounts are in default."}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3 pt-1">
+                {filteredGroupedDefaulters.map((group) => {
+                  const isExpanded = expandedUserIds.has(group.userId);
+                  const initials = group.memberName
+                    .split(" ")
+                    .filter(Boolean)
+                    .map(n => n[0])
+                    .join("")
+                    .substring(0, 2)
+                    .toUpperCase() || "MB";
+
+                  return (
+                    <div
+                      key={group.userId}
+                      className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-zinc-700/80 transition-all shadow-sm"
+                    >
+                      {/* Main Group Header Row */}
+                      <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        
+                        {/* Member Identity & Details */}
+                        <div className="flex items-start gap-3.5">
+                          <div className="w-11 h-11 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 font-bold text-xs shrink-0 mt-0.5">
+                            {initials}
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h5 className="font-bold text-white text-sm">{group.memberName}</h5>
+                              
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-red-500/15 text-red-400 border border-red-500/30">
+                                {group.failedCount} {group.failedCount === 1 ? "Failed Debit" : "Failed Debits"}
+                              </span>
+
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                Trust Score: {group.creditScore}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-[11px] text-zinc-400 flex-wrap">
+                              {group.phone && <span>{group.phone}</span>}
+                              {group.phone && group.email && <span>•</span>}
+                              {group.email && <span>{group.email}</span>}
+                            </div>
+
+                            <div className="flex items-center gap-2 text-[11px] text-zinc-500 pt-0.5 flex-wrap">
+                              <span>Linked Account:</span>
+                              <strong className="text-zinc-300 font-medium">{group.bankName}</strong>
+                              <span>({group.accountNumber})</span>
+                              <span>•</span>
+                              <span>Circles:</span>
+                              <strong className="text-emerald-400 font-medium">
+                                {group.circles.join(", ") || "General Circle"}
+                              </strong>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Total Debt & Primary Actions */}
+                        <div className="flex items-center justify-between lg:justify-end gap-3 pt-3 lg:pt-0 border-t lg:border-t-0 border-zinc-800/80">
+                          <div className="text-left lg:text-right">
+                            <span className="text-[10px] font-mono uppercase text-zinc-500 block">Total Overdue</span>
+                            <span className="text-lg font-black font-mono text-red-400">
+                              ₦{group.totalAmountOwed.toLocaleString()}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {/* Trigger Sweep for consolidated user */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSweepModalTarget({
+                                  memberName: group.memberName,
+                                  groupName: group.circles.join(", "),
+                                  amountOwed: group.totalAmountOwed,
+                                  userId: group.userId
+                                });
+                                setSweepOptInAgreed(false);
+                              }}
+                              className="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/60 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                              title="Trigger automated sweep across BVN linked accounts"
+                            >
+                              <RefreshCw className="w-3 h-3 text-red-400" />
+                              <span className="hidden sm:inline">Sweep</span> Mono
+                            </button>
+
+                            {/* Report user to CRC bureau */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setBureauModalTarget({
+                                  memberName: group.memberName,
+                                  amountOwed: group.totalAmountOwed,
+                                  userId: group.userId
+                                });
+                                setBureauOptInAgreed(false);
+                              }}
+                              className="px-3 py-2 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                              title="Submit default record to CRC Credit Bureau & FirstCentral"
+                            >
+                              <Building2 className="w-3 h-3" />
+                              <span className="hidden sm:inline">Report to</span> Bureau
+                            </button>
+
+                            {/* Accordion Expand / Collapse */}
+                            <button
+                              type="button"
+                              onClick={() => toggleExpand(group.userId)}
+                              className="p-2 text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer"
+                              aria-label={isExpanded ? "Collapse failed debits" : "Expand failed debits"}
+                              title={isExpanded ? "Hide breakdown" : "View individual debits breakdown"}
+                            >
+                              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* Expandable Breakdown of Individual Failed Transactions */}
+                      {isExpanded && (
+                        <div className="border-t border-zinc-800/80 bg-zinc-950 p-4 sm:p-5 space-y-3 animate-in fade-in duration-200">
+                          <div className="flex items-center justify-between text-xs text-zinc-400 font-mono pb-2 border-b border-zinc-900">
+                            <span>Individual Failed Debit Breakdown ({group.records.length} {group.records.length === 1 ? "turn" : "turns"})</span>
+                            <span>Latest: {group.latestTimestamp ? new Date(group.latestTimestamp).toLocaleDateString() : "Recent"}</span>
+                          </div>
+
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse text-xs">
+                              <thead>
+                                <tr className="text-zinc-500 font-mono uppercase tracking-wider text-[10px] border-b border-zinc-900">
+                                  <th className="py-2 px-3">Circle</th>
+                                  <th className="py-2 px-3">Turn</th>
+                                  <th className="py-2 px-3">Amount</th>
+                                  <th className="py-2 px-3">Reference</th>
+                                  <th className="py-2 px-3">Date</th>
+                                  <th className="py-2 px-3 text-right">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-zinc-900">
+                                {group.records.map((rec) => (
+                                  <tr key={rec.id} className="hover:bg-zinc-900/40 text-zinc-300">
+                                    <td className="py-2.5 px-3 font-semibold text-white">
+                                      {rec.groupName}
+                                    </td>
+                                    <td className="py-2.5 px-3 font-mono">
+                                      Turn {rec.turn}
+                                    </td>
+                                    <td className="py-2.5 px-3 font-mono font-bold text-red-400">
+                                      ₦{rec.amountOwed.toLocaleString()}
+                                    </td>
+                                    <td className="py-2.5 px-3 font-mono text-[11px] text-zinc-500">
+                                      {rec.reference}
+                                    </td>
+                                    <td className="py-2.5 px-3 text-[11px] text-zinc-400">
+                                      {rec.timestamp ? new Date(rec.timestamp).toLocaleDateString() : "Recent"}
+                                    </td>
+                                    <td className="py-2.5 px-3 text-right">
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                                        Failed
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+        </div>
+      ) : (
+        /* Fines Tab */
         <div className="space-y-6">
           
           {/* Policy Overview Callout */}
@@ -124,13 +534,13 @@ export function AdminDefaultsClient({
               <div>
                 <h3 className="font-bold text-white text-sm">15% Early Departure Split Policy</h3>
                 <p className="text-xs text-zinc-400 mt-1 max-w-2xl leading-relaxed">
-                  When a member leaves mid-cycle, a 15% exit fine is levied. <strong className="text-emerald-400">10%</strong> is credited to the circle Admin trustee as compensation for re-balancing the roster, and <strong className="text-[#C5A059]">5%</strong> is retained by Àjọṣe. Members awaiting payout must wait their turn to collect net funds.
+                  When a member leaves mid-cycle, a 15% exit fine is levied. <strong className="text-[#C5A059]">10%</strong> is retained by Àjọṣe platform handling, and <strong className="text-emerald-400">5%</strong> is credited to the circle Admin trustee as compensation for re-balancing the roster. Members awaiting payout must wait their turn to collect net funds.
                 </p>
               </div>
             </div>
             <div className="text-right shrink-0">
               <p className="text-[10px] uppercase font-mono text-zinc-500">Fine Revenue Share</p>
-              <p className="text-lg font-black text-[#C5A059]">10% Admin • 5% Àjọṣe</p>
+              <p className="text-lg font-black text-[#C5A059]">10% Àjọṣe • 5% Admin</p>
             </div>
           </div>
 
@@ -156,8 +566,8 @@ export function AdminDefaultsClient({
                       <th className="px-5 py-4">Exited Member &amp; Circle</th>
                       <th className="px-5 py-4">Exit Type &amp; Status</th>
                       <th className="px-5 py-4">Total 15% Fine</th>
-                      <th className="px-5 py-4">10% Admin Split</th>
-                      <th className="px-5 py-4">5% Àjọṣe Split</th>
+                      <th className="px-5 py-4">10% Àjọṣe Split</th>
+                      <th className="px-5 py-4">5% Admin Split</th>
                       <th className="px-5 py-4">Resolution Action</th>
                       <th className="px-5 py-4 text-right">Actions</th>
                     </tr>
@@ -189,14 +599,14 @@ export function AdminDefaultsClient({
                           <p className="text-[10px] text-zinc-500 font-normal">of ₦{fine.poolAmount.toLocaleString()}</p>
                         </td>
 
-                        <td className="px-5 py-4 font-mono font-bold text-emerald-400 text-sm">
-                          ₦{fine.adminCut10Pct.toLocaleString()}
-                          <p className="text-[10px] text-zinc-500 font-normal">To Admin Bank</p>
+                        <td className="px-5 py-4 font-mono font-bold text-[#C5A059] text-sm">
+                          ₦{(fine.ajoseCut10Pct ?? fine.ajoseCut5Pct ?? 0).toLocaleString()}
+                          <p className="text-[10px] text-zinc-500 font-normal">Platform Fee</p>
                         </td>
 
-                        <td className="px-5 py-4 font-mono font-bold text-[#C5A059] text-sm">
-                          ₦{fine.ajoseCut5Pct.toLocaleString()}
-                          <p className="text-[10px] text-zinc-500 font-normal">Platform Fee</p>
+                        <td className="px-5 py-4 font-mono font-bold text-emerald-400 text-sm">
+                          ₦{(fine.adminCut5Pct ?? fine.adminCut10Pct ?? 0).toLocaleString()}
+                          <p className="text-[10px] text-zinc-500 font-normal">To Admin Bank</p>
                         </td>
 
                         <td className="px-5 py-4 text-zinc-300">
@@ -222,100 +632,6 @@ export function AdminDefaultsClient({
                     ))}
                   </tbody>
                 </table>
-              </div>
-            )}
-          </div>
-
-        </div>
-      ) : (
-        <div className="space-y-6">
-          
-          <div className="bg-[#0C120E] border border-red-500/30 rounded-2xl p-5 flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
-              <ShieldAlert className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="font-bold text-white text-sm">Defaulter Enforcement &amp; Platform Restrictions</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Members who collect rotational funds early and refuse subsequent contributions undergo automated recovery sweeps through Mono Open-Banking. Irrecoverable accounts are penalized with -50 Trust Score and platform-wide circle restrictions.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl p-6">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
-              <div>
-                <h4 className="font-bold text-white text-sm">Active Defaulter Recovery Queue</h4>
-                <p className="text-xs text-zinc-400">
-                  {defaulters.length} live recovery record{defaulters.length === 1 ? "" : "s"} identified in system
-                </p>
-              </div>
-            </div>
-
-            {defaulters.length === 0 ? (
-              <div className="p-12 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
-                  <ShieldCheck className="h-6 w-6" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-white">No Active Defaulters</h4>
-                  <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
-                    Live system audit reports 100% scheduled debit clearing health. No accounts are in default.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {defaulters.map((defaulter) => (
-                  <div key={defaulter.id} className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 space-y-3 text-xs">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div>
-                        <span className="font-bold text-white text-sm">{defaulter.memberName}</span>
-                        <span className="text-zinc-500 ml-2">({defaulter.groupName})</span>
-                        <p className="text-[11px] font-mono text-zinc-400 mt-0.5">
-                          {defaulter.phone} • {defaulter.email} • Ref: {defaulter.reference}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded font-bold">
-                          FAILED DEBIT: ₦{defaulter.amountOwed.toLocaleString()}
-                        </span>
-                        <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
-                          Score: {defaulter.creditScore}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-zinc-800/80">
-                      <p className="text-zinc-400 text-xs">
-                        Linked: <strong className="text-zinc-200">{defaulter.bankName}</strong> ({defaulter.accountNumber})
-                      </p>
-                      
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSweepModalTarget(defaulter);
-                            setSweepOptInAgreed(false);
-                          }}
-                          className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                        >
-                          Sweep Mono
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setBureauModalTarget(defaulter);
-                            setBureauOptInAgreed(false);
-                          }}
-                          className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer"
-                        >
-                          Report to Bureau (CRC)
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
               </div>
             )}
           </div>

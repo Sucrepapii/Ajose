@@ -196,37 +196,38 @@ export function AdminGroupsClient({
                       </td>
 
                       {/* Actions */}
-                      <td className="px-5 py-4 text-right relative">
+                      <td className="px-5 py-4 text-right">
                         <div className="flex items-center justify-end">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setOpenMenuGroupId(openMenuGroupId === group.id ? null : group.id);
-                            }}
-                            className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
-                              openMenuGroupId === group.id
-                                ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
-                                : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
-                            }`}
-                            title="Circle Actions"
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </button>
+                          <div className="relative inline-block text-left">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setOpenMenuGroupId(openMenuGroupId === group.id ? null : group.id);
+                              }}
+                              className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
+                                openMenuGroupId === group.id
+                                  ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
+                                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
+                              }`}
+                              title="Circle Actions"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </button>
 
-                          {openMenuGroupId === group.id && (
-                            <>
-                              {/* Invisible backdrop to dismiss menu */}
-                              <div
-                                className="fixed inset-0 z-30"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setOpenMenuGroupId(null);
-                                }}
-                              />
+                            {openMenuGroupId === group.id && (
+                              <>
+                                {/* Invisible backdrop to dismiss menu */}
+                                <div
+                                  className="fixed inset-0 z-30"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenMenuGroupId(null);
+                                  }}
+                                />
 
-                              {/* Mini Dropdown Menu */}
-                              <div className="absolute right-4 top-12 z-40 w-52 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl">
+                                {/* Mini Dropdown Menu - Anchored directly to button */}
+                                <div className="absolute right-0 top-full mt-1.5 z-40 w-52 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl">
                                 <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
                                   <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Circle Actions</p>
                                   <p className="text-xs font-bold text-white truncate">{group.name}</p>
@@ -243,6 +244,17 @@ export function AdminGroupsClient({
                                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
                                   <span>Inspect Circle</span>
                                 </button>
+
+                                <a
+                                  href={`/dashboard/groups/${group.id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() => setOpenMenuGroupId(null)}
+                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors"
+                                >
+                                  <ExternalLink className="h-3.5 w-3.5 text-emerald-400" />
+                                  <span>Open Live Circle</span>
+                                </a>
 
                                 <button
                                   type="button"
@@ -291,6 +303,7 @@ export function AdminGroupsClient({
                               </div>
                             </>
                           )}
+                          </div>
                         </div>
                       </td>
                     </tr>

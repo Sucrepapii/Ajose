@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Risk & 15% Exit Fines Desk | Àjọṣe Operations",
-  description: "Monitor 15% mid-cycle departure fines (10% Admin / 5% Àjọṣe) and defaulter credit bureau reporting."
+  description: "Monitor 15% mid-cycle departure fines (10% Àjọṣe • 5% Admin) and defaulter credit bureau reporting."
 };
 
 export default async function AdminDefaultsPage() {
@@ -93,8 +93,8 @@ export default async function AdminDefaultsPage() {
     const group = f.memberships?.groups || {};
     const pool = (group.contribution_amount || 0) * (group.max_members || 1);
     const fineAmount = Number(f.amount || 0);
-    const adminCut = Math.round(fineAmount * (10 / 15));
-    const ajoseCut = fineAmount - adminCut;
+    const ajoseCut = Math.round(fineAmount * (10 / 15));
+    const adminCut = fineAmount - ajoseCut;
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ") || user.email || "Platform Member";
 
     return {
@@ -110,7 +110,9 @@ export default async function AdminDefaultsPage() {
       currentTurn: f.cycle_turn || 1,
       poolAmount: pool || fineAmount,
       totalFine15Pct: fineAmount,
+      adminCut5Pct: adminCut,
       adminCut10Pct: adminCut,
+      ajoseCut10Pct: ajoseCut,
       ajoseCut5Pct: ajoseCut,
       payoutAction: `15% exit fine on ${group.name || "Ajo Circle"}`,
       recoveryStatus: (f.status === "successful" || f.status === "completed") ? "Resolved (Mono Mandate)" : "Automated Sweep Active"
@@ -156,7 +158,7 @@ export default async function AdminDefaultsPage() {
             15% Departure Fines &amp; Defaulter Enforcement
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Tracking mid-cycle departures, 10% admin compensation transfers, 5% platform earnings, and bureau reporting.
+            Tracking mid-cycle departures, 10% platform earnings, 5% admin compensation transfers, and bureau reporting.
           </p>
         </div>
       </div>

@@ -852,14 +852,14 @@ export function GroupSettingsClient({
                       <span className="font-black text-[#0B3022]">₦{Number(fineAmount || defaultFine).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-[11px] text-gray-500 pt-1 border-t border-gray-200">
-                      <span>• Admin Compensation (10%):</span>
-                      <span className="font-bold text-emerald-700">
+                      <span>• Àjọṣe Platform Handling (10%):</span>
+                      <span className="font-bold text-[#0B3022]">
                         ₦{Math.round(Number(fineAmount || defaultFine) * (10 / 15)).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-[11px] text-gray-500">
-                      <span>• Àjọṣe Platform Handling (5%):</span>
-                      <span className="font-bold text-[#0B3022]">
+                      <span>• Admin Compensation (5%):</span>
+                      <span className="font-bold text-emerald-700">
                         ₦{(Number(fineAmount || defaultFine) - Math.round(Number(fineAmount || defaultFine) * (10 / 15))).toLocaleString()}
                       </span>
                     </div>
@@ -881,7 +881,7 @@ export function GroupSettingsClient({
                       />
                     </div>
                     <p className="text-[11px] text-gray-500 mt-1">
-                      Standard 15% departure penalty is ₦{defaultFine.toLocaleString()} (10% to Admin, 5% to Àjọṣe).
+                      Standard 15% departure penalty is ₦{defaultFine.toLocaleString()} (10% to Àjọṣe, 5% to Admin).
                     </p>
                   </div>
 

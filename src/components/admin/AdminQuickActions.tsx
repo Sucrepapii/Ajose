@@ -52,7 +52,7 @@ export function AdminQuickActions() {
       platform: "Àjọṣe Financial Operations Engine",
       monoGateway: "Sandbox Active (Verified)",
       payoutProtocol: "Direct Debit & Instant Payout via Mono Open-Banking",
-      fineSplit: "15% Total (10% Admin Trustee, 5% Àjọṣe Platform)",
+      fineSplit: "15% Total (10% Àjọṣe Platform, 5% Admin Trustee)",
       exportType: "System Audit Ledger"
     };
 

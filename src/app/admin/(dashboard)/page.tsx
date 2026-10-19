@@ -182,7 +182,7 @@ export default async function AdminCommandCenterPage() {
             ₦{totalPlatformRevenue.toLocaleString()}
           </div>
           <p className="text-[11px] text-zinc-400 mt-1.5">
-            2% Cycle fees + 5% departure fine share
+            2% Cycle fees + 10% departure fine share
           </p>
         </div>
 
@@ -265,7 +265,7 @@ export default async function AdminCommandCenterPage() {
                 <span className="text-[10px] font-mono text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">ENFORCED</span>
               </div>
               <p className="text-zinc-400 text-[11px]">
-                Applied on mid-cycle departures. Split: <strong className="text-emerald-400">10%</strong> to Admin trustee, <strong className="text-[#C5A059]">5%</strong> retained by Àjọṣe.
+                Applied on mid-cycle departures. Split: <strong className="text-[#C5A059]">10%</strong> retained by Àjọṣe, <strong className="text-emerald-400">5%</strong> to Admin trustee.
               </p>
             </div>
 

@@ -69,11 +69,11 @@ export default function TermsOfServicePage() {
             5.2. <strong>Agreed Administrative Exit Fee:</strong> Once an Ajo cycle is launched and active, any member who leaves, requests premature withdrawal, or is removed for non-cooperation disrupts collective rotational liquidity and agrees to an administrative departure fee of <strong>15% of their scheduled contribution amount</strong> to cover disruption costs. This fee is apportioned as follows:
           </p>
           <ul className="list-disc pl-6 space-y-2 mt-2">
-            <li><strong>10% to the Group Admin:</strong> Compensating the Admin trustee for administrative restructuring, managing collection shortfalls, and onboarding a replacement member.</li>
-            <li><strong>5% to Àjọṣe:</strong> Covering platform open-banking ledger reconciliation, mandate re-routing, and infrastructure management.</li>
+            <li><strong>10% to Àjọṣe:</strong> Covering platform open-banking ledger reconciliation, mandate re-routing, and infrastructure management.</li>
+            <li><strong>5% to the Group Admin:</strong> Compensating the Admin trustee for administrative restructuring, managing collection shortfalls, and onboarding a replacement member.</li>
           </ul>
           <p className="mt-3">
-            5.3. <strong>Members Awaiting Payout (Must Wait Their Turn):</strong> If an exiting member has not yet received their Ajo Pot disbursement, <strong>they are strictly required to wait until their originally scheduled payout turn</strong> to collect their past contributions. Under no circumstances will early or accelerated disbursements be made. On their scheduled turn, their accumulated past contributions will be credited minus the mandatory 15% fine (10% to Admin, 5% to Àjọṣe).
+            5.3. <strong>Members Awaiting Payout (Must Wait Their Turn):</strong> If an exiting member has not yet received their Ajo Pot disbursement, <strong>they are strictly required to wait until their originally scheduled payout turn</strong> to collect their past contributions. Under no circumstances will early or accelerated disbursements be made. On their scheduled turn, their accumulated past contributions will be credited minus the mandatory 15% fine (10% to Àjọṣe, 5% to Admin).
           </p>
           <p>
             5.4. <strong>Members Who Have Already Collected (Immediate Fine & Mandate Enforcement):</strong> A member who has already collected their rotational Ajo Pot has received other members' funds and is legally prohibited from absconding. If such a member attempts to exit or fails scheduled payments, <strong>they must pay the 15% fine immediately</strong> in addition to their full remaining contribution obligations. Their continuous Mono Direct Debit mandate remains fully enforceable, and failure to fulfill remaining debits constitutes an immediate default event subject to credit bureau reporting and debt recovery under Section 4.

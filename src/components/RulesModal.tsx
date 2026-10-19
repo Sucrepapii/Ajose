@@ -107,7 +107,7 @@ export function RulesModal() {
                 </p>
                 <ul className="list-disc pl-5 text-[#1F2937]/70 space-y-1.5 mt-1">
                   <li><strong>Before Cycle Launch (Pending):</strong> The Admin trustee can freely adjust member slots with <strong>zero fines or penalties</strong>.</li>
-                  <li><strong>Mid-Cycle Exit (Awaiting Payout):</strong> If a member requests to leave or is removed before their turn, an agreed <strong>15% Early Departure Administrative Fee</strong> is assessed (10% to the Circle Organizer for disruption and replacement management, and 5% platform fee). Reconciled past contributions minus the administrative fee are settled on their scheduled turn. No premature cashouts that disrupt ongoing turns are permitted.</li>
+                  <li><strong>Mid-Cycle Exit (Awaiting Payout):</strong> If a member requests to leave or is removed before their turn, an agreed <strong>15% Early Departure Administrative Fee</strong> is assessed (10% platform fee, and 5% to the Circle Organizer for disruption and replacement management). Reconciled past contributions minus the administrative fee are settled on their scheduled turn. No premature cashouts that disrupt ongoing turns are permitted.</li>
                   <li><strong>Mid-Cycle Exit (Already Collected):</strong> Members who already received their Ajo Pot payout cannot abandon subsequent rounds. Their ongoing Direct Debit authorization remains active to fulfill all scheduled contributions, their platform Trust Score is penalized, and they are restricted from future circles.</li>
                 </ul>
               </div>
