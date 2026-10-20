@@ -1,0 +1,41 @@
+name: Automated Direct Debit Sweep & Reminders
+
+on:
+  schedule:
+    # 05:00 UTC = 06:00 AM West Africa Time (WAT) -> Primary Morning Auto-Sweep
+    - cron: '0 5 * * *'
+    # 08:00 UTC = 09:00 AM WAT -> 24-Hour Pre-Debit Reminders
+    - cron: '0 8 * * *'
+    # 17:00 UTC = 06:00 PM WAT -> Evening Auto-Sweep Retry
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-automated-sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Automated Contribution Sweep (Daily, Weekly, Monthly)
+        run: |
+          echo "Initiating automated sweep across all active Daily, Weekly, and Monthly circles..."
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "https://ajose.ng/api/cron/sweep" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET || 'ajose_sec_cron_99f2b810d7a6e4c' }}" \
+            -H "Content-Type: application/json")
+          
+          HTTP_BODY=$(echo "$RESPONSE" | sed -e '$d')
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n 1 | cut -d: -f2)
+
+          echo "Status: $HTTP_STATUS"
+          echo "Response: $HTTP_BODY"
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "::warning ::Sweep endpoint returned HTTP $HTTP_STATUS"
+          else
+            echo "Automated sweep executed successfully."
+          fi
+
+      - name: Trigger 24h Pre-Debit Reminders
+        run: |
+          echo "Triggering 24-hour pre-debit member funding reminders..."
+          curl -s -X POST "https://ajose.ng/api/cron/reminders" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET || 'ajose_sec_cron_99f2b810d7a6e4c' }}" \
+            -H "Content-Type: application/json" || true
