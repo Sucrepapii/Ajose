@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 /**
  * Auto-Sweep Cron / Trigger Route for Àjọṣe Rotational Contributions
@@ -460,8 +461,8 @@ async function handleSweep(req: NextRequest) {
             });
           }
 
-          // Throttle between bank API calls to prevent Cloudflare/gateway rate limits
-          await new Promise((resolve) => setTimeout(resolve, 800));
+          // Minimal throttle between bank API calls to prevent rate limits without timing out
+          await new Promise((resolve) => setTimeout(resolve, 100));
 
         } catch (memberErr: any) {
           console.error("Member sweep failed:", memberErr);

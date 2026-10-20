@@ -3,6 +3,7 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { sendPreDebitReminderEmail } from "@/utils/resend";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 /**
  * 24-Hour Pre-Debit Auto-Debit Reminder Cron Route
