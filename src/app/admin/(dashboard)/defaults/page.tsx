@@ -87,6 +87,27 @@ export default async function AdminDefaultsPage() {
     console.warn("Failed transactions query warning:", failedError.message);
   }
 
+  // 2b. Query successful contributions to exclude turns that have been settled
+  const { data: rawSuccessful, error: successError } = await supabase
+    .from("transactions")
+    .select("membership_id, cycle_turn")
+    .eq("status", "successful")
+    .eq("type", "contribution");
+
+  if (successError) {
+    console.warn("Successful transactions query warning:", successError.message);
+  }
+
+  const settledTurnKeys = new Set(
+    (rawSuccessful || []).map((t: any) => `${t.membership_id}_turn_${t.cycle_turn}`)
+  );
+
+  // Filter out any failed transactions for turns that were subsequently settled
+  const unpaidFailedTxs = (rawFailed || []).filter((f: any) => {
+    const key = `${f.memberships?.id}_turn_${f.cycle_turn || 1}`;
+    return !settledTurnKeys.has(key);
+  });
+
   // 3. Map to live fines array
   const liveFines = (rawFines || []).map((f: any) => {
     const user = f.memberships?.users || {};
@@ -119,20 +140,26 @@ export default async function AdminDefaultsPage() {
     };
   });
 
-  // 4. Map to live defaulters array
-  const liveDefaulters = (rawFailed || []).map((f: any) => {
+  // 4. Map to live defaulters array with proper contractual turn debt vs attempt amount
+  const liveDefaulters = unpaidFailedTxs.map((f: any) => {
     const user = f.memberships?.users || {};
     const group = f.memberships?.groups || {};
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ") || user.email || "Platform Member";
+    // The contractual obligation for an unpaid turn is the circle's contribution_amount
+    const circleContrib = Number(group.contribution_amount || 0);
+    const turnAmount = circleContrib > 0 ? circleContrib : Number(f.amount || 0);
 
     return {
       id: f.id,
       userId: f.memberships?.user_id || "",
+      membershipId: f.memberships?.id || "",
+      groupId: group.id || "",
       memberName: name,
       email: user.email || "",
       phone: user.phone || "No phone",
       groupName: group.name || "Ajo Circle",
-      amountOwed: Number(f.amount || 0),
+      amountOwed: turnAmount,
+      attemptAmount: Number(f.amount || 0),
       turn: f.cycle_turn || 1,
       creditScore: user.credit_score ?? 60,
       bankName: user.bank_name || "Linked Account",

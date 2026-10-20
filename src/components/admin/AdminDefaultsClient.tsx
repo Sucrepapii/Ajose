@@ -27,11 +27,14 @@ import { toast } from "sonner";
 interface DefaulterRecord {
   id: string;
   userId: string;
+  membershipId?: string;
+  groupId?: string;
   memberName: string;
   email: string;
   phone: string;
   groupName: string;
-  amountOwed: number;
+  amountOwed: number; // Contractual contribution amount for this turn
+  attemptAmount?: number; // Actual amount charged during this attempt
   turn: number;
   creditScore: number;
   bankName: string;
@@ -50,6 +53,7 @@ interface GroupedDefaulter {
   creditScore: number;
   totalAmountOwed: number;
   failedCount: number;
+  unpaidTurnsCount: number;
   circles: string[];
   records: DefaulterRecord[];
   latestTimestamp: string;
@@ -77,32 +81,52 @@ export function AdminDefaultsClient({
   const [bureauOptInAgreed, setBureauOptInAgreed] = useState(false);
   const [isReporting, setIsReporting] = useState(false);
 
-  // Group Defaulters by User to eliminate duplicate names
+  // Group Defaulters by User: Consolidate debt by unique unpaid turns rather than summing retry attempts
   const groupedDefaulters: GroupedDefaulter[] = useMemo(() => {
-    const map = new Map<string, GroupedDefaulter>();
+    const map = new Map<string, {
+      defaulter: GroupedDefaulter;
+      seenTurns: Map<string, number>;
+    }>();
 
     for (const d of defaulters) {
       const key = d.userId || d.email || d.memberName;
       if (!map.has(key)) {
         map.set(key, {
-          userId: d.userId || key,
-          memberName: d.memberName || "Member",
-          email: d.email || "",
-          phone: d.phone || "",
-          bankName: d.bankName || "Linked Bank",
-          accountNumber: d.accountNumber || "••••••••••",
-          creditScore: d.creditScore ?? 60,
-          totalAmountOwed: 0,
-          failedCount: 0,
-          circles: [],
-          records: [],
-          latestTimestamp: d.timestamp || ""
+          defaulter: {
+            userId: d.userId || key,
+            memberName: d.memberName || "Member",
+            email: d.email || "",
+            phone: d.phone || "",
+            bankName: d.bankName || "Linked Bank",
+            accountNumber: d.accountNumber || "••••••••••",
+            creditScore: d.creditScore ?? 60,
+            totalAmountOwed: 0,
+            failedCount: 0,
+            unpaidTurnsCount: 0,
+            circles: [],
+            records: [],
+            latestTimestamp: d.timestamp || ""
+          },
+          seenTurns: new Map()
         });
       }
 
-      const item = map.get(key)!;
-      item.totalAmountOwed += Number(d.amountOwed || 0);
+      const entry = map.get(key)!;
+      const item = entry.defaulter;
+
+      // Track failed debit attempts (audit logs)
       item.failedCount += 1;
+
+      // Unique turn key: A member only owes the contribution amount ONCE per turn,
+      // regardless of how many times automated sweeps retried that turn
+      const turnKey = `${d.groupId || d.groupName}_turn_${d.turn}`;
+      if (!entry.seenTurns.has(turnKey)) {
+        const turnDebt = Number(d.amountOwed || 0);
+        entry.seenTurns.set(turnKey, turnDebt);
+        item.totalAmountOwed += turnDebt;
+        item.unpaidTurnsCount += 1;
+      }
+
       if (d.groupName && !item.circles.includes(d.groupName)) {
         item.circles.push(d.groupName);
       }
@@ -112,7 +136,9 @@ export function AdminDefaultsClient({
       }
     }
 
-    return Array.from(map.values()).sort((a, b) => b.totalAmountOwed - a.totalAmountOwed);
+    return Array.from(map.values())
+      .map(e => e.defaulter)
+      .sort((a, b) => b.totalAmountOwed - a.totalAmountOwed);
   }, [defaulters]);
 
   // Filtered Defaulters based on search query
@@ -127,10 +153,10 @@ export function AdminDefaultsClient({
     );
   }, [groupedDefaulters, searchQuery]);
 
-  // Aggregate Metrics
+  // Aggregate Metrics: Real unrecovered debt summed across unique overdue turn obligations
   const totalDebt = useMemo(() => {
-    return defaulters.reduce((acc, d) => acc + Number(d.amountOwed || 0), 0);
-  }, [defaulters]);
+    return groupedDefaulters.reduce((acc, g) => acc + g.totalAmountOwed, 0);
+  }, [groupedDefaulters]);
 
   const toggleExpand = (userId: string) => {
     setExpandedUserIds(prev => {
@@ -266,7 +292,7 @@ export function AdminDefaultsClient({
                 <Coins className="w-4 h-4 text-[#C5A059]" />
               </div>
               <p className="text-2xl font-black text-red-400 font-mono">₦{totalDebt.toLocaleString()}</p>
-              <p className="text-[11px] text-zinc-500 mt-1">Sum of all failed debit rounds</p>
+              <p className="text-[11px] text-zinc-500 mt-1">Sum of verified overdue turn obligations</p>
             </div>
 
             <div className="bg-[#0C120E] border border-zinc-800 rounded-2xl p-4">
@@ -275,7 +301,7 @@ export function AdminDefaultsClient({
                 <Layers className="w-4 h-4 text-amber-400" />
               </div>
               <p className="text-2xl font-black text-amber-400 font-mono">{defaulters.length}</p>
-              <p className="text-[11px] text-zinc-500 mt-1">Individual turn collection failures</p>
+              <p className="text-[11px] text-zinc-500 mt-1">Collection retry attempt logs</p>
             </div>
           </div>
 
@@ -374,7 +400,7 @@ export function AdminDefaultsClient({
                               <h5 className="font-bold text-white text-sm">{group.memberName}</h5>
                               
                               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-red-500/15 text-red-400 border border-red-500/30">
-                                {group.failedCount} {group.failedCount === 1 ? "Failed Debit" : "Failed Debits"}
+                                {group.unpaidTurnsCount} {group.unpaidTurnsCount === 1 ? "Unpaid Turn" : "Unpaid Turns"} ({group.failedCount} {group.failedCount === 1 ? "Attempt" : "Attempts"})
                               </span>
 
                               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -467,8 +493,8 @@ export function AdminDefaultsClient({
                       {isExpanded && (
                         <div className="border-t border-zinc-800/80 bg-zinc-950 p-4 sm:p-5 space-y-3 animate-in fade-in duration-200">
                           <div className="flex items-center justify-between text-xs text-zinc-400 font-mono pb-2 border-b border-zinc-900">
-                            <span>Individual Failed Debit Breakdown ({group.records.length} {group.records.length === 1 ? "turn" : "turns"})</span>
-                            <span>Latest: {group.latestTimestamp ? new Date(group.latestTimestamp).toLocaleDateString() : "Recent"}</span>
+                            <span>Collection Retry History ({group.records.length} {group.records.length === 1 ? "attempt" : "attempts"} logged across {group.unpaidTurnsCount} {group.unpaidTurnsCount === 1 ? "turn" : "turns"})</span>
+                            <span>Latest Attempt: {group.latestTimestamp ? new Date(group.latestTimestamp).toLocaleDateString() : "Recent"}</span>
                           </div>
 
                           <div className="overflow-x-auto">
@@ -477,7 +503,8 @@ export function AdminDefaultsClient({
                                 <tr className="text-zinc-500 font-mono uppercase tracking-wider text-[10px] border-b border-zinc-900">
                                   <th className="py-2 px-3">Circle</th>
                                   <th className="py-2 px-3">Turn</th>
-                                  <th className="py-2 px-3">Amount</th>
+                                  <th className="py-2 px-3">Turn Obligation</th>
+                                  <th className="py-2 px-3">Attempted Amount</th>
                                   <th className="py-2 px-3">Reference</th>
                                   <th className="py-2 px-3">Date</th>
                                   <th className="py-2 px-3 text-right">Status</th>
@@ -495,6 +522,9 @@ export function AdminDefaultsClient({
                                     <td className="py-2.5 px-3 font-mono font-bold text-red-400">
                                       ₦{rec.amountOwed.toLocaleString()}
                                     </td>
+                                    <td className="py-2.5 px-3 font-mono text-zinc-400">
+                                      ₦{(rec.attemptAmount || rec.amountOwed).toLocaleString()}
+                                    </td>
                                     <td className="py-2.5 px-3 font-mono text-[11px] text-zinc-500">
                                       {rec.reference}
                                     </td>
@@ -511,6 +541,9 @@ export function AdminDefaultsClient({
                               </tbody>
                             </table>
                           </div>
+                          <p className="text-[11px] text-zinc-500 italic pt-1">
+                            Note: Multiple records for the same turn reflect automated retry collection sweeps by the sweep scheduler.
+                          </p>
                         </div>
                       )}
                     </div>

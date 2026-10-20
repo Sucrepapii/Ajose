@@ -257,8 +257,9 @@ export function AdminTeamClient({
                   </td>
                 </tr>
               ) : (
-                filteredAdmins.map((admin) => {
+                filteredAdmins.map((admin, index) => {
                   const isImmutable = admin.email.toLowerCase() === "samuel@paylodeservices.com";
+                  const isNearBottom = filteredAdmins.length > 1 && index >= filteredAdmins.length - 2;
                   return (
                     <tr key={admin.id} className="hover:bg-white/[0.02] transition-colors">
                       {/* Name & Email */}
@@ -354,40 +355,43 @@ export function AdminTeamClient({
                       </td>
 
                       {/* Actions */}
-                      <td className="px-5 py-4 text-right relative">
+                      <td className="px-5 py-4 text-right">
                         {isImmutable ? (
                           <span className="text-[10px] font-mono font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/30 px-2 py-0.5 rounded">
                             Immutable
                           </span>
                         ) : (
                           <div className="flex items-center justify-end">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setOpenMenuAdminId(openMenuAdminId === admin.id ? null : admin.id);
-                              }}
-                              className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
-                                openMenuAdminId === admin.id
-                                  ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
-                                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
-                              }`}
-                              title="Staff Actions"
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </button>
+                            <div className="relative inline-block text-left">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenMenuAdminId(openMenuAdminId === admin.id ? null : admin.id);
+                                }}
+                                className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
+                                  openMenuAdminId === admin.id
+                                    ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
+                                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
+                                }`}
+                                title="Staff Actions"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </button>
 
-                            {openMenuAdminId === admin.id && (
-                              <>
-                                <div
-                                  className="fixed inset-0 z-30"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setOpenMenuAdminId(null);
-                                  }}
-                                />
+                              {openMenuAdminId === admin.id && (
+                                <>
+                                  <div
+                                    className="fixed inset-0 z-30"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setOpenMenuAdminId(null);
+                                    }}
+                                  />
 
-                                <div className="absolute right-4 top-12 z-40 w-48 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl">
+                                  <div className={`absolute right-0 z-40 w-48 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl ${
+                                    isNearBottom ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
+                                  }`}>
                                   <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
                                     <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Staff Actions</p>
                                     <p className="text-xs font-bold text-white truncate">{admin.fullName}</p>
@@ -431,6 +435,7 @@ export function AdminTeamClient({
                                 </div>
                               </>
                             )}
+                            </div>
                           </div>
                         )}
                       </td>

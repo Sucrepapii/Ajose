@@ -133,11 +133,12 @@ export function AdminGroupsClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
-                {filteredGroups.map((group) => {
+                {filteredGroups.map((group, index) => {
                   const contrib = Number(group.contribution_amount || 0);
                   const maxMem = Number(group.max_members || 1);
                   const poolSize = contrib * maxMem;
                   const memberCount = group.memberships?.length || 0;
+                  const isNearBottom = filteredGroups.length > 1 && index >= filteredGroups.length - 2;
 
                   return (
                     <tr key={group.id} className="hover:bg-zinc-900/40 transition-colors">
@@ -227,7 +228,9 @@ export function AdminGroupsClient({
                                 />
 
                                 {/* Mini Dropdown Menu - Anchored directly to button */}
-                                <div className="absolute right-0 top-full mt-1.5 z-40 w-52 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl">
+                                <div className={`absolute right-0 z-40 w-52 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl ${
+                                  isNearBottom ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
+                                }`}>
                                 <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
                                   <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Circle Actions</p>
                                   <p className="text-xs font-bold text-white truncate">{group.name}</p>
