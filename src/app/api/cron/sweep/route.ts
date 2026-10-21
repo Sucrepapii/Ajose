@@ -221,8 +221,7 @@ async function handleSweep(req: NextRequest) {
           .map((tx) => tx.membership_id)
       );
 
-      const isTestCircle = (group.name || "").toLowerCase().includes("test");
-      const allowSimulation = isSandbox || isTestCircle || process.env.PAYMENTS_MODE === "sandbox";
+      const allowSimulation = isSandbox || process.env.PAYMENTS_MODE === "sandbox";
 
       const groupSummary = {
         groupId: group.id,
@@ -513,7 +512,7 @@ async function handleSweep(req: NextRequest) {
                 reference: payoutRef
               });
 
-              const isSimulatedPayout = !autoPayoutResult.success && isTestCircle;
+              const isSimulatedPayout = !autoPayoutResult.success && allowSimulation;
               if (autoPayoutResult.success || isSimulatedPayout) {
                 const nextTurn = currentTurn + 1;
                 const isCompleted = nextTurn > (group.max_members || 1);

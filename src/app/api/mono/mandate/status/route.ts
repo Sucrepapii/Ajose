@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     );
 
     const adminClient = createAdminClient();
-    if (isApproved && user.user_metadata?.mono_mandate_status !== "approved") {
+    if (isApproved && (user.user_metadata?.mono_mandate_status !== "approved" || user.user_metadata?.mono_mandate_id !== mandateId)) {
       await adminClient.auth.admin.updateUserById(user.id, {
         user_metadata: {
           ...user.user_metadata,
