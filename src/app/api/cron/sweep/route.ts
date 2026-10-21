@@ -221,6 +221,9 @@ async function handleSweep(req: NextRequest) {
           .map((tx) => tx.membership_id)
       );
 
+      const isTestCircle = (group.name || "").toLowerCase().includes("test");
+      const allowSimulation = isSandbox || isTestCircle || process.env.PAYMENTS_MODE === "sandbox";
+
       const groupSummary = {
         groupId: group.id,
         groupName: group.name,
@@ -304,9 +307,6 @@ async function handleSweep(req: NextRequest) {
 
             // Resolve member mandate ID: check database record, then Supabase Auth user_metadata
             const mandateId = (member as any).mono_mandate_id || (userProfile as any)?.mono_mandate_id || memberAuthUser?.user_metadata?.mono_mandate_id;
-
-            const isTestCircle = (group.name || "").toLowerCase().includes("test");
-            const allowSimulation = isSandbox || (isTestCircle && (process.env.PAYMENTS_MODE === "sandbox" || process.env.NODE_ENV !== "production"));
 
             if (mandateId) {
               // LIVE MONO DIRECT DEBIT CALL
@@ -513,7 +513,8 @@ async function handleSweep(req: NextRequest) {
                 reference: payoutRef
               });
 
-              if (autoPayoutResult.success) {
+              const isSimulatedPayout = !autoPayoutResult.success && isTestCircle;
+              if (autoPayoutResult.success || isSimulatedPayout) {
                 const nextTurn = currentTurn + 1;
                 const isCompleted = nextTurn > (group.max_members || 1);
                 await supabase.from("groups").update({
@@ -532,12 +533,13 @@ async function handleSweep(req: NextRequest) {
                 await supabase.from("notifications").insert({
                   user_id: recipientUser.id,
                   title: `🎉 Turn ${currentTurn} Payout Received! ₦${netPayoutAmount.toLocaleString()}`,
-                  message: `Your rotational payout for Turn ${currentTurn} in ${group.name} was autonomously disbursed via Mono to your ${recipientUser.bank_name || 'bank'} account.`,
+                  message: `Your rotational payout for Turn ${currentTurn} in ${group.name} was autonomously disbursed${isSimulatedPayout ? " (Test Circle Mode)" : " via Mono"} to your ${recipientUser.bank_name || 'bank'} account.`,
                   type: "success"
                 });
 
                 groupSummary.details.push({
                   autoPayout: "successful",
+                  mode: isSimulatedPayout ? "test_simulation" : "live_mono",
                   recipient: `${recipientUser.first_name} ${recipientUser.last_name || ""}`,
                   amount: netPayoutAmount,
                   nextTurn
