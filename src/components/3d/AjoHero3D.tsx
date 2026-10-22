@@ -1,8 +1,7 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React from "react";
 import dynamic from "next/dynamic";
-import { Canvas } from "@react-three/fiber";
 
 // Dynamically import the 3D scene with SSR disabled for optimal performance
 const AjoCircleScene = dynamic(() => import("./AjoCircleScene"), {
@@ -21,17 +20,9 @@ export function AjoHero3D() {
   return (
     <div className="relative w-full h-[380px] sm:h-[440px] md:h-[480px] flex items-center justify-center rounded-2xl overflow-hidden bg-gradient-to-b from-[#0B3022]/90 via-[#0D3B1E]/60 to-transparent border border-[#C5A059]/30 shadow-[0_0_50px_rgba(11,48,34,0.6)] group">
       
-      {/* 3D Canvas */}
+      {/* 3D Canvas Container */}
       <div className="w-full h-full cursor-grab active:cursor-grabbing">
-        <Canvas 
-          camera={{ position: [0, 0, 6.5], fov: 45 }}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-          dpr={[1, 2]}
-        >
-          <Suspense fallback={null}>
-            <AjoCircleScene />
-          </Suspense>
-        </Canvas>
+        <AjoCircleScene />
       </div>
 
       {/* Floating Interactive Badge (Top Right) */}

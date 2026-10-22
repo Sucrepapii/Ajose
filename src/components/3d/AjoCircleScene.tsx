@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Sparkles, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -153,7 +153,11 @@ function AjoRotationalCore() {
 
 export default function AjoCircleScene() {
   return (
-    <>
+    <Canvas 
+      camera={{ position: [0, 0, 6.5], fov: 45 }}
+      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      dpr={[1, 2]}
+    >
       <ambientLight intensity={0.8} />
       <directionalLight position={[6, 8, 5]} intensity={2.2} color="#FFF8E7" />
       <directionalLight position={[-6, -4, -4]} intensity={1.5} color="#34D399" />
@@ -179,6 +183,6 @@ export default function AjoCircleScene() {
         maxPolarAngle={(Math.PI * 2) / 3}
         rotateSpeed={0.6}
       />
-    </>
+    </Canvas>
   );
 }
