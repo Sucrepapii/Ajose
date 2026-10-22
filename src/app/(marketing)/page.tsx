@@ -7,7 +7,6 @@ import { ShieldCheck, Rocket, Lock, ArrowRight, Zap, Users, CheckSquare, CreditC
 import { CountryFlag } from "@/components/CountryFlag";
 import { InteractiveRevenueCalculator } from "@/components/InteractiveRevenueCalculator";
 import { MobileAppShowcase } from "@/components/MobileAppShowcase";
-import { AjoHero3D } from "@/components/3d/AjoHero3D";
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -25,7 +24,6 @@ const staggerContainer: Variants = {
 };
 
 export default function Home() {
-  const [heroVisual, setHeroVisual] = useState<"3d" | "roster">("3d");
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [activeShowcase, setActiveShowcase] = useState(0);
@@ -129,114 +127,93 @@ export default function Home() {
               </motion.div>
             </motion.div>
 
-            {/* Hero Interactive Showcase: 3D Vault & Live Roster */}
+            {/* Hero Showcase: Live Automated Roster & Ledger */}
             <motion.div 
               initial={{ opacity: 0, x: 40, perspective: 1000 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, delay: 0.3, type: "spring", bounce: 0.2 }}
               className="relative w-full z-20 flex flex-col gap-4"
             >
-              {/* Interactive View Switcher Tabs */}
+              {/* Header Status Badge */}
               <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/10 border border-white/15 backdrop-blur-md shadow-sm">
-                  <button
-                    type="button"
-                    onClick={() => setHeroVisual("3d")}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      heroVisual === "3d"
-                        ? "bg-[#C5A059] text-[#0B3022] shadow-md scale-[1.02]"
-                        : "text-white/80 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    <span className="text-xs">✦</span>
-                    <span>3D Rotational Vault</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setHeroVisual("roster")}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      heroVisual === "roster"
-                        ? "bg-[#C5A059] text-[#0B3022] shadow-md scale-[1.02]"
-                        : "text-white/80 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    <span>Roster & Commission</span>
-                  </button>
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md shadow-sm">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-xs font-bold text-[#FDFBF7] tracking-wide">
+                    Live Automated Ajo Ledger
+                  </span>
                 </div>
 
                 <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/20 px-2.5 py-1 rounded-full font-mono">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-ping" />
-                  WebGL 3D
+                  100% Automated
                 </span>
               </div>
 
-              {heroVisual === "3d" ? (
-                <AjoHero3D />
-              ) : (
-                <div className="bg-[#FDFBF7] rounded-2xl p-6 shadow-2xl border border-gray-100 flex flex-col gap-6 transform hover:scale-[1.01] transition-transform duration-500">
-                  <div className="flex items-center gap-2 mb-2 px-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
-                  </div>
+              <div className="bg-[#FDFBF7] rounded-2xl p-6 shadow-2xl border border-gray-100 flex flex-col gap-6 transform hover:scale-[1.01] transition-transform duration-500">
+                <div className="flex items-center gap-2 mb-2 px-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-amber-400"></div>
+                  <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
+                </div>
 
-                  <div className="bg-[#F4F1EA] rounded-xl p-5 border border-gray-100">
-                    <div className="flex justify-between items-center mb-5">
-                      <div>
-                        <h3 className="text-[#0B3022] font-bold text-lg">Group Roster</h3>
-                        <p className="text-[#1F2937]/70 text-sm">October Payout Cycle</p>
-                      </div>
-                      <div className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">ACTIVE ROUND</div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {[
-                        { name: "Sarah J.", status: "E don pay ✓", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
-                        { name: "Michael O.", status: "E don pay ✓", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
-                        { name: "David K.", status: "Your turn don reach 🎯", icon: Activity, color: "text-amber-700", bg: "bg-amber-100" }
-                      ].map((user, i) => (
-                        <motion.div 
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.8 + (i * 0.1) }}
-                          className="flex items-center justify-between p-3 rounded-lg bg-[#FDFBF7] border border-gray-200 shadow-sm"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#0B3022] flex items-center justify-center text-xs font-bold text-white">{user.name[0]}</div>
-                            <span className="text-sm font-semibold text-[#1F2937]">{user.name}</span>
-                          </div>
-                          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${user.bg} ${user.color}`}>
-                            <user.icon className="w-3 h-3" />
-                            {user.status}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-[#0B3022] rounded-xl p-6 border border-[#0B3022] shadow-inner text-white flex flex-col justify-between">
+                <div className="bg-[#F4F1EA] rounded-xl p-5 border border-gray-100">
+                  <div className="flex justify-between items-center mb-5">
                     <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-gray-300 font-medium text-sm">Organizer Commission</h3>
-                        <span className="text-[10px] font-bold uppercase tracking-wider bg-[#C5A059]/20 text-[#C5A059] px-2 py-0.5 rounded-full border border-[#C5A059]/30">Example</span>
-                      </div>
-                      <motion.p 
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 1.2, type: "spring" }}
-                        className="text-3xl font-bold text-[#C5A059]"
+                      <h3 className="text-[#0B3022] font-bold text-lg">Group Roster</h3>
+                      <p className="text-[#1F2937]/70 text-sm">October Payout Cycle</p>
+                    </div>
+                    <div className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">ACTIVE ROUND</div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {[
+                      { name: "Sarah J.", status: "E don pay ✓", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
+                      { name: "Michael O.", status: "E don pay ✓", icon: CheckSquare, color: "text-emerald-700", bg: "bg-emerald-100" },
+                      { name: "David K.", status: "Your turn don reach 🎯", icon: Activity, color: "text-amber-700", bg: "bg-amber-100" }
+                    ].map((user, i) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.8 + (i * 0.1) }}
+                        className="flex items-center justify-between p-3 rounded-lg bg-[#FDFBF7] border border-gray-200 shadow-sm"
                       >
-                        ₦450,000
-                      </motion.p>
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-white/20 space-y-1">
-                      <p className="text-xs text-gray-200">Illustrative example across 3 circles at 5% rate*</p>
-                      <p className="text-[10px] text-gray-400 italic leading-tight">*Example simulation only. Actual organizer earnings depend on circle size and organizer terms.</p>
-                    </div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-[#0B3022] flex items-center justify-center text-xs font-bold text-white">{user.name[0]}</div>
+                          <span className="text-sm font-semibold text-[#1F2937]">{user.name}</span>
+                        </div>
+                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${user.bg} ${user.color}`}>
+                          <user.icon className="w-3 h-3" />
+                          {user.status}
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
-              )}
+
+                <div className="bg-[#0B3022] rounded-xl p-6 border border-[#0B3022] shadow-inner text-white flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="text-gray-300 font-medium text-sm">Organizer Commission</h3>
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-[#C5A059]/20 text-[#C5A059] px-2 py-0.5 rounded-full border border-[#C5A059]/30">Example</span>
+                    </div>
+                    <motion.p 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1.2, type: "spring" }}
+                      className="text-3xl font-bold text-[#C5A059]"
+                    >
+                      ₦450,000
+                    </motion.p>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-white/20 space-y-1">
+                    <p className="text-xs text-gray-200">Illustrative example across 3 circles at 5% rate*</p>
+                    <p className="text-[10px] text-gray-400 italic leading-tight">*Example simulation only. Actual organizer earnings depend on circle size and organizer terms.</p>
+                  </div>
+                </div>
+              </div>
             </motion.div>
 
           </div>

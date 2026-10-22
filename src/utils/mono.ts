@@ -456,7 +456,7 @@ export async function initiatePayoutWithMono({
       // 2. Mono v3 requires clean alphanumeric references (no hyphens/underscores)
       const cleanBatchRef = reference.replace(/[^a-zA-Z0-9]/g, "").slice(0, 30) || `payout${Date.now()}`;
       const cleanItemRef = `${cleanBatchRef}item1`.slice(0, 30);
-      const cleanNarration = (narration || "Ajose Rotational Payout").slice(0, 100);
+      const cleanNarration = (narration || "Ajose Rotational Payout").slice(0, 30);
 
       const response = await fetch("https://api.withmono.com/v3/payments/disburse/disbursements", {
         method: "POST",

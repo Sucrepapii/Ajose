@@ -543,7 +543,7 @@ async function handleSweep(req: NextRequest) {
                 recipientAccountNumber: recipientUser.account_number,
                 recipientBankCode: getBankCode(recipientUser.bank_name),
                 amount: netPayoutAmount,
-                narration: `Àjọṣe Turn ${currentTurn} Auto-Payout (${group.name})`,
+                narration: `Àjọṣe T${currentTurn} Payout: ${group.name}`.slice(0, 30),
                 reference: payoutRef
               });
 
