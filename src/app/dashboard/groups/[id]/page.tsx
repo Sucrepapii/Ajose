@@ -183,6 +183,34 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
   const maxPaidTurn = paidPayoutTurns.size > 0 ? Math.max(...Array.from(paidPayoutTurns)) : 0;
   const currentTurn = group.current_turn || (maxPaidTurn + 1);
 
+  // Frequency Cooldown Check: Verify if current turn is within mandatory frequency waiting period
+  let isCooldownActive = false;
+  let cooldownRemainingHours = 0;
+  let nextTurnAvailableAt: Date | null = null;
+
+  if (maxPaidTurn > 0 && currentTurn <= (group.max_members || 1)) {
+    const lastPayoutTx = txList
+      .filter(tx => tx.type === 'payout' && (tx.status === 'successful' || tx.status === 'completed') && tx.cycle_turn === maxPaidTurn)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+
+    if (lastPayoutTx?.created_at) {
+      const lastPayoutTime = new Date(lastPayoutTx.created_at).getTime();
+      const elapsedMs = Date.now() - lastPayoutTime;
+      const freq = (group.frequency || 'monthly').toLowerCase();
+      let cooldownMs = 23 * 60 * 60 * 1000;
+      if (freq === 'weekly') cooldownMs = 6 * 24 * 60 * 60 * 1000;
+      else if (freq === 'biweekly' || freq === 'bi-weekly') cooldownMs = 13 * 24 * 60 * 60 * 1000;
+      else if (freq === 'monthly') cooldownMs = 27 * 24 * 60 * 60 * 1000;
+      else if (freq === 'daily') cooldownMs = 23 * 60 * 60 * 1000;
+
+      if (elapsedMs < cooldownMs) {
+        isCooldownActive = true;
+        cooldownRemainingHours = Math.ceil((cooldownMs - elapsedMs) / (1000 * 60 * 60));
+        nextTurnAvailableAt = new Date(lastPayoutTime + cooldownMs);
+      }
+    }
+  }
+
   // Completed contributions for this turn
   const paidUserIds = new Set(
     txList
@@ -466,6 +494,11 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#C5A059]/10 rounded-full blur-2xl"></div>
           <h3 className="text-white/60 text-sm font-bold mb-1 uppercase tracking-wider relative z-10">Collecting Next (Turn {currentTurn})</h3>
           <p className="text-xl font-bold text-white truncate relative z-10">{receivingMemberProfileName}</p>
+          {isCooldownActive && (
+            <span className="text-[11px] text-[#C5A059] font-medium block mt-1.5 relative z-10">
+              ⏳ Opens in ~{cooldownRemainingHours}h ({group.frequency} cycle)
+            </span>
+          )}
         </div>
         <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/30 transition-colors group">
           <h3 className="text-[#1F2937]/60 text-sm font-bold mb-1 uppercase tracking-wider group-hover:text-[#C5A059] transition-colors">Members</h3>

@@ -47,6 +47,7 @@ async function handleSweep(req: NextRequest) {
     const defaultCronSecret = "ajose_sec_cron_99f2b810d7a6e4c";
     const cronSecret = process.env.CRON_SECRET || defaultCronSecret;
     const specificGroupId = req.nextUrl.searchParams.get("groupId");
+    const forceOverride = req.nextUrl.searchParams.get("force") === "true" || req.headers.get("x-force-sweep") === "true";
     const queryKey = req.nextUrl.searchParams.get("key") || req.nextUrl.searchParams.get("secret");
     const headerKey = req.headers.get("x-cron-secret") || req.headers.get("x-cron-key");
     const isVercelCron = req.headers.get("user-agent")?.toLowerCase().includes("vercel-cron") || Boolean(req.headers.get("x-vercel-cron"));
@@ -193,7 +194,7 @@ async function handleSweep(req: NextRequest) {
       const { data: payouts } = memberIds.length > 0
         ? await supabase
             .from("transactions")
-            .select("cycle_turn")
+            .select("cycle_turn, created_at")
             .in("membership_id", memberIds)
             .eq("type", "payout")
             .eq("status", "successful")
@@ -201,6 +202,73 @@ async function handleSweep(req: NextRequest) {
 
       const maxPaidTurn = (payouts || []).reduce((max: number, p: any) => Math.max(max, p.cycle_turn || 0), 0);
       const currentTurn = (group as any).current_turn || (maxPaidTurn + 1);
+
+      // Check if circle has completed all rotational turns
+      if (currentTurn > (group.max_members || 1)) {
+        sweepResults.push({
+          groupId: group.id,
+          groupName: group.name,
+          currentTurn,
+          status: "completed",
+          message: `All ${group.max_members} turns in ${group.name} have already been successfully completed.`
+        });
+        continue;
+      }
+
+      // Frequency Cooldown Guard:
+      // Prevent consecutive turns from debiting members prematurely.
+      // A turn must respect its full cycle duration (24h daily, 7d weekly, etc.)
+      // before automated contributions for the next turn can be collected.
+      if (maxPaidTurn > 0) {
+        const lastCompletedPayout = (payouts || [])
+          .filter((p: any) => p.cycle_turn === maxPaidTurn && p.created_at)
+          .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+
+        if (lastCompletedPayout) {
+          const lastPayoutTime = new Date(lastCompletedPayout.created_at).getTime();
+          const nowTime = Date.now();
+          const elapsedMs = nowTime - lastPayoutTime;
+
+          const freq = (group.frequency || "monthly").toLowerCase();
+          // Required cooldown intervals:
+          // Daily: 23 hours (giving a 1-hour margin for scheduled cron runners at same hour every day)
+          // Weekly: 6 days (144 hours)
+          // Biweekly: 13 days
+          // Monthly: 27 days
+          let cooldownMs = 23 * 60 * 60 * 1000;
+          if (freq === "weekly") {
+            cooldownMs = 6 * 24 * 60 * 60 * 1000;
+          } else if (freq === "biweekly" || freq === "bi-weekly") {
+            cooldownMs = 13 * 24 * 60 * 60 * 1000;
+          } else if (freq === "monthly") {
+            cooldownMs = 27 * 24 * 60 * 60 * 1000;
+          } else if (freq === "daily") {
+            cooldownMs = 23 * 60 * 60 * 1000;
+          }
+
+          if (!forceOverride && elapsedMs < cooldownMs) {
+            const remainingMs = cooldownMs - elapsedMs;
+            const hoursRemaining = (remainingMs / (1000 * 60 * 60)).toFixed(1);
+            const nextTurnDate = new Date(lastPayoutTime + cooldownMs);
+
+            console.log(`[Sweep Cooldown] ${group.name} (Turn ${currentTurn}) is in frequency cooldown until ${nextTurnDate.toISOString()} (~${hoursRemaining}h remaining). Skipping automated debits.`);
+
+            sweepResults.push({
+              groupId: group.id,
+              groupName: group.name,
+              currentTurn,
+              status: "cooldown_active",
+              message: `Turn ${currentTurn} collection is on cooldown until ${nextTurnDate.toLocaleString("en-NG", { timeZone: "Africa/Lagos" })} WAT (~${hoursRemaining}h remaining for ${group.frequency} cycle).`,
+              nextTurnAvailableAt: nextTurnDate.toISOString(),
+              debitsInitiated: 0,
+              skippedAlreadyPaid: 0,
+              failedDebits: 0,
+              details: []
+            });
+            continue;
+          }
+        }
+      }
       const { data: existingTxs } = memberIds.length > 0
         ? await supabase
             .from("transactions")

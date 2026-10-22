@@ -30,6 +30,8 @@ export function TriggerSweepClient({
   const [isOpen, setIsOpen] = useState(false);
   const [isSweeping, setIsSweeping] = useState(false);
 
+  const [bypassCooldown, setBypassCooldown] = useState(false);
+
   const isDaily = frequency === "daily";
   const isWeekly = frequency === "weekly";
   const feePct = typeof customFeePct === "number" && customFeePct >= 0 ? customFeePct : 2.0;
@@ -41,7 +43,8 @@ export function TriggerSweepClient({
     const toastId = toast.loading(`Triggering automated Mono sweep for Turn ${currentTurn}...`);
 
     try {
-      const res = await fetch(`/api/cron/sweep?groupId=${encodeURIComponent(groupId)}`, {
+      const url = `/api/cron/sweep?groupId=${encodeURIComponent(groupId)}${bypassCooldown ? "&force=true" : ""}`;
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -57,7 +60,14 @@ export function TriggerSweepClient({
       const failed = summary.failedDebits ?? 0;
       const skipped = summary.skippedAlreadyPaid ?? 0;
 
-      if (initiated > 0) {
+      if (summary.status === "cooldown_active") {
+        toast.info(
+          `⏳ Cooldown Active: ${summary.message || "Cycle cooldown is active."}`,
+          { id: toastId, duration: 6000 }
+        );
+      } else if (summary.status === "completed") {
+        toast.info(summary.message || "All turns have been completed.", { id: toastId });
+      } else if (initiated > 0) {
         toast.success(
           `🎉 Sweep complete: ${initiated} automated debits initiated via Mono (${skipped} already cleared).`,
           { id: toastId }
@@ -166,6 +176,21 @@ export function TriggerSweepClient({
                 <span className="text-[#0B3022]">Total Per Member Debit</span>
                 <span className="text-sm text-emerald-700">₦{totalPerMember.toLocaleString()}</span>
               </div>
+            </div>
+
+            {/* Optional Cooldown Bypass for testing / manual override */}
+            <div className="px-1">
+              <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={bypassCooldown}
+                  onChange={(e) => setBypassCooldown(e.target.checked)}
+                  className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 h-3.5 w-3.5 cursor-pointer"
+                />
+                <span className="text-[11px] text-gray-500">
+                  Force sweep (Bypass {frequency} cooldown for testing)
+                </span>
+              </label>
             </div>
 
             <div className="flex items-center justify-end gap-2.5 pt-2">
