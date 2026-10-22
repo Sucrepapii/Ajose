@@ -302,6 +302,7 @@ async function handleSweep(req: NextRequest) {
             const rawRef = `swp${Date.now().toString().slice(-8)}${Math.random().toString(36).substring(2, 6)}`;
             const reference = rawRef.replace(/[^a-zA-Z0-9]/g, "").slice(0, 24);
             let debitSuccess = false;
+            let isPendingConfirmation = false;
             let debitMessage = "";
 
             // Resolve member mandate ID: check database record, then Supabase Auth user_metadata
@@ -322,7 +323,7 @@ async function handleSweep(req: NextRequest) {
                     narration: `Àjọṣe Contribution Turn ${currentTurn} - ${group.name.slice(0, 15)}`,
                     reference
                   }),
-                  signal: AbortSignal.timeout(8000)
+                  signal: AbortSignal.timeout(28000)
                 });
 
                 const rawBody = await debitRes.text();
@@ -366,7 +367,7 @@ async function handleSweep(req: NextRequest) {
                           narration: `Àjọṣe Contribution Turn ${currentTurn} - ${group.name.slice(0, 15)}`,
                           reference: `${reference}b`.slice(0, 24)
                         }),
-                        signal: AbortSignal.timeout(8000)
+                        signal: AbortSignal.timeout(25000)
                       });
                       const fallbackBody = await fallbackRes.text();
                       let fallbackData: any = {};
@@ -395,11 +396,21 @@ async function handleSweep(req: NextRequest) {
                   }
                 }
               } catch (err: any) {
-                debitSuccess = false;
-                debitMessage = err.message || "Mono connection error.";
-                if (allowSimulation) {
-                  debitSuccess = true;
-                  debitMessage = `Swept in Test Mode (Connection error: ${err.message})`;
+                const isTimeout = err.name === "TimeoutError" || (typeof err.message === "string" && err.message.toLowerCase().includes("timeout"));
+                if (isTimeout) {
+                  // Gateway timed out: do NOT fail or trigger a retry later.
+                  // Mark as pending_confirmation so subsequent cron runs recognize it as in-flight and do not double-debit!
+                  isPendingConfirmation = true;
+                  debitSuccess = false;
+                  debitMessage = "Debit instruction dispatched to bank; awaiting network confirmation.";
+                  console.warn(`[Sweep Timeout Protection] Debit for ${displayName} timed out after 28s. Marking as pending_confirmation to protect against double debit.`);
+                } else {
+                  debitSuccess = false;
+                  debitMessage = err.message || "Mono connection error.";
+                  if (allowSimulation) {
+                    debitSuccess = true;
+                    debitMessage = `Swept in Test Mode (Connection error: ${err.message})`;
+                  }
                 }
               }
             } else if (allowSimulation) {
@@ -434,6 +445,30 @@ async function handleSweep(req: NextRequest) {
                 userId: member.user_id,
                 name: displayName,
                 status: "successful",
+                reference,
+                message: debitMessage
+              });
+            } else if (isPendingConfirmation) {
+              // Record as pending_confirmation to protect against double debit on subsequent sweeps
+              await supabase.from("transactions").insert({
+                membership_id: member.id,
+                amount: totalDebitAmount,
+                type: "contribution",
+                status: "pending_confirmation",
+                cycle_turn: currentTurn
+              });
+
+              await supabase.from("notifications").insert({
+                user_id: member.user_id,
+                title: `⏳ Contribution Processing: ₦${totalDebitAmount.toLocaleString()}`,
+                message: `Your scheduled Ajo contribution for Turn ${currentTurn} in ${group.name} was dispatched to your bank and is awaiting clearance confirmation.`,
+                type: "info"
+              });
+
+              groupSummary.details.push({
+                userId: member.user_id,
+                name: displayName,
+                status: "pending_confirmation",
                 reference,
                 message: debitMessage
               });
