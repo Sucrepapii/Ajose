@@ -234,15 +234,12 @@ export async function POST(req: Request) {
     // Advance group turn in DB
     const nextTurn = turn + 1;
     const isCompleted = nextTurn > (group.max_members || 1);
-    try {
+    if (isCompleted) {
       await supabaseAdmin
         .from("groups")
-        .update({
-          current_turn: nextTurn,
-          ...(isCompleted ? { status: "completed" } : {})
-        })
+        .update({ status: "completed" })
         .eq("id", groupId);
-    } catch {}
+    }
 
     // Delete prior failed transactions for this turn
     try {

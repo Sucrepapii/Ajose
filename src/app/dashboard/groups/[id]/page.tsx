@@ -181,14 +181,15 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
 
   // Derive current turn from completed payout transactions or group.current_turn
   const maxPaidTurn = paidPayoutTurns.size > 0 ? Math.max(...Array.from(paidPayoutTurns)) : 0;
-  const currentTurn = group.current_turn || (maxPaidTurn + 1);
+  const isCircleCompleted = group.status === 'completed' || maxPaidTurn >= (group.max_members || 1);
+  const currentTurn = isCircleCompleted ? maxPaidTurn : (group.current_turn || (maxPaidTurn + 1));
 
   // Frequency Cooldown Check: Verify if current turn is within mandatory frequency waiting period
   let isCooldownActive = false;
   let cooldownRemainingHours = 0;
   let nextTurnAvailableAt: Date | null = null;
 
-  if (maxPaidTurn > 0 && currentTurn <= (group.max_members || 1)) {
+  if (!isCircleCompleted && maxPaidTurn > 0 && currentTurn <= (group.max_members || 1)) {
     const lastPayoutTx = txList
       .filter(tx => tx.type === 'payout' && (tx.status === 'successful' || tx.status === 'completed') && tx.cycle_turn === maxPaidTurn)
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
@@ -322,8 +323,14 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
             <div className="min-w-0">
               <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-bold text-[#0B3022] truncate">{group.name}</h1>
-                <span className={`px-2 py-0.5 text-xs font-bold rounded shrink-0 ${group.status === 'active' ? 'bg-green-500/10 text-green-700 border border-green-500/20' : 'bg-[#C5A059]/10 text-[#0B3022] border border-[#C5A059]/20'}`}>
-                  {group.status.toUpperCase()}
+                <span className={`px-2 py-0.5 text-xs font-bold rounded shrink-0 ${
+                  isCircleCompleted 
+                    ? 'bg-[#C5A059]/10 text-[#0B3022] border border-[#C5A059]/30' 
+                    : group.status === 'active' 
+                      ? 'bg-green-500/10 text-green-700 border border-green-500/20' 
+                      : 'bg-[#C5A059]/10 text-[#0B3022] border border-[#C5A059]/20'
+                }`}>
+                  {isCircleCompleted ? 'COMPLETED' : group.status.toUpperCase()}
                 </span>
               </div>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -364,7 +371,7 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
             />
           )}
 
-          {isAdmin && group.status === 'active' && (
+          {isAdmin && group.status === 'active' && !isCircleCompleted && (
             <>
               <TriggerSweepClient 
                 groupId={groupId}
@@ -490,16 +497,29 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
           <h3 className="text-[#1F2937]/60 text-sm font-bold mb-1 uppercase tracking-wider group-hover:text-[#C5A059] transition-colors">Total Pool</h3>
           <p className="text-2xl font-bold text-[#0B3022]">₦{totalPool.toLocaleString()}</p>
         </div>
-        <div className="bg-[#0B3022] border border-[#0B3022]/10 shadow-md rounded-2xl p-5 relative overflow-hidden">
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#C5A059]/10 rounded-full blur-2xl"></div>
-          <h3 className="text-white/60 text-sm font-bold mb-1 uppercase tracking-wider relative z-10">Collecting Next (Turn {currentTurn})</h3>
-          <p className="text-xl font-bold text-white truncate relative z-10">{receivingMemberProfileName}</p>
-          {isCooldownActive && (
-            <span className="text-[11px] text-[#C5A059] font-medium block mt-1.5 relative z-10">
-              ⏳ Opens in ~{cooldownRemainingHours}h ({group.frequency} cycle)
+        {isCircleCompleted ? (
+          <div className="bg-[#0B3022] border border-[#C5A059]/30 shadow-md rounded-2xl p-5 relative overflow-hidden">
+            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#C5A059]/20 rounded-full blur-2xl"></div>
+            <h3 className="text-[#C5A059] text-xs font-bold mb-1 uppercase tracking-wider relative z-10">Cycle Status</h3>
+            <p className="text-xl font-bold text-white relative z-10 flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-emerald-400" /> Completed
+            </p>
+            <span className="text-[11px] text-white/70 block mt-1 relative z-10">
+              All {group.max_members} rotational turns disbursed
             </span>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="bg-[#0B3022] border border-[#0B3022]/10 shadow-md rounded-2xl p-5 relative overflow-hidden">
+            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#C5A059]/10 rounded-full blur-2xl"></div>
+            <h3 className="text-white/60 text-sm font-bold mb-1 uppercase tracking-wider relative z-10">Collecting Next (Turn {currentTurn})</h3>
+            <p className="text-xl font-bold text-white truncate relative z-10">{receivingMemberProfileName}</p>
+            {isCooldownActive && (
+              <span className="text-[11px] text-[#C5A059] font-medium block mt-1.5 relative z-10">
+                ⏳ Opens in ~{cooldownRemainingHours}h ({group.frequency} cycle)
+              </span>
+            )}
+          </div>
+        )}
         <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/30 transition-colors group">
           <h3 className="text-[#1F2937]/60 text-sm font-bold mb-1 uppercase tracking-wider group-hover:text-[#C5A059] transition-colors">Members</h3>
           <p className="text-2xl font-bold text-[#0B3022]">{contributingMembers.length}/{group.max_members}</p>
@@ -785,8 +805,8 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                   }
                 }
 
-                const isTurn = receivingMember?.id === m.id;
-                const isPaid = paidUserIds.has(m.user_id);
+                const isTurn = !isCircleCompleted && receivingMember?.id === m.id;
+                const isPaid = isCircleCompleted || paidUserIds.has(m.user_id);
                 const hasFailedDebit = failedMemberUserIds.has(m.user_id);
 
                 return (
@@ -869,6 +889,14 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                         const userCompletedTx = txList.find(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && tx.status === 'completed' && tx.user_id === m.user_id);
                         const isReserveCovered = userCompletedTx?.description?.toLowerCase().includes('reserve pool') || userCompletedTx?.description?.toLowerCase().includes('credit direct') || userCompletedTx?.description?.toLowerCase().includes('cdl');
                         const isManualPaid = userCompletedTx?.description?.toLowerCase().includes('manual') || userCompletedTx?.description?.toLowerCase().includes('mono verified');
+
+                        if (isCircleCompleted) {
+                          return (
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
+                              <CheckCircle2 className="h-4 w-4 text-green-600" /> Cycle Cleared
+                            </span>
+                          );
+                        }
 
                         if (m.role === 'admin') {
                           return (

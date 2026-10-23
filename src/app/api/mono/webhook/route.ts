@@ -186,11 +186,14 @@ export async function POST(req: NextRequest) {
                 cycle_turn
               });
 
-              // Advance the group to the next turn
-              await supabase
-                .from("groups")
-                .update({ current_turn: cycle_turn + 1 })
-                .eq("id", group_id);
+              // Check if all turns completed
+              const isCompleted = (cycle_turn + 1) > (group.max_members || 1);
+              if (isCompleted) {
+                await supabase
+                  .from("groups")
+                  .update({ status: "completed" })
+                  .eq("id", group_id);
+              }
 
               // Notify the Admin that pool has landed in their account
               await supabase.from("notifications").insert({

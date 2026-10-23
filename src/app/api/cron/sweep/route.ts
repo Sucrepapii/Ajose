@@ -619,10 +619,11 @@ async function handleSweep(req: NextRequest) {
               if (autoPayoutResult.success || isSimulatedPayout) {
                 const nextTurn = currentTurn + 1;
                 const isCompleted = nextTurn > (group.max_members || 1);
-                await supabase.from("groups").update({
-                  current_turn: nextTurn,
-                  ...(isCompleted ? { status: "completed" } : {})
-                }).eq("id", group.id);
+                if (isCompleted) {
+                  await supabase.from("groups").update({
+                    status: "completed"
+                  }).eq("id", group.id);
+                }
 
                 await supabase.from("transactions").insert({
                   membership_id: recipientMember.id,

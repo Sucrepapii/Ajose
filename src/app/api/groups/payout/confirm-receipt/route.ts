@@ -86,15 +86,12 @@ export async function POST(req: Request) {
     // 2. Advance group turn
     const nextTurn = Number(turn) + 1;
     const isCompleted = nextTurn > (group.max_members || 1);
-    try {
+    if (isCompleted) {
       await supabaseAdmin
         .from("groups")
-        .update({
-          current_turn: nextTurn,
-          ...(isCompleted ? { status: "completed" } : {})
-        })
+        .update({ status: "completed" })
         .eq("id", groupId);
-    } catch {}
+    }
 
     // 3. Award trust & credit score boost (+10 points)
     const recipientUser = recipientMembership.users;
