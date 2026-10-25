@@ -802,7 +802,7 @@ export default function InvitePage(props: {
                     <div className="flex items-start gap-2">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">2</div>
                       <p>
-                        <strong>Continuous Account Reconciliation via Mono:</strong> Your account status and sufficient balance are monitored and reconciled through Mono Open-Banking to guarantee timely cycle clearance.
+                        <strong>Admin Management &amp; Know Your Admin:</strong> This circle is managed entirely by the Ajo Admin. You confirm that you know and trust the Admin. Àjọṣe provides management software only and is not responsible for unpaid contributions.
                       </p>
                     </div>
 
@@ -823,8 +823,8 @@ export default function InvitePage(props: {
                         onChange={(e) => setMandateAgreed(e.target.checked)}
                         className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
                       />
-                      <span className="text-xs text-zinc-300">
-                        I authorize the <strong>{cycleDurationLabel.toLowerCase()} standing direct debit mandate</strong> for my scheduled contributions in {group?.name}.
+                      <span className="text-xs text-zinc-300 leading-normal">
+                        I confirm that I know and trust the Ajo Admin, accept the <button type="button" onClick={() => setShowTermsModal(true)} className="text-emerald-400 underline font-semibold hover:text-emerald-300">Terms of Service</button>, and authorize the <strong>{cycleDurationLabel.toLowerCase()} standing direct debit mandate</strong> for my scheduled contributions in {group?.name}.
                       </span>
                     </label>
                   </div>
@@ -917,31 +917,41 @@ export default function InvitePage(props: {
             <div className="p-6 overflow-y-auto space-y-5 text-xs text-zinc-300 leading-relaxed divide-y divide-zinc-900">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                  <ShieldCheck className="h-4 w-4" />
-                  1. Automated Collection &amp; Payout Architecture
+                  <Users className="h-4 w-4" />
+                  1. Ajo Admin Responsibility &amp; Platform Role
                 </div>
                 <p>
-                  Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe&apos;s wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds.
+                  The Ajo Admin who created this circle takes full responsibility for managing it, vetting members, tracking collections, and overseeing group turns. Àjọṣe provides software automation to make rotational savings easier and does not manage or guarantee group funds.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center gap-2 text-[#C5A059] font-bold text-sm">
+                  <ShieldAlert className="h-4 w-4" />
+                  2. Member Due Diligence: Know Your Admin
+                </div>
+                <p>
+                  Anyone joining this group <strong>must make sure they personally know and trust the Ajo Admin well</strong> before committing funds. Participation in any rotational circle is strictly voluntary and at your own discretion and risk.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-4">
+                <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
+                  <AlertTriangle className="h-4 w-4" />
+                  3. Non-Liability for Late or Unpaid Contributions
+                </div>
+                <p>
+                  <strong>Àjọṣe will not be responsible or liable for late, defaulted, failed, or unpaid contributions.</strong> We do not absorb peer credit risk. Any collection recovery or disputes remain strictly between members and their Ajo Admin.
                 </p>
               </div>
 
               <div className="space-y-2 pt-4">
                 <div className="flex items-center gap-2 text-white font-bold text-sm">
                   <Wallet className="h-4 w-4 text-emerald-400" />
-                  2. Continuous Direct Debit Mandate
+                  4. Continuous Direct Debit Mandate
                 </div>
                 <p>
-                  By joining this Àjọṣe, you authorize an automated direct debit mandate on your linked primary bank account. On each {frequencyLabel} contribution due date, the agreed amount of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> will be automatically swept into the Admin's settlement account.
-                </p>
-              </div>
-
-              <div className="space-y-2 pt-4">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                  <CheckCircle2 className="h-4 w-4" />
-                  3. Timely Contribution Commitment &amp; Bureau Standing
-                </div>
-                <p>
-                  Members commit to maintaining sufficient funds for automated debit on or before each scheduled cycle due date. Continuous verification via Mono Open-Banking and Credit Bureau reporting protects the circle and preserves member reputation.
+                  By joining, you authorize an automated direct debit mandate on your linked primary bank account via Mono. On each {frequencyLabel} contribution due date, the agreed amount of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> will be automatically swept for rotational payout.
                 </p>
               </div>
             </div>

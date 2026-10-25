@@ -583,7 +583,7 @@ export default function CreateGroupPage() {
                       className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                     />
                     <label htmlFor="adminTenderAgreed" className="text-xs text-[#1F2937]/90 leading-relaxed cursor-pointer select-none font-medium">
-                      <strong>Mandate Authorization:</strong> I tender this account as the designated settlement repository. I authorize Àjọṣe's automated payment engine to debit this account for member cycle payouts. I understand that if my account has insufficient funds and an auto-debit fails, <strong>all group members will be immediately notified</strong>.
+                      <strong>Admin Management &amp; Mandate Authorization:</strong> As the Circle Admin, I take full responsibility for managing this Ajo circle, vetting members, and overseeing contributions. I acknowledge that Àjọṣe provides management software to make circle tracking easier and is not liable for late, defaulted, or unpaid contributions. I tender this account as the designated settlement repository and authorize automated debits for scheduled member cycle payouts.
                     </label>
                   </div>
                 </div>
