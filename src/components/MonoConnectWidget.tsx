@@ -123,6 +123,18 @@ export function MonoConnectWidget({
           router.refresh();
           return;
         }
+
+        if (data.status === "cancelled" || data.status === "failed" || data.status === "expired") {
+          clearInterval(interval);
+          setIsCheckingMandate(false);
+          setMandateId("");
+          setMandateUrl("");
+          setMandateStatus("not_initiated");
+          toast.error("Bank authorization session was cancelled or expired. You can click 'Restart Authorization' to try again.", {
+            duration: 6000
+          });
+          return;
+        }
       } catch (_) {}
 
       if (attempts >= 30) {
@@ -143,6 +155,11 @@ export function MonoConnectWidget({
         setMandateStatus("approved");
         toast.success("✓ Mandate is ACTIVE and authorized for automated sweeps!", { id: toastId });
         router.refresh();
+      } else if (data.status === "cancelled" || data.status === "failed" || data.status === "expired") {
+        setMandateId("");
+        setMandateUrl("");
+        setMandateStatus("not_initiated");
+        toast.error(`Session was ${data.status}. Click 'Restart Authorization' to generate a fresh link.`, { id: toastId, duration: 6000 });
       } else {
         toast.info(`Status: ${data.status || "Awaiting bank approval"}. Please complete authorization in Mono.`, { id: toastId });
       }
@@ -466,14 +483,25 @@ export function MonoConnectWidget({
                 )}
 
                 {mandateId ? (
-                  <button
-                    onClick={checkMandateNow}
-                    disabled={isCheckingMandate}
-                    className="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-[#0B3022] font-bold rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                  >
-                    <RefreshCw className={`h-3.5 w-3.5 text-[#C5A059] ${isCheckingMandate ? "animate-spin" : ""}`} />
-                    <span>{isCheckingMandate ? "Verifying..." : "Check Status"}</span>
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={checkMandateNow}
+                      disabled={isCheckingMandate}
+                      className="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-[#0B3022] font-bold rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <RefreshCw className={`h-3.5 w-3.5 text-[#C5A059] ${isCheckingMandate ? "animate-spin" : ""}`} />
+                      <span>{isCheckingMandate ? "Verifying..." : "Check Status"}</span>
+                    </button>
+                    <button
+                      onClick={handleAuthorizeMandate}
+                      disabled={isInitiatingMandate}
+                      className="px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      title="Generate a brand new authorization link if previous link was cancelled or expired"
+                    >
+                      <RefreshCw className={`h-3.5 w-3.5 text-amber-700 ${isInitiatingMandate ? "animate-spin" : ""}`} />
+                      <span>{isInitiatingMandate ? "Generating..." : "Restart Authorization"}</span>
+                    </button>
+                  </div>
                 ) : (
                   <button
                     onClick={handleAuthorizeMandate}
