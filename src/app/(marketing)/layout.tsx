@@ -1,5 +1,6 @@
 import { MarketingHeader } from "@/components/MarketingHeader";
 import { MarketingFooter } from "@/components/MarketingFooter";
+// import { WhatsAppSupportButton } from "@/components/WhatsAppSupportButton";
 
 export default function MarketingLayout({
   children,
@@ -11,6 +12,7 @@ export default function MarketingLayout({
       <MarketingHeader />
       {children}
       <MarketingFooter />
+      {/* <WhatsAppSupportButton /> */}
     </div>
   );
 }

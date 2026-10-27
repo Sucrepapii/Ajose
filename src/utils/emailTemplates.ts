@@ -36,8 +36,15 @@ const getEmailHeader = (title: string) => `
 const getEmailFooter = () => `
     </div>
     <div class="footer">
-      <p>&copy; ${new Date().getFullYear()} Àjọṣe. The Guaranteed Ajo Platform.</p>
-      <p style="margin-top: 4px;">Institutional-grade rotational contribution management.</p>
+      <p style="margin: 0 0 4px 0; font-weight: 600; color: #52525b;">&copy; ${new Date().getFullYear()} Àjọṣe Technologies Ltd. The Guaranteed Ajo Platform.</p>
+      <p style="margin: 0 0 12px 0; color: #a1a1aa;">Institutional-grade rotational contribution management. Turn by turn, no wahala.</p>
+      <div style="padding-top: 8px; border-top: 1px solid #e4e4e7;">
+        <a href="https://www.instagram.com/ajoseapp?utm_source=qr" target="_blank" style="color: #0B402B; text-decoration: none; font-weight: 600; margin: 0 8px; font-size: 11px;">Instagram</a>
+        <span style="color: #d4d4d8;">&bull;</span>
+        <a href="https://x.com/ajoseapp?s=11&t=QnoqdrIaByUDrhoWj0KuLA" target="_blank" style="color: #0B402B; text-decoration: none; font-weight: 600; margin: 0 8px; font-size: 11px;">X (Twitter)</a>
+        <span style="color: #d4d4d8;">&bull;</span>
+        <a href="https://www.linkedin.com/company/%C3%A0j%E1%BB%8D%E1%B9%A3e/?viewAsMember=true" target="_blank" style="color: #0B402B; text-decoration: none; font-weight: 600; margin: 0 8px; font-size: 11px;">LinkedIn</a>
+      </div>
     </div>
   </div>
 </body>
@@ -56,27 +63,72 @@ export function getWelcomeEmailTemplate({
 }) {
   return `
   ${getEmailHeader("Welcome to Àjọṣe")}
-    <h1 class="title">Welcome to Àjọṣe! 👋</h1>
-    <p class="text">Hello ${userName},</p>
-    <p class="text">Welcome to <strong>Ajose</strong> — the digital platform that runs your Ajo group. Turn by turn, no wahala.</p>
+    <h1 class="title" style="color: #0B402B; font-size: 24px; font-weight: 800; margin-bottom: 8px;">Welcome to Àjọṣe! 👋</h1>
+    <p class="text" style="font-size: 16px; color: #374151; margin-bottom: 16px;">Hello <strong>${userName}</strong>,</p>
+    <p class="text" style="font-size: 15px; color: #4b5563; line-height: 1.6;">
+      Your account is now active and ready. Whether you are creating a new contribution circle for your business, family, or colleagues, or joining an existing pool, we are truly honored to have you with us.
+    </p>
 
     ${groupName ? `
-    <div class="card">
-      <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b;">Joined Circle</span>
-      <div style="font-size: 20px; font-weight: 800; color: #0B402B; margin-top: 4px;">${groupName}</div>
-      <p style="font-size: 13px; color: #059669; font-weight: 600; margin-top: 4px;">Status: Verified Member & Direct Debit Active</p>
+    <div class="card" style="background-color: #FDFBF7; border: 1px solid #C5A059; border-radius: 12px; padding: 20px; margin: 20px 0;">
+      <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #C5A059; letter-spacing: 0.05em;">Your Circle</span>
+      <div style="font-size: 20px; font-weight: 800; color: #0B3022; margin-top: 4px;">${groupName}</div>
+      <p style="font-size: 13px; color: #059669; font-weight: 600; margin-top: 6px;">✓ Status: Membership Active & Direct Debit Linked</p>
     </div>
     ` : `
-    <div class="card">
-      <p style="font-size: 14px; color: #0B402B; font-weight: 600; margin: 0;">Your account is active and verified!</p>
-      <p style="font-size: 13px; color: #64748b; margin-top: 4px;">You can now create or join trusted rotational contribution groups with guaranteed payouts.</p>
+    <div class="card" style="background-color: #FDFBF7; border: 1px solid #C5A059; border-radius: 12px; padding: 20px; margin: 20px 0;">
+      <p style="font-size: 14px; color: #0B3022; font-weight: 700; margin: 0;">✓ Identity Verified & Account Ready</p>
+      <p style="font-size: 13px; color: #64748b; margin-top: 4px;">You can now create or join trusted rotational contribution groups with automated payouts.</p>
     </div>
     `}
 
-    <p class="text">With Àjọṣe, your contributions and payouts are backed by Mono Open-Banking, automated direct debits, and credit bureau accountability.</p>
+    <!-- Detailed Note from the Founder -->
+    <div style="background: linear-gradient(135deg, #0B3022 0%, #061e15 100%); border-radius: 16px; padding: 28px 24px; color: #ffffff; margin: 28px 0; border: 1px solid rgba(197, 160, 89, 0.4); box-shadow: 0 8px 24px rgba(11, 48, 34, 0.15);">
+      <div style="margin-bottom: 18px;">
+        <table cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
+          <tr>
+            <td style="width: 48px; vertical-align: top;">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #C5A059, #F5D79E); color: #0B3022; font-weight: 900; font-size: 18px; text-align: center; line-height: 48px;">
+                SA
+              </div>
+            </td>
+            <td style="padding-left: 14px; vertical-align: top;">
+              <div style="font-size: 11px; font-weight: 700; color: #C5A059; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px;">A Personal Note from Our Founder</div>
+              <div style="font-size: 17px; font-weight: 700; color: #ffffff; margin-bottom: 2px;">Why I Built Àjọṣe</div>
+              <div style="font-size: 12px; color: #9ca3af;">Samuel Akinboro &bull; Founder, Àjọṣe (CAC Registered: BN 9965199)</div>
+            </td>
+          </tr>
+        </table>
+      </div>
 
-    <div style="text-align: center; margin-top: 28px;">
-      <a href="https://ajose.ng/dashboard" class="btn">Go to Dashboard</a>
+      <div style="font-size: 14px; line-height: 1.7; color: #e5e7eb; border-left: 2px solid #C5A059; padding-left: 16px; margin: 16px 0;">
+        <p style="margin: 0 0 12px 0;">
+          For generations across Nigeria, <em>Ajo</em>, <em>Esusu</em>, and <em>Adashe</em> have been the financial lifeblood of our communities. It has helped families pay university tuition, traders restock stores, and colleagues build capital together without borrowing at exploitative interest rates.
+        </p>
+        <p style="margin: 0 0 12px 0;">
+          Yet, almost everyone who has ever run or participated in a traditional circle shares the exact same trauma: chasing friends for money on WhatsApp, dealing with awkward excuses, and the constant fear of who might collect their payout first and default.
+        </p>
+        <p style="margin: 0 0 12px 0;">
+          I created <strong>Àjọṣe</strong> to fix this cultural institution once and for all:
+        </p>
+        <ul style="margin: 8px 0 14px 18px; padding: 0; color: #f3f4f6; font-size: 13.5px; line-height: 1.6;">
+          <li style="margin-bottom: 8px;"><strong>Automated Bank Debits:</strong> Contributions are swept automatically from linked accounts. No manual transfers, no chasing, and no excuses.</li>
+          <li style="margin-bottom: 8px;"><strong>100% Transparent Ledger:</strong> Every member sees the circle roster, verified payouts, and who is collecting next in real time.</li>
+          <li style="margin-bottom: 8px;"><strong>Strict Zero-Default Protection:</strong> BVN identity verification and automated clearing ensure members can never take a lump sum and disappear.</li>
+          <li style="margin-bottom: 0;"><strong>Legally Registered & Compliant:</strong> Fully registered with the Corporate Affairs Commission (<strong>BN: 9965199</strong>) and backed by licensed Open Banking rails.</li>
+        </ul>
+        <p style="margin: 0;">
+          My commitment to you is simple: your turn will always be respected, every single naira will be accounted for, and your trust will never be taken for granted.
+        </p>
+      </div>
+
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 12px; color: #d1d5db;">
+        Have a question or want advice on setting up your circle? Simply reply directly to this email or reach our team at <a href="mailto:ajoseapp@gmail.com" style="color: #C5A059; text-decoration: underline; font-weight: 600;">ajoseapp@gmail.com</a>.
+      </div>
+    </div>
+
+    <div style="text-align: center; margin: 32px 0 16px 0;">
+      <a href="https://ajose.ng/dashboard" class="btn" style="background-color: #C5A059; color: #0B3022; font-weight: 800; font-size: 15px; padding: 14px 32px; border-radius: 10px; text-decoration: none; display: inline-block;">Go to My Dashboard &rarr;</a>
     </div>
   ${getEmailFooter()}
   `;

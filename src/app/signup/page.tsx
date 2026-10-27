@@ -1,5 +1,7 @@
 "use client";
 
+import { trackEvent } from "@/components/Analytics";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -423,8 +425,24 @@ export default function SignupPage() {
           console.error("Auto group join error on signup:", joinErr);
         }
       }
-    }
+        // Send welcome email with detailed note from the founder
+        try {
+          fetch("/api/auth/welcome", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: formData.email,
+              firstName: verifiedFirst,
+              lastName: verifiedLast,
+              groupName: nextUrlParams?.get("name") ? decodeURIComponent(nextUrlParams.get("name")!) : (verifiedGroup?.name || undefined),
+            }),
+          }).catch((e) => console.warn("Welcome email trigger warning:", e));
+        } catch (e) {
+          // Non-blocking
+        }
+      }
 
+    trackEvent("CompleteRegistration", { method: "bvn_verified" });
     setStep(3); // Success Screen
     toast.success("Account created! Please check your email for confirmation.", { id: toastId });
   };

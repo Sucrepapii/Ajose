@@ -25,12 +25,7 @@ const staggerContainer: Variants = {
 
 export default function Home() {
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [activeShowcase, setActiveShowcase] = useState(0);
-
-  const toggleFaq = (index: number) => {
-    setActiveFaq(activeFaq === index ? null : index);
-  };
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-[#FDFBF7]">
@@ -77,52 +72,66 @@ export default function Home() {
                 variants={fadeIn}
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.15]"
               >
-                Because life is turn by turn, Ajose makes sure yours comes.
+                Run your Ajo without the chasing.
               </motion.h1>
               
               <motion.p 
                 variants={fadeIn}
                 className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-xl"
               >
-                Àjọṣe helps groups run Ajo (esusu, susu, adashi) without the chasing. Contributions are collected automatically by bank debit through Mono. Once NIBSS settles the funds, the payout is credited to the member whose turn it is. Every round is recorded on a ledger the whole group can see.
+                Automated bank debits collect every contribution on time, while a shared ledger tracks every turn — no excuses, no awkward reminders.
               </motion.p>
               
-              <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4">
+              <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
                 <Link
                   href="/signup"
-                  className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-md bg-[#C5A059] px-8 text-base font-bold text-[#0B3022] shadow-lg hover:bg-[#A48243] hover:scale-[1.02] active:scale-95 transition-all"
+                  className="inline-flex h-14 items-center justify-center rounded-xl bg-[#C5A059] px-8 text-base font-bold text-[#0B3022] shadow-[0_4px_25px_rgba(197,160,89,0.35)] hover:bg-[#d8b368] hover:scale-[1.02] active:scale-95 transition-all gap-2"
                 >
-                  Start Your Ajo Group
+                  <span>Start an Ajo Circle</span>
+                  <ArrowRight className="w-4 h-4 text-[#0B3022]" />
                 </Link>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-md border-2 border-[#C5A059] px-8 text-base font-medium text-[#C5A059] hover:bg-[#C5A059]/10 transition-all cursor-pointer"
+                <Link
+                  href="/login"
+                  className="inline-flex h-14 items-center justify-center rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 px-6 text-sm font-semibold text-white transition-all gap-2 backdrop-blur-sm"
                 >
-                  See how it works
-                </button>
+                  <Users className="w-4 h-4 text-[#C5A059]" />
+                  <span>Got an invite link? Join your circle &rarr;</span>
+                </Link>
               </motion.div>
 
-              {/* Above-The-Fold Regulatory & Compliance Trust Bar */}
+              {/* Conversion Microcopy */}
+              <motion.div variants={fadeIn} className="mt-3 flex flex-wrap items-center gap-3 text-xs text-[#C5A059] font-medium">
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5" /> Free to start
+                </span>
+                <span className="text-white/30">•</span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5" /> Takes 2 minutes
+                </span>
+                <span className="text-white/30">•</span>
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5" /> No paperwork
+                </span>
+              </motion.div>
+
+              {/* Above-The-Fold Outcome Trust Bar */}
               <motion.div 
                 variants={fadeIn}
-                className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-4 text-xs text-white/80"
+                className="mt-7 pt-5 border-t border-white/10 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/80"
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>Automatic Collection</strong> via Mono</span>
+                  <span><strong>Automated Bank Sweeps</strong></span>
                 </div>
                 <span className="hidden sm:inline text-white/30">•</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <Lock className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>Automated Payouts</strong> via NIBSS Settlement</span>
+                  <span><strong>100% Transparent Ledger</strong></span>
                 </div>
                 <span className="hidden sm:inline text-white/30">•</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <Zap className="w-4 h-4 text-[#C5A059] shrink-0" />
-                  <span><strong>Doesn&apos;t Hold Onto</strong> Group Funds</span>
+                  <span>Zero Awkward Reminders</span>
                 </div>
               </motion.div>
             </motion.div>
@@ -330,7 +339,7 @@ export default function Home() {
             <div className="flex flex-col h-full">
               <motion.div variants={fadeIn} className="mb-8">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] block mb-2">
-                  System Architecture
+                  How We Protect Your Money
                 </span>
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] font-serif mb-4">
                   Engineered for Trust &amp; Transparency
@@ -792,7 +801,7 @@ export default function Home() {
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold mb-6">
                     <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span>Multi-Layer Default Protection Protocol</span>
+                    <span>4-Step Zero-Default Protection</span>
                   </div>
 
                   <ol className="space-y-4">
@@ -806,7 +815,7 @@ export default function Home() {
                     <li className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full bg-[#0B3022] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
                       <div>
-                        <h4 className="font-bold text-sm text-[#0B3022]">Trust Score Reduction &amp; Circle Restriction</h4>
+                        <h4 className="font-bold text-sm text-[#0B3022]">Trust Score Penalty &amp; Circle Lockout</h4>
                         <p className="text-xs text-gray-600 mt-0.5">The defaulter&rsquo;s Àjọṣe Trust Score is penalized, freezing them from joining or creating other circles on the platform.</p>
                       </div>
                     </li>
@@ -1015,110 +1024,6 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* FAQ Accordion Block */}
-      <section id="faq" className="w-full py-24 md:py-32 bg-[#F4F1EA] relative z-10 border-t border-gray-200">
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-          className="container mx-auto px-6 lg:px-12 max-w-3xl"
-        >
-          <motion.div variants={fadeIn} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0B3022] mb-3">Frequently Asked Questions</h2>
-            <p className="text-base text-gray-600 max-w-xl mx-auto">
-              Everything you need to know about automated sweeps, BVN verification, turn payouts, and multi-tier default protection on Àjọṣe.
-            </p>
-          </motion.div>
-          
-          <div className="space-y-4">
-            {[
-              { 
-                q: "Where is our money held, and how do payouts work?", 
-                a: "Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe's wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn't hold onto group funds." 
-              },
-              { 
-                q: "How does the automated direct-debit (Mono) sweep work?", 
-                a: "When you join a circle, you securely link your verified commercial bank account through Open-Banking rails (Mono). On scheduled sweep days, the exact contribution is debited automatically from your account via Mono. No manual bank transfers, no uploading payment screenshots, and no chasing members." 
-              },
-              { 
-                q: "Why is BVN identity verification required?", 
-                a: "To eliminate fraud, identity theft, and bad actors across circles, every participant must verify their Bank Verification Number (BVN). This authenticates your legal identity, enforces that linked bank accounts match your verified name, and ensures high accountability so all circle members can save with complete peace of mind." 
-              },
-              { 
-                q: "What happens if someone defaults or misses a sweep?", 
-                a: "Àjọṣe enforces a 4-tier default protection protocol: (1) Automated smart retries trigger throughout the day at 6:00 AM, 12:00 PM, and 6:00 PM WAT; (2) Instant 1-click fallback payment links are dispatched via SMS & WhatsApp; (3) Unresolved defaults freeze future payouts and apply an organizer-configured late settlement fee to compensate the turn recipient; and (4) The defaulter incurs an immediate reduction on their Àjọṣe Trust Score and is restricted from joining other circles until resolved." 
-              },
-              { 
-                q: "When are contributions swept and payouts disbursed?", 
-                a: "Schedules are structured around Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT with rapid 24-hr turn payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off and turn payouts on the 5th) to match corporate salary cycles (payouts are routed directly to the recipient via Mono auto-disburse on a T+1 timeline)." 
-              },
-              { 
-                q: "What is the Ajo Credit Score, and how does it work?", 
-                a: "Your Ajo Credit Score (300 to 1,000 points) is a universal reputation metric that tracks your financial reliability across all circles. Timely sweeps elevate you into Platinum/Elite status (unlocking access to high-value circles up to ₦10,000,000+), while defaults immediately cost you 50 points and restrict entry into premium groups." 
-              },
-              { 
-                q: "What are the fees on Àjọṣe?", 
-                a: "Transparent, capped pricing with ₦0 monthly subscriptions: 📅 Monthly Circles: 2.0% platform fee deducted only upon successful payouts (strictly capped at ₦10,000 max, ₦0 per-sweep fee); 🗓 Weekly Circles: 0.0% payout fee with a flat ₦300 automated sweep processing fee per transaction; 📌 Daily Thrift: 0.0% payout fee with a flat ₦100 automated sweep processing fee per transaction. Circle organizers may also set an optional management commission, clearly displayed before you accept an invite." 
-              },
-              { 
-                q: "Can Nigerians in the diaspora participate?", 
-                a: "Yes! Any Nigerian living abroad with an active Nigerian commercial bank account and a valid BVN can join and contribute seamlessly to Naira-denominated circles from anywhere in the world." 
-              },
-              { 
-                q: "Are circles public or private?", 
-                a: "All circles on Àjọṣe are 100% private and invite-only. Participants can only enroll using a unique invitation link or QR code issued by the Circle Organizer through their Organizer Share Kit." 
-              },
-              { 
-                q: "Can I leave a circle before the rotation completes?", 
-                a: "Once a circle is marked 'Active' by the organizer, the rotation roster is contractually locked. This ensures members who receive early turn payouts cannot abandon the group before completing all their required contribution cycles." 
-              },
-              { 
-                q: "Is there a native mobile app available?", 
-                a: "Native iOS and Android mobile apps are currently coming soon (TestFlight and Google Play Beta rollouts are underway). In the meantime, Àjọṣe is fully mobile-optimized as an ultra-fast web app accessible from any browser on your smartphone, and you can easily add it to your home screen." 
-              },
-              { 
-                q: "Is my personal and financial data secure?", 
-                a: "Yes. All data and payment communications are encrypted with AES-256 encryption. Our banking integrations run securely through Open Banking (Mono)—we never view or store your banking passwords or PINs, and operations comply with NDPR standards." 
-              }
-            ].map((faq, i) => (
-              <motion.div 
-                variants={fadeIn}
-                key={i} 
-                className="bg-[#FDFBF7] border border-gray-200 shadow-sm rounded-xl overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleFaq(i)}
-                  className="w-full flex items-center justify-between p-6 cursor-pointer font-bold text-lg text-[#0B3022] text-left hover:bg-[#FDFBF7]/50 transition-colors"
-                >
-                  <span>{faq.q}</span>
-                  <motion.div
-                    animate={{ rotate: activeFaq === i ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ChevronDown className="h-5 w-5 text-[#C5A059]" />
-                  </motion.div>
-                </button>
-                <AnimatePresence>
-                  {activeFaq === i && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                    >
-                      <div className="px-6 pb-6 text-[#1F2937]/80 leading-relaxed border-t border-gray-100 pt-4">
-                        {faq.a}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
-
       {/* Mobile App Showcase Section */}
       <MobileAppShowcase />
 
@@ -1139,16 +1044,19 @@ export default function Home() {
             Ready to secure your Ajo group?
           </motion.h2>
           <motion.p variants={fadeIn} className="text-xl text-gray-300 mb-10 max-w-2xl">
-            Upgrade from stressful WhatsApp groups and manual ledgers to Àjọṣe. Turn by turn, no wahala.
+            Upgrade from stressful WhatsApp groups and manual chasing to automated Àjọṣe. Turn by turn, no wahala.
           </motion.p>
-          <motion.div variants={fadeIn}>
+          <motion.div variants={fadeIn} className="flex flex-col items-center gap-3">
             <Link
               href="/signup"
-              className="inline-flex h-16 items-center justify-center rounded-xl bg-[#C5A059] px-10 text-lg font-bold text-[#0B3022] shadow-2xl hover:bg-[#A48243] hover:scale-105 active:scale-95 transition-all"
+              className="inline-flex h-16 items-center justify-center rounded-xl bg-[#C5A059] px-10 text-lg font-bold text-[#0B3022] shadow-2xl hover:bg-[#d8b368] hover:scale-105 active:scale-95 transition-all gap-2"
             >
-              Create a Group Free
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <span>Start an Ajo Circle</span>
+              <ArrowRight className="w-5 h-5 text-[#0B3022]" />
             </Link>
+            <p className="text-xs text-[#C5A059]/90 font-medium">
+              Free to start &bull; Takes 2 minutes &bull; No paperwork
+            </p>
           </motion.div>
         </motion.div>
       </section>

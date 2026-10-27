@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
+import { sanitizeUserProfile } from "@/utils/security/piiSanitizer";
+import { whitelistAndValidate, USER_PROFILE_UPDATE_FIELDS } from "@/utils/security/schemaGuard";
 import crypto from "crypto";
 
 function hashPin(pin: string, userId: string): string {
@@ -40,11 +42,16 @@ export async function GET() {
       bank_name: dbUser?.bank_name ?? null,
       account_number: dbUser?.account_number ?? null,
       account_name: dbUser?.account_name ?? null,
+      bvn: dbUser?.bvn || userMeta.bvn || null,
+      nin: dbUser?.nin || userMeta.nin || null,
       bvn_verified: Boolean(dbUser?.bvn_verified),
       has_pin: Boolean(userMeta.has_pin || userMeta.pin_hash)
     };
 
-    return NextResponse.json({ success: true, profile: mergedProfile });
+    // PII Protection: Sanitize profile and mask BVN/NIN before sending to client
+    const safeProfile = sanitizeUserProfile(mergedProfile, true);
+
+    return NextResponse.json({ success: true, profile: safeProfile });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Failed to fetch profile." }, { status: 500 });
   }
@@ -52,52 +59,27 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    // 1. IDOR Protection: Always strictly bind to authenticated session user
     const supabase = await createClient();
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    let user = authUser;
-    if (!user) {
-      if (process.env.NODE_ENV === 'development') {
-        user = {
-          id: "demo-user",
-          email: "adewale@example.com",
-          user_metadata: {
-            has_pin: true,
-            pin_hash: hashPin("1234", "demo-user")
-          }
-        } as any;
-      } else {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized. Please log in." }, { status: 401 });
     }
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const rawBody = await req.json().catch(() => ({}));
+
+    // 2. Mass Assignment Protection: Strict Schema Whitelisting
+    const validation = whitelistAndValidate<any>(rawBody, USER_PROFILE_UPDATE_FIELDS);
+    if (!validation.isValid) {
+      return validation.errorResponse!;
     }
 
-    const body = await req.json();
-    const {
-      first_name,
-      last_name,
-      nickname,
-      phone,
-      bank_name,
-      account_number,
-      account_name,
-      next_of_kin_name,
-      next_of_kin_relationship,
-      next_of_kin_phone,
-      next_of_kin_email,
-      next_of_kin_address,
-      guarantor_name,
-      guarantor_phone,
-      guarantor_relationship,
-      pin
-    } = body;
-
+    const { pin } = rawBody;
+    const sanitized = validation.sanitized;
     const adminSupabase = createAdminClient();
 
-    // 1. Fetch current bank details from database to check for modifications
+    // 3. IDOR Guard: Verify that bank account changes are protected by transaction PIN
     const { data: currentDbUser } = await adminSupabase
       .from("users")
       .select("bank_name, account_number")
@@ -106,10 +88,9 @@ export async function POST(req: Request) {
 
     const userHasPin = Boolean(user.user_metadata?.has_pin && user.user_metadata?.pin_hash);
     const bankChanged = 
-      (bank_name && bank_name !== currentDbUser?.bank_name) ||
-      (account_number && account_number !== currentDbUser?.account_number);
+      (rawBody.bank_name && rawBody.bank_name !== currentDbUser?.bank_name) ||
+      (rawBody.account_number && rawBody.account_number !== currentDbUser?.account_number);
 
-    // 2. PIN Gate: Require 4-digit PIN if settlement bank account is altered
     if (userHasPin && bankChanged) {
       if (!pin) {
         return NextResponse.json({
@@ -127,12 +108,12 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Update core profile fields in public.users table (Bank details can ONLY be altered via Mono verification)
+    // 4. Update core profile fields in public.users table (Whitelisted fields only)
     const coreUpdatePayload: Record<string, any> = {
-      first_name: first_name || "",
-      last_name: last_name || "",
-      nickname: nickname || "",
-      phone: phone || ""
+      first_name: sanitized.first_name || "",
+      last_name: sanitized.last_name || "",
+      nickname: sanitized.nickname || "",
+      phone: sanitized.phone || ""
     };
 
     const { error: dbError } = await adminSupabase
@@ -144,25 +125,24 @@ export async function POST(req: Request) {
       console.warn("Could not update public.users table directly:", dbError.message);
     }
 
-    // 4. Update Supabase Auth user_metadata with Next of Kin, Guarantor, and profile data
-    // Strictly ensure bank_name, account_number, account_name are null in metadata to prevent overriding DB
+    // 5. Update Supabase Auth user_metadata with sanitized whitelist
     const updatedMetadata = {
       ...user.user_metadata,
-      first_name: first_name ?? user.user_metadata?.first_name,
-      last_name: last_name ?? user.user_metadata?.last_name,
-      nickname: nickname ?? user.user_metadata?.nickname,
-      phone: phone ?? user.user_metadata?.phone,
+      first_name: sanitized.first_name ?? user.user_metadata?.first_name,
+      last_name: sanitized.last_name ?? user.user_metadata?.last_name,
+      nickname: sanitized.nickname ?? user.user_metadata?.nickname,
+      phone: sanitized.phone ?? user.user_metadata?.phone,
       bank_name: null,
       account_number: null,
       account_name: null,
-      next_of_kin_name: next_of_kin_name || "",
-      next_of_kin_relationship: next_of_kin_relationship || "",
-      next_of_kin_phone: next_of_kin_phone || "",
-      next_of_kin_email: next_of_kin_email || "",
-      next_of_kin_address: next_of_kin_address || "",
-      guarantor_name: guarantor_name || "",
-      guarantor_phone: guarantor_phone || "",
-      guarantor_relationship: guarantor_relationship || ""
+      next_of_kin_name: sanitized.next_of_kin_name || "",
+      next_of_kin_relationship: sanitized.next_of_kin_relationship || "",
+      next_of_kin_phone: sanitized.next_of_kin_phone || "",
+      next_of_kin_email: sanitized.next_of_kin_email || "",
+      next_of_kin_address: sanitized.next_of_kin_address || "",
+      guarantor_name: sanitized.guarantor_name || "",
+      guarantor_phone: sanitized.guarantor_phone || "",
+      guarantor_relationship: sanitized.guarantor_relationship || ""
     };
 
     const { error: authUpdateError } = await adminSupabase.auth.admin.updateUserById(user.id, {
@@ -171,25 +151,6 @@ export async function POST(req: Request) {
 
     if (authUpdateError) {
       throw new Error(authUpdateError.message);
-    }
-
-    // 5. If Next of Kin columns exist in public.users table, attempt syncing them as well
-    try {
-      await adminSupabase
-        .from("users")
-        .update({
-          next_of_kin_name,
-          next_of_kin_relationship,
-          next_of_kin_phone,
-          next_of_kin_email,
-          next_of_kin_address,
-          guarantor_name,
-          guarantor_phone,
-          guarantor_relationship
-        })
-        .eq("id", user.id);
-    } catch {
-      // Ignored if columns do not exist yet in Postgres schema
     }
 
     return NextResponse.json({

@@ -79,16 +79,16 @@ def generate_og_image():
     draw.text((left_x, 248), "Turn by turn, no wahala.", font=font_tagline, fill=(243, 229, 200, 255))
     
     # 4. Value Propositions
-    sub1 = "Run your Ajo. Track every round. Trust every naira."
-    sub2 = "Automated Open-Banking Sweeps • Guaranteed Turn Payouts"
+    sub1 = "Run your Ajo without the chasing."
+    sub2 = "Automated Bank Sweeps • 100% Transparent Ledger"
     draw.text((left_x, 310), sub1, font=font_subtitle, fill=(220, 235, 228, 255))
     draw.text((left_x, 350), sub2, font=font_subtitle, fill=(160, 185, 175, 255))
     
     # 5. Three Trust Badges at Bottom
     badges = [
-        "Automated Payouts",
-        "Mono Open-Banking",
-        "Transparent Ledger"
+        "Automated Bank Sweeps",
+        "100% Transparent Ledger",
+        "Zero Default Risk"
     ]
     badge_x = left_x
     badge_y = 445

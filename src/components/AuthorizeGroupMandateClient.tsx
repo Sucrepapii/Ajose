@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { 
@@ -31,7 +32,7 @@ export function AuthorizeGroupMandateClient({
   contributionAmount,
   frequency = "monthly",
   customFeePct,
-  userId: _userId,
+  userId,
   initialMandateId,
   initialMandateStatus,
   initialMandateUrl,
@@ -82,8 +83,8 @@ export function AuthorizeGroupMandateClient({
       // Open Mono authorization window
       window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
 
-      // Start polling for mandate approval
-      pollStatus(data.mandateId);
+      // Subscribe to mandate events as they happen (no polling)
+      subscribeToMandateEvents(data.mandateId);
     } catch (err: any) {
       toast.error(err.message || "Could not initiate mandate", { id: toastId });
     } finally {
@@ -91,31 +92,78 @@ export function AuthorizeGroupMandateClient({
     }
   };
 
-  const pollStatus = (mId: string) => {
+  const supabase = createClient();
+
+  const subscribeToMandateEvents = (mId: string) => {
     setIsChecking(true);
-    let attempts = 0;
-    const interval = setInterval(async () => {
-      attempts++;
+
+    const checkApprovalOnce = async () => {
       try {
         const res = await fetch(`/api/mono/mandate/status?mandateId=${encodeURIComponent(mId)}`);
         const data = await res.json();
         if (data.approved || data.readyToDebit) {
-          clearInterval(interval);
+          cleanup();
           setIsChecking(false);
           setMandateStatus("approved");
           toast.success("🎉 Direct Debit Mandate successfully authorized with your bank!", {
             duration: 6000
           });
           router.refresh();
-          return;
+          return true;
         }
       } catch {}
+      return false;
+    };
 
-      if (attempts >= 30) {
-        clearInterval(interval);
-        setIsChecking(false);
+    // 1. Subscribe to Mono Window postMessage events as they happen
+    const handleWindowMessage = (event: MessageEvent) => {
+      const type = event?.data?.type || event?.data?.event;
+      if (
+        type === "mono.connect.widget.account_linked" ||
+        type === "mono.modal.closed" ||
+        type === "mono.mandate.approved" ||
+        type === "mono.mandate.authorized"
+      ) {
+        checkApprovalOnce();
       }
-    }, 3000);
+    };
+    window.addEventListener("message", handleWindowMessage);
+
+    // 2. Subscribe to Window / Tab Focus & Visibility events
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === "visible") {
+        checkApprovalOnce();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+    window.addEventListener("focus", handleVisibilityOrFocus);
+
+    // 3. Subscribe to Supabase Realtime notification events as they happen
+    const channel = supabase
+      .channel(`mandate-group-${mId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`
+        },
+        async (payload: any) => {
+          const title = payload.new?.title?.toLowerCase() || "";
+          if (title.includes("mandate") || title.includes("approved")) {
+            await checkApprovalOnce();
+          }
+        }
+      )
+      .subscribe();
+
+    const cleanup = () => {
+      window.removeEventListener("message", handleWindowMessage);
+      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+      window.removeEventListener("focus", handleVisibilityOrFocus);
+      supabase.removeChannel(channel);
+    };
   };
 
   const handleCheckStatus = async () => {

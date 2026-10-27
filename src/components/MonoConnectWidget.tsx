@@ -97,7 +97,7 @@ export function MonoConnectWidget({
 
       window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
 
-      pollMandateStatus(data.mandateId);
+      subscribeToMandateEvents(data.mandateId);
     } catch (err: any) {
       toast.error(err.message || "Failed to initiate mandate", { id: toastId });
     } finally {
@@ -105,27 +105,26 @@ export function MonoConnectWidget({
     }
   };
 
-  const pollMandateStatus = (mId: string) => {
+  const subscribeToMandateEvents = (mId: string) => {
     setIsCheckingMandate(true);
-    let attempts = 0;
-    const interval = setInterval(async () => {
-      attempts++;
+
+    const checkApprovalOnce = async () => {
       try {
         const res = await fetch(`/api/mono/mandate/status?mandateId=${encodeURIComponent(mId)}`);
         const data = await res.json();
         if (data.approved || data.readyToDebit) {
-          clearInterval(interval);
+          cleanup();
           setIsCheckingMandate(false);
           setMandateStatus("approved");
           toast.success("🎉 NIBSS Direct Debit Mandate authorized successfully!", {
             duration: 6000
           });
           router.refresh();
-          return;
+          return true;
         }
 
         if (data.status === "cancelled" || data.status === "failed" || data.status === "expired") {
-          clearInterval(interval);
+          cleanup();
           setIsCheckingMandate(false);
           setMandateId("");
           setMandateUrl("");
@@ -133,15 +132,60 @@ export function MonoConnectWidget({
           toast.error("Bank authorization session was cancelled or expired. You can click 'Restart Authorization' to try again.", {
             duration: 6000
           });
-          return;
+          return true;
         }
       } catch (_) {}
+      return false;
+    };
 
-      if (attempts >= 30) {
-        clearInterval(interval);
-        setIsCheckingMandate(false);
+    // 1. Subscribe to Mono Window postMessage events as they happen
+    const handleWindowMessage = (event: MessageEvent) => {
+      const type = event?.data?.type || event?.data?.event;
+      if (
+        type === "mono.connect.widget.account_linked" ||
+        type === "mono.modal.closed" ||
+        type === "mono.mandate.approved" ||
+        type === "mono.mandate.authorized"
+      ) {
+        checkApprovalOnce();
       }
-    }, 3000);
+    };
+    window.addEventListener("message", handleWindowMessage);
+
+    // 2. Subscribe to Window / Tab Focus & Visibility events
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === "visible") {
+        checkApprovalOnce();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+    window.addEventListener("focus", handleVisibilityOrFocus);
+
+    // 3. Subscribe to Supabase Realtime notification events as they happen
+    const channel = supabase
+      .channel(`mandate-widget-${mId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+        },
+        async (payload: any) => {
+          const title = payload.new?.title?.toLowerCase() || "";
+          if (title.includes("mandate") || title.includes("approved")) {
+            await checkApprovalOnce();
+          }
+        }
+      )
+      .subscribe();
+
+    const cleanup = () => {
+      window.removeEventListener("message", handleWindowMessage);
+      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+      window.removeEventListener("focus", handleVisibilityOrFocus);
+      supabase.removeChannel(channel);
+    };
   };
 
   const checkMandateNow = async () => {

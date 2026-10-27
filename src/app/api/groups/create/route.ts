@@ -2,11 +2,20 @@ import { NextResponse } from "next/server";
 import { createClient as createSupabaseJsClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
+import { consumeQuota, createQuotaExceededResponse } from "@/utils/quotaManager";
+import { whitelistAndValidate, GROUP_CREATE_FIELDS } from "@/utils/security/schemaGuard";
 
 export async function POST(req: Request) {
   try {
     const authHeader = req.headers.get("authorization");
-    const body = await req.json();
+    const rawBody = await req.json().catch(() => ({}));
+
+    // 1. Mass Assignment Protection: Validate and strictly whitelist input fields
+    const validation = whitelistAndValidate<any>(rawBody, GROUP_CREATE_FIELDS);
+    if (!validation.isValid) {
+      return validation.errorResponse!;
+    }
+
     const {
       name,
       contributionAmount,
@@ -17,11 +26,9 @@ export async function POST(req: Request) {
       adminBankName,
       adminAccountNumber,
       adminAccountName,
-      userId: bodyUserId,
-      userEmail: bodyUserEmail
-    } = body;
+    } = validation.sanitized;
 
-    // 1. Authenticate user session
+    // 2. IDOR Protection: Authenticate caller and strictly bind group ownership to serverUser.id
     const supabaseServer = await createClient();
     const { data: { user: serverUser } } = await supabaseServer.auth.getUser();
 
@@ -33,7 +40,13 @@ export async function POST(req: Request) {
     }
 
     const userId = serverUser.id;
-    const userEmail = serverUser.email || bodyUserEmail;
+    const userEmail = serverUser.email;
+
+    // 3. Cost & Anti-Abuse Control: Enforce daily group creation quota (max 10 per day)
+    const quota = consumeQuota("GROUP_CREATION", userId);
+    if (!quota.allowed) {
+      return createQuotaExceededResponse(quota);
+    }
 
     if (!name || !contributionAmount || !maxMembers) {
       return NextResponse.json(
@@ -46,7 +59,6 @@ export async function POST(req: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
     const hasServiceRole = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-    // Instantiate userClient with Bearer token if provided to satisfy RLS (auth.uid() = admin_id)
     const userClient = authHeader
       ? createSupabaseJsClient(supabaseUrl, supabaseAnonKey, {
           global: { headers: { Authorization: authHeader } },
@@ -63,139 +75,111 @@ export async function POST(req: Request) {
         await supabaseAdmin
           .from("users")
           .update({
-            bank_name: adminBankName?.trim() || "",
-            account_number: adminAccountNumber?.trim() || "",
-            account_name: adminAccountName?.trim() || ""
+            bank_name: adminBankName || undefined,
+            account_number: adminAccountNumber || undefined,
+            account_name: adminAccountName || undefined,
           })
           .eq("id", userId);
-      } catch (userErr) {
-        console.warn("Could not update admin bank details:", userErr);
+      } catch (bankErr) {
+        console.warn("Could not auto-save admin bank details to profile:", bankErr);
       }
     }
 
-    // 2. Prepare payload for groups table
-    const groupId = crypto.randomUUID();
-    const parsedContrib = parseInt(contributionAmount);
-    const parsedMembers = parseInt(maxMembers);
-    const parsedCommission = parseFloat(adminCommission) || 0;
-    const parsedMinScore = parseInt(minCreditScore) || 0;
-
-    let insertedGroup: any = null;
-
-    // Attempt 1: Direct insert matching confirmed groups table columns
-    const payload1 = {
-      id: groupId,
-      name: name.trim(),
-      contribution_amount: parsedContrib,
-      max_members: parsedMembers,
+    // 4. Create Group Record with guaranteed owner binding (admin_id strictly = userId)
+    const groupPayload = {
+      name,
+      contribution_amount: Number(contributionAmount),
+      max_members: Number(maxMembers),
       frequency: frequency || "monthly",
-      admin_commission_pct: parsedCommission,
-      min_credit_score: parsedMinScore,
+      admin_id: userId,
       status: "pending",
-      admin_id: userId
+      admin_commission_pct: adminCommission !== undefined ? Number(adminCommission) : 0,
+      min_credit_score: minCreditScore ? Number(minCreditScore) : 0
     };
 
-    const { data: data1, error: err1 } = await dbClient
+    let group: any = null;
+    let createError: any = null;
+
+    const { data: primaryData, error: primaryErr } = await dbClient
       .from("groups")
-      .insert(payload1)
+      .insert(groupPayload)
       .select()
-      .maybeSingle();
+      .single();
 
-    if (!err1 && (data1 || payload1)) {
-      insertedGroup = data1 || payload1;
-    } else {
-      console.warn("Insert attempt 1 warning:", err1?.message);
-
-      // Attempt 2: Standard schema with admin_id (without optional custom commission & score)
-      const payload2 = {
-        id: groupId,
-        name: name.trim(),
-        contribution_amount: parsedContrib,
-        max_members: parsedMembers,
-        frequency: frequency || "monthly",
-        status: "pending",
-        admin_id: userId,
-        description: `Rotational contribution group managed on Ajose (${name.trim()}).`
-      };
-
-      const { data: data2, error: err2 } = await dbClient
-        .from("groups")
-        .insert(payload2)
-        .select()
-        .maybeSingle();
-
-      if (!err2) {
-        insertedGroup = data2 || payload2;
-      } else {
-        console.warn("Insert attempt 2 warning:", err2?.message);
-
-        // Attempt 3: Core schema with admin_id (guarantees NOT NULL admin_id constraint)
-        const payload3 = {
-          id: groupId,
-          name: name.trim(),
-          contribution_amount: parsedContrib,
-          max_members: parsedMembers,
-          frequency: frequency || "monthly",
-          status: "pending",
-          admin_id: userId
-        };
-
-        const { data: data3, error: err3 } = await dbClient
+    if (primaryErr) {
+      createError = primaryErr;
+      if (hasServiceRole && dbClient !== supabaseAdmin) {
+        const { data: adminData, error: adminErr } = await supabaseAdmin
           .from("groups")
-          .insert(payload3)
+          .insert(groupPayload)
           .select()
-          .maybeSingle();
+          .single();
 
-        if (!err3) {
-          insertedGroup = data3 || payload3;
+        if (!adminErr && adminData) {
+          group = adminData;
+          createError = null;
         } else {
-          console.error("All group insert attempts failed:", err3);
-          return NextResponse.json(
-            { error: err3.message || "Failed to create group in database.", details: err3 },
-            { status: 500 }
-          );
+          createError = adminErr || primaryErr;
         }
       }
+    } else {
+      group = primaryData;
     }
 
-    const finalGroupId = insertedGroup?.id || groupId;
+    if (createError || !group) {
+      console.error("Group creation DB error:", createError);
+      return NextResponse.json(
+        { error: createError?.message || "Failed to create group in database" },
+        { status: 500 }
+      );
+    }
 
-    // 3. Create Admin membership record in public.memberships
-    try {
-      const { error: memberError } = await dbClient
+    // 5. Create Admin Membership Record
+    const adminMembershipPayload = {
+      group_id: group.id,
+      user_id: userId,
+      role: "admin",
+      status: "active",
+      payout_turn: null
+    };
+
+    let membership: any = null;
+    const { data: primaryMem, error: memErr } = await dbClient
+      .from("memberships")
+      .insert(adminMembershipPayload)
+      .select()
+      .single();
+
+    if (memErr) {
+      const { data: fallbackMem, error: fallbackErr } = await supabaseAdmin
         .from("memberships")
-        .upsert({
-          group_id: finalGroupId,
-          user_id: userId,
-          role: "admin",
-          status: "active",
-          payout_turn: null
-        }, { onConflict: "group_id, user_id" });
+        .insert(adminMembershipPayload)
+        .select()
+        .single();
 
-      if (memberError) {
-        console.warn("Membership upsert warning on dbClient, retrying via userClient:", memberError.message);
-        await userClient.from("memberships").upsert({
-          group_id: finalGroupId,
-          user_id: userId,
-          role: "admin",
-          status: "active",
-          payout_turn: null
-        }, { onConflict: "group_id, user_id" });
+      if (fallbackErr) {
+        console.error("Admin membership creation error:", fallbackErr);
+      } else {
+        membership = fallbackMem;
       }
-    } catch (memberErr) {
-      console.error("Admin membership insertion error:", memberErr);
+    } else {
+      membership = primaryMem;
     }
 
+    // 6. Return response
     return NextResponse.json({
       success: true,
-      group: insertedGroup,
-      groupId: finalGroupId
+      group: {
+        ...group,
+        admin_email: userEmail
+      },
+      membership
     });
 
   } catch (error: any) {
-    console.error("Group creation API error:", error);
+    console.error("Create group API error:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to process group creation" },
+      { error: error?.message || "Internal server error" },
       { status: 500 }
     );
   }

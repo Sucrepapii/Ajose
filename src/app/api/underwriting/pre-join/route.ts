@@ -1,8 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { verifyWithYouVerify } from "@/utils/youverify";
-import { analyzeBankStatementWithMono } from "@/utils/mono";
 import { pullCreditBureauReport } from "@/utils/creditBureau";
+import { consumeQuota, createQuotaExceededResponse } from "@/utils/quotaManager";
+
+export const dynamic = "force-dynamic";
+
+// Cost Control: 30-minute underwriting cache per user
+// Eliminates duplicate billable calls to YouVerify & Credit Bureau when users explore groups
+interface UnderwritingCacheRecord {
+  report: any;
+  timestamp: number;
+}
+const underwritingCache = new Map<string, UnderwritingCacheRecord>();
+
+if (typeof setInterval !== "undefined") {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [userId, record] of underwritingCache.entries()) {
+      if (now - record.timestamp > 1_800_000) { // 30 minutes
+        underwritingCache.delete(userId);
+      }
+    }
+  }, 300_000).unref?.();
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,8 +34,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { groupId, contributionAmount = 50000, bvn, nin } = body;
+    // 1. Check in-memory 30-minute cache first
+    const cached = underwritingCache.get(user.id);
+    if (cached && Date.now() - cached.timestamp < 1_800_000) {
+      return NextResponse.json({
+        success: true,
+        underwritingReport: cached.report,
+        cached: true,
+      });
+    }
+
+    // 2. Daily Underwriting Quota Check (Max 10 / day)
+    const quota = consumeQuota("UNDERWRITING_CHECK", user.id);
+    if (!quota.allowed) {
+      return createQuotaExceededResponse(quota);
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const { bvn, nin } = body;
 
     // Fetch user profile from database
     const { data: profile } = await supabase
@@ -37,31 +74,27 @@ export async function POST(req: NextRequest) {
       phone: profile?.phone
     });
 
-    // 2. Bank Statement Cashflow Analysis: Deferred to Phase 2
-    // For Phase 1, circle membership is lightweight & streamlined via BVN identity + Standing Direct Debit Mandate
     const statementScore = 90;
     const monthlyInflowEstimate = 450000;
 
-    // 3. Dynamic Real-Time Credit Bureau Pull (CRC / FirstCentral)
-    // Ensures recent defaults elsewhere are caught before joining
+    // 2. Dynamic Real-Time Credit Bureau Pull (CRC / FirstCentral)
     const bureauReport = await pullCreditBureauReport({
       bvn: userBvn,
       nin: userNin,
       monthlyInflow: monthlyInflowEstimate
     });
 
-    // 4. Calculate Comprehensive Àjọṣe Credit & Risk Score (Phase 1 Streamlined)
+    // 3. Calculate Comprehensive Àjọṣe Credit & Risk Score
     const normalizedBureau = Math.round((bureauReport.bureauScore / 850) * 100);
     const baseTrackScore = profile?.credit_score || 85;
 
     let computedAjoScore = Math.round((normalizedBureau * 0.55) + (statementScore * 0.2) + (baseTrackScore * 0.25));
 
-    // Severe penalty if active external default detected
     if (bureauReport.hasActiveDefaults) {
-      computedAjoScore = Math.min(computedAjoScore, 45); // Restricts from joining standard groups
+      computedAjoScore = Math.min(computedAjoScore, 45);
     }
 
-    // Update user profile in Supabase with freshly verified underwriting data
+    // Update user profile in Supabase
     await supabase
       .from("users")
       .update({
@@ -71,26 +104,34 @@ export async function POST(req: NextRequest) {
       })
       .eq("id", user.id);
 
+    const report = {
+      phase: "phase_1_streamlined",
+      statementUnderwriting: "deferred_phase_2",
+      ajoScore: computedAjoScore,
+      bureau: bureauReport,
+      identity: {
+        fullName: youVerifyResult.fullName,
+        bvn: youVerifyResult.bvn,
+        nin: youVerifyResult.nin,
+        linkedAccounts: youVerifyResult.linkedAccounts
+      },
+      hasActiveDefaults: bureauReport.hasActiveDefaults,
+      isEligible: !bureauReport.hasActiveDefaults && computedAjoScore >= 60,
+      verificationEngine: "BVN & Credit Bureau Registry (Phase 1 Streamlined)",
+      message: bureauReport.hasActiveDefaults
+        ? "Active default detected on Credit Bureau. Eligibility restricted."
+        : "Underwriting verified via BVN & Bureau. Bank statement cashflow underwriting deferred to Phase 2."
+    };
+
+    // Cache the report for 30 minutes
+    underwritingCache.set(user.id, {
+      report,
+      timestamp: Date.now(),
+    });
+
     return NextResponse.json({
       success: true,
-      underwritingReport: {
-        phase: "phase_1_streamlined",
-        statementUnderwriting: "deferred_phase_2",
-        ajoScore: computedAjoScore,
-        bureau: bureauReport,
-        identity: {
-          fullName: youVerifyResult.fullName,
-          bvn: youVerifyResult.bvn,
-          nin: youVerifyResult.nin,
-          linkedAccounts: youVerifyResult.linkedAccounts
-        },
-        hasActiveDefaults: bureauReport.hasActiveDefaults,
-        isEligible: !bureauReport.hasActiveDefaults && computedAjoScore >= 60,
-        verificationEngine: "BVN & Credit Bureau Registry (Phase 1 Streamlined)",
-        message: bureauReport.hasActiveDefaults
-          ? "Active default detected on Credit Bureau. Eligibility restricted."
-          : "Underwriting verified via BVN & Bureau. Bank statement cashflow underwriting deferred to Phase 2."
-      }
+      underwritingReport: report
     });
 
   } catch (error: any) {

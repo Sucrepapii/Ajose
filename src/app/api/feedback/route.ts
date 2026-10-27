@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { sendEmail } from "@/utils/resend";
+import { getClientIp } from "@/utils/rateLimit";
+import { consumeQuota, createQuotaExceededResponse } from "@/utils/quotaManager";
+import { verifyCaptchaToken, createCaptchaErrorResponse } from "@/utils/captcha";
+import { assertSuperAdminAccess } from "@/utils/security/idorGuard";
 
 export const dynamic = "force-dynamic";
 
-/**
- * GET /api/feedback
- * Returns all feedback items for Admin, or only featured testimonials if ?featured=true
- */
 export async function GET(req: NextRequest) {
   try {
     const isFeaturedOnly = req.nextUrl.searchParams.get("featured") === "true";
@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
     }
 
     const { data: items, error } = await query;
-
     if (error) throw error;
 
     if (isFeaturedOnly) {
@@ -40,27 +39,39 @@ export async function GET(req: NextRequest) {
   }
 }
 
-/**
- * POST /api/feedback
- * Submits new user feedback from the footer or app
- */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const clientIp = getClientIp(req);
+    const body = await req.json().catch(() => ({}));
     const { 
       category = "General Feedback", 
       message, 
       rating = 5, 
       name = "Anonymous Contributor", 
       email = "",
-      url = "Footer Widget" 
+      url = "Footer Widget",
+      captchaToken
     } = body;
+
+    const token = captchaToken || req.headers.get("x-captcha-token");
+
+    // 1. CAPTCHA Verification
+    const captchaCheck = verifyCaptchaToken(token, clientIp);
+    if (!captchaCheck.valid) {
+      return createCaptchaErrorResponse(captchaCheck.reason);
+    }
 
     if (!message || typeof message !== "string" || message.trim().length === 0) {
       return NextResponse.json(
         { error: "Please enter your feedback message." },
         { status: 400 }
       );
+    }
+
+    // 2. Usage Quota Check (Max 5 / day)
+    const quota = consumeQuota("PUBLIC_LEAD_SUBMISSION", clientIp);
+    if (!quota.allowed) {
+      return createQuotaExceededResponse(quota);
     }
 
     const formattedDate = new Date().toLocaleString("en-NG", {
@@ -85,7 +96,7 @@ export async function POST(req: NextRequest) {
       throw dbErr;
     }
 
-    // Dispatch instant email notification to akinboroo@gmail.com
+    // Dispatch email notification to platform admin
     const emailSubject = `💬 Àjọṣe Feedback [${category}] from ${name || "User"}`;
     const starsHtml = "★".repeat(Math.max(1, Math.min(5, Number(rating)))) + 
                       "☆".repeat(Math.max(0, 5 - Math.max(1, Math.min(5, Number(rating)))));
@@ -125,7 +136,7 @@ export async function POST(req: NextRequest) {
 
             <div style="text-align: center;">
               <a href="https://ajose.ng/admin/feedback" style="display: inline-block; background-color: #0B3022; color: #E2C285; font-size: 13px; font-weight: bold; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
-                Moderate &amp; Add to "Loved by Communities" &rarr;
+                Moderate Feedback &rarr;
               </a>
             </div>
           </div>
@@ -138,7 +149,7 @@ export async function POST(req: NextRequest) {
     `;
 
     await sendEmail({
-      to: "akinboroo@gmail.com",
+      to: process.env.ADMIN_NOTIFICATION_EMAIL || "ajoseapp@gmail.com",
       subject: emailSubject,
       html: emailHtml,
     });
@@ -160,28 +171,26 @@ export async function POST(req: NextRequest) {
 
 /**
  * PATCH /api/feedback
- * Allows Admin to feature or unfeature feedback into "Loved by Communities"
+ * Protected by IDOR Guard: Requires Super Administrator privileges
  */
 export async function PATCH(req: NextRequest) {
   try {
+    const adminAuth = await assertSuperAdminAccess();
+    if (!adminAuth.allowed) {
+      return adminAuth.errorResponse!;
+    }
+
     const body = await req.json();
-    const { id, isFeaturedInCommunity, featuredQuote, featuredAuthor, featuredRole } = body;
+    const { id, isFeaturedInCommunity } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Feedback id is required" }, { status: 400 });
     }
 
     const supabase = createAdminClient();
-    
-    // Assuming the table schema might have these extra columns added if you're using them
     const { data: updated, error } = await supabase
       .from("feedback")
-      .update({
-        is_featured: isFeaturedInCommunity,
-        // featured_quote: featuredQuote, // uncomment if added to schema
-        // featured_author: featuredAuthor, // uncomment if added to schema
-        // featured_role: featuredRole // uncomment if added to schema
-      })
+      .update({ is_featured: isFeaturedInCommunity })
       .eq("id", id)
       .select()
       .single();
@@ -194,8 +203,8 @@ export async function PATCH(req: NextRequest) {
       success: true,
       item: updated,
       message: updated.is_featured 
-        ? `Added to 'Loved by Communities' section!` 
-        : `Removed from 'Loved by Communities' section.`,
+        ? "Added to 'Loved by Communities' section!" 
+        : "Removed from 'Loved by Communities' section.",
     });
   } catch (err: any) {
     console.error("PATCH /api/feedback error:", err);
@@ -205,10 +214,15 @@ export async function PATCH(req: NextRequest) {
 
 /**
  * DELETE /api/feedback
- * Allows Admin to remove feedback
+ * Protected by IDOR Guard: Requires Super Administrator privileges
  */
 export async function DELETE(req: NextRequest) {
   try {
+    const adminAuth = await assertSuperAdminAccess();
+    if (!adminAuth.allowed) {
+      return adminAuth.errorResponse!;
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 

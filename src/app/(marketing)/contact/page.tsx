@@ -2,6 +2,7 @@
 
 import { Mail, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+import { FAQSection } from "@/components/FAQSection";
 
 export default function ContactPage() {
   return (
@@ -70,13 +71,13 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <a href="https://wa.me/2348125225352" target="_blank" rel="noopener noreferrer" className="flex items-start gap-6 group hover:cursor-pointer">
+                <a href="https://wa.me/2349024129891" target="_blank" rel="noopener noreferrer" className="flex items-start gap-6 group hover:cursor-pointer">
                   <div className="w-16 h-16 rounded-2xl bg-[#C5A059]/10 group-hover:bg-[#C5A059]/20 transition-colors flex items-center justify-center shrink-0 border border-[#C5A059]/20">
                     <MessageCircle className="w-8 h-8 text-[#C5A059]" />
                   </div>
                   <div>
                     <h4 className="text-xl font-black text-[#0B3022] mb-1 group-hover:underline">WhatsApp</h4>
-                    <p className="text-[#1F2937]/70 font-medium text-lg">+234 812 522 5352</p>
+                    <p className="text-[#1F2937]/70 font-medium text-lg">+234 902 412 9891</p>
                   </div>
                 </a>
 
@@ -98,6 +99,9 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
+
+      {/* Dedicated FAQ Knowledge Base Section */}
+      <FAQSection />
     </main>
   );
 }

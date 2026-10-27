@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { getBankCode } from "@/utils/mono";
+import { consumeQuota, createQuotaExceededResponse } from "@/utils/quotaManager";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,9 @@ export const dynamic = "force-dynamic";
  * 
  * Supports both self-initiation by member, and Admin-initiated mandate generation
  * for circle members.
+ * Includes cost controls:
+ * 1. Checks and reuses existing active unexpired mandate session within 30 minutes
+ * 2. Enforces daily usage quotas on mandate generation
  */
 export async function POST(req: NextRequest) {
   try {
@@ -52,6 +56,38 @@ export async function POST(req: NextRequest) {
       isInitiatedByAdmin = true;
     }
 
+    // Cost Control: Check daily mandate generation quota (5/day)
+    const quotaResult = consumeQuota("MANDATE_INITIATION", targetUser.id);
+    if (!quotaResult.allowed) {
+      return createQuotaExceededResponse(quotaResult);
+    }
+
+    // Cost Control: Check for existing unexpired mandate created in the last 30 minutes
+    const existingMandateId = targetUser.user_metadata?.mono_mandate_id;
+    const existingMandateUrl = targetUser.user_metadata?.mono_mandate_url;
+    const existingStatus = targetUser.user_metadata?.mono_mandate_status;
+    const existingUpdatedAt = targetUser.user_metadata?.mono_mandate_updated_at;
+
+    if (
+      existingMandateId &&
+      existingMandateUrl &&
+      existingStatus === "awaiting_authorization" &&
+      existingUpdatedAt
+    ) {
+      const timeDiff = Date.now() - new Date(existingUpdatedAt).getTime();
+      if (timeDiff < 1_800_000) { // 30 minutes
+        console.log(`[Mono Cost Control] Reusing existing active mandate link for user ${targetUser.id}`);
+        return NextResponse.json({
+          success: true,
+          mandateId: existingMandateId,
+          monoUrl: existingMandateUrl,
+          reference: targetUser.user_metadata?.mono_mandate_reference || `ref_cached_${Date.now()}`,
+          status: "awaiting_authorization",
+          reused: true,
+        });
+      }
+    }
+
     // Fetch target user profile from database
     const { data: profile, error: profileErr } = await adminClient
       .from("users")
@@ -63,7 +99,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User profile not found." }, { status: 404 });
     }
 
-    let mandateAmountNaira = customAmount || 200000000; // default ₦200,000,000 annual savings aggregate limit
+    let mandateAmountNaira = customAmount || 200000000;
     let groupName = "Àjọṣe Rotational Circle";
 
     if (groupId) {
@@ -75,9 +111,6 @@ export async function POST(req: NextRequest) {
 
       if (group) {
         groupName = group.name;
-        // In Mono variable mandates, `amount` is the aggregate cumulative ceiling
-        // for the entire mandate period (1 year). It must cover all rounds of the circle
-        // so daily, weekly, or monthly sweeps do not exhaust the mandate limit after a single turn.
         const cyclesPerYear = group.frequency === "daily" ? 365 
           : group.frequency === "weekly" ? 52 
           : group.frequency === "biweekly" ? 26 
@@ -86,7 +119,6 @@ export async function POST(req: NextRequest) {
         const isDaily = group.frequency === "daily";
         const isWeekly = group.frequency === "weekly";
 
-        // Resolve monthly fee percentage: configured on user, or on group admin, or default 2%
         let feePct = 2.0;
         const profileFee = (profile as any)?.user_metadata?.custom_platform_fee_pct ?? (profile as any)?.custom_platform_fee_pct;
         if (typeof profileFee === "number" && profileFee >= 0) {
@@ -103,8 +135,6 @@ export async function POST(req: NextRequest) {
 
         const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round(((group.contribution_amount || 400) * feePct) / 100);
         const perTurnDebit = (group.contribution_amount || 400) + automationFee;
-        // Universal Headroom: Set to ₦200,000,000 so the mandate powers any circle size
-        // (including ₦3M, ₦5M, or 10 simultaneous circles) without ever hitting bank limit exhaustion.
         const circleCeiling = perTurnDebit * totalRounds;
         mandateAmountNaira = Math.max(customAmount || 0, circleCeiling, 200000000);
       }
@@ -115,7 +145,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Mono payments secret key is not configured." }, { status: 500 });
     }
 
-    // Reference must be <= 24 characters and alphanumeric only
     const rawRef = `mnd${Date.now().toString().slice(-8)}${Math.random().toString(36).substring(2, 6)}`;
     const reference = rawRef.replace(/[^a-zA-Z0-9]/g, "").slice(0, 24);
 
@@ -136,9 +165,6 @@ export async function POST(req: NextRequest) {
     const startDate = new Date().toISOString().split("T")[0];
     const endDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
-    // OPay (999992) and PalmPay (999991) are MMOs and do not accept direct e-mandate codes.
-    // If user's connected bank is an MMO, omit bank_code and account_number so Mono prompts
-    // the customer to select their commercial bank on the hosted authorization page.
     const isMmoBank = bankCode === "999992" || bankCode === "999991" || !profile.account_number;
 
     const initiatePayload: any = {
@@ -147,7 +173,7 @@ export async function POST(req: NextRequest) {
       method: "mandate",
       mandate_type: "emandate",
       debit_type: "variable",
-      description: `Àjọṣe Savings Mandate: Automated Contributions`,
+      description: "Àjọṣe Savings Mandate: Automated Contributions",
       reference,
       redirect_url: redirectUrl,
       customer: {
@@ -168,14 +194,6 @@ export async function POST(req: NextRequest) {
       initiatePayload.account_number = profile.account_number;
       initiatePayload.bank_code = bankCode;
     }
-
-    console.log("[Mono Mandate Initiate] Sending payload:", {
-      isMmoBank,
-      bank_code: initiatePayload.bank_code,
-      customer_name: customerName,
-      reference,
-      amount_kobo: initiatePayload.amount
-    });
 
     const monoRes = await fetch("https://api.withmono.com/v2/payments/initiate", {
       method: "POST",
