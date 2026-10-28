@@ -9,7 +9,8 @@ import {
   Settings,
   ShieldCheck,
   HelpCircle,
-  MessageSquare
+  MessageSquare,
+  Gift
 } from "lucide-react";
 
 export function SidebarNav() {
@@ -19,6 +20,7 @@ export function SidebarNav() {
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { href: "/dashboard/groups", label: "My Groups", icon: Users, tourClass: "tour-desktop-create-group" },
     { href: "/dashboard/transactions", label: "Transactions", icon: ArrowRightLeft, tourClass: "tour-desktop-transactions" },
+    { href: "/dashboard/referrals", label: "Refer & Earn", icon: Gift },
     { href: "/dashboard/verify", label: "Verify Identity", icon: ShieldCheck, tourClass: "tour-desktop-verify" },
     { href: "/dashboard/settings", label: "Profile & Bank", icon: Settings, tourClass: "tour-desktop-link-bank" },
     { href: "/dashboard/support", label: "Help & Support", icon: HelpCircle },

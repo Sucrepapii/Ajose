@@ -12,7 +12,8 @@ import {
   ArrowRightLeft, 
   ShieldCheck, 
   Settings, 
-  Home
+  Home,
+  Gift
 } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { LogoutButton } from "@/components/LogoutButton";
@@ -54,6 +55,7 @@ export function MobileDashboardHeader({
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { href: "/dashboard/groups", label: "My Groups", icon: Users },
     { href: "/dashboard/transactions", label: "Transactions", icon: ArrowRightLeft },
+    { href: "/dashboard/referrals", label: "Refer & Earn", icon: Gift },
     { href: "/dashboard/verify", label: "Verify Identity", icon: ShieldCheck },
     { href: "/dashboard/settings", label: "Profile & Bank", icon: Settings },
   ];

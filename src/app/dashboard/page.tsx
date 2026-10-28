@@ -1,4 +1,3 @@
-import { ReferralTierWidget } from "@/components/ReferralTierWidget";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
@@ -12,7 +11,8 @@ import {
   Plus,
   ArrowRight,
   Users,
-  Coins
+  Coins,
+  Gift
 } from "lucide-react";
 import { OrganizerShareKitModal } from "@/components/OrganizerShareKitModal";
 
@@ -254,8 +254,33 @@ export default async function DashboardOverview() {
 
       </div>
 
-      {/* Referral Tier & Fee Slash Engine */}
-      <ReferralTierWidget />
+      {/* Clean Referral Promotion Strip */}
+      <div className="bg-gradient-to-r from-[#0B3022] to-[#124230] rounded-2xl p-4 sm:p-5 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[#C5A059]/30">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#C5A059]/20 flex items-center justify-center shrink-0 border border-[#C5A059]/30">
+            <Gift className="w-5 h-5 text-[#C5A059]" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className="font-bold text-sm sm:text-base text-white">Refer Friends &amp; Slash Your Fees</h4>
+              <span className="text-[10px] font-black uppercase tracking-wider bg-[#C5A059] text-[#0B3022] px-2 py-0.5 rounded-full">
+                Down to 0.5%
+              </span>
+            </div>
+            <p className="text-xs text-white/70 font-medium mt-0.5">
+              Invite your circle members. Unlock tiered discounts on your monthly rotational payouts.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          href="/dashboard/referrals"
+          className="shrink-0 px-4 py-2.5 bg-[#C5A059] hover:bg-[#d8b56f] text-[#0B3022] font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 self-start sm:self-auto"
+        >
+          <span>View Referrals</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
 
       {/* Active Groups & Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
