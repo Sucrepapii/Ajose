@@ -1,3 +1,4 @@
+import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { sendEmail } from "@/utils/resend";
@@ -55,10 +56,20 @@ export async function POST(req: NextRequest) {
 
     const token = captchaToken || req.headers.get("x-captcha-token");
 
-    // 1. CAPTCHA Verification
-    const captchaCheck = verifyCaptchaToken(token, clientIp);
-    if (!captchaCheck.valid) {
-      return createCaptchaErrorResponse(captchaCheck.reason);
+    // Check if user is authenticated
+    let isAuthedUser = false;
+    try {
+      const supabaseUser = await createClient();
+      const { data: { user } } = await supabaseUser.auth.getUser();
+      if (user) isAuthedUser = true;
+    } catch (_) {}
+
+    // 1. CAPTCHA Verification (required for public unauthenticated submissions)
+    if (!isAuthedUser) {
+      const captchaCheck = verifyCaptchaToken(token, clientIp);
+      if (!captchaCheck.valid) {
+        return createCaptchaErrorResponse(captchaCheck.reason);
+      }
     }
 
     if (!message || typeof message !== "string" || message.trim().length === 0) {

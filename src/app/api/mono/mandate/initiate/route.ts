@@ -1,3 +1,4 @@
+import { resolveUserEffectiveFeePct } from "@/utils/referralTiers";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
@@ -119,11 +120,9 @@ export async function POST(req: NextRequest) {
         const isDaily = group.frequency === "daily";
         const isWeekly = group.frequency === "weekly";
 
-        let feePct = 2.0;
         const profileFee = (profile as any)?.user_metadata?.custom_platform_fee_pct ?? (profile as any)?.custom_platform_fee_pct;
-        if (typeof profileFee === "number" && profileFee >= 0) {
-          feePct = profileFee;
-        } else if (group.admin_id) {
+        let feePct = await resolveUserEffectiveFeePct(adminClient, targetUser.id, profileFee);
+        if (group.admin_id) {
           try {
             const { data: adminAuth } = await adminClient.auth.admin.getUserById(group.admin_id);
             const authFee = adminAuth?.user?.user_metadata?.custom_platform_fee_pct;

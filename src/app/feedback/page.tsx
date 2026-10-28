@@ -1,5 +1,7 @@
 "use client";
 
+import { getSecurityProofToken } from "@/components/SecurityCaptcha";
+
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -42,9 +44,13 @@ export default function FeedbackPage() {
     setIsSubmitting(true);
 
     try {
+      const captchaToken = await getSecurityProofToken();
       const res = await fetch("/api/feedback", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "x-captcha-token": captchaToken
+        },
         body: JSON.stringify({
           category: selectedCategory,
           rating,
@@ -53,6 +59,7 @@ export default function FeedbackPage() {
           email: email.trim() || undefined,
           location: location.trim() || undefined,
           url: "/feedback",
+          captchaToken,
         }),
       });
 

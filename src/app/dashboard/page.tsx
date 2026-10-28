@@ -1,3 +1,4 @@
+import { ReferralTierWidget } from "@/components/ReferralTierWidget";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
@@ -252,6 +253,9 @@ export default async function DashboardOverview() {
         </div>
 
       </div>
+
+      {/* Referral Tier & Fee Slash Engine */}
+      <ReferralTierWidget />
 
       {/* Active Groups & Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

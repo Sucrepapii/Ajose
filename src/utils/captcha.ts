@@ -42,7 +42,7 @@ export function generateCaptchaChallenge(clientIp: string): CaptchaChallenge {
   const nonce = crypto.randomBytes(16).toString("hex");
   const secret = getSecretKey();
 
-  const payload = `${timestamp}:${clientIp}:${nonce}`;
+  const payload = `${timestamp}:any:${nonce}`;
   const signature = crypto.createHmac("sha256", secret).update(payload).digest("hex");
 
   return {

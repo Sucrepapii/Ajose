@@ -1,3 +1,4 @@
+import { resolveUserEffectiveFeePct } from "@/utils/referralTiers";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 
@@ -354,14 +355,14 @@ async function handleSweep(req: NextRequest) {
               }
             }
 
-            // Resolve monthly fee percentage: configured on user, or on group admin, or default 2%
-            let feePct = 2.0;
+            // Resolve monthly fee percentage via Referral Tier discount engine
             const userMetaFee = memberAuthUser?.user_metadata?.custom_platform_fee_pct;
-            if (typeof userMetaFee === "number" && userMetaFee >= 0) {
-              feePct = userMetaFee;
-            } else if (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) {
-              feePct = adminCustomFeePct;
-            }
+            const baseOverride = (typeof userMetaFee === "number" && userMetaFee >= 0) 
+              ? userMetaFee 
+              : (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) 
+                ? adminCustomFeePct 
+                : null;
+            let feePct = await resolveUserEffectiveFeePct(supabase, member.user_id, baseOverride);
 
             const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round(((group.contribution_amount || 0) * feePct) / 100);
             let totalDebitAmount = (group.contribution_amount || 0) + automationFee;

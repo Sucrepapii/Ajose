@@ -1,5 +1,7 @@
 "use client";
 
+import { getSecurityProofToken } from "@/components/SecurityCaptcha";
+
 import { trackEvent } from "@/components/Analytics";
 
 import { useState, useEffect } from "react";
@@ -56,6 +58,10 @@ export default function SignupPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      const refParam = params.get("ref");
+      if (refParam && typeof window !== "undefined") {
+        try { localStorage.setItem("ajose_referral_ref", refParam.trim().toUpperCase()); } catch (_) {}
+      }
       const directCode = params.get("code") || params.get("invite");
       const nextParam = params.get("next");
       let initialCode = directCode || "";
@@ -262,11 +268,15 @@ export default function SignupPage() {
 
           toast.loading("Initiating BVN verification via Mono...", { id: monoToastId });
 
-          // 2. Initiate BVN lookup via Mono API
+          // 2. Initiate BVN lookup via Mono API with anti-bot security token
+          const captchaToken = await getSecurityProofToken();
           const initRes = await fetch("/api/mono/bvn/initiate", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ bvn: formData.bvn })
+            headers: { 
+              "Content-Type": "application/json",
+              "x-captcha-token": captchaToken
+            },
+            body: JSON.stringify({ bvn: formData.bvn, captchaToken })
           });
 
           const initData = await initRes.json();
@@ -385,6 +395,19 @@ export default function SignupPage() {
       if (upsertError) {
         console.warn("User profile update warning:", upsertError.message);
       }
+
+      // Link referral code if user signed up via referral
+      try {
+        const storedRef = typeof window !== "undefined" ? localStorage.getItem("ajose_referral_ref") : null;
+        if (storedRef) {
+          fetch("/api/user/referrals", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: storedRef }),
+          }).catch(() => {});
+          try { localStorage.removeItem("ajose_referral_ref"); } catch (_) {}
+        }
+      } catch (_) {}
 
       let targetGroupId = formData.inviteCode.trim();
       let nextUrlParams: URLSearchParams | null = null;
