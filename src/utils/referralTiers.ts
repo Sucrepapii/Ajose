@@ -102,15 +102,81 @@ export function getReferralTier(activeCount: number): ReferralTierDetails {
 }
 
 /**
- * Generates or derives a consistent referral code for a user
+ * Generates or derives a clean, human-readable name-based referral code.
+ * Example: "TUNDE", "CHUKWUDI", "FATIMA", "BLESSING"
  */
-export function generateUserReferralCode(user: { id: string; first_name?: string | null; email?: string | null }): string {
-  const prefix = (user.first_name || user.email?.split("@")[0] || "AJO")
+export function generateUserReferralCode(user: { id: string; first_name?: string | null; last_name?: string | null; email?: string | null }): string {
+  const nameSource = user.first_name || user.email?.split("@")[0] || "AJO";
+  const cleanFirst = nameSource
     .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .slice(0, 6);
-  const suffix = user.id.replace(/-/g, "").slice(0, 4).toUpperCase();
-  return `${prefix || "AJO"}${suffix}`;
+    .replace(/[^A-Z0-9]/g, "");
+
+  if (cleanFirst.length >= 3) {
+    return cleanFirst;
+  }
+  return `AJO${cleanFirst || "MEMBER"}`;
+}
+
+/**
+ * Ensures user has an assigned unique referral code in the database based on their name.
+ * If multiple users share the same first name (e.g. "TUNDE"), it tries:
+ * 1. "TUNDE"
+ * 2. "TUNDE" + Last Name (e.g. "TUNDEADEBAYO" or "TUNDE-A")
+ * 3. "TUNDE2", "TUNDE3", etc.
+ */
+export async function ensureUniqueReferralCode(
+  supabaseAdmin: SupabaseClient,
+  user: { id: string; first_name?: string | null; last_name?: string | null; email?: string | null; referral_code?: string | null }
+): Promise<string> {
+  if (user.referral_code && user.referral_code.trim()) {
+    return user.referral_code.trim().toUpperCase();
+  }
+
+  const rawFirst = (user.first_name || user.email?.split("@")[0] || "AJO")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+  const baseName = rawFirst.length >= 3 ? rawFirst : `AJO${rawFirst}`;
+
+  const candidates: string[] = [baseName];
+
+  if (user.last_name) {
+    const rawLast = user.last_name.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (rawLast) {
+      candidates.push(`${baseName}${rawLast}`);
+      candidates.push(`${baseName}-${rawLast.charAt(0)}`);
+    }
+  }
+
+  // Numbered variants if exact name is already claimed
+  for (let i = 2; i <= 9; i++) {
+    candidates.push(`${baseName}${i}`);
+  }
+  candidates.push(`${baseName}${Math.floor(10 + Math.random() * 90)}`);
+
+  for (const code of candidates) {
+    try {
+      const { data: existing } = await supabaseAdmin
+        .from("users")
+        .select("id")
+        .ilike("referral_code", code)
+        .maybeSingle();
+
+      if (!existing || existing.id === user.id) {
+        // Free to claim! Persist into users table so it's permanent
+        await supabaseAdmin
+          .from("users")
+          .update({ referral_code: code })
+          .eq("id", user.id);
+        return code;
+      }
+    } catch {}
+  }
+
+  const fallback = `${baseName}${user.id.slice(0, 4).toUpperCase()}`;
+  try {
+    await supabaseAdmin.from("users").update({ referral_code: fallback }).eq("id", user.id);
+  } catch {}
+  return fallback;
 }
 
 export interface ReferredFriendAudit {
@@ -149,12 +215,12 @@ export async function getReferralSummary(
   const user = userProfile || (
     await supabaseAdmin
       .from("users")
-      .select("id, first_name, email, referral_code, custom_platform_fee_pct")
+      .select("id, first_name, last_name, email, referral_code, custom_platform_fee_pct")
       .eq("id", userId)
       .maybeSingle()
   ).data;
 
-  const referralCode = user?.referral_code || generateUserReferralCode(user || { id: userId });
+  const referralCode = await ensureUniqueReferralCode(supabaseAdmin, user || { id: userId });
 
   // Find referred users via referrals table or users.referred_by
   let referredUserIds: { id: string; created_at?: string }[] = [];

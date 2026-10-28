@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Award,
   Zap,
-  Info
+  Info,
+  Pencil
 } from "lucide-react";
 import { toast } from "sonner";
 import { UserReferralSummary, REFERRAL_TIERS, ReferralTierName } from "@/utils/referralTiers";
@@ -36,6 +37,11 @@ export function ReferralDashboardClient({ initialSummary }: ReferralDashboardCli
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [showRules, setShowRules] = useState(false);
+
+  // Custom referral code state
+  const [isEditingCode, setIsEditingCode] = useState(false);
+  const [customCodeInput, setCustomCodeInput] = useState("");
+  const [isSavingCode, setIsSavingCode] = useState(false);
 
   // Redeem code form state
   const [redeemCode, setRedeemCode] = useState("");
@@ -100,6 +106,38 @@ export function ReferralDashboardClient({ initialSummary }: ReferralDashboardCli
       toast.error(err.message || "Could not apply referral code.", { id: toastId });
     } finally {
       setIsRedeeming(false);
+    }
+  };
+
+  const handleSaveCustomCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customCodeInput.trim()) return;
+
+    setIsSavingCode(true);
+    const toastId = toast.loading("Updating your referral code...");
+    try {
+      const res = await fetch("/api/user/referrals", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: customCodeInput.trim() }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to update referral code");
+      }
+
+      toast.success(data.message || "Referral code updated!", { id: toastId });
+      setSummary(prev => ({
+        ...prev,
+        referralCode: data.referralCode,
+        referralLink: data.referralLink || prev.referralLink,
+      }));
+      setIsEditingCode(false);
+    } catch (err: any) {
+      toast.error(err.message || "Could not customize referral code", { id: toastId });
+    } finally {
+      setIsSavingCode(false);
     }
   };
 
@@ -301,20 +339,71 @@ export function ReferralDashboardClient({ initialSummary }: ReferralDashboardCli
           {/* Referral Code Box */}
           <div className="bg-[#FAF8F5] border border-gray-200 rounded-xl p-4 flex flex-col justify-between">
             <div>
-              <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
-                Your Referral Code
-              </span>
-              <div className="text-xl font-mono font-black text-[#0B3022] tracking-wider select-all">
-                {summary.referralCode}
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
+                  Your Referral Code
+                </span>
+                {!isEditingCode && (
+                  <button
+                    onClick={() => {
+                      setCustomCodeInput(summary.referralCode);
+                      setIsEditingCode(true);
+                    }}
+                    className="text-[11px] text-[#C5A059] hover:text-[#997839] font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    <span>Customize</span>
+                  </button>
+                )}
               </div>
+
+              {isEditingCode ? (
+                <form onSubmit={handleSaveCustomCode} className="mt-2 space-y-2">
+                  <input
+                    type="text"
+                    value={customCodeInput}
+                    onChange={(e) => setCustomCodeInput(e.target.value.toUpperCase())}
+                    placeholder="e.g. TUNDE or EMEKA"
+                    disabled={isSavingCode}
+                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-[#0B3022] font-mono font-bold uppercase placeholder:font-sans placeholder:normal-case placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C5A059]/40 focus:border-[#C5A059]"
+                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="submit"
+                      disabled={isSavingCode || !customCodeInput.trim()}
+                      className="px-3 py-1 bg-[#0B3022] text-white text-xs font-bold rounded-lg hover:bg-[#134934] transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      {isSavingCode ? "Saving..." : "Save Code"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingCode(false)}
+                      disabled={isSavingCode}
+                      className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-200 transition-all cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-gray-500 font-medium">
+                    Use your name or handle (3–25 letters/numbers).
+                  </p>
+                </form>
+              ) : (
+                <div className="text-xl font-mono font-black text-[#0B3022] tracking-wider select-all">
+                  {summary.referralCode}
+                </div>
+              )}
             </div>
-            <button
-              onClick={copyCode}
-              className="mt-4 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-gray-300 hover:border-[#C5A059] bg-white text-[#0B3022] font-bold text-xs transition-all shadow-xs cursor-pointer hover:bg-gray-50"
-            >
-              {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-gray-500" />}
-              <span>{copiedCode ? "Code Copied!" : "Copy Code"}</span>
-            </button>
+
+            {!isEditingCode && (
+              <button
+                onClick={copyCode}
+                className="mt-4 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-gray-300 hover:border-[#C5A059] bg-white text-[#0B3022] font-bold text-xs transition-all shadow-xs cursor-pointer hover:bg-gray-50"
+              >
+                {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-gray-500" />}
+                <span>{copiedCode ? "Code Copied!" : "Copy Code"}</span>
+              </button>
+            )}
           </div>
 
           {/* Referral Link Box */}

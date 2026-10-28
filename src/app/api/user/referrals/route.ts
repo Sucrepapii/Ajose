@@ -99,3 +99,80 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+/**
+ * PATCH /api/user/referrals
+ * Allows a user to customize their referral code to their name or handle
+ */
+export async function PATCH(req: NextRequest) {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authErr } = await supabase.auth.getUser();
+
+    if (authErr || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const { code } = body;
+
+    if (!code || typeof code !== "string") {
+      return NextResponse.json({ error: "A referral code is required" }, { status: 400 });
+    }
+
+    const cleanCode = code.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+
+    if (cleanCode.length < 3 || cleanCode.length > 25) {
+      return NextResponse.json(
+        { error: "Referral code must be between 3 and 25 letters or numbers." },
+        { status: 400 }
+      );
+    }
+
+    const adminClient = createAdminClient();
+
+    // Check if another user already has this code
+    const { data: existing } = await adminClient
+      .from("users")
+      .select("id, first_name")
+      .ilike("referral_code", cleanCode)
+      .maybeSingle();
+
+    if (existing && existing.id !== user.id) {
+      return NextResponse.json(
+        { error: `The code "${cleanCode}" is already taken by another member. Try another variation!` },
+        { status: 409 }
+      );
+    }
+
+    // Update users table
+    const { error: updateErr } = await adminClient
+      .from("users")
+      .update({ referral_code: cleanCode })
+      .eq("id", user.id);
+
+    if (updateErr) {
+      return NextResponse.json(
+        { error: updateErr.message || "Failed to update referral code" },
+        { status: 500 }
+      );
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ajose.ng";
+    const newLink = `${baseUrl}/signup?ref=${encodeURIComponent(cleanCode)}`;
+
+    return NextResponse.json({
+      success: true,
+      message: `Your referral code has been updated to "${cleanCode}"!`,
+      referralCode: cleanCode,
+      referralLink: newLink,
+    });
+  } catch (error: any) {
+    console.error("Referrals PATCH API error:", error);
+    return NextResponse.json(
+      { error: error?.message || "Failed to customize referral code" },
+      { status: 500 }
+    );
+  }
+}
+
