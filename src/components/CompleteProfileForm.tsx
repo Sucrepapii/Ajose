@@ -16,14 +16,15 @@ import { getSecurityProofToken } from "@/components/SecurityCaptcha";
 type VerificationStep = "INITIATE" | "SELECT_METHOD" | "VERIFY_OTP";
 
 export function CompleteProfileForm({ 
-  _userId,
+  userId,
   initialPhone = "",
   initialBvn = ""
 }: { 
-  _userId?: string;
+  userId?: string;
   initialPhone?: string;
   initialBvn?: string;
 }) {
+  void userId;
   const [formData, setFormData] = useState({ 
     phone: initialPhone, 
     bvn: initialBvn, 
