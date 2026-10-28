@@ -171,7 +171,7 @@ export async function getReferralSummary(
         created_at: r.created_at,
       }));
     }
-  } catch (_) {}
+  } catch {}
 
   // Also query users where referred_by = userId
   try {
@@ -188,7 +188,7 @@ export async function getReferralSummary(
         }
       }
     }
-  } catch (_) {}
+  } catch {}
 
   const friends: ReferredFriendAudit[] = [];
   let activeCount = 0;

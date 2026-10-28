@@ -362,7 +362,7 @@ async function handleSweep(req: NextRequest) {
               : (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) 
                 ? adminCustomFeePct 
                 : null;
-            let feePct = await resolveUserEffectiveFeePct(supabase, member.user_id, baseOverride);
+            const feePct = await resolveUserEffectiveFeePct(supabase, member.user_id, baseOverride);
 
             const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round(((group.contribution_amount || 0) * feePct) / 100);
             let totalDebitAmount = (group.contribution_amount || 0) + automationFee;

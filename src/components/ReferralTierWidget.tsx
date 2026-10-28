@@ -2,16 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-  Users, 
   Share2, 
   Copy, 
   Check, 
   TrendingDown, 
-  ShieldCheck, 
   Sparkles, 
-  ChevronRight,
-  Info,
-  ArrowRight
+  Info
 } from "lucide-react";
 import { toast } from "sonner";
 

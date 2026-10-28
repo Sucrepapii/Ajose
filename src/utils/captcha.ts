@@ -37,7 +37,7 @@ export interface CaptchaChallenge {
 /**
  * Issues a fresh cryptographic proof-of-work challenge signed by the server
  */
-export function generateCaptchaChallenge(clientIp: string): CaptchaChallenge {
+export function generateCaptchaChallenge(_clientIp?: string): CaptchaChallenge {
   const timestamp = Date.now();
   const nonce = crypto.randomBytes(16).toString("hex");
   const secret = getSecretKey();

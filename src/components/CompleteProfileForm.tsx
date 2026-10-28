@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { 
   ShieldCheck, 
   ArrowRight, 
@@ -10,19 +9,18 @@ import {
   Mail, 
   CheckCircle2, 
   RefreshCw,
-  Sparkles,
-  AlertCircle
+  Sparkles
 } from "lucide-react";
 import { getSecurityProofToken } from "@/components/SecurityCaptcha";
 
 type VerificationStep = "INITIATE" | "SELECT_METHOD" | "VERIFY_OTP";
 
 export function CompleteProfileForm({ 
-  userId,
+  _userId,
   initialPhone = "",
   initialBvn = ""
 }: { 
-  userId: string;
+  _userId?: string;
   initialPhone?: string;
   initialBvn?: string;
 }) {
@@ -39,7 +37,6 @@ export function CompleteProfileForm({
   const [selectedMethod, setSelectedMethod] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  const router = useRouter();
 
   // Handle resend countdown timer
   useEffect(() => {

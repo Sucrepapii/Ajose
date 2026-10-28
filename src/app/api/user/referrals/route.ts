@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
  * GET /api/user/referrals
  * Returns user's referral tier, active count, referral code/link, and referred friends checklist
  */
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         referred_user_id: user.id,
         referral_code: cleanCode,
       });
-    } catch (_) {}
+    } catch {}
 
     return NextResponse.json({
       success: true,

@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       const supabaseUser = await createClient();
       const { data: { user } } = await supabaseUser.auth.getUser();
       if (user) authUser = user;
-    } catch (_) {}
+    } catch {}
 
     // 1. CAPTCHA & Anti-Bot Verification (enforced for public unauthenticated requests)
     if (!authUser) {
