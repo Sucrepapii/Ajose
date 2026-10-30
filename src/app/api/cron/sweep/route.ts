@@ -1,6 +1,7 @@
 import { resolveUserEffectiveFeePct } from "@/utils/referralTiers";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
+import { verifyCronAuth } from "@/utils/cronAuth";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -39,28 +40,10 @@ export async function POST(req: NextRequest) {
 
 async function handleSweep(req: NextRequest) {
   try {
-    // 1. Authorization check:
-    // a) Strict Bearer token matching process.env.CRON_SECRET
-    // b) Strict Bearer token matching process.env.SUPABASE_SERVICE_ROLE_KEY
-    // c) Authenticated SuperAdmin session cookie
-    // d) Authenticated Group Admin of specificGroupId
-    const authHeader = req.headers.get("authorization");
-    const cronSecret = process.env.CRON_SECRET;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const specificGroupId = req.nextUrl.searchParams.get("groupId");
     const forceOverride = req.nextUrl.searchParams.get("force") === "true" || req.headers.get("x-force-sweep") === "true";
 
-    let isAuthorized = false;
-
-    // Strict Cron Secret check (Header: Authorization: Bearer <secret>)
-    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
-      isAuthorized = true;
-    }
-
-    // Strict Supabase Service Role Key check
-    if (!isAuthorized && serviceRoleKey && authHeader === `Bearer ${serviceRoleKey}`) {
-      isAuthorized = true;
-    }
+    let isAuthorized = verifyCronAuth(req);
 
     // Authenticated SuperAdmin check via session
     if (!isAuthorized) {

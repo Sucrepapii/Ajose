@@ -21,11 +21,11 @@ if (typeof setInterval !== "undefined") {
 }
 
 function getSecretKey(): string {
-  return (
-    process.env.CRON_SECRET ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "ajose_security_shield_secret_key"
-  );
+  const secret = process.env.CRON_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) {
+    throw new Error("Missing server security secret for CAPTCHA challenge");
+  }
+  return secret;
 }
 
 export interface CaptchaChallenge {
