@@ -22,3 +22,6 @@ CREATE TABLE IF NOT EXISTS "referrals" (
 
 CREATE INDEX IF NOT EXISTS idx_referrals_referrer_id ON "referrals"("referrer_id");
 CREATE INDEX IF NOT EXISTS idx_referrals_status ON "referrals"("status");
+
+-- Reload PostgREST schema cache immediately
+NOTIFY pgrst, 'reload schema';
