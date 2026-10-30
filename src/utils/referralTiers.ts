@@ -155,11 +155,16 @@ export async function ensureUniqueReferralCode(
 
   for (const code of candidates) {
     try {
-      const { data: existing } = await supabaseAdmin
+      const { data: existing, error: checkErr } = await supabaseAdmin
         .from("users")
         .select("id")
         .ilike("referral_code", code)
         .maybeSingle();
+
+      if (checkErr) {
+        // If column doesn't exist yet (migration pending), safely return candidate without crashing
+        return code;
+      }
 
       if (!existing || existing.id === user.id) {
         // Free to claim! Persist into users table so it's permanent
@@ -169,7 +174,9 @@ export async function ensureUniqueReferralCode(
           .eq("id", user.id);
         return code;
       }
-    } catch {}
+    } catch {
+      return code;
+    }
   }
 
   const fallback = `${baseName}${user.id.slice(0, 4).toUpperCase()}`;
@@ -212,13 +219,30 @@ export async function getReferralSummary(
   userId: string,
   userProfile?: any
 ): Promise<UserReferralSummary> {
-  const user = userProfile || (
-    await supabaseAdmin
-      .from("users")
-      .select("id, first_name, last_name, email, referral_code, custom_platform_fee_pct")
-      .eq("id", userId)
-      .maybeSingle()
-  ).data;
+  let user = userProfile;
+  if (!user) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("users")
+        .select("id, first_name, last_name, email, referral_code, custom_platform_fee_pct")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (error || !data) {
+        // Fallback without newer columns if database migration is pending
+        const { data: fallbackUser } = await supabaseAdmin
+          .from("users")
+          .select("id, first_name, last_name, email")
+          .eq("id", userId)
+          .maybeSingle();
+        user = fallbackUser || { id: userId };
+      } else {
+        user = data;
+      }
+    } catch {
+      user = { id: userId };
+    }
+  }
 
   const referralCode = await ensureUniqueReferralCode(supabaseAdmin, user || { id: userId });
 

@@ -58,11 +58,21 @@ export async function POST(req: NextRequest) {
     const adminClient = createAdminClient();
 
     // Find referrer by referral_code
-    const { data: referrer } = await adminClient
+    const { data: referrer, error: referrerErr } = await adminClient
       .from("users")
       .select("id, first_name")
       .ilike("referral_code", cleanCode)
       .maybeSingle();
+
+    if (referrerErr) {
+      if (referrerErr.code === "42703") {
+        return NextResponse.json(
+          { error: "Referral system database migration is pending in Supabase. Please run the SQL migration." },
+          { status: 503 }
+        );
+      }
+      return NextResponse.json({ error: referrerErr.message }, { status: 500 });
+    }
 
     if (!referrer) {
       return NextResponse.json({ error: "Invalid referral code." }, { status: 404 });
@@ -73,10 +83,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Link in users table
-    await adminClient
+    const { error: linkErr } = await adminClient
       .from("users")
       .update({ referred_by: referrer.id })
       .eq("id", user.id);
+
+    if (linkErr) {
+      if (linkErr.code === "42703") {
+        return NextResponse.json(
+          { error: "Referral system database migration is pending in Supabase. Please run the SQL migration." },
+          { status: 503 }
+        );
+      }
+    }
 
     // Also attempt insert into referrals table
     try {
@@ -132,11 +151,18 @@ export async function PATCH(req: NextRequest) {
     const adminClient = createAdminClient();
 
     // Check if another user already has this code
-    const { data: existing } = await adminClient
+    const { data: existing, error: checkErr } = await adminClient
       .from("users")
       .select("id, first_name")
       .ilike("referral_code", cleanCode)
       .maybeSingle();
+
+    if (checkErr && checkErr.code === "42703") {
+      return NextResponse.json(
+        { error: "The referral system database migration has not been applied to Supabase yet. Please execute the SQL migration in your Supabase dashboard." },
+        { status: 503 }
+      );
+    }
 
     if (existing && existing.id !== user.id) {
       return NextResponse.json(
@@ -152,6 +178,12 @@ export async function PATCH(req: NextRequest) {
       .eq("id", user.id);
 
     if (updateErr) {
+      if (updateErr.code === "42703") {
+        return NextResponse.json(
+          { error: "The referral system database migration has not been applied to Supabase yet. Please execute the SQL migration in your Supabase dashboard." },
+          { status: 503 }
+        );
+      }
       return NextResponse.json(
         { error: updateErr.message || "Failed to update referral code" },
         { status: 500 }

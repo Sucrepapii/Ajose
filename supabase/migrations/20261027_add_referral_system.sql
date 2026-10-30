@@ -3,7 +3,8 @@
 
 ALTER TABLE "users"
 ADD COLUMN IF NOT EXISTS "referral_code" VARCHAR(50) UNIQUE,
-ADD COLUMN IF NOT EXISTS "referred_by" UUID REFERENCES "users"("id");
+ADD COLUMN IF NOT EXISTS "referred_by" UUID REFERENCES "users"("id"),
+ADD COLUMN IF NOT EXISTS "custom_platform_fee_pct" NUMERIC;
 
 CREATE TABLE IF NOT EXISTS "referrals" (
   "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
