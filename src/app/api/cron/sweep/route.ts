@@ -40,30 +40,30 @@ export async function POST(req: NextRequest) {
 async function handleSweep(req: NextRequest) {
   try {
     // 1. Authorization check:
-    // a) Bearer token or CRON_SECRET header / query param / default secret
-    // b) Vercel native cron / Supabase Service Role Key
-    // c) Authenticated SuperAdmin session
+    // a) Strict Bearer token matching process.env.CRON_SECRET
+    // b) Strict Bearer token matching process.env.SUPABASE_SERVICE_ROLE_KEY
+    // c) Authenticated SuperAdmin session cookie
     // d) Authenticated Group Admin of specificGroupId
     const authHeader = req.headers.get("authorization");
-    const defaultCronSecret = "ajose_sec_cron_99f2b810d7a6e4c";
-    const cronSecret = process.env.CRON_SECRET || defaultCronSecret;
+    const cronSecret = process.env.CRON_SECRET;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const specificGroupId = req.nextUrl.searchParams.get("groupId");
     const forceOverride = req.nextUrl.searchParams.get("force") === "true" || req.headers.get("x-force-sweep") === "true";
-    const queryKey = req.nextUrl.searchParams.get("key") || req.nextUrl.searchParams.get("secret");
-    const headerKey = req.headers.get("x-cron-secret") || req.headers.get("x-cron-key");
-    const isVercelCron = req.headers.get("user-agent")?.toLowerCase().includes("vercel-cron") || Boolean(req.headers.get("x-vercel-cron"));
 
     let isAuthorized = false;
-    if (
-      (authHeader && (authHeader === `Bearer ${cronSecret}` || authHeader === `Bearer ${defaultCronSecret}`)) ||
-      (queryKey && (queryKey === cronSecret || queryKey === defaultCronSecret)) ||
-      (headerKey && (headerKey === cronSecret || headerKey === defaultCronSecret)) ||
-      (authHeader?.startsWith("Bearer ") && process.env.SUPABASE_SERVICE_ROLE_KEY && authHeader.slice(7) === process.env.SUPABASE_SERVICE_ROLE_KEY) ||
-      isVercelCron
-    ) {
+
+    // Strict Cron Secret check (Header: Authorization: Bearer <secret>)
+    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
       isAuthorized = true;
-    } else {
-      // Check for authenticated SuperAdmin
+    }
+
+    // Strict Supabase Service Role Key check
+    if (!isAuthorized && serviceRoleKey && authHeader === `Bearer ${serviceRoleKey}`) {
+      isAuthorized = true;
+    }
+
+    // Authenticated SuperAdmin check via session
+    if (!isAuthorized) {
       try {
         const { getSuperAdminSession } = await import("@/utils/adminAuth");
         const adminSession = await getSuperAdminSession();
@@ -71,27 +71,27 @@ async function handleSweep(req: NextRequest) {
           isAuthorized = true;
         }
       } catch {}
+    }
 
-      // Check if caller is the authenticated Admin of this specific circle
-      if (!isAuthorized && specificGroupId) {
-        try {
-          const { createClient } = await import("@/utils/supabase/server");
-          const supabaseUser = await createClient();
-          const { data: { user } } = await supabaseUser.auth.getUser();
-          if (user) {
-            const adminSupabase = createAdminClient();
-            const { data: grp } = await adminSupabase
-              .from("groups")
-              .select("admin_id")
-              .eq("id", specificGroupId)
-              .maybeSingle();
+    // Authenticated Admin of specific circle
+    if (!isAuthorized && specificGroupId) {
+      try {
+        const { createClient } = await import("@/utils/supabase/server");
+        const supabaseUser = await createClient();
+        const { data: { user } } = await supabaseUser.auth.getUser();
+        if (user) {
+          const adminSupabase = createAdminClient();
+          const { data: grp } = await adminSupabase
+            .from("groups")
+            .select("admin_id")
+            .eq("id", specificGroupId)
+            .maybeSingle();
 
-            if (grp && grp.admin_id === user.id) {
-              isAuthorized = true;
-            }
+          if (grp && grp.admin_id === user.id) {
+            isAuthorized = true;
           }
-        } catch {}
-      }
+        }
+      } catch {}
     }
 
     if (!isAuthorized) {

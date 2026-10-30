@@ -42,7 +42,11 @@ export function startInternalSweepScheduler() {
 async function checkAndExecuteSweep(triggerReason: string) {
   try {
     const port = process.env.PORT || 3000;
-    const cronSecret = process.env.CRON_SECRET || "ajose_sec_cron_99f2b810d7a6e4c";
+    const cronSecret = process.env.CRON_SECRET;
+    if (!cronSecret) {
+      console.warn("[Àjọṣe Scheduler] Cannot trigger automated sweep: CRON_SECRET environment variable is missing.");
+      return;
+    }
     const targetUrl = `http://127.0.0.1:${port}/api/cron/sweep`;
 
     console.log(`[Àjọṣe Scheduler] Triggering automated sweep [${triggerReason}] via ${targetUrl}...`);
