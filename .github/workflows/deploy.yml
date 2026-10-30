@@ -55,4 +55,4 @@ jobs:
             git reset --hard origin/master
             npm install --production=false
             npm run build
-            pm2 restart ajose || pm2 start npm --name "ajose" -- run start
+            sudo systemctl restart app-ajose || systemctl restart app-ajose || pm2 restart ajose || pm2 start npm --name "ajose" -- run start
