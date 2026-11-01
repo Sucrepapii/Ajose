@@ -43,6 +43,7 @@ export default function SignupPage() {
   const [otp, setOtp] = useState("");
   const [alternatePhone, setAlternatePhone] = useState("");
   const [countdown, setCountdown] = useState(0);
+  const [existingProviderPrompt, setExistingProviderPrompt] = useState<{ email: string; provider: "google" | "apple" } | null>(null);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -214,6 +215,36 @@ export default function SignupPage() {
 
         const dupData = await dupRes.json();
         if (!dupRes.ok || dupData.exists) {
+          if (dupData.provider === "google") {
+            setExistingProviderPrompt({ email: formData.email, provider: "google" });
+            toast.error(dupData.error || "This email was registered using Google.", {
+              id: checkToastId,
+              description: "You already have an account! Click below to sign in with Google.",
+              action: {
+                label: "Sign in with Google",
+                onClick: () => handleGoogleSignup(),
+              },
+              duration: 12000,
+            });
+            setIsSubmitting(false);
+            return;
+          }
+
+          if (dupData.provider === "apple") {
+            setExistingProviderPrompt({ email: formData.email, provider: "apple" });
+            toast.error(dupData.error || "This email was registered using Apple.", {
+              id: checkToastId,
+              description: "You already have an account! Click below to sign in with Apple.",
+              action: {
+                label: "Sign in with Apple",
+                onClick: () => handleAppleSignup(),
+              },
+              duration: 12000,
+            });
+            setIsSubmitting(false);
+            return;
+          }
+
           toast.error(dupData.error || "An account with this phone number or email already exists.", { id: checkToastId });
           setIsSubmitting(false);
           return;
@@ -261,6 +292,36 @@ export default function SignupPage() {
 
           const dupData = await dupRes.json();
           if (!dupRes.ok || dupData.exists) {
+            if (dupData.provider === "google") {
+              setExistingProviderPrompt({ email: formData.email, provider: "google" });
+              toast.error(dupData.error || "This email was registered using Google.", {
+                id: monoToastId,
+                description: "You already have an account! Click below to sign in with Google.",
+                action: {
+                  label: "Sign in with Google",
+                  onClick: () => handleGoogleSignup(),
+                },
+                duration: 12000,
+              });
+              setIsSubmitting(false);
+              return;
+            }
+
+            if (dupData.provider === "apple") {
+              setExistingProviderPrompt({ email: formData.email, provider: "apple" });
+              toast.error(dupData.error || "This email was registered using Apple.", {
+                id: monoToastId,
+                description: "You already have an account! Click below to sign in with Apple.",
+                action: {
+                  label: "Sign in with Apple",
+                  onClick: () => handleAppleSignup(),
+                },
+                duration: 12000,
+              });
+              setIsSubmitting(false);
+              return;
+            }
+
             toast.error(dupData.error || "An account with these identity details already exists.", { id: monoToastId });
             setIsSubmitting(false);
             return;
@@ -687,6 +748,26 @@ export default function SignupPage() {
                 </div>
 
                 <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
+                  {existingProviderPrompt && existingProviderPrompt.email.toLowerCase() === formData.email.trim().toLowerCase() && (
+                    <div className="p-4 rounded-xl bg-[#0B402B]/5 border border-[#0B402B]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+                      <div>
+                        <p className="text-sm font-semibold text-[#0B402B]">
+                          Account already exists with {existingProviderPrompt.provider === "google" ? "Google" : "Apple"}
+                        </p>
+                        <p className="text-xs text-gray-600 mt-0.5">
+                          <strong>{formData.email}</strong> is linked to {existingProviderPrompt.provider === "google" ? "Google" : "Apple"} Sign-In.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={existingProviderPrompt.provider === "google" ? handleGoogleSignup : handleAppleSignup}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0B402B] text-[#D4AF37] font-semibold text-xs rounded-lg hover:bg-[#0B402B]/90 transition-colors shadow-xs shrink-0 cursor-pointer"
+                      >
+                        Continue with {existingProviderPrompt.provider === "google" ? "Google" : "Apple"} &rarr;
+                      </button>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">First Name</label>

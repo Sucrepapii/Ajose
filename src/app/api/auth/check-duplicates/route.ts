@@ -24,10 +24,44 @@ export async function POST(req: Request) {
         .maybeSingle();
 
       if (existingEmailUser) {
+        let isGoogle = false;
+        let isApple = false;
+        try {
+          const { data: authData } = await supabase.auth.admin.getUserById(existingEmailUser.id);
+          const providers = authData?.user?.app_metadata?.providers || [authData?.user?.app_metadata?.provider];
+          isGoogle = providers.includes("google");
+          isApple = providers.includes("apple");
+        } catch (_) {}
+
+        if (isGoogle) {
+          return NextResponse.json(
+            { 
+              exists: true, 
+              field: "email",
+              provider: "google",
+              error: "This email was registered using Google. Please continue with Google to sign in." 
+            },
+            { status: 409 }
+          );
+        }
+
+        if (isApple) {
+          return NextResponse.json(
+            { 
+              exists: true, 
+              field: "email",
+              provider: "apple",
+              error: "This email was registered using Apple. Please continue with Apple to sign in." 
+            },
+            { status: 409 }
+          );
+        }
+
         return NextResponse.json(
           { 
             exists: true, 
             field: "email",
+            provider: "email",
             error: "An account with this email address already exists. Please log in instead." 
           },
           { status: 409 }
