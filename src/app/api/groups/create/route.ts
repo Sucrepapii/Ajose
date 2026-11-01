@@ -169,6 +169,7 @@ export async function POST(req: Request) {
     // 6. Return response
     return NextResponse.json({
       success: true,
+      groupId: group.id,
       group: {
         ...group,
         admin_email: userEmail

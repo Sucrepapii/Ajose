@@ -14,7 +14,8 @@ import {
   X,
   Landmark,
   Sparkles,
-  Lock
+  Lock,
+  Copy
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -183,7 +184,8 @@ export default function CreateGroupPage() {
         throw new Error(data.error || "Failed to create group.");
       }
 
-      setNewGroupId(data.groupId);
+      const createdId = data.groupId || data.group?.id || data.id || "";
+      setNewGroupId(createdId);
       setShowConfirm(false);
       setStep(3); // Success
       toast.success("Rotational group created successfully!");
@@ -678,28 +680,39 @@ export default function CreateGroupPage() {
             Your rotational group is ready. Invite members by sharing the unique invite link. Members will review and accept the Terms & Conditions before joining.
           </p>
           
-          <div className="bg-[#FDFBF7] p-4 rounded-xl border border-gray-200 shadow-inner flex items-center justify-between mb-8 max-w-sm mx-auto relative z-10">
-            <span className="text-[#0B3022] font-mono text-sm font-bold truncate max-w-[250px]">{newGroupId}</span>
-            <button 
-              onClick={() => {
-                const baseUrl = window.location.origin;
-                const params = new URLSearchParams();
-                if (formData.name) params.set("name", formData.name);
-                if (formData.contributionAmount) params.set("amount", formData.contributionAmount);
-                if (formData.frequency) params.set("freq", formData.frequency);
-                if (formData.maxMembers) params.set("members", formData.maxMembers);
-                if (formData.minCreditScore) params.set("score", formData.minCreditScore);
+          {(() => {
+            const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://www.ajose.ng";
+            const params = new URLSearchParams();
+            if (formData.name) params.set("name", formData.name);
+            if (formData.contributionAmount) params.set("amount", formData.contributionAmount);
+            if (formData.frequency) params.set("freq", formData.frequency);
+            if (formData.maxMembers) params.set("members", formData.maxMembers);
+            if (formData.minCreditScore) params.set("score", formData.minCreditScore);
 
-                const queryString = params.toString();
-                const inviteUrl = `${baseUrl}/invite/${newGroupId}${queryString ? `?${queryString}` : ""}`;
-                navigator.clipboard.writeText(inviteUrl);
-                toast.success("Invite link copied to clipboard!");
-              }}
-              className="text-[#C5A059] text-sm font-bold hover:text-[#A48243] ml-2 px-3 py-1.5 rounded-md hover:bg-[#C5A059]/10 transition-colors cursor-pointer"
-            >
-              COPY LINK
-            </button>
-          </div>
+            const queryString = params.toString();
+            const inviteUrl = newGroupId ? `${baseUrl}/invite/${newGroupId}${queryString ? `?${queryString}` : ""}` : "";
+
+            return (
+              <div className="bg-[#FDFBF7] p-3 md:p-4 rounded-xl border border-gray-200 shadow-inner flex items-center justify-between mb-8 max-w-md mx-auto relative z-10 gap-3">
+                <span className="text-[#0B3022] font-mono text-xs md:text-sm font-bold truncate text-left flex-1 select-all">
+                  {inviteUrl || "Loading invite link..."}
+                </span>
+                <button 
+                  type="button"
+                  disabled={!newGroupId}
+                  onClick={() => {
+                    if (!inviteUrl) return;
+                    navigator.clipboard.writeText(inviteUrl);
+                    toast.success("Invite link copied to clipboard!");
+                  }}
+                  className="text-[#0B3022] bg-[#C5A059] hover:bg-[#A48243] disabled:opacity-50 text-xs font-bold px-3.5 py-2 rounded-lg transition-colors cursor-pointer shadow-sm flex items-center gap-1.5 shrink-0"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                  COPY LINK
+                </button>
+              </div>
+            );
+          })()}
 
           <Link 
             href={`/dashboard/groups/${newGroupId}`}
