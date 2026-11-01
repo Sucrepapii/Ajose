@@ -213,3 +213,44 @@ export async function sendPreDebitReminderEmail({
     }),
   });
 }
+
+/**
+ * Adds an email subscriber to Resend Audience ("General") for newsletters & broadcasts
+ */
+export async function addNewsletterSubscriberToAudience({
+  email,
+  firstName,
+  lastName,
+}: {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+}) {
+  try {
+    const audienceId = process.env.RESEND_AUDIENCE_ID || "ec24565e-51e8-43b9-b27e-01f1a7b782fd";
+    if (!resend || !audienceId) {
+      console.warn("[Resend Audience] Skipped: resend client or RESEND_AUDIENCE_ID missing");
+      return { success: false, error: "Resend not configured" };
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const result = await resend.contacts.create({
+      audienceId,
+      email: cleanEmail,
+      firstName: firstName?.trim(),
+      lastName: lastName?.trim(),
+      unsubscribed: false,
+    });
+
+    if (result.error) {
+      console.warn(`[Resend Audience] Failed to add contact ${cleanEmail}:`, result.error);
+      return { success: false, error: result.error };
+    }
+
+    console.log(`[Resend Audience] Contact ${cleanEmail} added successfully to audience ${audienceId}`);
+    return { success: true, data: result.data };
+  } catch (err: any) {
+    console.error("[Resend Audience] Exception creating contact:", err);
+    return { success: false, error: err?.message || "Unknown error" };
+  }
+}

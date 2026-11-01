@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
-import { sendEmail } from "@/utils/resend";
+import { sendEmail, addNewsletterSubscriberToAudience } from "@/utils/resend";
 import { getClientIp } from "@/utils/rateLimit";
 import { consumeQuota, createQuotaExceededResponse } from "@/utils/quotaManager";
 import { verifyCaptchaToken, createCaptchaErrorResponse } from "@/utils/captcha";
@@ -71,6 +71,17 @@ export async function POST(req: NextRequest) {
         source: "footer_newsletter_subscription",
       });
     } catch (_) {}
+
+    // 4. Sync contact directly to Resend Audience ("General") for broadcasts
+    try {
+      await addNewsletterSubscriberToAudience({
+        email: cleanEmail,
+        firstName: typeof body?.name === "string" ? body.name.trim().split(" ")[0] : undefined,
+        lastName: typeof body?.name === "string" && body.name.trim().includes(" ") ? body.name.trim().split(" ").slice(1).join(" ") : undefined,
+      });
+    } catch (audienceErr) {
+      console.warn("Resend audience sync non-fatal warning:", audienceErr);
+    }
 
     const formattedDate = new Date().toLocaleString("en-NG", {
       timeZone: "Africa/Lagos",

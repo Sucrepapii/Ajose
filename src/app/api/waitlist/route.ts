@@ -3,6 +3,7 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { getClientIp } from "@/utils/rateLimit";
 import { consumeQuota, createQuotaExceededResponse } from "@/utils/quotaManager";
 import { verifyCaptchaToken, createCaptchaErrorResponse } from "@/utils/captcha";
+import { addNewsletterSubscriberToAudience } from "@/utils/resend";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,11 @@ export async function POST(req: NextRequest) {
     } catch (dbErr) {
       console.log(`[Mobile App Waitlist Entry] Email: ${cleanEmail}, Platform: ${platform}, Time: ${new Date().toISOString()}`);
     }
+
+    // Sync to Resend "General" Audience for newsletters and product updates
+    try {
+      await addNewsletterSubscriberToAudience({ email: cleanEmail });
+    } catch (_) {}
 
     return NextResponse.json({
       success: true,
