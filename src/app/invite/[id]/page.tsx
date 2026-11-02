@@ -582,9 +582,9 @@ export default function InvitePage(props: {
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="text-red-900 font-bold mb-1">Credit Score Insufficient</h4>
+                        <h4 className="text-red-900 font-bold mb-1">Trust Score Insufficient</h4>
                         <p className="text-red-700 text-xs leading-relaxed">
-                          Your current Ajose Score is <strong>{effectiveCreditScore}</strong>. This group requires at least <strong>{minScoreRequired}</strong> points to maintain safety against rotational defaults.
+                          Your current Trust Score is <strong>{effectiveCreditScore}</strong>. This group requires at least <strong>{minScoreRequired}</strong> points to maintain safety against rotational defaults.
                         </p>
                       </div>
                     </div>

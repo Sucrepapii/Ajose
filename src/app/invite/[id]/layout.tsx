@@ -39,7 +39,7 @@ export async function generateMetadata(
   
   const title = `Join "${groupName}" | Àjọṣe`;
   const description = amount > 0
-    ? `Contribute ₦${amount.toLocaleString()}/${freqLabel} • Total Pot: ₦${pot.toLocaleString()} • Guaranteed turns & automated bank sweeps.`
+    ? `Contribute ₦${amount.toLocaleString()}/${freqLabel} • Total Pot: ₦${pot.toLocaleString()} • Scheduled turns & automated bank sweeps.`
     : `You've been invited to join "${groupName}" on Àjọṣe. Safe rotational thrift with automated bank sweeps.`;
 
   return {

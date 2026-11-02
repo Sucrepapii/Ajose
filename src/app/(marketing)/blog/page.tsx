@@ -22,8 +22,8 @@ const POSTS = [
   },
   {
     id: 2,
-    title: "How to Build Your Àjọṣe Credit Score",
-    excerpt: "Your Àjọṣe Credit Score unlocks premium contribution pools. Learn the top 3 strategies to maintain a perfect score and avoid the dreaded default penalty.",
+    title: "How to Build Your Àjọṣe Trust Score",
+    excerpt: "Your Àjọṣe Trust Score unlocks premium contribution pools. Learn the top 3 strategies to maintain a perfect score and avoid the dreaded default penalty.",
     date: "Sep 28, 2026",
     category: "Guides",
     readTime: "4 min read",

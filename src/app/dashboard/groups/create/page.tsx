@@ -206,11 +206,10 @@ export default function CreateGroupPage() {
   const isMonthly = formData.frequency === "monthly" || formData.frequency === "biweekly";
 
   // Commercial Pricing Model:
-  // - Monthly Groups: 2% platform fee (or custom admin rate) added to monthly auto-debit (0% at payout).
-  // - Weekly Groups: 0% payout fees! Flat ₦300 automated processing fee per transaction.
-  // - Daily Groups: 0% payout fees! Flat ₦100 automated processing fee per transaction.
-  const platformFee = 0; // 0% at payout across all frequencies!
-  const automationFeePerTx = isDaily ? 100 : isWeekly ? 300 : isMonthly ? Math.round(cont * 0.02) : 0;
+  // - Monthly Groups: 2% platform fee (capped at ₦10,000 max, as low as 0.5% with referral discounts)
+  // - Weekly Groups: Flat ₦300 automated processing fee per cycle.
+  // - Daily Groups: Flat ₦100 automated processing fee per cycle.
+  const platformFee = isMonthly ? Math.min(totalPool * 0.02, 10000) : isWeekly ? 300 : isDaily ? 100 : 0;
   const commPctNumber = parseFloat(formData.adminCommission) || 0;
   const adminFee = totalPool * (commPctNumber / 100);
   const collectorReceives = Math.max(0, totalPool - adminFee - platformFee);
@@ -348,7 +347,7 @@ export default function CreateGroupPage() {
                       <Sparkles className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold block text-[#0B3022]">Weekly Group Pricing Rule:</span>
-                        A flat <strong>₦300 automation fee</strong> applies to each weekly debit to secure and auto-verify your contributions via open banking. <span className="font-bold text-emerald-800">0% payout fees!</span>
+                        A flat <strong>₦300 processing fee</strong> applies per weekly cycle to secure and auto-verify contributions via open banking.
                       </div>
                     </div>
                   )}
@@ -358,7 +357,7 @@ export default function CreateGroupPage() {
                       <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold block text-[#0B3022]">Monthly Group Pricing Rule:</span>
-                        A <strong>2% platform fee</strong> (or admin custom rate) is included at auto-debit. <strong>0% payout fee</strong> so turn collectors receive 100% of the guaranteed savings pot!
+                        A <strong>2% platform fee</strong> (strictly capped at ₦10,000 max, as low as 0.5% with referral discounts) applies per cycle.
                       </div>
                     </div>
                   )}
@@ -591,9 +590,9 @@ export default function CreateGroupPage() {
                 </div>
               </div>
 
-              {/* Minimum Credit Score Required */}
+              {/* Minimum Trust Score Required */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-[#0B3022]">Minimum Credit Score Required</label>
+                <label className="text-sm font-bold text-[#0B3022]">Minimum Trust Score Required</label>
                 <p className="text-xs text-[#1F2937]/60 mb-1 font-medium">Only members with this score or higher can join. Default is 0.</p>
                 <div className="relative">
                   <ShieldCheck className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
@@ -617,12 +616,6 @@ export default function CreateGroupPage() {
                     <span className="text-[#1F2937]/70">Contribution per Member</span>
                     <span className="text-[#0B3022]">₦{cont.toLocaleString()} / <span className="capitalize">{formData.frequency}</span></span>
                   </div>
-                  {automationFeePerTx > 0 && (
-                    <div className="flex justify-between font-medium text-xs bg-amber-500/10 p-2.5 rounded-lg text-amber-900 border border-amber-500/20">
-                      <span>Open-Banking Automation Fee</span>
-                      <span className="font-bold">₦{automationFeePerTx} / transaction (0% at payout)</span>
-                    </div>
-                  )}
                   <div className="flex justify-between font-medium">
                     <span className="text-[#1F2937]/70">Total Members</span>
                     <span className="text-[#0B3022]">{mems}</span>
@@ -632,13 +625,17 @@ export default function CreateGroupPage() {
                     <span className="text-[#0B3022] font-bold">₦{totalPool.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between border-t border-gray-200 pt-3 mt-3 font-medium">
-                    <span className="text-[#1F2937]/70">Platform Payout Fee</span>
-                    <span className="text-emerald-700 font-bold">₦0 (0% Payout Fee • 100% Complete Pot)</span>
+                    <span className="text-[#1F2937]/70">Platform Automation Fee</span>
+                    <span className="text-gray-700 font-bold">
+                      {platformFee > 0 ? `-₦${platformFee.toLocaleString()} (${isMonthly ? "2% max ₦10k" : isWeekly ? "₦300 flat" : "₦100 flat"})` : "₦0"}
+                    </span>
                   </div>
-                  <div className="flex justify-between font-medium">
-                    <span className="text-[#1F2937]/70">Your Admin Cut ({commPctNumber}%)</span>
-                    <span className="text-green-700 font-bold">+₦{adminFee.toLocaleString()}</span>
-                  </div>
+                  {commPctNumber > 0 && (
+                    <div className="flex justify-between font-medium">
+                      <span className="text-[#1F2937]/70">Organizer Commission ({commPctNumber}%)</span>
+                      <span className="text-emerald-700 font-bold">+₦{adminFee.toLocaleString()}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between border-t border-gray-200 pt-3 mt-3">
                     <span className="text-[#0B3022] font-bold text-base">Turn Collector Receives</span>
                     <span className="text-[#0B3022] font-black text-lg">₦{collectorReceives.toLocaleString()}</span>

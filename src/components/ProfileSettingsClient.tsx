@@ -958,7 +958,7 @@ export function ProfileSettingsClient({
             <div className="text-center space-y-2">
               <h3 className="text-lg font-bold text-white">Permanently Delete Account?</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                This will purge your profile, remove verified identity records, delete your Ajo credit score, and erase your notification history.
+                This will purge your profile, remove verified identity records, delete your Trust Score, and erase your notification history.
                 <strong className="text-red-400 block mt-1.5 font-medium">This action is permanent and cannot be undone.</strong>
               </p>
             </div>

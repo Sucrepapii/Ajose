@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Security & Trust | Àjọṣe",
-  description: "Learn how Àjọṣe protects your contributions with bank-grade encryption, BVN verification, and the Ajo Credit Penalty System.",
+  description: "Learn how Àjọṣe protects your contributions with bank-grade encryption, BVN verification, and the Trust Score Penalty System.",
   alternates: {
     canonical: "/security",
   },
@@ -57,7 +57,7 @@ export default function SecurityPage() {
               </div>
             </div>
             <div className="md:w-2/3">
-              <h2 className="text-3xl font-black text-white mb-4">The Ajo Credit Penalty System</h2>
+              <h2 className="text-3xl font-black text-white mb-4">The Trust Score Penalty System</h2>
               <p className="text-white/80 leading-relaxed font-medium text-lg mb-6">
                 Trust is the foundation of cooperative contributions. To protect the pool, we enforce a strict penalty system:
               </p>
@@ -66,13 +66,13 @@ export default function SecurityPage() {
                   <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
                     <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                   </div>
-                  <p className="text-white font-medium">Defaulting on a payment results in an immediate <strong>-50 point</strong> penalty to your global Ajo Credit Score.</p>
+                  <p className="text-white font-medium">Defaulting on a payment results in an immediate <strong>-50 point</strong> penalty to your global Trust Score.</p>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-[#C5A059]/20 flex items-center justify-center shrink-0 mt-0.5">
                     <span className="w-2 h-2 bg-[#C5A059] rounded-full"></span>
                   </div>
-                  <p className="text-white font-medium">Users with poor credit scores are automatically restricted from joining premium or high-value groups.</p>
+                  <p className="text-white font-medium">Users with low Trust Scores are automatically restricted from joining premium or high-value groups.</p>
                 </li>
               </ul>
             </div>

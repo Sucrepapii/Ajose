@@ -38,13 +38,13 @@ const FAQS: FAQItem[] = [
   },
   { 
     category: "Trust Score",
-    q: "What is the Ajo Credit Score, and how does it work?", 
-    a: "Your Ajo Credit Score (300 to 1,000 points) is a universal reputation metric that tracks your financial reliability across all circles. Timely sweeps elevate you into Platinum/Elite status (unlocking access to high-value circles up to ₦10,000,000+), while defaults immediately cost you 50 points and restrict entry into premium groups." 
+    q: "What is the Trust Score, and how does it work?", 
+    a: "Your Trust Score (300 to 1,000 points) is a universal reputation metric that tracks your financial reliability across all circles. Timely sweeps elevate you into Platinum/Elite status (unlocking access to high-value circles up to ₦10,000,000+), while defaults immediately cost you 50 points and restrict entry into premium groups." 
   },
   { 
     category: "Fees & Pricing",
     q: "What are the fees on Àjọṣe?", 
-    a: "Transparent, capped pricing with ₦0 monthly subscriptions: 📅 Monthly Circles: 2.0% platform fee deducted only upon successful payouts (strictly capped at ₦10,000 max, ₦0 per-sweep fee); 🗓 Weekly Circles: 0.0% payout fee with a flat ₦300 automated sweep processing fee per transaction; 📌 Daily Thrift: 0.0% payout fee with a flat ₦100 automated sweep processing fee per transaction. Circle organizers may also set an optional management commission, clearly displayed before you accept an invite." 
+    a: "Transparent, capped pricing with ₦0 monthly subscriptions: 📅 Monthly Circles: 2.0% platform fee (strictly capped at ₦10,000 max, as low as 0.5% with referral discounts); 🗓 Weekly Circles: flat ₦300 automated processing fee per cycle; 📌 Daily Thrift: flat ₦100 automated processing fee per cycle. Circle organizers may also set an optional management commission, clearly displayed before you accept an invite." 
   },
   { 
     category: "Diaspora",

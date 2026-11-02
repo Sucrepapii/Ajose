@@ -230,7 +230,7 @@ export function MakeContributionClient({
                 </div>
 
                 <p className="text-[11px] text-gray-400 text-center leading-relaxed">
-                  As soon as the Admin confirms the deposit in their Àjọṣe dashboard, your turn ledger will automatically update to Completed and your credit score penalty will be reversed.
+                  As soon as the Admin confirms the deposit in their Àjọṣe dashboard, your turn ledger will automatically update to Completed and your Trust Score penalty will be reversed.
                 </p>
 
                 <button

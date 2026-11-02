@@ -148,7 +148,7 @@ export default async function SettingsPage() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <Target className="h-5 w-5 text-blue-500" />
-              Àjọṣe Credit Score
+              Àjọṣe Trust Score
             </h3>
             
             {(() => {

@@ -830,7 +830,7 @@ export function GroupSettingsClient({
                       </p>
                       <p>
                         This member collected their lump sum on Turn {memberToRemove.payout_turn}. 
-                        They <strong>must pay the 15% fine immediately</strong>. Their ongoing Direct Debit mandate remains in effect to collect remaining rounds, their credit score drops (-50 points), and credit bureau reporting is initiated.
+                        They <strong>must pay the 15% fine immediately</strong>. Their ongoing Direct Debit mandate remains in effect to collect remaining rounds, their Trust Score drops (-50 points), and credit bureau reporting is initiated.
                       </p>
                     </div>
                   ) : (

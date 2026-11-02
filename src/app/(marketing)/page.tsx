@@ -437,7 +437,7 @@ export default function Home() {
                           </div>
 
                           <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                            <span>Turn by turn, guaranteed.</span>
+                            <span>Turn by turn, no wahala.</span>
                             <span className="font-semibold text-[#0B3022]">Automated direct debit</span>
                           </div>
                         </div>
@@ -634,7 +634,7 @@ export default function Home() {
                         desc: "Get large capital multiplier on your assigned turn",
                         whatsapp: { text: "High Default Risk", sub: "People vanish after collecting", status: "warn" },
                         fintech: { text: "No (Solo Only)", sub: "Save alone with zero leverage", status: "bad" },
-                        ajose: { text: "Mono Auto-Disburse (T+1)", sub: "Guaranteed turns with automated payout", status: "good" }
+                        ajose: { text: "Mono Auto-Disburse (T+1)", sub: "Scheduled turns with automated payout", status: "good" }
                       },
                       {
                         title: "Automated Bank Sweeps",
@@ -710,7 +710,7 @@ export default function Home() {
                   <div className="absolute top-0 left-0 w-full h-full bg-[#C5A059]/10"></div>
                   <h3 className="text-2xl font-bold relative z-10">Flexible Circle Plans</h3>
                   <p className="text-[#C5A059] text-xs font-bold uppercase tracking-wider mt-1 relative z-10">
-                    Zero Hidden Fees &bull; Guaranteed Rotations
+                    Zero Hidden Fees &bull; Automated Rotations
                   </p>
                 </div>
                 
@@ -722,7 +722,7 @@ export default function Home() {
                         <span className="text-xs font-bold text-[#0B3022] flex items-center gap-1.5">
                           📅 Monthly Groups
                         </span>
-                        <p className="text-[11px] text-gray-500 mt-0.5">Open-Banking Protection fee &bull; 0% on member debits</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5">As low as 0.5% with referrals &bull; Capped at ₦10k</p>
                       </div>
                       <div className="text-right">
                         <span className="text-base font-black text-[#0B3022]">2%</span>
@@ -735,11 +735,11 @@ export default function Home() {
                         <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
                           🗓 Weekly Groups
                         </span>
-                        <p className="text-[11px] text-emerald-800 mt-0.5">0% payout fees! Auto-debit via Mono</p>
+                        <p className="text-[11px] text-emerald-800 mt-0.5">Flat processing fee per weekly cycle</p>
                       </div>
                       <div className="text-right">
                         <span className="text-base font-black text-[#0B3022]">₦300</span>
-                        <span className="text-[10px] text-emerald-700 block font-bold">/ transaction</span>
+                        <span className="text-[10px] text-emerald-700 block font-bold">/ cycle</span>
                       </div>
                     </div>
 
@@ -748,11 +748,11 @@ export default function Home() {
                         <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
                           📌 Daily Groups
                         </span>
-                        <p className="text-[11px] text-amber-800 mt-0.5">0% payout fees! Daily thrift micro-debit</p>
+                        <p className="text-[11px] text-amber-800 mt-0.5">Flat micro-fee per daily cycle</p>
                       </div>
                       <div className="text-right">
                         <span className="text-base font-black text-[#0B3022]">₦100</span>
-                        <span className="text-[10px] text-amber-700 block font-bold">/ transaction</span>
+                        <span className="text-[10px] text-amber-700 block font-bold">/ cycle</span>
                       </div>
                     </div>
                   </div>
@@ -837,7 +837,7 @@ export default function Home() {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-xs text-gray-500 font-medium">Turn by turn, guaranteed.</span>
+                  <span className="text-xs text-gray-500 font-medium">Turn by turn, no wahala.</span>
                   <Link href="/pricing" className="text-xs font-bold text-[#0B3022] hover:text-[#C5A059] flex items-center gap-1">
                     <span>Calculate Your Pot Payout</span>
                     <ArrowRight className="w-3.5 h-3.5" />

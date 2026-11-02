@@ -161,7 +161,7 @@ export function ReferralDashboardClient({ initialSummary }: ReferralDashboardCli
               Refer &amp; Earn
             </h1>
             <p className="text-[#1F2937]/70 text-sm font-medium">
-              Invite friends to Àjọṣe and slash your monthly platform fee from 2.0% down to 0.5%.
+              Invite friends to Àjọṣe and slash your monthly platform fee from 2.0% down to as low as 0.5% (up to 75% off).
             </p>
           </div>
         </div>
@@ -302,24 +302,20 @@ export function ReferralDashboardClient({ initialSummary }: ReferralDashboardCli
               </button>
             </div>
             <p className="text-gray-300 text-[11px] leading-relaxed">
-              To keep circles safe, secure, and prevent bot gaming, referrals qualify once your friend completes four milestones:
+              A friend only counts after BVN verification, joining a circle and a first debit. The Legend tier needs 40+ active referrals for fees as low as 0.5% (up to 75% off):
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
               <div className="flex items-center gap-2 bg-white/5 p-2 rounded-lg border border-white/10">
                 <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>1. Signs up with verified email/phone</span>
+                <span>1. BVN identity verification</span>
               </div>
               <div className="flex items-center gap-2 bg-white/5 p-2 rounded-lg border border-white/10">
                 <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>2. Verifies BVN via Bank mandate</span>
+                <span>2. Join an active circle</span>
               </div>
               <div className="flex items-center gap-2 bg-white/5 p-2 rounded-lg border border-white/10">
                 <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>3. Joins or starts an active circle</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/5 p-2 rounded-lg border border-white/10">
-                <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>4. Completes first successful auto-debit</span>
+                <span>3. Complete first debit</span>
               </div>
             </div>
           </div>

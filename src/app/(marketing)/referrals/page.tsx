@@ -63,12 +63,12 @@ export default function ReferralsMarketingPage() {
     },
     {
       name: "Legend",
-      referrals: "40+ friends",
+      referrals: "40+ active referrals",
       fee: "0.5%",
-      discount: "75% Fee Discount",
+      discount: "Up to 75% off",
       badge: "Legend VIP",
       highlight: false,
-      desc: "The absolute lowest fee floor across the entire platform."
+      desc: "Our lowest fee tier across the platform (up to 75% off standard rates). Requires 40+ active referrals."
     },
   ];
 
@@ -80,29 +80,29 @@ export default function ReferralsMarketingPage() {
     },
     {
       number: "02",
-      title: "Friend Joins & Verifies BVN",
-      desc: "Your friend signs up and securely establishes an authorized direct-debit mandate via Mono for automated turn savings."
+      title: "BVN Verification",
+      desc: "Your friend signs up and completes secure BVN identity verification."
     },
     {
       number: "03",
-      title: "Active Circle Participation",
-      desc: "Friend joins or starts their first Ajo circle and makes their scheduled auto-debit contribution."
+      title: "Join Circle & First Debit",
+      desc: "Your friend joins an active savings circle and completes their first scheduled contribution debit."
     },
     {
       number: "04",
-      title: "Automatic Fee Reduction",
-      desc: "Your account automatically climbs to the next fee tier. Enjoy lower deductions on every cycle payout turn."
+      title: "Fee Reduction (Up to 75% Off)",
+      desc: "A friend counts as an active referral after BVN verification, joining a circle, and a first debit. Your monthly fee drops to as low as 0.5%."
     }
   ];
 
   const faqs = [
     {
       q: "How does the referral discount apply to my circles?",
-      a: "When your referred friends become active, your custom platform fee percentage drops automatically. On monthly circles, your payout deduction drops from 2.0% to as low as 0.5%."
+      a: "When your referred friends become active, your custom platform fee percentage drops automatically. On monthly circles, your platform fee drops from 2.0% down to as low as 0.5% (up to 75% off)."
     },
     {
       q: "What qualifies a friend as an 'Active' referral?",
-      a: "To ensure real savings circles without spam or fake accounts, a friend counts as active once they sign up, verify their BVN, join a circle, and complete their first auto-debit contribution."
+      a: "A friend only counts after BVN verification, joining a circle and a first debit. The Legend tier needs 40+ active referrals to unlock our maximum discount of up to 75% off (as low as 0.5%)."
     },
     {
       q: "Can circle organizers use their referral code for members?",
@@ -133,7 +133,7 @@ export default function ReferralsMarketingPage() {
           </h1>
           <p className="text-lg md:text-xl text-[#1F2937]/80 leading-relaxed font-medium mb-8">
             Turn by turn, no wahala. Bring friends, family, and colleagues to automated Ajo savings. 
-            Reduce your monthly platform fee from <strong className="text-[#0B3022]">2.0%</strong> down to <strong className="text-[#0B3022]">0.5%</strong>.
+            Reduce your monthly platform fee from <strong className="text-[#0B3022]">2.0%</strong> down to <strong className="text-[#0B3022]">as low as 0.5%</strong> (up to 75% off).
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -161,7 +161,7 @@ export default function ReferralsMarketingPage() {
               Transparent Tiered Discounts
             </h2>
             <p className="text-sm text-gray-600 font-medium">
-              Every verified active referral moves you closer to the lowest fee rate in Nigeria.
+              Every verified active referral moves you closer to as low as 0.5% platform fee (up to 75% off).
             </p>
           </div>
 
@@ -299,7 +299,7 @@ export default function ReferralsMarketingPage() {
                 Built on Trust: Why We Enforce Real Circle Activity
               </h3>
               <p className="text-sm text-[#1F2937]/80 leading-relaxed mb-4">
-                Unlike platforms with fake bots or phantom referral codes, Àjọṣe only counts referrals who verify their bank BVN and participate in savings circles. This ensures that every member in our community is real, verified, and committed to turn-by-turn financial discipline.
+                Unlike platforms with fake bots or phantom referral codes, a friend only counts after BVN verification, joining a circle and a first debit. The Legend tier needs 40+ active referrals, unlocking fees as low as 0.5% (up to 75% off).
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold text-[#0B3022]">
                 <div className="flex items-center gap-2">

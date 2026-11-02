@@ -92,7 +92,7 @@ export async function POST(req: Request) {
         await supabaseAdmin.from("notifications").insert({
           user_id: memberUserId,
           title: "Manual Transfer Confirmed!",
-          message: `Your manual contribution of ₦${Number(amount || 0).toLocaleString()} for Turn ${currentTurn} was verified and confirmed by the Admin. Credit score penalty restored!`,
+          message: `Your manual contribution of ₦${Number(amount || 0).toLocaleString()} for Turn ${currentTurn} was verified and confirmed by the Admin. Trust Score penalty restored!`,
           type: "success"
         });
       }

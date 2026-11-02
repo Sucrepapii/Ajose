@@ -36,7 +36,7 @@ const getEmailHeader = (title: string) => `
 const getEmailFooter = () => `
     </div>
     <div class="footer">
-      <p style="margin: 0 0 4px 0; font-weight: 600; color: #52525b;">&copy; ${new Date().getFullYear()} Àjọṣe Technologies Ltd. The Guaranteed Ajo Platform.</p>
+      <p style="margin: 0 0 4px 0; font-weight: 600; color: #52525b;">&copy; ${new Date().getFullYear()} Àjọṣe Technologies Ltd. Automated Rotational Savings.</p>
       <p style="margin: 0 0 12px 0; color: #a1a1aa;">Institutional-grade rotational contribution management. Turn by turn, no wahala.</p>
       <div style="padding-top: 8px; border-top: 1px solid #e4e4e7;">
         <a href="https://www.instagram.com/ajoseapp?utm_source=qr" target="_blank" style="color: #0B402B; text-decoration: none; font-weight: 600; margin: 0 8px; font-size: 11px;">Instagram</a>
@@ -173,7 +173,7 @@ export function getContributionReceiptEmailTemplate({
       </div>
     </div>
 
-    <p class="text">Thank you for maintaining a 100% on-time contribution record! This builds your Àjọṣe Credit Score.</p>
+    <p class="text">Thank you for maintaining a 100% on-time contribution record! This builds your Àjọṣe Trust Score.</p>
 
     <div style="text-align: center; margin-top: 28px;">
       <a href="https://ajose.ng/dashboard" class="btn">View Contribution Progress</a>
@@ -379,7 +379,7 @@ export function getPreDebitReminderEmailTemplate({
 
     <div style="background-color: #fefce8; border: 1px solid #fef08a; border-radius: 8px; padding: 14px; margin: 16px 0; color: #854d0e; font-size: 13px; line-height: 1.5;">
       <strong>⚠️ Action Required:</strong><br/>
-      Please ensure your linked settlement account has sufficient balance (at least <strong>₦${amount.toLocaleString()}</strong>) before midnight to allow seamless automated clearance without bounce fees and protect your Àjọṣe Credit Score.
+      Please ensure your linked settlement account has sufficient balance (at least <strong>₦${amount.toLocaleString()}</strong>) before midnight to allow seamless automated clearance without bounce fees and protect your Àjọṣe Trust Score.
     </div>
 
     <p class="text">If your account is already funded, no further action is needed — your contribution will process automatically.</p>

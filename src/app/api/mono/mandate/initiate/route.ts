@@ -132,8 +132,7 @@ export async function POST(req: NextRequest) {
           } catch {}
         }
 
-        const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round(((group.contribution_amount || 400) * feePct) / 100);
-        const perTurnDebit = (group.contribution_amount || 400) + automationFee;
+        const perTurnDebit = group.contribution_amount || 400;
         const circleCeiling = perTurnDebit * totalRounds;
         mandateAmountNaira = Math.max(customAmount || 0, circleCeiling, 200000000);
       }

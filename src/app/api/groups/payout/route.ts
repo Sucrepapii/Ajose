@@ -133,14 +133,27 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // 6. Calculate payout amounts based on group frequency & admin volume tier:
-    // Platform fee is ₦0 across all frequencies at payout time because platform charges 
-    // are collected incrementally during auto-debit (Daily: ₦100, Weekly: ₦300, Monthly: 2% / custom rate),
-    // ensuring the turn collector receives 100% of their savings pot complete!
+    // 6. Calculate payout amounts based on group frequency & platform fee:
     const totalPool = (group.contribution_amount || 50000) * (group.max_members || 1);
     const adminCommissionPct = group.admin_commission_pct || 0;
     const adminFee = Math.round((adminCommissionPct / 100) * totalPool);
-    const platformFee = 0;
+    const isDaily = group.frequency === "daily";
+    const isWeekly = group.frequency === "weekly";
+    const isMonthly = group.frequency === "monthly" || group.frequency === "biweekly";
+
+    let feePct = 2.0;
+    try {
+      const { resolveUserEffectiveFeePct } = await import("@/utils/referralTiers");
+      feePct = await resolveUserEffectiveFeePct(supabaseAdmin, receiverUser.id);
+    } catch {}
+
+    const platformFee = isMonthly
+      ? Math.min(Math.round(totalPool * (feePct / 100)), 10000)
+      : isWeekly
+        ? 300
+        : isDaily
+          ? 100
+          : 0;
     const netPayoutAmount = Math.max(0, totalPool - adminFee - platformFee);
 
     if (!receiverUser.account_number && method !== "manual_bank_transfer") {
