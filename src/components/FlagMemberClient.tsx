@@ -100,8 +100,8 @@ export function FlagMemberClient({
             <div className="p-6 space-y-6">
               <p className="text-sm text-[#1F2937]/80 text-center leading-relaxed">
                 {isDefaulted 
-                  ? `Are you sure you want to restore ${memberName} to Active status? Their Trust Score will recover by +50 points.`
-                  : `Are you sure you want to mark ${memberName} as Defaulted? They will lose 50 Trust Score points and cannot receive payouts.`
+                  ? `Are you sure you want to restore ${memberName} to Active status? Their trust score will recover by +50 points.`
+                  : `Are you sure you want to mark ${memberName} as Defaulted? They will lose 50 trust score points and cannot receive payouts.`
                 }
               </p>
 

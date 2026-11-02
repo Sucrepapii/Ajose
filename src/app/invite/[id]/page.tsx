@@ -584,7 +584,7 @@ export default function InvitePage(props: {
                       <div>
                         <h4 className="text-red-900 font-bold mb-1">Trust Score Insufficient</h4>
                         <p className="text-red-700 text-xs leading-relaxed">
-                          Your current Trust Score is <strong>{effectiveCreditScore}</strong>. This group requires at least <strong>{minScoreRequired}</strong> points to maintain safety against rotational defaults.
+                          Your current Àjọṣe Trust Score is <strong>{effectiveCreditScore}</strong>. This group requires at least <strong>{minScoreRequired}</strong> points to maintain safety against rotational defaults.
                         </p>
                       </div>
                     </div>

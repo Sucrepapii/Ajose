@@ -177,20 +177,24 @@ export function ReferralTierWidget() {
             </button>
           </div>
           <p className="text-gray-300 leading-relaxed text-[11px]">
-            A friend only counts after BVN verification, joining a circle and a first debit. The Legend tier needs 40+ active referrals for fees as low as 0.5% (up to 75% off):
+            To prevent bot gaming and keep circles safe, a referral officially counts as <strong>Active</strong> when your friend:
           </p>
           <ul className="space-y-1.5 text-gray-200 text-[11px] pl-1">
             <li className="flex items-center gap-2">
               <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>BVN verification via linked account</span>
+              <span>Signs up with verified email &amp; phone</span>
             </li>
             <li className="flex items-center gap-2">
               <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>Joining an active savings circle</span>
+              <span>Completes bank BVN verification</span>
             </li>
             <li className="flex items-center gap-2">
               <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>First contribution debit successfully cleared</span>
+              <span>Joins their first savings circle</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>Completes their first circle auto-debit</span>
             </li>
           </ul>
         </div>

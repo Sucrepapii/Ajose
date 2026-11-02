@@ -338,7 +338,17 @@ async function handleSweep(req: NextRequest) {
               }
             }
 
-            let totalDebitAmount = group.contribution_amount || 0;
+            // Resolve monthly fee percentage via Referral Tier discount engine
+            const userMetaFee = memberAuthUser?.user_metadata?.custom_platform_fee_pct;
+            const baseOverride = (typeof userMetaFee === "number" && userMetaFee >= 0) 
+              ? userMetaFee 
+              : (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) 
+                ? adminCustomFeePct 
+                : null;
+            const feePct = await resolveUserEffectiveFeePct(supabase, member.user_id, baseOverride);
+
+            const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round(((group.contribution_amount || 0) * feePct) / 100);
+            let totalDebitAmount = (group.contribution_amount || 0) + automationFee;
 
             // Mono references must be alphanumeric and <= 24 characters
             const rawRef = `swp${Date.now().toString().slice(-8)}${Math.random().toString(36).substring(2, 6)}`;
@@ -353,7 +363,7 @@ async function handleSweep(req: NextRequest) {
             if (mandateId) {
               // LIVE MONO DIRECT DEBIT CALL
               try {
-                console.log(`[Sweep] Initiating live Mono debit for member ${displayName} (${member.user_id}) with mandate ${mandateId}, amount: ₦${totalDebitAmount}`);
+                console.log(`[Sweep] Initiating live Mono debit for member ${displayName} (${member.user_id}) with mandate ${mandateId}, amount: ₦${totalDebitAmount} (₦${group.contribution_amount} ajo + ₦${automationFee} charge)`);
                 const debitRes = await fetch(`https://api.withmono.com/v3/payments/mandates/${mandateId}/debit`, {
                   method: "POST",
                   headers: {
@@ -577,28 +587,10 @@ async function handleSweep(req: NextRequest) {
               const { initiatePayoutWithMono, getBankCode } = await import("@/utils/mono");
               const totalPool = (group.contribution_amount || 0) * (group.max_members || 1);
               const adminFee = Math.round((((group as any).admin_commission_pct || 0) / 100) * totalPool);
-
-              const isDaily = group.frequency === "daily";
-              const isWeekly = group.frequency === "weekly";
-              const isMonthly = group.frequency === "monthly" || group.frequency === "biweekly";
-
-              let feePct = 2.0;
-              try {
-                feePct = await resolveUserEffectiveFeePct(supabase, recipientUser.id);
-              } catch {}
-
-              const platformFee = isMonthly
-                ? Math.min(Math.round(totalPool * (feePct / 100)), 10000)
-                : isWeekly
-                  ? 300
-                  : isDaily
-                    ? 100
-                    : 0;
-
-              const netPayoutAmount = Math.max(0, totalPool - adminFee - platformFee);
+              const netPayoutAmount = Math.max(0, totalPool - adminFee);
               const payoutRef = `ajose_auto_turn${currentTurn}_${Date.now()}`;
 
-              console.log(`[Sweep Autonomous] All members contributed for Turn ${currentTurn} in ${group.name}. Attempting automated Mono disbursement of ₦${netPayoutAmount} (minus ₦${platformFee} fee) to ${recipientUser.first_name}...`);
+              console.log(`[Sweep Autonomous] All members contributed for Turn ${currentTurn} in ${group.name}. Attempting automated Mono disbursement of ₦${netPayoutAmount} to ${recipientUser.first_name}...`);
               const autoPayoutResult = await initiatePayoutWithMono({
                 recipientAccountNumber: recipientUser.account_number,
                 recipientBankCode: getBankCode(recipientUser.bank_name),

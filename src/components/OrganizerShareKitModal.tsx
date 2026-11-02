@@ -106,11 +106,11 @@ You have been invited by the organizer to join *${groupName}*.
 *Contribution:* ₦${amount.toLocaleString()} / ${freqLabel}
 *Total Cycle Pot:* ₦${totalPool.toLocaleString()}
 *Open Slots:* ${openSlots} of ${maxMembers} slots remaining
-*Rotational Model:* Scheduled direct payout when it's your turn
+*Rotational Model:* Guaranteed direct payout when it's your turn
 
 *Bank-Grade Security:*
 • Direct bank settlement via Mono Open-Banking
-• Verified BVN Identity & Trust Score standing
+• Verified BVN Identity & Ajo Trust Standing
 • Automated direct debit sweeps — zero manual cash chasing
 • 100% transparent live ledger
 

@@ -19,17 +19,18 @@ export function MemberFeeCalculator() {
   if (schedule === "MONTHLY") {
     // 2% standard capped at 10,000 total
     totalFee = Math.min(totalPot * 0.02, 10000);
-    feeDescription = totalPot * 0.02 > 10000 ? "2% Capped at ₦10,000 Max" : "2% Platform Automation Fee";
+    feeDescription = totalPot * 0.02 > 10000 ? "2% Capped at ₦10,000 Max" : "2% Open-Banking Protection Fee";
   } else if (schedule === "WEEKLY") {
-    totalFee = 300;
-    feeDescription = "₦300 Flat Processing Fee";
+    totalFee = 300 * members;
+    feeDescription = "₦300 Sweep Fee per Debit";
   } else {
-    totalFee = 100;
-    feeDescription = "₦100 Flat Processing Fee";
+    totalFee = 100 * members;
+    feeDescription = "₦100 Processing Fee per Debit";
   }
 
-  const memberScheduledDebit = contribution;
-  const netPayout = Math.max(0, totalPot - totalFee);
+  const memberFee = totalFee / members;
+  const memberTotalDebit = contribution + memberFee;
+  const netPayout = totalPot; // Additive model: Payout is exactly the base pot!
   const effectivePercentage = totalPot > 0 ? ((totalFee / totalPot) * 100).toFixed(2) : "0";
 
   return (
@@ -166,7 +167,7 @@ export function MemberFeeCalculator() {
             <ShieldCheck className="w-5 h-5 text-[#C5A059] shrink-0 mt-0.5" />
             <div>
               <span className="font-bold text-white block">What does this fee cover?</span>
-              Mono Open-Banking direct account sweeps, BVN identity lock, Trust Score tracking, and direct bank payout. Funds never sit in an omnibus holding account.
+              Mono Open-Banking direct account sweeps, BVN identity lock, Trust Score enforcement, and 100% direct bank payout. Funds never sit in an omnibus holding account.
             </div>
           </div>
 
@@ -177,19 +178,10 @@ export function MemberFeeCalculator() {
           <div>
             <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
               <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                Member Scheduled Debit
+                Total Member Debit (Base + Fee)
               </span>
-              <span className="font-mono text-base font-black text-[#0B3022]">
-                ₦{memberScheduledDebit.toLocaleString()} /member
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                Total Cycle Pot ({members} members)
-              </span>
-              <span className="font-mono text-base font-black text-gray-700">
-                ₦{totalPot.toLocaleString()}
+              <span className="font-mono text-base font-black text-rose-600">
+                ₦{memberTotalDebit.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} /saver
               </span>
             </div>
 
@@ -198,10 +190,10 @@ export function MemberFeeCalculator() {
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-500 block">
                   Platform Automation Fee
                 </span>
-                <span className="text-[10px] text-gray-400 font-semibold">{feeDescription}</span>
+                <span className="text-[10px] text-gray-400 font-semibold">{feeDescription} (Charged on debit)</span>
               </div>
-              <span className="font-mono text-base font-black text-rose-600">
-                -₦{totalFee.toLocaleString()}
+              <span className="font-mono text-base font-black text-gray-500">
+                +₦{totalFee.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}
               </span>
             </div>
 
@@ -209,17 +201,17 @@ export function MemberFeeCalculator() {
             <div className="p-4 rounded-xl bg-[#0B3022]/5 border border-[#0B3022]/10 mb-6">
               <div className="flex justify-between items-center mb-1">
                 <span className="text-xs font-black uppercase tracking-wider text-[#0B3022]">
-                  Total Turn Payout
+                  Target Pot Payout
                 </span>
-                <span className="text-[10px] font-bold text-gray-600 bg-gray-200/80 px-2 py-0.5 rounded-full">
-                  Net to bank
+                <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                  100% Disbursed
                 </span>
               </div>
               <div className="font-mono text-3xl sm:text-4xl font-black text-[#0B3022] tracking-tight">
                 ₦{netPayout.toLocaleString()}
               </div>
               <p className="text-[11px] text-gray-600 mt-1">
-                Disbursed straight to the turn collector&rsquo;s verified commercial bank account.
+                The full target savings pot disbursed directly to the recipient's verified bank account.
               </p>
             </div>
           </div>

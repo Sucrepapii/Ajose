@@ -119,9 +119,12 @@ export async function POST(req: NextRequest) {
               return NextResponse.json({ received: true, status: "payout_already_processed" });
             }
 
-            // Calculate payout pool
+            // Additive Fee Model: Members pay the platform fee on top of their debit.
+            // So we pay out exactly 100% of the guaranteed savings pot!
+            const platformFeePct = group.admin_commission_pct || 0;
             const targetBasePool = group.contribution_amount * contributingMembers.length;
-            const finalPayoutAmount = targetBasePool;
+            const platformFeeAmount = (targetBasePool * platformFeePct) / 100;
+            const finalPayoutAmount = targetBasePool; // Guaranteed 100% payout
             
             const beneficiary = allMembers?.find((m) => m.payout_turn === cycle_turn);
             const admin = allMembers?.find((m) => m.role === "admin");
@@ -179,7 +182,7 @@ export async function POST(req: NextRequest) {
                 amount: finalPayoutAmount,
                 type: "payout",
                 status: payoutResult.success ? "completed" : "failed",
-                description: `Turn ${cycle_turn} payout credited to Admin (${adminName}). Base Pool: ₦${targetBasePool}`,
+                description: `Turn ${cycle_turn} payout credited to Admin (${adminName}). Base Pool: ₦${targetBasePool}, Platform Fee Deducted: ₦0 (Additive Fee Model)`,
                 cycle_turn
               });
 
@@ -196,7 +199,7 @@ export async function POST(req: NextRequest) {
               await supabase.from("notifications").insert({
                 user_id: admin.user_id,
                 title: `💰 ₦${finalPayoutAmount.toLocaleString()} Pool Credited to Your Account!`,
-                message: `All member contributions for Turn ${cycle_turn} in ${group.name} are complete. The turn payout of ₦${finalPayoutAmount.toLocaleString()} has been credited to your bank account.`,
+                message: `All member contributions for Turn ${cycle_turn} in ${group.name} are complete. Members paid their platform fees on debit, so the full target pot of ₦${finalPayoutAmount.toLocaleString()} has been credited to your bank account complete.`,
                 type: "success"
               });
 

@@ -6,7 +6,7 @@ import { MemberFeeCalculator } from "@/components/MemberFeeCalculator";
 
 export const metadata: Metadata = {
   title: "Simple, Transparent Pricing | Àjọṣe",
-  description: "No hidden fees, no subscriptions. Select the schedule that works best for your circle: Monthly at 2% (capped at ₦10k), Weekly at ₦300/tx, and Daily at ₦100/tx.",
+  description: "No hidden fees, no subscriptions. Select the schedule that works best for your circle: Monthly at standard 2% on debits (as low as 0.5%), Weekly at ₦300/tx, and Daily at ₦100/tx with 0% payout deductions.",
   alternates: {
     canonical: "/pricing",
   },
@@ -45,17 +45,17 @@ export default function PricingPage() {
                 📌 Daily Groups
               </span>
               <span className="text-xs font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full">
-                Flat Micro-Fee
+                0% Payout Fees!
               </span>
             </div>
 
             <div className="mb-4">
               <div className="text-4xl md:text-5xl font-black text-[#0B3022] tracking-tight">
                 ₦100
-                <span className="text-sm font-semibold text-gray-500 ml-1.5">/ cycle</span>
+                <span className="text-sm font-semibold text-gray-500 ml-1.5">/ transaction</span>
               </div>
-              <p className="text-xs font-bold text-gray-600 mt-1">
-                Flat processing fee per daily cycle
+              <p className="text-xs font-bold text-emerald-700 mt-1">
+                Zero fees deducted at payout
               </p>
             </div>
 
@@ -65,11 +65,11 @@ export default function PricingPage() {
 
             <ul className="space-y-3.5 mb-8 text-xs font-medium text-[#1F2937]/90">
               {[
-                "Flat ₦100 automated processing fee per cycle",
+                "Flat ₦100 automated processing fee per transaction",
+                "0% payout fees — collector receives entire cycle pot",
                 "Automated daily direct debit sweep via Mono Open Banking",
                 "Instant ledger update upon morning sweep",
-                "Habitual defaulter prevention & real-time tracking",
-                "Trust Score tracking & automated member reminders"
+                "Habitual defaulter prevention & real-time tracking"
               ].map((feature, i) => (
                 <li key={i} className="flex items-start gap-2.5">
                   <div className="bg-[#0B3022]/10 rounded-full p-0.5 mt-0.5 shrink-0">
@@ -97,17 +97,17 @@ export default function PricingPage() {
                 🗓 Weekly Groups
               </span>
               <span className="text-xs font-black text-[#0B3022] bg-[#C5A059]/30 border border-[#C5A059] px-2.5 py-0.5 rounded-full text-[#C5A059]">
-                Flat Rate
+                0% Payout Fees!
               </span>
             </div>
 
             <div className="mb-4 relative z-10">
               <div className="text-4xl md:text-5xl font-black text-white tracking-tight">
                 ₦300
-                <span className="text-sm font-semibold text-gray-300 ml-1.5">/ cycle</span>
+                <span className="text-sm font-semibold text-gray-300 ml-1.5">/ transaction</span>
               </div>
               <p className="text-xs font-bold text-[#C5A059] mt-1">
-                Flat processing fee per weekly cycle
+                Zero fees deducted at payout
               </p>
             </div>
 
@@ -117,11 +117,11 @@ export default function PricingPage() {
 
             <ul className="space-y-3.5 mb-8 text-xs font-medium text-white/90 relative z-10">
               {[
-                "Flat ₦300 automated processing fee per cycle",
+                "Flat ₦300 automated processing fee per transaction",
+                "0% payout fees — collector receives entire cycle pot",
                 "2-day grace period (Opens Monday, cutoff Tuesday)",
                 "Automated direct debit & live statement reconciliation",
-                "Trust Score tracking & automated member reminders",
-                "Automated pass-through payout to recipient bank account"
+                "Trust Score protection & automated member reminders"
               ].map((feature, i) => (
                 <li key={i} className="flex items-start gap-2.5">
                   <div className="bg-[#C5A059]/20 rounded-full p-0.5 mt-0.5 shrink-0">
@@ -154,10 +154,10 @@ export default function PricingPage() {
             <div className="mb-4">
               <div className="text-4xl md:text-5xl font-black text-[#0B3022] tracking-tight">
                 2%
-                <span className="text-sm font-semibold text-gray-500 ml-1.5">/ cycle</span>
+                <span className="text-sm font-semibold text-gray-500 ml-1.5">/ debit</span>
               </div>
-              <p className="text-xs font-bold text-gray-500 mt-1">
-                As low as 0.5% with referral discounts
+              <p className="text-xs font-bold text-emerald-700 mt-1">
+                Zero fees deducted at payout
               </p>
             </div>
 
@@ -167,11 +167,11 @@ export default function PricingPage() {
 
             <ul className="space-y-3.5 mb-8 text-xs font-medium text-[#1F2937]/90">
               {[
-                "2% platform fee per monthly cycle (down to 0.5% with referrals)",
-                "Strictly capped at ₦10,000 maximum per cycle",
+                "Standard 2% platform fee on monthly debits (as low as 0.5% with referrals)",
+                "Strictly capped at ₦10,000 maximum per debit",
+                "0% payout fees — collector receives 100% of the target pot complete",
                 "5-day grace period aligned with salary cycles (1st to 5th)",
-                "Automated pass-through payout to recipient bank account",
-                "Trust Score tracking & automated member reminders"
+                "Automated pass-through settlement to recipient bank account"
               ].map((feature, i) => (
                 <li key={i} className="flex items-start gap-2.5">
                   <div className="bg-[#0B3022]/10 rounded-full p-0.5 mt-0.5 shrink-0">

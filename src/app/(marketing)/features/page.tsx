@@ -65,7 +65,7 @@ export default function FeaturesPage() {
               </div>
               <h3 className="text-3xl font-black text-[#0B3022] mb-4">Àjọṣe Trust Score</h3>
               <p className="text-[#1F2937]/80 text-lg leading-relaxed font-medium">
-                We track every successful payment and default across the platform to generate a universal Trust Score. Admins can restrict their groups to only allow members with high trust scores.
+                We track every successful payment and default across the platform to generate a verifiable financial reputation score. Admins can restrict their groups to only allow members with high trust scores.
               </p>
             </div>
 

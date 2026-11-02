@@ -193,13 +193,19 @@ async function handlePreDebitReminders(req: NextRequest) {
         const isDaily = group.frequency === "daily";
         const isWeekly = group.frequency === "weekly";
 
-        const totalDebitAmount = group.contribution_amount || 0;
+        let feePct = 2.0;
+        if (typeof adminCustomFeePct === "number" && adminCustomFeePct >= 0) {
+          feePct = adminCustomFeePct;
+        }
+
+        const automationFee = isDaily ? 100 : isWeekly ? 300 : Math.round(((group.contribution_amount || 0) * feePct) / 100);
+        const totalDebitAmount = (group.contribution_amount || 0) + automationFee;
 
         // Queue in-app notification for bulk insert
         notificationsToInsert.push({
           user_id: u.id,
           title: `Auto-Debit Tomorrow: ₦${totalDebitAmount.toLocaleString()}`,
-          message: `Your scheduled contribution auto-debit of ₦${totalDebitAmount.toLocaleString()} for "${group.name}" is tomorrow (${formattedDueDate}). Please ensure your account is funded.`,
+          message: `Your scheduled auto-debit of ₦${totalDebitAmount.toLocaleString()} (₦${(group.contribution_amount || 0).toLocaleString()} contribution${automationFee > 0 ? ` + ₦${automationFee} automation charge` : ""}) for "${group.name}" is tomorrow (${formattedDueDate}). Please ensure your account is funded.`,
           type: "warning",
         });
 

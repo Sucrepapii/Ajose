@@ -298,7 +298,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
             <div>
               <h4 className="text-sm font-bold text-white">Live Registry Active</h4>
               <p className="text-xs text-zinc-400 mt-1 max-w-md mx-auto">
-                No registered members currently in the database. When members complete onboarding, their verified KYC records, Next of Kin, credit scores, and linked bank accounts will appear here automatically.
+                No registered members currently in the database. When members complete onboarding, their verified KYC records, Next of Kin, trust scores, and linked bank accounts will appear here automatically.
               </p>
             </div>
           </div>
