@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock, Users, Mail, Phone, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Lock, Users, Mail, Phone, Loader2, Copy, Check, Lightbulb } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
 
@@ -44,6 +44,16 @@ export default function SignupPage() {
   const [alternatePhone, setAlternatePhone] = useState("");
   const [countdown, setCountdown] = useState(0);
   const [existingProviderPrompt, setExistingProviderPrompt] = useState<{ email: string; provider: "google" | "apple" } | null>(null);
+  const [copiedUssd, setCopiedUssd] = useState(false);
+
+  const handleCopyUssd = () => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText("*565*0#");
+      setCopiedUssd(true);
+      toast.success("USSD code *565*0# copied to clipboard!");
+      setTimeout(() => setCopiedUssd(false), 2500);
+    }
+  };
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -909,9 +919,56 @@ export default function SignupPage() {
                           type="text" placeholder="Enter your 11-digit BVN" maxLength={11}
                           className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.bvn.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
                         />
-                        <p className="text-xs text-gray-500 mt-1.5">
-                          💡 Don&apos;t know your BVN? Dial <strong className="text-[#0B402B] font-mono">*565*0#</strong> on your registered bank phone line.
-                        </p>
+                        {/* High-visibility BVN Retrieval Callout */}
+                        <div className="mt-3 p-3.5 bg-gradient-to-r from-amber-50/95 via-amber-50/70 to-emerald-50/50 border border-amber-300/80 rounded-xl shadow-xs">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-300/80 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
+                              <Lightbulb className="w-4 h-4 text-amber-700" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+                                <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                                  Don&apos;t know your BVN?
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={handleCopyUssd}
+                                  className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0B402B] hover:text-[#062418] bg-white px-2 py-0.5 rounded-md border border-gray-200 hover:border-gray-300 shadow-2xs transition-colors cursor-pointer"
+                                  title="Copy USSD code"
+                                >
+                                  {copiedUssd ? (
+                                    <>
+                                      <Check className="w-3 h-3 text-emerald-600" />
+                                      <span className="text-emerald-700">Copied!</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-3 h-3 text-gray-500" />
+                                      <span>Copy Code</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                              <p className="text-xs text-gray-700 leading-relaxed mb-2 font-medium">
+                                Dial{" "}
+                                <a
+                                  href="tel:*565*0%23"
+                                  onClick={handleCopyUssd}
+                                  className="inline-flex items-center gap-1 font-mono font-black text-xs px-2.5 py-0.5 bg-[#0B402B] text-[#D4AF37] hover:bg-[#072a1c] rounded-md shadow-xs transition-transform active:scale-95"
+                                  title="Tap to dial or copy *565*0#"
+                                >
+                                  <Phone className="w-2.5 h-2.5 text-[#D4AF37]" />
+                                  *565*0#
+                                </a>{" "}
+                                on your registered bank phone line to retrieve it instantly.
+                              </p>
+                              <div className="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
+                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <span>Works on MTN, Airtel, Glo &amp; 9mobile</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </form>
 
