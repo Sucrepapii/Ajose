@@ -267,8 +267,8 @@ export async function verifyIdentityWithMono({
 }): Promise<MonoIdentityVerificationResult> {
   const monoSecretKey =
     process.env.LIVE_MONO_LOOKUP_SECRET_KEY ||
-    process.env.LIVE_MONO_SECRET_KEY ||
     process.env.MONO_LOOKUP_SECRET_KEY ||
+    process.env.LIVE_MONO_SECRET_KEY ||
     process.env.MONO_SECRET_KEY;
 
   const isBvnValid = Boolean(bvn && /^\d{11}$/.test(bvn));

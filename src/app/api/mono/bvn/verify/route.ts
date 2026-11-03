@@ -17,8 +17,8 @@ export async function POST(req: Request) {
 
     const monoSecretKey =
       process.env.LIVE_MONO_LOOKUP_SECRET_KEY ||
-      process.env.LIVE_MONO_SECRET_KEY ||
       process.env.MONO_LOOKUP_SECRET_KEY ||
+      process.env.LIVE_MONO_SECRET_KEY ||
       process.env.MONO_SECRET_KEY;
 
     if (!monoSecretKey) {
