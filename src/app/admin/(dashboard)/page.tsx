@@ -281,11 +281,11 @@ export default async function AdminCommandCenterPage() {
 
             <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-zinc-800 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-white">2% Monthly Contribution Fee (Capped at ₦10,000)</span>
+                <span className="font-bold text-white">2% Standard Monthly Fee (Adjustable in Admin)</span>
                 <span className="text-[10px] font-mono text-[#C5A059] bg-[#C5A059]/10 px-1.5 py-0.5 rounded">AUTOMATED</span>
               </div>
               <p className="text-zinc-400 text-[11px]">
-                Collected during monthly contribution debits (capped at ₦10,000 max), ensuring 0% deduction at payout so members receive their pot complete.
+                Default 2% collected during monthly debits (capped at ₦10,000 max). Can be overridden to lower custom rates per organizer via SuperAdmin VIP controls, ensuring 0% deduction at payout.
               </p>
             </div>
           </div>

@@ -167,7 +167,7 @@ export function MemberFeeCalculator() {
             <ShieldCheck className="w-5 h-5 text-[#C5A059] shrink-0 mt-0.5" />
             <div>
               <span className="font-bold text-white block">What does this fee cover?</span>
-              Mono Open-Banking direct account sweeps, BVN identity lock, Trust Score enforcement, and 100% direct bank payout. Funds never sit in an omnibus holding account.
+              Mono Open-Banking direct account sweeps, BVN identity lock, Trust Score enforcement, and 100% direct bank payout. Standard baseline rate shown (can be reduced lower via referral tiers or custom Admin partner rates). Funds never sit in an omnibus holding account.
             </div>
           </div>
 

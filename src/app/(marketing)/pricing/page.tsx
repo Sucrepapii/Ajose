@@ -167,7 +167,7 @@ export default function PricingPage() {
 
             <ul className="space-y-3.5 mb-8 text-xs font-medium text-[#1F2937]/90">
               {[
-                "Standard 2% platform fee on monthly debits (as low as 0.5% with referrals)",
+                "Standard 2% platform fee on monthly debits (subject to lower Admin rates or as low as 0.5% with referrals)",
                 "Strictly capped at ₦10,000 maximum per debit",
                 "0% payout fees — collector receives 100% of the target pot complete",
                 "5-day grace period aligned with salary cycles (1st to 5th)",
