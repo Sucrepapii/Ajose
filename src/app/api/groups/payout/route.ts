@@ -5,7 +5,7 @@ import { initiatePayoutWithMono, getBankCode } from "@/utils/mono";
 
 export async function POST(req: Request) {
   try {
-    const { groupId, currentTurn, method } = await req.json();
+    const { groupId, currentTurn, method, forceBypassSettlement } = await req.json();
 
     if (!groupId) {
       return NextResponse.json({ error: "groupId is required" }, { status: 400 });
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     const { data: turnContributions, error: contribErr } = contributingMemberIds.length > 0
       ? await supabaseAdmin
           .from("transactions")
-          .select("membership_id, status")
+          .select("membership_id, created_at, status")
           .in("membership_id", contributingMemberIds)
           .eq("cycle_turn", turn)
           .eq("type", "contribution")
@@ -131,6 +131,28 @@ export async function POST(req: Request) {
       return NextResponse.json({
         error: `Cannot disburse Turn ${turn} payout yet. ${unpaidContributors.length} contributing member(s) have not been debited for this turn.`
       }, { status: 400 });
+    }
+
+    // 5c. Enforce 48-hour NIBSS Interbank Settlement Window for Automated Disbursements
+    // In Nigerian banking, direct debits take up to 48 hours (T+1/T+2 banking days) to physically settle into the source account.
+    // Automated disbursement pulls from this account; disbursing prematurely causes insufficient balance failures.
+    // Manual transfers can proceed anytime at Admin discretion because the Admin transfers directly from their own bank app.
+    const contributionTimes = (turnContributions || [])
+      .map((t: any) => (t.created_at ? new Date(t.created_at).getTime() : 0))
+      .filter((t: number) => t > 0);
+    const lastPaymentTime = contributionTimes.length > 0 ? Math.max(...contributionTimes) : Date.now();
+    const settlementDelayMs = 48 * 60 * 60 * 1000; // 48-hour NIBSS clearing window
+    const clearanceTime = lastPaymentTime + settlementDelayMs;
+    const isSettlementCleared = Date.now() >= clearanceTime;
+
+    if (method !== "manual_bank_transfer" && !isSettlementCleared && !forceBypassSettlement) {
+      const hoursRemaining = Math.max(1, Math.ceil((clearanceTime - Date.now()) / (1000 * 60 * 60)));
+      return NextResponse.json({
+        error: `Interbank clearing in progress (~${hoursRemaining}h remaining). Direct-debit contributions settle via NIBSS within 48 hours. Automated payout will be unlocked once funds clear into your account. Alternatively, you can transfer directly via your bank app now and choose 'Mark Transferred via Bank App'.`,
+        settlementWindowActive: true,
+        hoursRemaining,
+        clearanceTime: new Date(clearanceTime).toISOString()
+      }, { status: 422 });
     }
 
     // 6. Calculate payout amounts based on group frequency & admin volume tier:

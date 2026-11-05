@@ -67,10 +67,10 @@ export function RulesModal() {
               <div className="space-y-1.5 pt-4">
                 <h3 className="font-bold text-[#0B3022] flex items-center gap-2 text-sm">
                   <Users className="h-4 w-4 text-[#C5A059]" />
-                  3. Admin Auto-Debit Payouts & Transparency
+                  3. NIBSS Settlement &amp; 24–48hr Payout Window
                 </h3>
                 <p>
-                  When cycle payouts are disbursed, the Admin's tendered settlement account is automatically debited to credit the receiving member. If an Admin auto-debit fails (e.g., due to insufficient funds), <strong>all members will immediately see the failure alert in real time</strong>.
+                  To match Nigerian interbank (NIBSS) clearing cycles, rotational target pots disburse within <strong>24 to 48 banking hours after all circle contributions are confirmed</strong>. This guarantees that pooled member debits are 100% physically cleared in the settlement account before transfer to the turn collector. When cycle payouts are disbursed, the settlement account is debited to credit the receiving member with real-time tracking visible to all participants.
                 </p>
               </div>
 

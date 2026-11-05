@@ -213,11 +213,26 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
   }
 
   // Completed contributions for this turn
+  const completedContributions = txList
+    .filter(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && (tx.status === 'successful' || tx.status === 'completed'));
+
   const paidUserIds = new Set(
-    txList
-      .filter(tx => tx.cycle_turn === currentTurn && tx.type === 'contribution' && (tx.status === 'successful' || tx.status === 'completed'))
-      .map(tx => tx.user_id)
+    completedContributions.map(tx => tx.user_id)
   );
+
+  // 48-Hour NIBSS Interbank Settlement Clearance Check
+  // In Nigerian banking, direct debits on Day T settle into the source account within 48 hours (T+1/T+2 banking days).
+  const lastContributionTimestamp = completedContributions.reduce((latest: number, tx: any) => {
+    const txTime = tx.created_at ? new Date(tx.created_at).getTime() : 0;
+    return txTime > latest ? txTime : latest;
+  }, 0);
+
+  const SETTLEMENT_CLEARANCE_WINDOW_MS = 48 * 60 * 60 * 1000;
+  const clearanceTimestamp = lastContributionTimestamp ? lastContributionTimestamp + SETTLEMENT_CLEARANCE_WINDOW_MS : 0;
+  const isSettlementCleared = clearanceTimestamp === 0 || Date.now() >= clearanceTimestamp;
+  const settlementRemainingHours = clearanceTimestamp > 0 && !isSettlementCleared
+    ? Math.max(1, Math.ceil((clearanceTimestamp - Date.now()) / (1000 * 60 * 60)))
+    : 0;
 
   // Pending 2-way payout handshake awaiting recipient confirmation
   const pendingPayoutTx = txList.find(
@@ -868,14 +883,28 @@ export default async function GroupDetailPage(props: { params: Promise<{ id: str
                                   </span>
                                 </span>
                               ) : (
-                                <ProcessPayoutClient 
-                                  group={group} 
-                                  receivingMember={receivingMember} 
-                                  isAdmin={isAdmin} 
-                                  currentTurn={currentTurn}
-                                  adminGroupCount={adminGroupCount || 1}
-                                  customPlatformFeePct={customPlatformFeePct}
-                                />
+                                <div className="flex items-center gap-2">
+                                  {!isSettlementCleared && (
+                                    <span 
+                                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md"
+                                      title="Contributions settle via NIBSS within 48 hours"
+                                    >
+                                      <Clock className="h-3 w-3 text-amber-600 animate-pulse" />
+                                      <span>Clearing (~{settlementRemainingHours}h)</span>
+                                    </span>
+                                  )}
+                                  <ProcessPayoutClient 
+                                    group={group} 
+                                    receivingMember={receivingMember} 
+                                    isAdmin={isAdmin} 
+                                    currentTurn={currentTurn}
+                                    adminGroupCount={adminGroupCount || 1}
+                                    customPlatformFeePct={customPlatformFeePct}
+                                    isSettlementCleared={isSettlementCleared}
+                                    settlementRemainingHours={settlementRemainingHours}
+                                    clearanceTime={clearanceTimestamp ? new Date(clearanceTimestamp).toISOString() : null}
+                                  />
+                                </div>
                               )}
                             </div>
                           )}

@@ -569,7 +569,7 @@ async function handleSweep(req: NextRequest) {
         const activeContributors = members.filter(m => m.status === 'active' && m.payout_turn !== null);
         const { data: turnContributions } = await supabase
           .from("transactions")
-          .select("membership_id")
+          .select("membership_id, created_at")
           .in("membership_id", memberIds)
           .eq("cycle_turn", currentTurn)
           .eq("type", "contribution")
@@ -581,23 +581,41 @@ async function handleSweep(req: NextRequest) {
         if (allTurnContributorsPaid) {
           const alreadyPaidOut = (payouts || []).some((p: any) => p.cycle_turn === currentTurn);
           if (!alreadyPaidOut) {
-            const recipientMember = members.find(m => m.payout_turn === currentTurn);
-            const recipientUser = recipientMember?.users as any;
-            if (recipientMember && recipientUser && recipientUser.account_number) {
-              const { initiatePayoutWithMono, getBankCode } = await import("@/utils/mono");
-              const totalPool = (group.contribution_amount || 0) * (group.max_members || 1);
-              const adminFee = Math.round((((group as any).admin_commission_pct || 0) / 100) * totalPool);
-              const netPayoutAmount = Math.max(0, totalPool - adminFee);
-              const payoutRef = `ajose_auto_turn${currentTurn}_${Date.now()}`;
+            // Enforce 48-hour NIBSS interbank settlement window
+            // In Nigerian banking, direct debits executed on Day T settle into the settlement account on T+1/T+2 (24–48 banking hours).
+            // Waiting 48 hours ensures pooled member funds are 100% physically settled before auto-disbursing to the recipient.
+            const contributionTimes = (turnContributions || [])
+              .map((t: any) => (t.created_at ? new Date(t.created_at).getTime() : 0))
+              .filter((t: number) => t > 0);
+            const lastPaymentTime = contributionTimes.length > 0 ? Math.max(...contributionTimes) : Date.now();
+            const settlementDelayMs = 48 * 60 * 60 * 1000; // 48-hour settlement window
+            const clearanceTime = lastPaymentTime + settlementDelayMs;
+            const isSettlementCleared = Date.now() >= clearanceTime;
 
-              console.log(`[Sweep Autonomous] All members contributed for Turn ${currentTurn} in ${group.name}. Attempting automated Mono disbursement of ₦${netPayoutAmount} to ${recipientUser.first_name}...`);
-              const autoPayoutResult = await initiatePayoutWithMono({
-                recipientAccountNumber: recipientUser.account_number,
-                recipientBankCode: getBankCode(recipientUser.bank_name),
-                amount: netPayoutAmount,
-                narration: `Àjọṣe T${currentTurn} Payout: ${group.name}`.slice(0, 30),
-                reference: payoutRef
+            if (!isSettlementCleared) {
+              const hoursRemaining = Math.max(1, Math.ceil((clearanceTime - Date.now()) / (1000 * 60 * 60)));
+              console.log(`[Sweep Autonomous] Turn ${currentTurn} in ${group.name}: All members contributed, but 48-hr NIBSS interbank settlement window is active (~${hoursRemaining}h remaining). Payout will auto-disburse once cleared.`);
+              groupSummary.details.push({
+                autoPayoutNotice: `Interbank clearing in progress: ~${hoursRemaining}h remaining until 48-hour NIBSS settlement matures.`
               });
+            } else {
+              const recipientMember = members.find(m => m.payout_turn === currentTurn);
+              const recipientUser = recipientMember?.users as any;
+              if (recipientMember && recipientUser && recipientUser.account_number) {
+                const { initiatePayoutWithMono, getBankCode } = await import("@/utils/mono");
+                const totalPool = (group.contribution_amount || 0) * (group.max_members || 1);
+                const adminFee = Math.round((((group as any).admin_commission_pct || 0) / 100) * totalPool);
+                const netPayoutAmount = Math.max(0, totalPool - adminFee);
+                const payoutRef = `ajose_auto_turn${currentTurn}_${Date.now()}`;
+
+                console.log(`[Sweep Autonomous] All members contributed and 48-hr settlement cleared for Turn ${currentTurn} in ${group.name}. Initiating automated Mono disbursement of ₦${netPayoutAmount} to ${recipientUser.first_name}...`);
+                const autoPayoutResult = await initiatePayoutWithMono({
+                  recipientAccountNumber: recipientUser.account_number,
+                  recipientBankCode: getBankCode(recipientUser.bank_name),
+                  amount: netPayoutAmount,
+                  narration: `Àjọṣe T${currentTurn} Payout: ${group.name}`.slice(0, 30),
+                  reference: payoutRef
+                });
 
               const isSimulatedPayout = !autoPayoutResult.success && allowSimulation;
               if (autoPayoutResult.success || isSimulatedPayout) {
@@ -640,6 +658,7 @@ async function handleSweep(req: NextRequest) {
             }
           }
         }
+      }
       } catch (autoErr: any) {
         console.warn("[Sweep Autonomous] Auto-disburse check error:", autoErr?.message);
       }

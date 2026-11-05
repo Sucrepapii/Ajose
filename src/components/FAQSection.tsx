@@ -34,7 +34,7 @@ const FAQS: FAQItem[] = [
   { 
     category: "Schedules & Timing",
     q: "When are contributions swept and payouts disbursed?", 
-    a: "Schedules are structured around Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT with rapid 24-hr turn payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off and turn payouts on the 5th) to match corporate salary cycles." 
+    a: "Schedules match Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT; Weekly circles open Monday with a 2-day collection window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off on the 5th). In line with NIBSS interbank clearing rules, rotational target pots disburse within 24 to 48 banking hours after the circle's final payment is confirmed, ensuring all pooled contributions are 100% physically settled before payout." 
   },
   { 
     category: "Trust Score",
