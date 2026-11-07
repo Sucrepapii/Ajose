@@ -6,6 +6,7 @@ export async function POST(req: Request) {
     const { bvn, nin, phone, firstName: bodyFirst, lastName: bodyLast } = await req.json();
 
     console.log("[Mono Verify Route Debug]", {
+      hasNewMonoBvnKey: !!process.env.NEW_MONO_BVN_KEY,
       hasMonoSecret: !!process.env.MONO_SECRET_KEY,
       hasMonoLookupSecret: !!process.env.MONO_LOOKUP_SECRET_KEY,
       hasLiveMonoSecret: !!process.env.LIVE_MONO_SECRET_KEY,

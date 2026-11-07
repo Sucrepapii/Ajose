@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { fetchMonoLookup, getMonoLookupCandidateKeys } from "@/utils/mono";
 
 export async function POST(req: Request) {
   try {
@@ -15,13 +16,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const monoSecretKey =
-      process.env.LIVE_MONO_LOOKUP_SECRET_KEY ||
-      process.env.MONO_LOOKUP_SECRET_KEY ||
-      process.env.LIVE_MONO_SECRET_KEY ||
-      process.env.MONO_SECRET_KEY;
-
-    if (!monoSecretKey) {
+    if (getMonoLookupCandidateKeys().length === 0) {
       return NextResponse.json({ error: "Mono configuration error." }, { status: 500 });
     }
 
@@ -48,17 +43,16 @@ export async function POST(req: Request) {
       payload,
     });
 
-    const response = await fetch("https://api.withmono.com/v2/lookup/bvn/verify", {
-      method: "POST",
-      headers: {
-        "mono-sec-key": monoSecretKey,
-        "x-session-id": sessionId,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
+    const { response, data } = await fetchMonoLookup(
+      "https://api.withmono.com/v2/lookup/bvn/verify",
+      {
+        method: "POST",
+        headers: {
+          "x-session-id": sessionId,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
     console.log("[Mono Verify Response]", { status: response.status, data });
 
     if (!response.ok || data.status !== "successful") {
