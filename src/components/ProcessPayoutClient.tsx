@@ -12,7 +12,8 @@ import {
   ShieldCheck, 
   Zap, 
   CalendarCheck, 
-  Sparkles
+  Sparkles,
+  Clock
 } from "lucide-react";
 
 type Member = any;
@@ -25,6 +26,9 @@ export function ProcessPayoutClient({
   currentTurn: passedTurn,
   adminGroupCount = 1,
   customPlatformFeePct = null,
+  isSettlementCleared = true,
+  settlementRemainingHours = 0,
+  clearanceTime = null,
 }: { 
   group: Group; 
   receivingMember: Member | null; 
@@ -32,6 +36,9 @@ export function ProcessPayoutClient({
   currentTurn?: number;
   adminGroupCount?: number;
   customPlatformFeePct?: number | null;
+  isSettlementCleared?: boolean;
+  settlementRemainingHours?: number;
+  clearanceTime?: string | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -137,7 +144,15 @@ export function ProcessPayoutClient({
   };
 
   // Execute Payout (either automated via Mono or manual direct bank transfer by admin)
-  const handleProcessPayout = async (method: "mono" | "manual_bank_transfer" = "mono") => {
+  const handleProcessPayout = async (method: "mono" | "manual_bank_transfer" = "mono", forceBypass: boolean = false) => {
+    if (method === "mono" && !isSettlementCleared && !forceBypass) {
+      const confirmBypass = window.confirm(
+        `⏳ Interbank Clearing in Progress (~${settlementRemainingHours}h remaining of 48-hour settlement window).\n\nIn accordance with NIBSS settlement cycles, funds take up to 48 hours to clear into your account.\n\nIf you have already pre-funded your disbursement account, click OK to execute now. Otherwise, click Cancel to wait for clearance or transfer directly via your bank app.`
+      );
+      if (!confirmBypass) return;
+      forceBypass = true;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -148,6 +163,7 @@ export function ProcessPayoutClient({
           groupId: group.id,
           currentTurn,
           method,
+          forceBypassSettlement: forceBypass,
         }),
       });
 
@@ -283,6 +299,30 @@ export function ProcessPayoutClient({
                     <strong>Direct Pass-Through Architecture:</strong> Because Àjọṣe cannot hold funds as we are not a bank, executing this payout initiates an <strong>Automated Direct Debit</strong> from your tendered settlement bank account directly into the beneficiary's bank account.
                   </p>
                 </div>
+              )}
+
+              {/* NIBSS 48-Hour Interbank Settlement Window Status */}
+              {!isDaily && (
+                !isSettlementCleared ? (
+                  <div className="bg-amber-50/90 border border-amber-300 rounded-xl p-3.5 space-y-1.5 text-amber-950">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-amber-700 animate-pulse shrink-0" />
+                      <span className="font-bold text-xs uppercase tracking-wide text-amber-900">
+                        NIBSS Interbank Clearing In Progress (~{settlementRemainingHours}h remaining)
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-amber-800 leading-relaxed">
+                      All circle members have contributed! In accordance with Nigerian banking rules, direct debits settle via NIBSS within 48 hours. <strong>Automated payouts trigger once funds physically clear</strong>. If you wish to disburse immediately from your personal funds, you can transfer directly via your bank app and mark it transferred.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-2.5 text-emerald-900">
+                    <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <p className="text-[11px] leading-tight">
+                      <strong>48-Hour Settlement Cleared:</strong> Pooled member contributions are fully cleared through NIBSS and available for payout disbursement.
+                    </p>
+                  </div>
+                )
               )}
 
               {/* Financial Breakdown Card */}
@@ -489,8 +529,17 @@ export function ProcessPayoutClient({
                       </>
                     ) : (
                       <>
-                        Execute Auto-Debit Payout
-                        <ArrowRight className="h-4 w-4" />
+                        {!isSettlementCleared ? (
+                          <>
+                            <Clock className="h-3.5 w-3.5 text-[#C5A059]" />
+                            Disburse Auto-Debit (~{settlementRemainingHours}h Clearing)
+                          </>
+                        ) : (
+                          <>
+                            Execute Auto-Debit Payout
+                            <ArrowRight className="h-4 w-4" />
+                          </>
+                        )}
                       </>
                     )}
                   </button>

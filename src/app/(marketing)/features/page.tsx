@@ -1,4 +1,5 @@
-import { ShieldCheck, Zap, Repeat, MessageCircle } from "lucide-react";
+import { ShieldCheck, Zap, Repeat, MessageCircle, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,80 +12,111 @@ export const metadata: Metadata = {
 
 export default function FeaturesPage() {
   return (
-    <main className="flex-1">
+    <main className="flex-1 bg-[#F3EEE3]">
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 overflow-hidden bg-[#0B3022]">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#0B3022] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
-          <div className="absolute right-0 top-0 w-[800px] h-[800px] bg-[#C5A059]/10 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2"></div>
-        </div>
+      <section className="relative py-24 lg:py-32 overflow-hidden bg-[#0B3022] border-b border-[#F3EEE3]/10">
+        <div className="absolute right-0 top-0 w-[600px] h-[600px] bg-[#D4A843]/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
         <div className="container mx-auto px-6 relative z-10 text-center max-w-4xl">
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-white mb-6 tracking-tight font-serif leading-tight">
-            Built for <span className="text-[#C5A059]">Trust</span>. <br/> Engineered for <span className="text-[#C5A059]">Scale</span>.
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 text-[#F3EEE3] text-[11px] font-mono uppercase tracking-[0.16em] mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+            Platform Capabilities
+          </div>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#F3EEE3] mb-6 tracking-[-0.03em] leading-[1.05]">
+            Built for{" "}
+            <span className="font-editorial italic font-normal text-[#D4A843]">trust.</span>{" "}
+            <br className="hidden sm:block" />
+            Engineered for{" "}
+            <span className="font-editorial italic font-normal text-[#D4A843]">scale.</span>
           </h1>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
+          <p className="text-lg md:text-xl text-[#F3EEE3]/70 max-w-2xl mx-auto leading-relaxed font-normal">
             Àjọṣe combines bank-grade open finance integrations with intuitive tools to completely automate and secure your Ajo contribution groups.
           </p>
         </div>
       </section>
 
       {/* Features Grid */}
-      <section className="py-24 bg-[#FDFBF7]">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
+      <section className="py-24 bg-[#F3EEE3]">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
             
             {/* Feature 1 */}
-            <div className="bg-white rounded-3xl p-10 lg:p-12 shadow-xl border border-gray-100 hover:shadow-2xl transition-all group overflow-hidden relative">
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#C5A059]/10 rounded-full blur-2xl group-hover:bg-[#C5A059]/20 transition-all"></div>
-              <div className="w-16 h-16 bg-[#0B3022] rounded-2xl flex items-center justify-center mb-8 shadow-md">
-                <ShieldCheck className="h-8 w-8 text-[#C5A059]" />
+            <div className="bg-white rounded-3xl p-8 lg:p-11 border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.04)] hover:border-[#D4A843]/50 transition-all group">
+              <div className="w-14 h-14 bg-[#0B3022] rounded-2xl flex items-center justify-center mb-7">
+                <ShieldCheck className="h-7 w-7 text-[#D4A843]" />
               </div>
-              <h3 className="text-3xl font-black text-[#0B3022] mb-4">Identity & BVN Verification</h3>
-              <p className="text-[#1F2937]/80 text-lg leading-relaxed font-medium">
+              <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[#D4A843] font-bold block mb-2">
+                01 / Identity Lock
+              </span>
+              <h3 className="text-2xl lg:text-3xl font-bold text-[#0B3022] mb-3 tracking-tight">
+                Identity &amp; BVN Verification
+              </h3>
+              <p className="text-[#0B3022]/75 text-base leading-relaxed">
                 Every member must pass a strict BVN verification process through our open-banking partners. Eliminate anonymous defaults and ensure you know exactly who is in your pool.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-[#0B3022] rounded-3xl p-10 lg:p-12 shadow-xl border border-[#0B3022]/10 hover:shadow-2xl transition-all group overflow-hidden relative">
-              <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-[#C5A059]/10 rounded-full blur-2xl group-hover:bg-[#C5A059]/20 transition-all"></div>
-              <div className="w-16 h-16 bg-[#C5A059]/20 rounded-2xl flex items-center justify-center mb-8 border border-[#C5A059]/30">
-                <Zap className="h-8 w-8 text-[#C5A059]" />
+            <div className="bg-[#0B3022] rounded-3xl p-8 lg:p-11 border border-[#0B3022] shadow-[0_18px_40px_rgba(11,48,34,0.14)] transition-all group">
+              <div className="w-14 h-14 bg-[#D4A843]/15 rounded-2xl flex items-center justify-center mb-7 border border-[#D4A843]/30">
+                <Zap className="h-7 w-7 text-[#D4A843]" />
               </div>
-              <h3 className="text-3xl font-black text-white mb-4">Direct Debit Auto-Sweep</h3>
-              <p className="text-white/80 text-lg leading-relaxed font-medium">
+              <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[#D4A843] font-bold block mb-2">
+                02 / Automated Collection
+              </span>
+              <h3 className="text-2xl lg:text-3xl font-bold text-[#F3EEE3] mb-3 tracking-tight">
+                Direct Debit Auto-Sweep
+              </h3>
+              <p className="text-[#F3EEE3]/75 text-base leading-relaxed">
                 No more chasing members for payments. Upon joining, members establish a direct debit mandate. Contributions are automatically swept from their linked bank accounts precisely when due.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white rounded-3xl p-10 lg:p-12 shadow-xl border border-gray-100 hover:shadow-2xl transition-all group overflow-hidden relative">
-              <div className="absolute -left-10 -top-10 w-40 h-40 bg-[#C5A059]/10 rounded-full blur-2xl group-hover:bg-[#C5A059]/20 transition-all"></div>
-              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-8 border border-gray-100">
-                <Repeat className="h-8 w-8 text-[#0B3022]" />
+            <div className="bg-[#0B3022] rounded-3xl p-8 lg:p-11 border border-[#0B3022] shadow-[0_18px_40px_rgba(11,48,34,0.14)] transition-all group">
+              <div className="w-14 h-14 bg-[#D4A843]/15 rounded-2xl flex items-center justify-center mb-7 border border-[#D4A843]/30">
+                <Repeat className="h-7 w-7 text-[#D4A843]" />
               </div>
-              <h3 className="text-3xl font-black text-[#0B3022] mb-4">Àjọṣe Trust Score</h3>
-              <p className="text-[#1F2937]/80 text-lg leading-relaxed font-medium">
+              <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[#D4A843] font-bold block mb-2">
+                03 / Reputation Ledger
+              </span>
+              <h3 className="text-2xl lg:text-3xl font-bold text-[#F3EEE3] mb-3 tracking-tight">
+                Àjọṣe Trust Score
+              </h3>
+              <p className="text-[#F3EEE3]/75 text-base leading-relaxed">
                 We track every successful payment and default across the platform to generate a verifiable financial reputation score. Admins can restrict their groups to only allow members with high trust scores.
               </p>
             </div>
 
             {/* Feature 4 */}
-            <div className="bg-[#082319] rounded-3xl p-10 lg:p-12 shadow-xl border border-[#0B3022]/10 hover:shadow-2xl transition-all group overflow-hidden relative">
-              <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#C5A059]/10 rounded-full blur-2xl group-hover:bg-[#C5A059]/20 transition-all"></div>
-              <div className="w-16 h-16 bg-[#C5A059]/20 rounded-2xl flex items-center justify-center mb-8 border border-[#C5A059]/30">
-                <MessageCircle className="h-8 w-8 text-[#C5A059]" />
+            <div className="bg-white rounded-3xl p-8 lg:p-11 border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.04)] hover:border-[#D4A843]/50 transition-all group">
+              <div className="w-14 h-14 bg-[#0B3022] rounded-2xl flex items-center justify-center mb-7">
+                <MessageCircle className="h-7 w-7 text-[#D4A843]" />
               </div>
-              <h3 className="text-3xl font-black text-white mb-4">WhatsApp Integration</h3>
-              <p className="text-white/80 text-lg leading-relaxed font-medium">
+              <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[#D4A843] font-bold block mb-2">
+                04 / Real-Time Alerts
+              </span>
+              <h3 className="text-2xl lg:text-3xl font-bold text-[#0B3022] mb-3 tracking-tight">
+                WhatsApp Integration
+              </h3>
+              <p className="text-[#0B3022]/75 text-base leading-relaxed">
                 Receive instant notifications for payouts, upcoming debits, and group updates directly on WhatsApp. Keep your group engaged without requiring them to check the app daily.
               </p>
             </div>
 
           </div>
+
+          {/* Bottom CTA */}
+          <div className="mt-16 text-center">
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-sm transition-all shadow-[0_12px_30px_rgba(212,168,67,0.25)]"
+            >
+              <span>Start Your Circle Today</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
-
     </main>
   );
 }

@@ -22,7 +22,7 @@ export default function SupportPage() {
     },
     {
       q: "When are contribution sweeps collected and payouts disbursed?",
-      a: "Daily Thrift sweeps at 06:00 AM WAT with 24-hr payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles provide a 5-day salary grace window (1st to 5th) to match corporate salary cycles."
+      a: "Daily Thrift sweeps at 06:00 AM WAT; Weekly circles open Monday with a 2-day collection window (cut-off Tuesday); and Monthly circles provide a 5-day salary grace window (1st to 5th). In line with NIBSS interbank clearing schedules, target pots disburse within 24 to 48 banking hours after the final contribution is confirmed to guarantee all funds are fully settled."
     },
     {
       q: "Can diaspora members participate?",
@@ -30,7 +30,7 @@ export default function SupportPage() {
     },
     {
       q: "What are the commercial platform fees?",
-      a: "Monthly Circles: 2.0% platform fee on successful payouts only (capped strictly at ₦10,000 max, ₦0 per-sweep fee). Weekly Circles: 0% payout fee, flat ₦300 processing fee per sweep. Daily Thrift: 0% payout fee, flat ₦100 processing fee per sweep."
+      a: "Monthly Circles: Standard 2.0% platform fee on monthly contribution debits (capped strictly at ₦10,000 max per debit, scaling down to 0.5% with referrals or custom admin rates; 0% deducted on payout so the turn recipient receives 100% of their savings pot). Weekly Circles: 0% payout fee, flat ₦300 processing fee per sweep. Daily Thrift: 0% payout fee, flat ₦100 processing fee per sweep."
     },
     {
       q: "Can I leave an active circle before rotation finishes?",

@@ -1,4 +1,4 @@
-import { ShieldCheck, Lock, Eye, FileText, AlertTriangle, Landmark } from "lucide-react";
+import { ShieldCheck, Lock, AlertTriangle, Landmark } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,68 +11,83 @@ export const metadata: Metadata = {
 
 export default function SecurityPage() {
   return (
-    <main className="flex-1 flex flex-col items-center relative overflow-hidden bg-[#FDFBF7] py-24 md:py-32">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0B3022]/5 rounded-full blur-[100px] -translate-y-1/2"></div>
-      
+    <main className="flex-1 flex flex-col items-center relative overflow-hidden bg-[#F3EEE3] py-24 md:py-32">
       <div className="container mx-auto px-6 lg:px-12 max-w-5xl relative z-10">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-[#0B3022] mb-6 font-serif">
-            Institutional-Grade <span className="text-[#C5A059]">Security</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B3022]/[0.06] border border-[#0B3022]/15 text-[#0B3022] text-[11px] font-mono font-bold uppercase tracking-[0.16em] mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+            Security Architecture
+          </div>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-[-0.03em] text-[#0B3022] mb-6 leading-[1.06]">
+            Institutional-grade{" "}
+            <span className="font-editorial italic font-normal text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-8">
+              security.
+            </span>
           </h1>
-          <p className="text-xl text-[#1F2937]/80 leading-relaxed max-w-3xl mx-auto font-medium">
+          <p className="text-lg md:text-xl text-[#0B3022]/75 leading-relaxed max-w-3xl mx-auto">
             Your contributions are protected by verified BVN identity checks, an audited transaction ledger, and automated circle default protections.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <div className="bg-white p-8 md:p-12 rounded-3xl border border-gray-100 shadow-xl hover:shadow-2xl transition-all">
-            <div className="w-16 h-16 rounded-2xl bg-[#0B3022] flex items-center justify-center shadow-lg mb-6">
-              <Lock className="w-8 h-8 text-[#C5A059]" />
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <div className="bg-white p-8 md:p-11 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.04)] hover:border-[#D4A843]/50 transition-all">
+            <div className="w-14 h-14 rounded-2xl bg-[#0B3022] flex items-center justify-center mb-6">
+              <Lock className="w-7 h-7 text-[#D4A843]" />
             </div>
-            <h3 className="text-2xl font-black text-[#0B3022] mb-3">End-to-End Encryption</h3>
-            <p className="text-[#1F2937]/80 leading-relaxed font-medium">
+            <h3 className="text-2xl font-bold text-[#0B3022] mb-3 tracking-tight">End-to-End Encryption</h3>
+            <p className="text-[#0B3022]/75 leading-relaxed">
               All financial data and personal information is encrypted both in transit and at rest using AES-256 standards. We never store raw banking credentials.
             </p>
           </div>
 
-          <div className="bg-white p-8 md:p-12 rounded-3xl border border-gray-100 shadow-xl hover:shadow-2xl transition-all">
-            <div className="w-16 h-16 rounded-2xl bg-[#0B3022] flex items-center justify-center shadow-lg mb-6">
-              <ShieldCheck className="w-8 h-8 text-[#C5A059]" />
+          <div className="bg-white p-8 md:p-11 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.04)] hover:border-[#D4A843]/50 transition-all">
+            <div className="w-14 h-14 rounded-2xl bg-[#0B3022] flex items-center justify-center mb-6">
+              <ShieldCheck className="w-7 h-7 text-[#D4A843]" />
             </div>
-            <h3 className="text-2xl font-black text-[#0B3022] mb-3">Identity Verification</h3>
-            <p className="text-[#1F2937]/80 leading-relaxed font-medium">
+            <h3 className="text-2xl font-bold text-[#0B3022] mb-3 tracking-tight">Identity Verification</h3>
+            <p className="text-[#0B3022]/75 leading-relaxed">
               Every member on Àjọṣe must pass our strict Know Your Customer (KYC) protocols using valid BVN before they can join an active Ajo group.
             </p>
           </div>
         </div>
 
         {/* Credit Penalty Section */}
-        <div className="bg-[#0B3022] p-10 md:p-16 rounded-[2.5rem] shadow-2xl border border-[#0B3022]/10 relative overflow-hidden">
-          <div className="absolute right-0 bottom-0 w-64 h-64 bg-[#C5A059]/20 rounded-full blur-[80px] translate-x-1/2 translate-y-1/2"></div>
+        <div className="bg-[#0B3022] p-10 md:p-14 rounded-3xl shadow-[0_24px_60px_rgba(11,48,34,0.18)] border border-[#0B3022] relative overflow-hidden">
+          <div className="absolute right-0 bottom-0 w-64 h-64 bg-[#D4A843]/15 rounded-full blur-[80px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
           
-          <div className="flex flex-col md:flex-row gap-12 items-center relative z-10">
-            <div className="md:w-1/3 shrink-0">
-              <div className="w-24 h-24 rounded-full bg-[#C5A059]/10 border-4 border-[#C5A059]/30 flex items-center justify-center">
-                <AlertTriangle className="h-10 w-10 text-[#C5A059]" />
+          <div className="flex flex-col md:flex-row gap-10 items-center relative z-10">
+            <div className="md:w-1/4 shrink-0 flex justify-center">
+              <div className="w-24 h-24 rounded-full bg-[#D4A843]/15 border-2 border-[#D4A843]/40 flex items-center justify-center">
+                <AlertTriangle className="h-10 w-10 text-[#D4A843]" />
               </div>
             </div>
-            <div className="md:w-2/3">
-              <h2 className="text-3xl font-black text-white mb-4">The Àjọṣe Trust Score Penalty System</h2>
-              <p className="text-white/80 leading-relaxed font-medium text-lg mb-6">
+            <div className="md:w-3/4">
+              <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[#D4A843] font-bold block mb-2">
+                Reputation Enforcement
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#F3EEE3] mb-4 tracking-tight">
+                The Àjọṣe Trust Score{" "}
+                <span className="font-editorial italic font-normal text-[#D4A843]">penalty system.</span>
+              </h2>
+              <p className="text-[#F3EEE3]/75 leading-relaxed text-base mb-6">
                 Trust is the foundation of cooperative contributions. To protect the pool, we enforce a strict penalty system:
               </p>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                  <div className="w-6 h-6 rounded-full bg-[#D4A843]/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-2 h-2 bg-[#D4A843] rounded-full" />
                   </div>
-                  <p className="text-white font-medium">Defaulting on a payment results in an immediate <strong>-50 point</strong> penalty to your global Àjọṣe Trust Score.</p>
+                  <p className="text-[#F3EEE3]/90">
+                    Defaulting on a payment results in an immediate <strong className="text-[#D4A843]">-50 point</strong> penalty to your global Àjọṣe Trust Score.
+                  </p>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#C5A059]/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="w-2 h-2 bg-[#C5A059] rounded-full"></span>
+                  <div className="w-6 h-6 rounded-full bg-[#D4A843]/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-2 h-2 bg-[#D4A843] rounded-full" />
                   </div>
-                  <p className="text-white font-medium">Users with poor trust scores are automatically restricted from joining premium or high-value groups.</p>
+                  <p className="text-[#F3EEE3]/90">
+                    Users with poor trust scores are automatically restricted from joining premium or high-value groups.
+                  </p>
                 </li>
               </ul>
             </div>
@@ -80,40 +95,38 @@ export default function SecurityPage() {
         </div>
 
         {/* Regulatory & Licensing Framework Card */}
-        <div className="mt-12 bg-white p-8 md:p-12 rounded-3xl border border-gray-100 shadow-xl relative overflow-hidden">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-[#0B3022] flex items-center justify-center text-[#C5A059] shadow-md shrink-0">
+        <div className="mt-12 bg-white p-8 md:p-12 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.04)] relative overflow-hidden">
+          <div className="flex items-center gap-3.5 mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-[#0B3022] flex items-center justify-center text-[#D4A843] shrink-0">
               <Landmark className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#C5A059]">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-[#D4A843]">
                 Platform Disclosure &amp; Operational Architecture
               </span>
-              <h3 className="text-2xl font-black text-[#0B3022]">Payment Infrastructure &amp; Open Banking Rails</h3>
+              <h3 className="text-2xl font-bold text-[#0B3022] tracking-tight">Payment Infrastructure &amp; Open Banking Rails</h3>
             </div>
           </div>
 
-          <p className="text-[#1F2937]/90 leading-relaxed font-medium text-base mb-6">
+          <p className="text-[#0B3022]/80 leading-relaxed text-base mb-6">
             <strong>Platform Disclosure:</strong> Àjọṣe is a financial technology platform, not a bank. Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe&apos;s wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-gray-100 text-xs font-mono">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-medium">
-              <span className="w-2 h-2 rounded-full bg-blue-500" />
-              Mono Direct Debit
-            </span>
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              NIBSS Settlement
-            </span>
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-purple-50 text-purple-800 border border-purple-200 font-medium">
-              <span className="w-2 h-2 rounded-full bg-purple-500" />
-              Automated Payouts
-            </span>
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 font-medium">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
-              Transparent Ledger
-            </span>
+          <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-[#0B3022]/10 text-xs font-mono">
+            {[
+              "Mono Direct Debit",
+              "NIBSS Settlement",
+              "Automated Payouts",
+              "Transparent Ledger",
+            ].map((badge) => (
+              <span
+                key={badge}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3] text-[#0B3022] border border-[#0B3022]/15 font-medium"
+              >
+                <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+                {badge}
+              </span>
+            ))}
           </div>
         </div>
 

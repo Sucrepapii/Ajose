@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle, ShieldCheck, CreditCard, Users, Landmark } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
 
 interface FAQItem {
   q: string;
@@ -34,7 +34,7 @@ const FAQS: FAQItem[] = [
   { 
     category: "Schedules & Timing",
     q: "When are contributions swept and payouts disbursed?", 
-    a: "Schedules are structured around Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT with rapid 24-hr turn payouts; Weekly circles open Monday with a 2-day grace window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off and turn payouts on the 5th) to match corporate salary cycles." 
+    a: "Schedules match Nigerian income cycles: Daily Thrift circles sweep every morning at 06:00 AM WAT; Weekly circles open Monday with a 2-day collection window (cut-off Tuesday); and Monthly circles feature a 5-day salary grace window (opens 1st, cut-off on the 5th). In line with NIBSS interbank clearing rules, rotational target pots disburse within 24 to 48 banking hours after the circle's final payment is confirmed, ensuring all pooled contributions are 100% physically settled before payout." 
   },
   { 
     category: "Trust Score",
@@ -44,7 +44,7 @@ const FAQS: FAQItem[] = [
   { 
     category: "Fees & Pricing",
     q: "What are the fees on Àjọṣe?", 
-    a: "Transparent, capped pricing with ₦0 monthly subscriptions: 📅 Monthly Circles: Standard 2.0% platform fee on monthly contribution debits (subject to lower custom rates configured in Admin for partners, or as low as 0.5% with referrals, strictly capped at ₦10,000 max per debit), with 0% deducted at payout so the turn recipient receives their savings pot complete; 🗓 Weekly Circles: 0% payout fee with a flat ₦300 automated sweep processing fee per transaction; 📌 Daily Thrift: 0% payout fee with a flat ₦100 automated sweep processing fee per transaction. Circle organizers may also set an optional management commission, clearly displayed before you accept an invite." 
+    a: "Transparent, capped pricing with ₦0 monthly subscriptions: Monthly Circles: Standard 2.0% platform fee on monthly contribution debits (subject to lower custom rates configured in Admin for partners, or as low as 0.5% with referrals, strictly capped at ₦10,000 max per debit), with 0% deducted at payout so the turn recipient receives their savings pot complete; Weekly Circles: 0% payout fee with a flat ₦300 automated sweep processing fee per transaction; Daily Thrift: 0% payout fee with a flat ₦100 automated sweep processing fee per transaction. Circle organizers may also set an optional management commission, clearly displayed before you accept an invite." 
   },
   { 
     category: "Diaspora",
@@ -89,17 +89,20 @@ export function FAQSection() {
   );
 
   return (
-    <section id="faq" className="w-full py-20 bg-white relative z-10 border-t border-gray-200">
+    <section id="faq" className="w-full py-20 bg-[#F3EEE3] relative z-10 border-t border-[#0B3022]/10">
       <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B3022]/10 border border-[#0B3022]/20 text-xs font-bold text-[#0B3022] uppercase tracking-wider mb-4">
-            <HelpCircle className="w-4 h-4 text-[#C5A059]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B3022]/[0.06] border border-[#0B3022]/15 text-[11px] font-mono font-bold text-[#0B3022] uppercase tracking-[0.16em] mb-4">
+            <HelpCircle className="w-3.5 h-3.5 text-[#D4A843]" />
             <span>Knowledge Base &amp; FAQ</span>
           </div>
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-[#0B3022] mb-4 font-serif">
-            Frequently Asked <span className="text-[#C5A059]">Questions</span>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-[-0.03em] text-[#0B3022] mb-4">
+            Frequently asked{" "}
+            <span className="font-editorial italic font-normal text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-8">
+              questions.
+            </span>
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-[#0B3022]/70 max-w-2xl mx-auto leading-relaxed">
             Everything you need to know about automated direct debits, BVN verification, turn payouts, and default protection on Àjọṣe.
           </p>
 
@@ -110,24 +113,24 @@ export function FAQSection() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search a question (e.g. fees, BVN, default)..."
-              className="w-full px-5 py-3.5 bg-[#FDFBF7] border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent font-medium"
+              className="w-full px-5 py-3.5 bg-white border border-[#0B3022]/15 rounded-full text-sm text-[#0B3022] placeholder-[#0B3022]/45 focus:outline-none focus:ring-2 focus:ring-[#D4A843] focus:border-transparent font-medium"
             />
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {filteredFaqs.map((faq, i) => (
             <div 
               key={i} 
-              className="bg-[#FDFBF7] border border-gray-200/80 hover:border-[#C5A059]/40 shadow-sm rounded-2xl overflow-hidden transition-all duration-200"
+              className="bg-white border border-[#0B3022]/10 hover:border-[#D4A843]/50 rounded-2xl overflow-hidden transition-all duration-200"
             >
               <button
                 onClick={() => toggleFaq(i)}
-                className="w-full flex items-center justify-between p-6 cursor-pointer font-bold text-base sm:text-lg text-[#0B3022] text-left hover:bg-white/60 transition-colors gap-4"
+                className="w-full flex items-center justify-between p-6 cursor-pointer font-bold text-base sm:text-lg text-[#0B3022] text-left hover:bg-[#F3EEE3]/30 transition-colors gap-4"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                   {faq.category && (
-                    <span className="text-[11px] font-bold tracking-wider uppercase text-[#C5A059] bg-[#C5A059]/10 px-2 py-0.5 rounded-md self-start sm:self-auto">
+                    <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-[#0B3022] bg-[#D4A843]/25 px-2.5 py-0.5 rounded-full self-start sm:self-auto">
                       {faq.category}
                     </span>
                   )}
@@ -138,7 +141,7 @@ export function FAQSection() {
                     activeFaq === i ? "rotate-180" : "rotate-0"
                   }`}
                 >
-                  <ChevronDown className="h-5 w-5 text-[#C5A059]" />
+                  <ChevronDown className="h-5 w-5 text-[#D4A843]" />
                 </div>
               </button>
 
@@ -151,7 +154,7 @@ export function FAQSection() {
                     transition={{ duration: 0.25, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
-                    <div className="px-6 pb-6 pt-2 text-gray-700 leading-relaxed text-sm sm:text-base border-t border-gray-100">
+                    <div className="px-6 pb-6 pt-3 text-[#0B3022]/75 leading-relaxed text-sm sm:text-base border-t border-[#0B3022]/10">
                       {faq.a}
                     </div>
                   </motion.div>
@@ -161,7 +164,7 @@ export function FAQSection() {
           ))}
 
           {filteredFaqs.length === 0 && (
-            <div className="text-center py-12 bg-[#FDFBF7] rounded-2xl border border-gray-200 text-gray-500">
+            <div className="text-center py-12 bg-white rounded-2xl border border-[#0B3022]/10 text-[#0B3022]/60">
               <p className="font-semibold">No questions matched your search query.</p>
               <p className="text-sm mt-1">Feel free to message us using the contact form above!</p>
             </div>

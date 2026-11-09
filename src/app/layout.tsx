@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -9,6 +9,13 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  weight: "400",
+  style: ["normal", "italic"],
   subsets: ["latin"],
 });
 
@@ -28,20 +35,41 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteUrl,
   },
-  title: "Àjọṣe — Run your Ajo without the chasing.",
-  description: "Run your Ajo without the chasing. Automated bank debits collect every contribution on time, while a shared ledger tracks every turn — no excuses, no awkward reminders.",
-  keywords: ["Ajo", "Esusu", "Osusu", "Rotational Contribution", "Nigeria Fintech", "Group Contribution", "Ajose"],
+  title: {
+    default: "Ajose (Àjọṣe) — Turn by Turn, No Wahala | Automated Ajo & Savings",
+    template: "%s | Ajose",
+  },
+  description: "Ajose (Àjọṣe) is Nigeria's premier automated rotational savings (Ajo, Esusu, Adashe) platform. Turn by Turn, No Wahala. Automated bank debits collect contributions on schedule with transparent tracking.",
+  keywords: [
+    "Ajose",
+    "Ajose Nigeria",
+    "Ajose app",
+    "Ajose savings",
+    "Ajose Ajo",
+    "Ajose fintech",
+    "Àjọṣe",
+    "Ajo",
+    "Esusu",
+    "Adashe",
+    "Osusu",
+    "Rotational Contribution",
+    "Rotational Savings",
+    "Nigeria Fintech",
+    "Group Contribution",
+    "Digital Thrift",
+    "Automated Thrift",
+  ],
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Àjọṣe",
+    title: "Ajose",
   },
   openGraph: {
-    title: "Àjọṣe — Run your Ajo without the chasing.",
-    description: "Run your Ajo without the chasing. Automated bank debits collect every contribution on time, while a shared ledger tracks every turn — no excuses, no awkward reminders.",
+    title: "Ajose (Àjọṣe) — Turn by Turn, No Wahala | Automated Ajo & Savings",
+    description: "Ajose (Àjọṣe) is Nigeria's automated digital Ajo and rotational savings platform. Turn by Turn, No Wahala. Automated bank debits collect contributions on schedule with transparent tracking.",
     url: "https://ajose.ng",
-    siteName: "Àjọṣe",
+    siteName: "Ajose",
     locale: "en_NG",
     type: "website",
     images: [
@@ -51,15 +79,29 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         type: "image/png",
-        alt: "Àjọṣe — Rotational Thrift Platform",
+        alt: "Ajose — Automated Rotational Savings & Thrift Platform",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Àjọṣe — Run your Ajo without the chasing.",
-    description: "Run your Ajo without the chasing. Automated bank debits collect every contribution on time, while a shared ledger tracks every turn — no excuses, no awkward reminders.",
+    title: "Ajose (Àjọṣe) — Turn by Turn, No Wahala",
+    description: "Nigeria's automated digital Ajo and rotational savings platform. Turn by Turn, No Wahala.",
     images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
   },
 };
 
@@ -76,10 +118,59 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
+        {/* Schema.org Structured Data (Google Knowledge Graph & Entity Disambiguation) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://ajose.ng/#organization",
+                  "name": "Ajose",
+                  "alternateName": ["Àjọṣe", "Ajose App", "Ajose Nigeria", "Ajose Savings", "Ajose Ajo"],
+                  "url": "https://ajose.ng",
+                  "logo": "https://ajose.ng/logo.png",
+                  "slogan": "Turn by Turn, No Wahala",
+                  "description": "Ajose (Àjọṣe) is Nigeria's automated digital Ajo and rotational savings platform.",
+                  "foundingLocation": {
+                    "@type": "Place",
+                    "name": "Nigeria"
+                  },
+                  "sameAs": [
+                    "https://twitter.com/ajose_ng",
+                    "https://www.linkedin.com/company/ajose",
+                    "https://www.instagram.com/ajose.ng"
+                  ]
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://ajose.ng/#website",
+                  "url": "https://ajose.ng",
+                  "name": "Ajose",
+                  "alternateName": "Àjọṣe",
+                  "publisher": { "@id": "https://ajose.ng/#organization" },
+                  "inLanguage": "en-NG"
+                },
+                {
+                  "@type": "FinancialProduct",
+                  "@id": "https://ajose.ng/#financialProduct",
+                  "name": "Ajose Automated Rotational Savings",
+                  "alternateName": ["Àjọṣe Ajo", "Digital Ajo", "Automated Esusu"],
+                  "description": "Automated rotational thrift and savings circles with direct-debit sweeps and transparent ledger tracking.",
+                  "provider": { "@id": "https://ajose.ng/#organization" },
+                  "feesAndCommissionsSpecification": "https://ajose.ng/pricing"
+                }
+              ]
+            })
+          }}
+        />
+
         {/* Meta Pixel Code */}
         <script
           dangerouslySetInnerHTML={{

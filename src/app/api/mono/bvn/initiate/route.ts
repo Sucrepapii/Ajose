@@ -4,6 +4,7 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { getClientIp } from "@/utils/rateLimit";
 import { consumeQuota, createQuotaExceededResponse } from "@/utils/quotaManager";
 import { verifyCaptchaToken, createCaptchaErrorResponse } from "@/utils/captcha";
+import { fetchMonoLookup, getMonoLookupCandidateKeys } from "@/utils/mono";
 
 export const dynamic = "force-dynamic";
 
@@ -98,27 +99,18 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const monoSecretKey =
-      process.env.LIVE_MONO_LOOKUP_SECRET_KEY ||
-      process.env.MONO_LOOKUP_SECRET_KEY ||
-      process.env.LIVE_MONO_SECRET_KEY ||
-      process.env.MONO_SECRET_KEY;
-
-    if (!monoSecretKey) {
+    if (getMonoLookupCandidateKeys().length === 0) {
       return NextResponse.json({ error: "Mono configuration error." }, { status: 500 });
     }
 
-    // 5. Call Live Mono v2 Identity Lookup API
-    const response = await fetch("https://api.withmono.com/v2/lookup/bvn/initiate", {
-      method: "POST",
-      headers: {
-        "mono-sec-key": monoSecretKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ bvn, scope: "identity" }),
-    });
-
-    const data = await response.json();
+    // 5. Call Live Mono v2 Identity Lookup API (auto-retries across all configured Lookup keys)
+    const { response, data } = await fetchMonoLookup(
+      "https://api.withmono.com/v2/lookup/bvn/initiate",
+      {
+        method: "POST",
+        body: JSON.stringify({ bvn, scope: "identity" }),
+      }
+    );
 
     if (response.ok && data.status === "successful") {
       const sessionId = data.data.session_id;

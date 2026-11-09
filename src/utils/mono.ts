@@ -249,6 +249,93 @@ export interface MonoIdentityVerificationResult {
   message: string;
 }
 
+let cachedWorkingLookupKey: string | null = null;
+
+/**
+ * Returns all configured Mono Lookup secret key candidates in priority order,
+ * stripped of accidental quotes or whitespace.
+ */
+export function getMonoLookupCandidateKeys(): string[] {
+  const rawKeys = [
+    cachedWorkingLookupKey,
+    process.env.NEW_MONO_BVN_KEY,
+    process.env.LIVE_MONO_LOOKUP_SECRET_KEY,
+    process.env.MONO_LOOKUP_SECRET_KEY,
+    process.env.LIVE_MONO_SECRET_KEY,
+    process.env.MONO_SECRET_KEY,
+  ];
+
+  return Array.from(
+    new Set(
+      rawKeys
+        .filter((k): k is string => Boolean(k && typeof k === "string"))
+        .map((k) => k.trim().replace(/^["']|["']$/g, ""))
+        .filter((k) => k.length > 5 && !k.startsWith("test_"))
+    )
+  );
+}
+
+/**
+ * Calls a Mono Lookup endpoint, automatically cycling through all configured
+ * Mono secret keys if a key belongs to a non-Lookup app (HTTP 401 "Please use a Lookup app...")
+ * or is invalid. Caches the working Lookup key for subsequent requests.
+ */
+export async function fetchMonoLookup(
+  url: string,
+  options: {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: string;
+  } = {}
+): Promise<{ response: Response; data: any }> {
+  const candidateKeys = getMonoLookupCandidateKeys();
+
+  if (candidateKeys.length === 0) {
+    throw new Error("Mono configuration error: No live Mono Lookup secret key found.");
+  }
+
+  let lastResponse: Response | null = null;
+  let lastData: any = null;
+
+  for (const key of candidateKeys) {
+    const response = await fetch(url, {
+      method: options.method || "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+        "mono-sec-key": key,
+      },
+      body: options.body,
+    });
+
+    const data = await response.json().catch(() => ({
+      message: `Mono API HTTP ${response.status}`,
+    }));
+
+    lastResponse = response;
+    lastData = data;
+
+    const errMsg = String(data?.message || data?.error || "").toLowerCase();
+    const isWrongAppOrKey =
+      response.status === 401 ||
+      errMsg.includes("lookup app") ||
+      errMsg.includes("lookup product") ||
+      errMsg.includes("invalid secret key") ||
+      errMsg.includes("unauthorized");
+
+    if (!isWrongAppOrKey) {
+      cachedWorkingLookupKey = key;
+      return { response, data };
+    }
+
+    console.warn(
+      `[Mono Lookup] Key prefix ${key.slice(0, 11)}... rejected (${data?.message || response.status}); trying next key candidate...`
+    );
+  }
+
+  return { response: lastResponse!, data: lastData };
+}
+
 /**
  * Performs automated BVN and NIN verification via Mono Identity Lookup API.
  */
@@ -265,11 +352,7 @@ export async function verifyIdentityWithMono({
   lastName?: string;
   phone?: string;
 }): Promise<MonoIdentityVerificationResult> {
-  const monoSecretKey =
-    process.env.LIVE_MONO_LOOKUP_SECRET_KEY ||
-    process.env.MONO_LOOKUP_SECRET_KEY ||
-    process.env.LIVE_MONO_SECRET_KEY ||
-    process.env.MONO_SECRET_KEY;
+  const candidateKeys = getMonoLookupCandidateKeys();
 
   const isBvnValid = Boolean(bvn && /^\d{11}$/.test(bvn));
   const isNinValid = Boolean(!nin || /^\d{11}$/.test(nin));
@@ -285,19 +368,17 @@ export async function verifyIdentityWithMono({
   }
 
   // Live Mono API verification check if secret key is configured
-  if (monoSecretKey && !monoSecretKey.startsWith("test_")) {
+  if (candidateKeys.length > 0) {
     try {
-      const bvnRes = await fetch("https://api.withmono.com/v3/lookup/bvn", {
-        method: "POST",
-        headers: {
-          "mono-sec-key": monoSecretKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ bvn }),
-      });
+      const { response: bvnRes, data: bvnData } = await fetchMonoLookup(
+        "https://api.withmono.com/v3/lookup/bvn",
+        {
+          method: "POST",
+          body: JSON.stringify({ bvn }),
+        }
+      );
 
       if (bvnRes.ok) {
-        const bvnData = await bvnRes.json();
         const bvnRecord = bvnData.data || bvnData;
 
         const returnedFirst = (bvnRecord?.first_name || bvnRecord?.firstName || "").toLowerCase().trim();
@@ -349,7 +430,7 @@ export async function verifyIdentityWithMono({
           message: "BVN identity verified successfully via live Mono API.",
         };
       } else {
-        const errData = await bvnRes.json().catch(() => ({ message: `Mono API HTTP ${bvnRes.status}` }));
+        const errData = bvnData || { message: `Mono API HTTP ${bvnRes.status}` };
         console.error("Mono Live API rejected BVN:", errData);
 
         const errorMsg =

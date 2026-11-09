@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
+import { fetchMonoLookup, getMonoLookupCandidateKeys } from "@/utils/mono";
 
 export async function POST(req: Request) {
   try {
@@ -23,27 +24,20 @@ export async function POST(req: Request) {
         bvn: bvn || "22222222222"
       };
     } else {
-      const monoSecretKey =
-        process.env.LIVE_MONO_LOOKUP_SECRET_KEY ||
-        process.env.MONO_LOOKUP_SECRET_KEY ||
-        process.env.LIVE_MONO_SECRET_KEY ||
-        process.env.MONO_SECRET_KEY;
-
-      if (!monoSecretKey) {
+      if (getMonoLookupCandidateKeys().length === 0) {
         return NextResponse.json({ error: "Mono configuration error." }, { status: 500 });
       }
 
-      const response = await fetch("https://api.withmono.com/v2/lookup/bvn/details", {
-        method: "POST",
-        headers: {
-          "mono-sec-key": monoSecretKey,
-          "x-session-id": sessionId,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ otp })
-      });
-
-      const data = await response.json();
+      const { response, data } = await fetchMonoLookup(
+        "https://api.withmono.com/v2/lookup/bvn/details",
+        {
+          method: "POST",
+          headers: {
+            "x-session-id": sessionId,
+          },
+          body: JSON.stringify({ otp }),
+        }
+      );
 
       if (!response.ok || data.status !== "successful") {
         return NextResponse.json(
