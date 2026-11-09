@@ -66,12 +66,12 @@ export default function Home() {
               {/* Sleek Editorial Announcement Pill (Volta / Tab style) */}
               <motion.div
                 variants={fadeIn}
-                className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/15 backdrop-blur-md mb-8"
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.08] border border-white/20 backdrop-blur-md mb-8"
               >
-                <span className="px-2 py-0.5 rounded-full bg-[#D4A843] text-[#0B3022] text-[10px] font-black uppercase tracking-wider">
+                <span className="px-2.5 py-1 rounded-full bg-[#D4A843] text-[#0B3022] text-xs font-black uppercase tracking-wider">
                   Turn by turn, no wahala
                 </span>
-                <span className="text-xs sm:text-sm font-medium text-[#F3EEE3]/90 tracking-tight">
+                <span className="text-sm sm:text-base font-semibold text-[#F3EEE3] tracking-tight">
                   Automated Ajo for Home &amp; Diaspora
                 </span>
               </motion.div>
@@ -106,7 +106,7 @@ export default function Home() {
 
               <motion.p
                 variants={fadeIn}
-                className="text-base sm:text-lg md:text-xl text-[#F3EEE3]/75 mb-9 leading-relaxed max-w-xl font-normal"
+                className="text-base sm:text-lg md:text-xl text-[#F3EEE3]/85 mb-9 leading-relaxed max-w-xl font-normal"
               >
                 Automated bank debits collect every member&rsquo;s contribution on schedule, while a shared live ledger tracks every turn — no excuses, no awkward reminders.
               </motion.p>
@@ -134,18 +134,18 @@ export default function Home() {
               {/* Restrained Trust Microcopy */}
               <motion.div
                 variants={fadeIn}
-                className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#F3EEE3]/65 font-medium"
+                className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#F3EEE3]/80 font-medium"
               >
                 <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
+                  <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
                   Free to start
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
+                  <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
                   2-minute setup
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
+                  <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
                   Powered by Mono Open Banking
                 </span>
               </motion.div>
@@ -166,30 +166,30 @@ export default function Home() {
                 initial={{ opacity: 0, y: -16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55, duration: 0.5 }}
-                className="hidden sm:block absolute -top-3 -right-2 z-30 w-64 rounded-2xl bg-[#111613] text-[#F3EEE3] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.45)] border border-white/10"
+                className="hidden sm:block absolute -top-3 -right-2 z-30 w-72 rounded-2xl bg-[#111613] text-[#F3EEE3] p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.45)] border border-white/10"
               >
-                <div className="flex items-center justify-between text-[11px] text-[#F3EEE3]/60 font-mono pb-2.5 mb-2.5 border-b border-white/10">
-                  <span className="font-semibold text-[#F3EEE3]">Morning Auto-Sweep</span>
-                  <span className="text-[#D4A843]">06:02 AM</span>
+                <div className="flex items-center justify-between text-xs text-[#F3EEE3]/70 font-mono pb-2.5 mb-2.5 border-b border-white/10">
+                  <span className="font-bold text-[#F3EEE3]">Morning Auto-Sweep</span>
+                  <span className="text-[#D4A843] font-semibold">06:02 AM</span>
                 </div>
-                <div className="space-y-2 text-xs">
+                <div className="space-y-2.5 text-xs sm:text-sm">
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-[#F3EEE3]/90">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#D4A843] shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-[#D4A843] shrink-0" />
                       Sarah J. debited
                     </span>
                     <span className="font-mono font-semibold text-[#F3EEE3]">₦100k</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-[#F3EEE3]/90">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#D4A843] shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-[#D4A843] shrink-0" />
                       Michael O. debited
                     </span>
                     <span className="font-mono font-semibold text-[#F3EEE3]">₦100k</span>
                   </div>
-                  <div className="flex items-center justify-between pt-1 border-t border-white/10">
-                    <span className="text-[11px] text-[#D4A843] font-medium">12/12 turns funded</span>
-                    <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#D4A843]/15 text-[#D4A843]">
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                    <span className="text-xs text-[#D4A843] font-bold">12/12 turns funded</span>
+                    <span className="text-xs font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#D4A843]/15 text-[#D4A843] font-bold">
                       Complete
                     </span>
                   </div>
@@ -202,8 +202,8 @@ export default function Home() {
                 <div className="flex items-center justify-between pb-4 border-b border-[#111613]/10">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#0B3022]" />
-                      <span className="text-[11px] font-mono uppercase tracking-widest text-[#111613]/60 font-semibold">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#0B3022]" />
+                      <span className="text-xs font-mono uppercase tracking-widest text-[#111613]/70 font-bold">
                         Lagos Tech Founders Circle
                       </span>
                     </div>
@@ -212,7 +212,7 @@ export default function Home() {
                     </h3>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#111613]/50 block">
+                    <span className="text-xs font-mono uppercase tracking-widest text-[#111613]/60 block font-semibold">
                       Total Pool
                     </span>
                     <span className="text-xl sm:text-2xl font-bold font-mono text-[#0B3022]">
@@ -222,7 +222,7 @@ export default function Home() {
                 </div>
 
                 {/* Member Roster Rows */}
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   {[
                     {
                       name: "Sarah J.",
@@ -248,7 +248,7 @@ export default function Home() {
                   ].map((member, i) => (
                     <div
                       key={i}
-                      className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all ${
+                      className={`flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border transition-all ${
                         member.active
                           ? "bg-[#0B3022] text-[#F3EEE3] border-[#0B3022] shadow-md"
                           : "bg-[#FAF7F0] text-[#111613] border-[#111613]/10"
@@ -256,7 +256,7 @@ export default function Home() {
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold font-mono ${
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold font-mono ${
                             member.active
                               ? "bg-[#D4A843] text-[#0B3022]"
                               : "bg-[#0B3022] text-[#F3EEE3]"
@@ -266,15 +266,15 @@ export default function Home() {
                         </div>
                         <div>
                           <p
-                            className={`text-sm font-bold leading-tight ${
+                            className={`text-sm sm:text-base font-bold leading-tight ${
                               member.active ? "text-[#F3EEE3]" : "text-[#111613]"
                             }`}
                           >
                             {member.name}
                           </p>
                           <p
-                            className={`text-[11px] font-mono mt-0.5 ${
-                              member.active ? "text-[#F3EEE3]/70" : "text-[#111613]/55"
+                            className={`text-xs font-mono mt-0.5 ${
+                              member.active ? "text-[#F3EEE3]/80" : "text-[#111613]/65"
                             }`}
                           >
                             {member.role}
@@ -284,7 +284,7 @@ export default function Home() {
 
                       <div className="text-right">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${
                             member.active
                               ? "bg-[#D4A843] text-[#0B3022]"
                               : "bg-[#0B3022]/10 text-[#0B3022]"
@@ -293,8 +293,8 @@ export default function Home() {
                           {member.status}
                         </span>
                         <span
-                          className={`block text-xs font-mono font-bold mt-1 ${
-                            member.active ? "text-[#D4A843]" : "text-[#111613]/70"
+                          className={`block text-xs sm:text-sm font-mono font-bold mt-1 ${
+                            member.active ? "text-[#D4A843]" : "text-[#111613]/80"
                           }`}
                         >
                           {member.amount}
@@ -308,14 +308,14 @@ export default function Home() {
                 <div className="rounded-2xl bg-[#EAE3D2] p-4 border border-[#111613]/10 flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-[#111613]">
+                      <span className="text-sm font-bold text-[#111613]">
                         Organizer Commission
                       </span>
-                      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#111613]/10 text-[#111613]/80 font-semibold">
+                      <span className="text-xs font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#111613]/10 text-[#111613]/90 font-bold">
                         Simulation*
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#111613]/65 mt-0.5">
+                    <p className="text-xs text-[#111613]/75 mt-0.5">
                       Across 3 circles at 5% organizer rate
                     </p>
                   </div>
@@ -323,7 +323,7 @@ export default function Home() {
                     <span className="text-2xl font-bold font-mono text-[#0B3022]">
                       ₦450,000
                     </span>
-                    <span className="block text-[10px] text-[#111613]/55">
+                    <span className="block text-xs text-[#111613]/70 font-medium">
                       Auto-settled
                     </span>
                   </div>
@@ -335,10 +335,10 @@ export default function Home() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.75, duration: 0.5 }}
-                className="hidden sm:flex items-center gap-3 absolute -bottom-2 -left-2 z-30 rounded-full bg-[#111613] text-[#F3EEE3] px-4 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-white/10"
+                className="hidden sm:flex items-center gap-3 absolute -bottom-2 -left-2 z-30 rounded-full bg-[#111613] text-[#F3EEE3] px-5 py-3 shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-white/10"
               >
                 <span className="w-2.5 h-2.5 rounded-full bg-[#D4A843] animate-pulse" />
-                <span className="text-xs font-medium">
+                <span className="text-xs sm:text-sm font-semibold">
                   <strong className="text-white">Direct NIBSS Payout</strong> &bull; Zero platform custody
                 </span>
               </motion.div>
@@ -384,10 +384,10 @@ export default function Home() {
                   {item.metric}
                 </span>
                 <div>
-                  <span className="block text-xs font-bold uppercase tracking-wider text-[#D4A843]">
+                  <span className="block text-sm font-bold uppercase tracking-wider text-[#D4A843]">
                     {item.label}
                   </span>
-                  <span className="block text-xs text-[#F3EEE3]/65 mt-0.5 leading-snug">
+                  <span className="block text-sm text-[#F3EEE3]/80 mt-1 leading-snug">
                     {item.sub}
                   </span>
                 </div>
@@ -414,7 +414,7 @@ export default function Home() {
             className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
           >
             <div>
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#0B3022]/70 block mb-3">
+              <span className="text-sm font-mono font-bold uppercase tracking-widest text-[#0B3022] block mb-3">
                 — The Rotational Protocol
               </span>
               <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.025em] text-[#111613] leading-[1.08]">
@@ -424,7 +424,7 @@ export default function Home() {
                 </span>
               </h2>
             </div>
-            <p className="text-[#111613]/70 max-w-md text-base sm:text-lg leading-relaxed">
+            <p className="text-[#111613]/80 max-w-md text-base sm:text-lg leading-relaxed">
               Set the rules once. Àjọṣe handles the verification, morning bank sweeps, and turn-by-turn settlement automatically.
             </p>
           </motion.div>
@@ -463,7 +463,7 @@ export default function Home() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-8">
-                    <span className="text-xs font-mono font-bold tracking-widest text-[#111613]/45 group-hover:text-[#D4A843] transition-colors">
+                    <span className="text-xs font-mono font-bold tracking-widest text-[#111613]/60 group-hover:text-[#D4A843] transition-colors">
                       STEP {step.num}
                     </span>
                     <div className="w-10 h-10 rounded-full bg-[#0B3022]/8 group-hover:bg-[#D4A843] flex items-center justify-center transition-colors">
@@ -478,7 +478,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-[#111613]/10 group-hover:border-white/15 flex items-center justify-between text-[11px] font-mono text-[#111613]/50 group-hover:text-[#D4A843]">
+                <div className="mt-8 pt-4 border-t border-[#111613]/10 group-hover:border-white/15 flex items-center justify-between text-xs font-mono font-bold text-[#111613]/60 group-hover:text-[#D4A843]">
                   <span>Automated</span>
                   <span>&rarr;</span>
                 </div>
@@ -504,7 +504,7 @@ export default function Home() {
             {/* Left Column: Engineered for Trust & Transparency */}
             <div className="flex flex-col h-full">
               <motion.div variants={fadeIn} className="mb-8">
-                <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#0B3022] block mb-2">
+                <span className="text-sm font-mono font-bold uppercase tracking-widest text-[#0B3022] block mb-2">
                   — How We Protect Your Circle
                 </span>
                 <h2 className="text-3xl md:text-5xl font-bold tracking-[-0.025em] text-[#111613] mb-4 leading-[1.1]">
@@ -528,10 +528,10 @@ export default function Home() {
                   <button
                     key={i}
                     onClick={() => setActiveFeatureTab(i)}
-                    className={`py-2.5 px-3 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`py-2.5 px-3 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                       activeFeatureTab === i
                         ? "bg-[#0B3022] text-[#F3EEE3] shadow-sm"
-                        : "text-[#111613]/65 hover:text-[#111613]"
+                        : "text-[#111613]/70 hover:text-[#111613]"
                     }`}
                   >
                     <feature.icon className="w-3.5 h-3.5 shrink-0" />
@@ -670,12 +670,12 @@ export default function Home() {
                 <div className="bg-[#0B3022] rounded-3xl p-6 sm:p-8 shadow-xl relative h-full flex flex-col justify-between overflow-hidden border border-[#111613]/15 text-[#F3EEE3] min-h-[360px]">
                   <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
-                      <span className="text-[11px] font-mono uppercase tracking-widest text-[#F3EEE3]/70">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#D4A843]" />
+                      <span className="text-xs font-mono uppercase tracking-widest text-[#F3EEE3]/90 font-bold">
                         Live Circle Telemetry
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-[#F3EEE3]/50">
+                    <span className="text-xs font-mono text-[#F3EEE3]/70">
                       ajose.ng/dashboard
                     </span>
                   </div>
@@ -690,23 +690,23 @@ export default function Home() {
                       className="flex-1 flex flex-col justify-center"
                     >
                       {activeShowcase === 0 && (
-                        <div className="bg-[#F3EEE3] rounded-2xl p-5 text-[#111613] shadow-lg flex flex-col gap-4">
+                        <div className="bg-[#F3EEE3] rounded-2xl p-5 sm:p-6 text-[#111613] shadow-lg flex flex-col gap-4">
                           <div className="flex justify-between items-center pb-3 border-b border-[#111613]/10">
                             <div>
-                              <h4 className="font-bold text-sm text-[#111613]">
+                              <h4 className="font-bold text-base text-[#111613]">
                                 Tech Savers Circle
                               </h4>
-                              <p className="text-[11px] font-mono text-[#111613]/60">
+                              <p className="text-xs font-mono text-[#111613]/70 font-medium">
                                 October Round 4 of 10
                               </p>
                             </div>
-                            <span className="text-[#0B3022] font-black text-lg font-mono">
+                            <span className="text-[#0B3022] font-black text-xl font-mono">
                               ₦1,200,000
                             </span>
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div className="bg-[#EAE3D2] p-3.5 rounded-xl border border-[#111613]/8">
-                              <p className="text-[10px] font-mono text-[#111613]/60 font-bold mb-0.5">
+                              <p className="text-xs font-mono text-[#111613]/70 font-bold mb-0.5">
                                 TOTAL MEMBERS
                               </p>
                               <p className="text-xl font-black font-mono text-[#111613]">
@@ -714,7 +714,7 @@ export default function Home() {
                               </p>
                             </div>
                             <div className="bg-[#0B3022] p-3.5 rounded-xl text-[#F3EEE3]">
-                              <p className="text-[10px] font-mono text-[#D4A843] font-bold mb-0.5">
+                              <p className="text-xs font-mono text-[#D4A843] font-bold mb-0.5">
                                 NEXT PAYOUT
                               </p>
                               <p className="text-lg font-bold font-mono text-[#F3EEE3]">
@@ -726,8 +726,8 @@ export default function Home() {
                       )}
 
                       {activeShowcase === 1 && (
-                        <div className="bg-[#F3EEE3] rounded-2xl p-5 text-[#111613] shadow-lg space-y-2.5">
-                          <h4 className="font-bold text-[11px] font-mono uppercase tracking-wider text-[#111613]/60 mb-2">
+                        <div className="bg-[#F3EEE3] rounded-2xl p-5 sm:p-6 text-[#111613] shadow-lg space-y-3">
+                          <h4 className="font-bold text-xs font-mono uppercase tracking-wider text-[#111613]/75 mb-2">
                             Turn Sequence
                           </h4>
                           {[
@@ -752,15 +752,15 @@ export default function Home() {
                           ].map((m, idx) => (
                             <div
                               key={idx}
-                              className={`flex items-center justify-between p-2.5 rounded-xl text-xs ${
+                              className={`flex items-center justify-between p-3 rounded-xl text-xs sm:text-sm ${
                                 m.active
                                   ? "bg-[#0B3022] text-[#F3EEE3]"
                                   : "bg-[#EAE3D2] text-[#111613]"
                               }`}
                             >
-                              <div className="flex items-center gap-2.5">
+                              <div className="flex items-center gap-3">
                                 <div
-                                  className={`w-7 h-7 rounded-full flex items-center justify-center font-bold font-mono text-[10px] ${
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold font-mono text-xs ${
                                     m.active
                                       ? "bg-[#D4A843] text-[#0B3022]"
                                       : "bg-[#0B3022] text-[#F3EEE3]"
@@ -768,10 +768,10 @@ export default function Home() {
                                 >
                                   {m.name[0]}
                                 </div>
-                                <span className="font-semibold">{m.name}</span>
+                                <span className="font-bold">{m.name}</span>
                               </div>
                               <span
-                                className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
+                                className={`px-3 py-1 rounded-full font-bold text-xs ${
                                   m.active
                                     ? "bg-[#D4A843] text-[#0B3022]"
                                     : "bg-[#0B3022]/10 text-[#0B3022]"
@@ -785,8 +785,8 @@ export default function Home() {
                       )}
 
                       {activeShowcase === 2 && (
-                        <div className="bg-[#F3EEE3] rounded-2xl p-5 text-[#111613] shadow-lg space-y-2.5">
-                          <h4 className="font-bold text-[11px] font-mono uppercase tracking-wider text-[#111613]/60 mb-2">
+                        <div className="bg-[#F3EEE3] rounded-2xl p-5 sm:p-6 text-[#111613] shadow-lg space-y-3">
+                          <h4 className="font-bold text-xs font-mono uppercase tracking-wider text-[#111613]/75 mb-2">
                             Real-Time Open Banking Ledger
                           </h4>
                           {[
@@ -808,11 +808,11 @@ export default function Home() {
                           ].map((t, idx) => (
                             <div
                               key={idx}
-                              className="flex items-center justify-between p-2.5 border-b border-[#111613]/10 last:border-0 text-xs"
+                              className="flex items-center justify-between p-3 border-b border-[#111613]/10 last:border-0 text-xs sm:text-sm"
                             >
                               <div>
                                 <p className="font-bold text-[#111613]">{t.title}</p>
-                                <p className="text-[10px] font-mono text-[#111613]/50">
+                                <p className="text-xs font-mono text-[#111613]/60">
                                   {t.time}
                                 </p>
                               </div>
@@ -882,19 +882,19 @@ export default function Home() {
                       </th>
                       <th className="p-5 md:p-6 text-sm font-bold text-[#111613] w-1/4 text-center">
                         <span className="block">WhatsApp Groups</span>
-                        <span className="text-[10px] font-mono text-[#111613]/55 font-normal">
+                        <span className="text-xs font-mono text-[#111613]/70 font-medium block mt-0.5">
                           Manual Peer Thrift
                         </span>
                       </th>
                       <th className="p-5 md:p-6 text-sm font-bold text-[#111613] w-1/4 text-center">
                         <span className="block">Solo Apps</span>
-                        <span className="text-[10px] font-mono text-[#111613]/55 font-normal">
+                        <span className="text-xs font-mono text-[#111613]/70 font-medium block mt-0.5">
                           Isolated Personal Lock
                         </span>
                       </th>
                       <th className="p-5 md:p-6 text-sm font-bold text-[#F3EEE3] w-1/4 text-center bg-[#0B3022]">
                         <span className="block text-[#D4A843]">Àjọṣe Platform</span>
-                        <span className="text-[10px] font-mono text-[#F3EEE3]/70 font-normal">
+                        <span className="text-xs font-mono text-[#F3EEE3]/80 font-medium block mt-0.5">
                           Automated Rotational Engine
                         </span>
                       </th>
@@ -985,33 +985,33 @@ export default function Home() {
                     ].map((row, idx) => (
                       <tr key={idx} className="hover:bg-[#EAE3D2]/40 transition-colors">
                         <td className="p-4 md:p-6 font-bold text-[#111613]">
-                          <div>{row.title}</div>
-                          <div className="text-[11px] text-[#111613]/55 font-normal mt-0.5">
+                          <div className="text-sm md:text-base font-bold">{row.title}</div>
+                          <div className="text-xs text-[#111613]/70 font-normal mt-0.5">
                             {row.desc}
                           </div>
                         </td>
                         <td className="p-4 md:p-6 text-center text-[#111613]/75">
-                          <span className="font-semibold text-[#111613] block">
+                          <span className="font-semibold text-xs md:text-sm text-[#111613] block">
                             {row.whatsapp.text}
                           </span>
-                          <span className="text-[10px] text-[#111613]/50">
+                          <span className="text-xs text-[#111613]/65 block mt-0.5">
                             {row.whatsapp.sub}
                           </span>
                         </td>
                         <td className="p-4 md:p-6 text-center text-[#111613]/75">
-                          <span className="font-semibold text-[#111613] block">
+                          <span className="font-semibold text-xs md:text-sm text-[#111613] block">
                             {row.fintech.text}
                           </span>
-                          <span className="text-[10px] text-[#111613]/50">
+                          <span className="text-xs text-[#111613]/65 block mt-0.5">
                             {row.fintech.sub}
                           </span>
                         </td>
                         <td className="p-4 md:p-6 text-center bg-[#0B3022] text-[#F3EEE3]">
-                          <span className="font-bold text-[#F3EEE3] flex items-center justify-center gap-1.5">
-                            <Check className="w-3.5 h-3.5 text-[#D4A843] shrink-0" />
+                          <span className="font-bold text-xs md:text-sm text-[#F3EEE3] flex items-center justify-center gap-1.5">
+                            <Check className="w-4 h-4 text-[#D4A843] shrink-0" />
                             {row.ajose.text}
                           </span>
-                          <span className="text-[10px] text-[#F3EEE3]/70 font-medium block mt-0.5">
+                          <span className="text-xs text-[#F3EEE3]/80 font-medium block mt-0.5">
                             {row.ajose.sub}
                           </span>
                         </td>
@@ -1056,7 +1056,7 @@ export default function Home() {
                         0% deducted on payout &bull; Automated NIBSS settlement
                       </p>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-[#0B3022] text-[#D4A843] text-[10px] font-mono font-bold uppercase tracking-wider">
+                    <span className="px-3.5 py-1.5 rounded-full bg-[#0B3022] text-[#D4A843] text-xs font-mono font-bold uppercase tracking-wider">
                       Pay As You Sweep
                     </span>
                   </div>
@@ -1098,7 +1098,7 @@ export default function Home() {
                           <span className="text-lg font-black font-mono text-[#0B3022]">
                             {plan.rate}
                           </span>
-                          <span className="text-[10px] font-mono text-[#111613]/55 block">
+                          <span className="text-xs font-mono text-[#111613]/70 block font-medium mt-0.5">
                             {plan.unit}
                           </span>
                         </div>
@@ -1159,8 +1159,8 @@ export default function Home() {
                 className="flex-1 bg-[#FAF7F0] rounded-3xl border border-[#111613]/15 p-6 md:p-8 flex flex-col justify-between shadow-sm"
               >
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0B3022] text-[#F3EEE3] text-[11px] font-mono font-bold mb-6">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#D4A843]" />
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B3022] text-[#F3EEE3] text-xs font-mono font-bold mb-6">
+                    <ShieldCheck className="w-4 h-4 text-[#D4A843]" />
                     <span>4-Step Default Protection</span>
                   </div>
 
@@ -1268,7 +1268,7 @@ export default function Home() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-6">
-                    <span className="text-[11px] font-mono font-bold tracking-widest text-[#D4A843]">
+                    <span className="text-xs font-mono font-bold tracking-widest text-[#D4A843]">
                       {item.tag}
                     </span>
                     <item.icon className="w-5 h-5 text-[#D4A843]" />
@@ -1325,8 +1325,8 @@ export default function Home() {
             >
               <CountryFlag code={item.code} size="xs" rounded={true} />
               <div className="flex flex-col text-left leading-tight">
-                <span className="text-[11px] font-bold text-[#0B3022] tracking-tight">{item.name}</span>
-                <span className="text-[9px] font-mono text-[#111613]/65 font-semibold tracking-wide">{item.tag}</span>
+                <span className="text-xs font-bold text-[#0B3022] tracking-tight">{item.name}</span>
+                <span className="text-xs font-mono text-[#111613]/70 font-semibold tracking-wide">{item.tag}</span>
               </div>
             </div>
           ))}
@@ -1406,7 +1406,7 @@ export default function Home() {
                     <div className="w-10 h-10 rounded-2xl bg-[#0B3022] flex items-center justify-center text-[#D4A843]">
                       <useCase.icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider bg-[#EAE3D2] text-[#111613]/80 px-2.5 py-1 rounded-full">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider bg-[#EAE3D2] text-[#111613]/85 px-3 py-1 rounded-full">
                       {useCase.category}
                     </span>
                   </div>
@@ -1414,13 +1414,13 @@ export default function Home() {
                   <h3 className="text-lg font-bold text-[#111613] mb-2 leading-snug tracking-tight">
                     {useCase.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-[#111613]/70 leading-relaxed mb-5">
+                  <p className="text-sm text-[#111613]/75 leading-relaxed mb-5">
                     {useCase.desc}
                   </p>
                 </div>
 
                 <div className="pt-4 border-t border-[#111613]/10 flex items-center justify-between">
-                  <span className="text-[11px] font-mono font-bold text-[#0B3022]">
+                  <span className="text-xs font-mono font-bold text-[#0B3022]">
                     ✓ {useCase.highlight}
                   </span>
                   <Link
