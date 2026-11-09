@@ -60,18 +60,18 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans text-[#0B3022]">
       
       {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-[#0C120E] p-4 rounded-2xl border border-zinc-800/90">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-[#0B3022]/10 shadow-xs">
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+          <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#0B3022]/40" />
           <input
             type="text"
             placeholder="Search by reference or circle..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-2 text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
           />
         </div>
 
@@ -80,7 +80,7 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500 cursor-pointer"
+            className="bg-[#F3EEE3]/40 border border-[#0B3022]/15 text-[#0B3022] text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-[#D4A843] cursor-pointer"
           >
             <option value="all">All Types</option>
             <option value="contribution">Contributions (Direct Debit)</option>
@@ -93,7 +93,7 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500 cursor-pointer"
+            className="bg-[#F3EEE3]/40 border border-[#0B3022]/15 text-[#0B3022] text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-[#D4A843] cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="completed">Completed</option>
@@ -104,16 +104,16 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
       </div>
 
       {/* Transaction Table */}
-      <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#0B3022]/10 rounded-2xl overflow-hidden shadow-xs">
         {filtered.length === 0 ? (
-          <div className="p-16 text-center text-zinc-500 text-xs">
+          <div className="p-16 text-center text-[#0B3022]/45 text-xs">
             No transactions found for the selected filter parameters.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-zinc-900/60 text-zinc-400 font-mono uppercase tracking-wider border-b border-zinc-800 text-[10px]">
+                <tr className="bg-[#F3EEE3]/60 text-[#0B3022]/70 font-mono uppercase tracking-wider border-b border-[#0B3022]/10 text-[10px]">
                   <th className="px-5 py-4">Transaction / Circle</th>
                   <th className="px-5 py-4">Type</th>
                   <th className="px-5 py-4">Amount</th>
@@ -124,19 +124,19 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
                   <th className="px-5 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-[#0B3022]/10">
                 {filtered.map((tx) => {
                   const isContribution = tx.type === "contribution";
                   const isPayout = tx.type === "payout";
                   const isFine = tx.type === "penalty" || tx.type === "fine";
 
                   return (
-                    <tr key={tx.id} className="hover:bg-zinc-900/40 transition-colors">
+                    <tr key={tx.id} className="hover:bg-[#F3EEE3]/25 transition-colors">
                       <td className="px-5 py-4">
-                        <p className="font-bold text-white text-sm">
+                        <p className="font-bold text-[#0B3022] text-sm">
                           {tx.groups?.name || "Ajo Contribution Circle"}
                         </p>
-                        <p className="text-[11px] font-mono text-zinc-500 mt-0.5 truncate max-w-[180px]">
+                        <p className="text-[11px] font-mono text-[#0B3022]/50 mt-0.5 truncate max-w-[180px]">
                           Ref: {tx.reference || tx.id}
                         </p>
                       </td>
@@ -144,12 +144,12 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
                       <td className="px-5 py-4">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold capitalize ${
                           isContribution
-                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                            ? "bg-amber-50 text-amber-700 border border-amber-200"
                             : isPayout
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                             : isFine
-                            ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                            : "bg-zinc-800 text-zinc-300"
+                            ? "bg-red-50 text-red-700 border border-red-200"
+                            : "bg-[#F3EEE3] text-[#0B3022]/70"
                         }`}>
                           {isContribution && <ArrowUpRight className="h-3 w-3" />}
                           {isPayout && <ArrowDownRight className="h-3 w-3" />}
@@ -158,31 +158,31 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
                         </span>
                       </td>
 
-                      <td className="px-5 py-4 font-mono font-bold text-sm text-white">
+                      <td className="px-5 py-4 font-mono font-bold text-sm text-[#0B3022]">
                         ₦{Number(tx.amount || 0).toLocaleString()}
                       </td>
 
-                      <td className="px-5 py-4 text-zinc-400">
+                      <td className="px-5 py-4 text-[#0B3022]/65">
                         Turn {tx.cycle_turn || 1}
                       </td>
 
-                      <td className="px-5 py-4 text-zinc-300 text-xs">
-                        <span className="font-mono text-emerald-400">Mono Direct Debit</span>
+                      <td className="px-5 py-4 text-[#0B3022]/80 text-xs">
+                        <span className="font-mono text-emerald-700 font-bold">Mono Direct Debit</span>
                       </td>
 
                       <td className="px-5 py-4">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
                           tx.status === "completed"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                             : tx.status === "failed"
-                            ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                            : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                            ? "bg-red-50 text-red-700 border border-red-200"
+                            : "bg-amber-50 text-amber-700 border border-amber-200"
                         }`}>
                           {tx.status?.toUpperCase() || "PENDING"}
                         </span>
                       </td>
 
-                      <td className="px-5 py-4 text-zinc-400 text-[11px]">
+                      <td className="px-5 py-4 text-[#0B3022]/60 text-[11px]">
                         {tx.created_at ? new Date(tx.created_at).toLocaleString() : "Recent"}
                       </td>
 
@@ -194,7 +194,7 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
                               setRetryTarget(tx);
                               setRetryDoubleOptIn(false);
                             }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded text-[11px] font-bold transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded text-[11px] font-bold transition-colors cursor-pointer border border-red-200"
                           >
                             <RefreshCw className="h-3 w-3" />
                             <span>Retry</span>
@@ -213,41 +213,41 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
       {/* In-App Double Opt-in Modal for Sweep Retry */}
       {retryTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-[#080B09] border border-zinc-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-5">
+          <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-5 text-[#F3EEE3]">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-[#D4A843]/20 border border-[#D4A843]/40 flex items-center justify-center text-[#D4A843] shrink-0">
                 <RefreshCw className="h-6 w-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-white tracking-tight">Confirm Debit Sweep Retry</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Retry automated direct debit for <strong className="text-white">{retryTarget.groups?.name || "Ajo Circle"}</strong>.
+                <h3 className="text-base font-bold text-[#F3EEE3] tracking-tight">Confirm Debit Sweep Retry</h3>
+                <p className="text-xs text-[#F3EEE3]/75 leading-relaxed">
+                  Retry automated direct debit for <strong className="text-[#F3EEE3]">{retryTarget.groups?.name || "Ajo Circle"}</strong>.
                 </p>
               </div>
             </div>
 
-            <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-zinc-800 text-xs space-y-1.5">
-              <div className="flex justify-between text-zinc-400">
+            <div className="bg-[#F3EEE3]/[0.06] p-3.5 rounded-xl border border-[#F3EEE3]/15 text-xs space-y-1.5">
+              <div className="flex justify-between text-[#F3EEE3]/70">
                 <span>Reference:</span>
-                <span className="text-zinc-200 font-mono text-[11px] truncate max-w-[200px]">
+                <span className="text-[#F3EEE3] font-mono text-[11px] truncate max-w-[200px]">
                   {retryTarget.reference || retryTarget.id}
                 </span>
               </div>
-              <div className="flex justify-between text-zinc-400">
+              <div className="flex justify-between text-[#F3EEE3]/70">
                 <span>Amount to Debit:</span>
-                <span className="text-emerald-400 font-mono font-bold">
+                <span className="text-[#D4A843] font-mono font-bold">
                   ₦{Number(retryTarget.amount || 0).toLocaleString()}
                 </span>
               </div>
             </div>
 
             {/* Double Opt-In Checkbox */}
-            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 cursor-pointer text-xs text-zinc-300 select-none hover:border-zinc-700 transition-colors">
+            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 cursor-pointer text-xs text-[#F3EEE3]/80 select-none hover:border-[#D4A843]/40 transition-colors">
               <input
                 type="checkbox"
                 checked={retryDoubleOptIn}
                 onChange={(e) => setRetryDoubleOptIn(e.target.checked)}
-                className="w-4 h-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-950 cursor-pointer"
+                className="w-4 h-4 rounded border-[#F3EEE3]/30 text-[#D4A843] focus:ring-[#D4A843] bg-[#0B3022] cursor-pointer"
               />
               <span>I confirm retrying this automated direct debit sweep</span>
             </label>
@@ -259,7 +259,7 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
                   setRetryTarget(null);
                   setRetryDoubleOptIn(false);
                 }}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-full text-xs font-semibold text-[#F3EEE3]/70 hover:text-[#F3EEE3] bg-[#F3EEE3]/[0.08] hover:bg-[#F3EEE3]/[0.15] transition-colors cursor-pointer border border-[#F3EEE3]/15"
               >
                 Cancel
               </button>
@@ -267,7 +267,7 @@ export function AdminTransactionsClient({ transactions }: { transactions: any[] 
                 type="button"
                 disabled={!retryDoubleOptIn || isRetrying}
                 onClick={confirmRetrySweep}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold text-zinc-950 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-full text-xs font-bold text-[#0B3022] bg-[#D4A843] hover:bg-[#dfba59] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md flex items-center gap-2 cursor-pointer"
               >
                 {isRetrying ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />}
                 <span>Queue Mono Retry</span>

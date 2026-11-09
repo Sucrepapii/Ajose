@@ -113,32 +113,32 @@ export function AdminAutoLogout() {
     <>
       {/* Interactive 60-Second Inactivity Warning Modal */}
       {showWarning && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-[#0C120E] border border-amber-500/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 p-6 space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 p-6 space-y-6">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-[#D4A843]/20 border border-[#D4A843]/40 flex items-center justify-center text-[#D4A843] shrink-0">
                 <Clock className="h-6 w-6 animate-pulse" />
               </div>
               <div>
-                <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                <span className="text-[10px] font-mono font-bold text-[#D4A843] uppercase tracking-wider bg-[#D4A843]/15 px-2 py-0.5 rounded border border-[#D4A843]/30">
                   Security Inactivity Lockout
                 </span>
-                <h3 className="text-lg font-bold text-white tracking-tight mt-1.5">
+                <h3 className="text-lg font-bold text-[#F3EEE3] tracking-tight mt-1.5">
                   Session Expiring Soon
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                <p className="text-xs text-[#F3EEE3]/70 mt-1 leading-relaxed">
                   No activity detected on the administrator desk. Your session will be securely terminated in:
                 </p>
               </div>
             </div>
 
             {/* Countdown Badge */}
-            <div className="flex items-center justify-center py-4 bg-zinc-900/60 rounded-2xl border border-zinc-800 text-center">
+            <div className="flex items-center justify-center py-4 bg-[#F3EEE3]/[0.06] rounded-2xl border border-[#F3EEE3]/15 text-center">
               <div>
-                <span className="text-4xl font-mono font-black text-amber-400">
+                <span className="text-4xl font-mono font-black text-[#D4A843]">
                   {secondsRemaining > 0 ? secondsRemaining : 0}s
                 </span>
-                <p className="text-[11px] text-zinc-500 font-mono mt-1">Seconds until auto sign-out</p>
+                <p className="text-[11px] text-[#F3EEE3]/60 font-mono mt-1">Seconds until auto sign-out</p>
               </div>
             </div>
 
@@ -147,7 +147,7 @@ export function AdminAutoLogout() {
                 type="button"
                 disabled={isLoggingOut}
                 onClick={handleLogout}
-                className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-semibold transition-colors cursor-pointer border border-zinc-800"
+                className="px-4 py-2.5 rounded-full bg-[#F3EEE3]/[0.08] hover:bg-[#F3EEE3]/[0.15] text-[#F3EEE3]/70 hover:text-[#F3EEE3] text-xs font-semibold transition-colors cursor-pointer border border-[#F3EEE3]/15"
               >
                 Sign Out Now
               </button>
@@ -155,7 +155,7 @@ export function AdminAutoLogout() {
                 type="button"
                 disabled={isLoggingOut}
                 onClick={resetTimer}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold text-xs transition-colors cursor-pointer shadow-lg shadow-emerald-950"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-xs transition-colors cursor-pointer shadow-md"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Keep Me Signed In</span>

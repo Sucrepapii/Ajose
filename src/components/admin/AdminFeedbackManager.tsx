@@ -281,19 +281,19 @@ export function AdminFeedbackManager({
     <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* Top Banner & Quick Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#0B3022]/10">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">
+            <span className="text-xs font-mono font-bold text-[#D4A843] uppercase tracking-widest">
               Community Governance
             </span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-xs text-zinc-400">Marketing Integration Desk</span>
+            <span className="text-[#0B3022]/30">•</span>
+            <span className="text-xs text-[#0B3022]/60">Marketing Integration Desk</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#0B3022] tracking-tight">
             Feedback &amp; "Loved by Communities"
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#0B3022]/70 mt-1">
             Review live contributor feedback submitted from the website footer. Curate and publish real quotes to the homepage.
           </p>
         </div>
@@ -302,14 +302,14 @@ export function AdminFeedbackManager({
           <Link
             href="/#testimonials"
             target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-[#F3EEE3] text-[#0B3022] border border-[#0B3022]/15 text-xs font-semibold transition-colors shadow-xs"
           >
-            <ExternalLink className="w-3.5 h-3.5 text-[#C5A059]" />
+            <ExternalLink className="w-3.5 h-3.5 text-[#D4A843]" />
             <span>View Live Landing Page</span>
           </Link>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#C5A059] hover:bg-[#D4AF37] text-zinc-950 text-xs font-bold shadow-md transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Add Testimonial</span>
@@ -319,41 +319,41 @@ export function AdminFeedbackManager({
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center justify-between text-[#0B3022]/60 mb-2">
             <span className="text-xs font-medium uppercase tracking-wider">Total Feedbacks</span>
-            <MessageSquare className="h-4 w-4 text-emerald-400" />
+            <MessageSquare className="h-4 w-4 text-[#0B3022]" />
           </div>
-          <div className="text-2xl font-black text-white">{totalCount}</div>
-          <p className="text-[11px] text-zinc-400 mt-1">From web footer &amp; in-app</p>
+          <div className="text-2xl font-black text-[#0B3022]">{totalCount}</div>
+          <p className="text-[11px] text-[#0B3022]/50 mt-1">From web footer &amp; in-app</p>
         </div>
 
-        <div className="bg-[#0C120E] border border-[#C5A059]/40 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A059]/10 rounded-full blur-xl pointer-events-none" />
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#C5A059]">Live in Community</span>
-            <Sparkles className="h-4 w-4 text-[#C5A059]" />
+        <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-2xl p-5 shadow-xs relative overflow-hidden text-[#F3EEE3]">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#D4A843]/15 rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between text-[#F3EEE3]/70 mb-2">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#D4A843]">Live in Community</span>
+            <Sparkles className="h-4 w-4 text-[#D4A843]" />
           </div>
-          <div className="text-2xl font-black text-[#C5A059]">{featuredCount}</div>
-          <p className="text-[11px] text-zinc-300 mt-1">Published on homepage</p>
+          <div className="text-2xl font-black text-[#D4A843]">{featuredCount}</div>
+          <p className="text-[11px] text-[#F3EEE3]/70 mt-1">Published on homepage</p>
         </div>
 
-        <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center justify-between text-[#0B3022]/60 mb-2">
             <span className="text-xs font-medium uppercase tracking-wider">Average Rating</span>
-            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+            <Star className="h-4 w-4 text-[#D4A843] fill-[#D4A843]" />
           </div>
-          <div className="text-2xl font-black text-white">{avgRating} <span className="text-xs font-normal text-zinc-500">/ 5.0</span></div>
-          <p className="text-[11px] text-zinc-400 mt-1">Contributor satisfaction</p>
+          <div className="text-2xl font-black text-[#0B3022]">{avgRating} <span className="text-xs font-normal text-[#0B3022]/50">/ 5.0</span></div>
+          <p className="text-[11px] text-[#0B3022]/50 mt-1">Contributor satisfaction</p>
         </div>
 
-        <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center justify-between text-[#0B3022]/60 mb-2">
             <span className="text-xs font-medium uppercase tracking-wider">Feature Requests</span>
-            <Lightbulb className="h-4 w-4 text-blue-400" />
+            <Lightbulb className="h-4 w-4 text-blue-600" />
           </div>
-          <div className="text-2xl font-black text-blue-400">{ideasCount}</div>
-          <p className="text-[11px] text-zinc-400 mt-1">Product roadmap ideas</p>
+          <div className="text-2xl font-black text-blue-600">{ideasCount}</div>
+          <p className="text-[11px] text-[#0B3022]/50 mt-1">Product roadmap ideas</p>
         </div>
       </div>
 
@@ -372,8 +372,8 @@ export function AdminFeedbackManager({
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === tab.id
-                  ? "bg-[#C5A059] text-zinc-950 font-bold shadow-sm"
-                  : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                  ? "bg-[#0B3022] text-[#F3EEE3] font-bold shadow-xs"
+                  : "bg-white text-[#0B3022]/70 hover:text-[#0B3022] hover:bg-[#F3EEE3] border border-[#0B3022]/10"
               }`}
             >
               {tab.label}
@@ -382,13 +382,13 @@ export function AdminFeedbackManager({
         </div>
 
         <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#0B3022]/40 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search feedback or author..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#C5A059] transition-all"
+            className="w-full pl-9 pr-4 py-2 bg-white border border-[#0B3022]/15 rounded-xl text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843] transition-all shadow-xs"
           />
         </div>
       </div>
@@ -396,10 +396,10 @@ export function AdminFeedbackManager({
       {/* Feedback Feed List */}
       <div className="space-y-4">
         {filteredItems.length === 0 ? (
-          <div className="bg-[#0C120E] border border-zinc-800 rounded-2xl p-12 text-center text-zinc-500">
-            <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-30" />
-            <h4 className="text-base font-bold text-zinc-300 mb-1">No feedback found</h4>
-            <p className="text-xs max-w-sm mx-auto">
+          <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-12 text-center text-[#0B3022]/50 shadow-xs">
+            <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-30 text-[#0B3022]" />
+            <h4 className="text-base font-bold text-[#0B3022] mb-1">No feedback found</h4>
+            <p className="text-xs max-w-sm mx-auto text-[#0B3022]/60">
               No feedback matching your selected filter. Submissions from the footer form will stream in here automatically.
             </p>
           </div>
@@ -411,31 +411,31 @@ export function AdminFeedbackManager({
             return (
               <div
                 key={item.id}
-                className={`bg-[#0C120E] rounded-2xl p-6 border transition-all duration-200 ${
+                className={`bg-white rounded-2xl p-6 border transition-all duration-200 shadow-xs ${
                   isFeatured
-                    ? "border-[#C5A059]/60 shadow-[0_0_20px_rgba(197,160,89,0.08)] bg-gradient-to-r from-[#0C120E] via-[#0F1813] to-[#0C120E]"
-                    : "border-zinc-800/80 hover:border-zinc-700"
+                    ? "border-2 border-[#D4A843] bg-gradient-to-r from-[#F3EEE3]/30 via-white to-[#F3EEE3]/30"
+                    : "border-[#0B3022]/10 hover:border-[#0B3022]/20"
                 }`}
               >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-white shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#0B3022]/10 border border-[#0B3022]/20 flex items-center justify-center text-sm font-bold text-[#0B3022] shrink-0">
                       {item.name ? item.name[0].toUpperCase() : "U"}
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h4 className="font-bold text-white text-sm">{item.name || "Anonymous"}</h4>
+                        <h4 className="font-bold text-[#0B3022] text-sm">{item.name || "Anonymous"}</h4>
                         {item.email && (
-                          <span className="text-xs text-zinc-400">({item.email})</span>
+                          <span className="text-xs text-[#0B3022]/60">({item.email})</span>
                         )}
-                        <span className="text-[11px] font-mono text-zinc-500">
+                        <span className="text-[11px] font-mono text-[#0B3022]/50">
                           &bull; {new Date(item.createdAt).toLocaleDateString()}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-medium border border-zinc-700">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#F3EEE3] text-[#0B3022]/80 font-medium border border-[#0B3022]/10">
                           {item.category}
                         </span>
                         {(item.location || item.countryCode) && (
-                          <span className="inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-300 font-medium border border-zinc-700">
+                          <span className="inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-[#F3EEE3] text-[#0B3022]/80 font-medium border border-[#0B3022]/10">
                             <CountryFlag code={item.countryCode || "NG"} size="xs" />
                             <span>{item.location || "Nigeria"}</span>
                           </span>
@@ -449,12 +449,12 @@ export function AdminFeedbackManager({
                             key={star}
                             className={`w-3.5 h-3.5 ${
                               star <= (item.rating || 5)
-                                ? "fill-[#C5A059] text-[#C5A059]"
-                                : "text-zinc-700 fill-transparent"
+                                ? "fill-[#D4A843] text-[#D4A843]"
+                                : "text-zinc-300 fill-transparent"
                             }`}
                           />
                         ))}
-                        <span className="text-xs font-semibold text-zinc-400 ml-1.5">
+                        <span className="text-xs font-semibold text-[#0B3022]/60 ml-1.5">
                           {item.rating || 5}/5
                         </span>
                       </div>
@@ -464,12 +464,12 @@ export function AdminFeedbackManager({
                   {/* Status Badge */}
                   <div className="flex items-center gap-2 self-start">
                     {isFeatured ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C5A059]/15 border border-[#C5A059]/40 text-[#C5A059] text-xs font-bold">
-                        <Sparkles className="w-3.5 h-3.5" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4A843]/15 border border-[#D4A843]/40 text-[#0B3022] text-xs font-bold">
+                        <Sparkles className="w-3.5 h-3.5 text-[#D4A843]" />
                         <span>Live in "Loved by Communities"</span>
                       </span>
                     ) : (
-                      <span className="text-xs text-zinc-500 font-medium px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800">
+                      <span className="text-xs text-[#0B3022]/50 font-medium px-2.5 py-1 rounded-full bg-[#F3EEE3] border border-[#0B3022]/10">
                         Not Featured
                       </span>
                     )}
@@ -477,29 +477,29 @@ export function AdminFeedbackManager({
                 </div>
 
                 {/* Original Feedback Message */}
-                <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-xl p-4 mb-4 text-xs sm:text-sm text-zinc-200 leading-relaxed">
+                <div className="bg-[#F3EEE3]/40 border border-[#0B3022]/10 rounded-xl p-4 mb-4 text-xs sm:text-sm text-[#0B3022] leading-relaxed">
                   "{item.message}"
                 </div>
 
                 {/* Live Preview if Featured */}
                 {isFeatured && (
-                  <div className="mb-4 bg-[#082319]/80 border border-[#C5A059]/30 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="mb-4 bg-[#0B3022] border border-[#D4A843]/30 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[#F3EEE3]">
                     <div>
-                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#C5A059] mb-1">
+                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D4A843] mb-1">
                         Landing Page Display Preview:
                       </div>
-                      <p className="text-xs text-zinc-100 italic mb-1.5">
+                      <p className="text-xs text-[#F3EEE3]/90 italic mb-1.5">
                         "{item.featuredQuote || item.message}"
                       </p>
                       <div className="flex items-center gap-2 text-xs">
                         <span className="font-bold text-white">&mdash; {item.featuredAuthor || item.name}</span>
-                        <span className="text-zinc-500">•</span>
-                        <span className="text-[#C5A059] font-medium">{item.featuredRole || "Group Admin"}</span>
+                        <span className="text-[#F3EEE3]/40">•</span>
+                        <span className="text-[#D4A843] font-medium">{item.featuredRole || "Group Admin"}</span>
                       </div>
                     </div>
                     <button
                       onClick={() => handleOpenFeatureModal(item)}
-                      className="px-3 py-1.5 text-xs bg-white/5 hover:bg-white/10 text-zinc-300 rounded-lg border border-white/10 transition-colors shrink-0 cursor-pointer"
+                      className="px-3 py-1.5 text-xs bg-white/10 hover:bg-white/20 text-[#F3EEE3] rounded-lg border border-white/10 transition-colors shrink-0 cursor-pointer"
                     >
                       Customize Quote &amp; Role
                     </button>
@@ -507,8 +507,8 @@ export function AdminFeedbackManager({
                 )}
 
                 {/* Card Action Controls */}
-                <div className="flex items-center justify-between pt-2 border-t border-zinc-900 text-xs">
-                  <span className="text-zinc-500 text-[11px]">
+                <div className="flex items-center justify-between pt-2 border-t border-[#0B3022]/10 text-xs">
+                  <span className="text-[#0B3022]/50 text-[11px]">
                     Source: {item.sourceUrl || "Footer Widget"}
                   </span>
 
@@ -516,7 +516,7 @@ export function AdminFeedbackManager({
                     <button
                       onClick={() => handleDelete(item.id)}
                       disabled={isLoading}
-                      className="text-zinc-500 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-red-500/10 cursor-pointer"
+                      className="text-[#0B3022]/40 hover:text-red-600 transition-colors p-1.5 rounded-lg hover:bg-red-500/10 cursor-pointer"
                       title="Delete Feedback"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -526,7 +526,7 @@ export function AdminFeedbackManager({
                       <button
                         onClick={() => handleUnfeature(item)}
                         disabled={isLoading}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F3EEE3] hover:bg-[#F3EEE3]/80 text-[#0B3022] font-semibold transition-all cursor-pointer border border-[#0B3022]/15"
                       >
                         {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <EyeOff className="w-3.5 h-3.5" />}
                         <span>Remove from Homepage</span>
@@ -535,7 +535,7 @@ export function AdminFeedbackManager({
                       <button
                         onClick={() => handleOpenFeatureModal(item)}
                         disabled={isLoading}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#C5A059] hover:bg-[#D4AF37] text-zinc-950 font-bold shadow-sm transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold shadow-xs transition-all cursor-pointer"
                       >
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Add to "Loved by Communities"</span>
@@ -551,28 +551,28 @@ export function AdminFeedbackManager({
 
       {/* Modal: Configure / Publish to "Loved by Communities" */}
       {modalItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0C120E] border border-zinc-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 sm:p-8 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 sm:p-8 relative text-[#F3EEE3]">
             <button
               onClick={() => setModalItem(null)}
-              className="absolute top-5 right-5 text-zinc-400 hover:text-white p-2 rounded-lg"
+              className="absolute top-5 right-5 text-[#F3EEE3]/60 hover:text-white p-2 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-[#C5A059]/20 border border-[#C5A059]/40 flex items-center justify-center text-[#C5A059]">
+              <div className="w-10 h-10 rounded-xl bg-[#D4A843]/15 border border-[#D4A843]/30 flex items-center justify-center text-[#D4A843]">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">Publish Testimonial</h3>
-                <p className="text-xs text-zinc-400">Featured on the "Loved by Communities" homepage section</p>
+                <p className="text-xs text-[#F3EEE3]/70">Featured on the "Loved by Communities" homepage section</p>
               </div>
             </div>
 
             <form onSubmit={handleSaveFeature} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                   Display Quote (Polished for Landing Page)
                 </label>
                 <textarea
@@ -580,14 +580,14 @@ export function AdminFeedbackManager({
                   value={editQuote}
                   onChange={(e) => setEditQuote(e.target.value)}
                   required
-                  className="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-[#C5A059] transition-all resize-none"
+                  className="w-full p-3 bg-white/10 border border-white/20 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-[#D4A843] transition-all resize-none"
                   placeholder="The concise quote displayed to site visitors..."
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                     Author Display Name
                   </label>
                   <input
@@ -596,12 +596,12 @@ export function AdminFeedbackManager({
                     onChange={(e) => setEditAuthor(e.target.value)}
                     required
                     placeholder="e.g., Bisi A. or Babatunde"
-                    className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
+                    className="w-full p-2.5 bg-white/10 border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:border-[#D4A843] transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                     Member Role / Title
                   </label>
                   <input
@@ -610,20 +610,20 @@ export function AdminFeedbackManager({
                     onChange={(e) => setEditRole(e.target.value)}
                     required
                     placeholder="e.g., Group Admin, Alumni President"
-                    className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
+                    className="w-full p-2.5 bg-white/10 border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:border-[#D4A843] transition-all"
                   />
                 </div>
               </div>
 
               {/* Country Selection Pills (1-Click) */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center justify-between">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5 flex items-center justify-between">
                   <span>Country Flag (1-Click Preset)</span>
-                  <span className="text-[11px] text-[#C5A059] font-normal">
+                  <span className="text-[11px] text-[#D4A843] font-normal">
                     Selected: {PRESET_COUNTRIES.find((c) => c.code === editCountryCode)?.name}
                   </span>
                 </label>
-                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-950 border border-zinc-800 rounded-xl">
+                <div className="flex flex-wrap gap-1.5 p-2 bg-white/5 border border-white/10 rounded-xl">
                   {PRESET_COUNTRIES.map((c) => (
                     <button
                       key={c.code}
@@ -634,8 +634,8 @@ export function AdminFeedbackManager({
                       }}
                       className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                         editCountryCode === c.code
-                          ? "bg-[#C5A059] text-zinc-950 font-bold shadow-xs scale-105"
-                          : "bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                          ? "bg-[#D4A843] text-[#0B3022] font-bold shadow-xs scale-105"
+                          : "bg-white/10 text-[#F3EEE3] hover:text-white hover:bg-white/20"
                       }`}
                     >
                       <CountryFlag code={c.code} size="xs" />
@@ -647,7 +647,7 @@ export function AdminFeedbackManager({
 
               {/* City / Location Input */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                   City / Location Tag
                 </label>
                 <input
@@ -656,24 +656,24 @@ export function AdminFeedbackManager({
                   onChange={(e) => setEditLocation(e.target.value)}
                   required
                   placeholder="e.g., Lagos, Nigeria • London, UK • Atlanta, USA"
-                  className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
+                  className="w-full p-2.5 bg-white/10 border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:border-[#D4A843] transition-all"
                 />
               </div>
 
               {/* Live Preview Card */}
-              <div className="bg-[#FDFBF7] p-4 rounded-xl border border-gray-200 mt-2 text-zinc-900">
+              <div className="bg-[#F3EEE3] p-4 rounded-xl border border-[#0B3022]/15 mt-2 text-[#0B3022]">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className="w-3.5 h-3.5 fill-[#C5A059] text-[#C5A059]" />
+                      <Star key={star} className="w-3.5 h-3.5 fill-[#D4A843] text-[#D4A843]" />
                     ))}
                   </div>
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#0B3022]/5 border border-[#0B3022]/15 text-[11px] font-semibold text-[#0B3022]">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#0B3022]/10 border border-[#0B3022]/15 text-[11px] font-semibold text-[#0B3022]">
                     <CountryFlag code={editCountryCode} size="xs" />
                     <span>{editLocation || "Nigeria"}</span>
                   </div>
                 </div>
-                <p className="text-xs italic text-gray-800 mb-2">
+                <p className="text-xs italic text-[#0B3022]/90 mb-2">
                   "{editQuote || "Your testimonial quote will appear here..."}"
                 </p>
                 <div className="flex items-center gap-2">
@@ -682,23 +682,23 @@ export function AdminFeedbackManager({
                   </div>
                   <div>
                     <span className="font-bold text-xs text-[#0B3022]">{editAuthor || "Author"}</span>
-                    <span className="text-[11px] text-gray-500 ml-1.5">({editRole || "Role"})</span>
+                    <span className="text-[11px] text-[#0B3022]/60 ml-1.5">({editRole || "Role"})</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setModalItem(null)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white"
+                  className="px-4 py-2 text-xs font-semibold text-[#F3EEE3]/70 hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C5A059] hover:bg-[#D4AF37] text-zinc-950 text-xs font-bold shadow-md cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] text-xs font-bold shadow-md cursor-pointer"
                 >
                   {isSaving ? (
                     <>
@@ -720,28 +720,28 @@ export function AdminFeedbackManager({
 
       {/* Modal: Create Manual Testimonial */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0C120E] border border-zinc-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 sm:p-8 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 sm:p-8 relative text-[#F3EEE3]">
             <button
               onClick={() => setIsCreateOpen(false)}
-              className="absolute top-5 right-5 text-zinc-400 hover:text-white p-2 rounded-lg"
+              className="absolute top-5 right-5 text-[#F3EEE3]/60 hover:text-white p-2 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+              <div className="w-10 h-10 rounded-xl bg-[#D4A843]/15 border border-[#D4A843]/30 flex items-center justify-center text-[#D4A843]">
                 <Plus className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">Add New Community Testimonial</h3>
-                <p className="text-xs text-zinc-400">Directly add a quote from a verified circle member</p>
+                <p className="text-xs text-[#F3EEE3]/70">Directly add a quote from a verified circle member</p>
               </div>
             </div>
 
             <form onSubmit={handleCreateManualTestimonial} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                   Testimonial Quote
                 </label>
                 <textarea
@@ -750,13 +750,13 @@ export function AdminFeedbackManager({
                   onChange={(e) => setNewQuote(e.target.value)}
                   required
                   placeholder="e.g., The direct debit automation took away all the drama from our monthly office circle..."
-                  className="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-[#C5A059] transition-all resize-none"
+                  className="w-full p-3 bg-white/10 border border-white/20 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-[#D4A843] transition-all resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                     Member Name
                   </label>
                   <input
@@ -765,12 +765,12 @@ export function AdminFeedbackManager({
                     onChange={(e) => setNewName(e.target.value)}
                     required
                     placeholder="e.g., Bisi Adeleke"
-                    className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
+                    className="w-full p-2.5 bg-white/10 border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:border-[#D4A843] transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                     Role / Title
                   </label>
                   <input
@@ -779,20 +779,20 @@ export function AdminFeedbackManager({
                     onChange={(e) => setNewRole(e.target.value)}
                     required
                     placeholder="e.g., Group Admin, Contributor"
-                    className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
+                    className="w-full p-2.5 bg-white/10 border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:border-[#D4A843] transition-all"
                   />
                 </div>
               </div>
 
               {/* Country Selection Pills (1-Click) */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center justify-between">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5 flex items-center justify-between">
                   <span>Country Flag (1-Click Preset)</span>
-                  <span className="text-[11px] text-[#C5A059] font-normal">
+                  <span className="text-[11px] text-[#D4A843] font-normal">
                     Selected: {PRESET_COUNTRIES.find((c) => c.code === newCountryCode)?.name}
                   </span>
                 </label>
-                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-950 border border-zinc-800 rounded-xl">
+                <div className="flex flex-wrap gap-1.5 p-2 bg-white/5 border border-white/10 rounded-xl">
                   {PRESET_COUNTRIES.map((c) => (
                     <button
                       key={c.code}
@@ -803,8 +803,8 @@ export function AdminFeedbackManager({
                       }}
                       className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                         newCountryCode === c.code
-                          ? "bg-[#C5A059] text-zinc-950 font-bold shadow-xs scale-105"
-                          : "bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                          ? "bg-[#D4A843] text-[#0B3022] font-bold shadow-xs scale-105"
+                          : "bg-white/10 text-[#F3EEE3] hover:text-white hover:bg-white/20"
                       }`}
                     >
                       <CountryFlag code={c.code} size="xs" />
@@ -816,7 +816,7 @@ export function AdminFeedbackManager({
 
               {/* City / Location Input */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                   City / Location Tag
                 </label>
                 <input
@@ -825,22 +825,22 @@ export function AdminFeedbackManager({
                   onChange={(e) => setNewLocation(e.target.value)}
                   required
                   placeholder="e.g., Lagos, Nigeria • London, UK • Atlanta, USA"
-                  className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white focus:outline-none focus:border-[#C5A059] transition-all"
+                  className="w-full p-2.5 bg-white/10 border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:border-[#D4A843] transition-all"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white"
+                  className="px-4 py-2 text-xs font-semibold text-[#F3EEE3]/70 hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C5A059] hover:bg-[#D4AF37] text-zinc-950 text-xs font-bold shadow-md cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] text-xs font-bold shadow-md cursor-pointer"
                 >
                   {isCreating ? (
                     <>

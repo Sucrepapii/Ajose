@@ -45,7 +45,7 @@ export function AdminSidebarNav({
 
   const renderNavLinks = () => (
     <div className="space-y-1">
-      <div className="px-3 pb-1.5 text-[10px] font-mono uppercase tracking-widest text-emerald-400/60 font-bold">
+      <div className="px-3 pb-1.5 text-[10px] font-mono uppercase tracking-widest text-[#D4A843] font-bold">
         Operations Navigation
       </div>
       {adminNavItems.map((item) => {
@@ -61,14 +61,14 @@ export function AdminSidebarNav({
             onClick={() => setMobileOpen(false)}
             className={`flex items-center gap-3 px-3 py-2 rounded-xl font-medium text-xs transition-all duration-200 ${
               isActive
-                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold shadow-sm"
-                : "text-zinc-400 hover:text-white hover:bg-white/5"
+                ? "bg-[#D4A843]/15 text-[#F3EEE3] border border-[#D4A843]/35 font-bold shadow-xs"
+                : "text-[#F3EEE3]/70 hover:text-[#F3EEE3] hover:bg-[#F3EEE3]/[0.08]"
             }`}
           >
-            <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-emerald-400" : "text-zinc-500"}`} />
+            <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#D4A843]" : "text-[#F3EEE3]/50"}`} />
             <span className="truncate">{item.label}</span>
             {isActive && (
-              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D4A843] animate-pulse shrink-0" />
             )}
           </Link>
         );
@@ -79,7 +79,7 @@ export function AdminSidebarNav({
   return (
     <>
       {/* Mobile Top Header */}
-      <header className="lg:hidden h-16 bg-[#080B09] border-b border-zinc-800/80 px-4 flex items-center justify-between sticky top-0 z-40">
+      <header className="lg:hidden h-16 bg-[#0B3022] border-b border-[#F3EEE3]/10 px-4 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
           <Image 
             src="/ajose-brand-pot.png" 
@@ -89,8 +89,8 @@ export function AdminSidebarNav({
             className="object-contain w-auto h-6"
           />
           <div className="flex items-center gap-2">
-            <span className="font-bold text-white font-serif tracking-tight text-base">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
-            <span className="text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30 font-bold">
+            <span className="font-bold text-[#F3EEE3] font-serif tracking-tight text-base">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
+            <span className="text-[10px] font-mono uppercase bg-[#D4A843]/20 text-[#D4A843] px-2 py-0.5 rounded border border-[#D4A843]/40 font-bold">
               ADMIN
             </span>
           </div>
@@ -98,7 +98,7 @@ export function AdminSidebarNav({
 
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-2 text-zinc-400 hover:text-white rounded-xl bg-zinc-900 border border-zinc-800"
+          className="p-2 text-[#F3EEE3]/70 hover:text-[#F3EEE3] rounded-xl bg-[#F3EEE3]/10 border border-[#F3EEE3]/15"
           aria-label="Toggle admin menu"
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -112,18 +112,18 @@ export function AdminSidebarNav({
           onClick={() => setMobileOpen(false)}
         >
           <div 
-            className="absolute top-0 right-0 w-[80%] max-w-xs h-full bg-[#080B09] border-l border-zinc-800 p-5 flex flex-col justify-between overflow-hidden"
+            className="absolute top-0 right-0 w-[80%] max-w-xs h-full bg-[#0B3022] border-l border-[#F3EEE3]/15 p-5 flex flex-col justify-between overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div>
-              <div className="flex items-center justify-between pb-5 border-b border-zinc-800 mb-6">
+              <div className="flex items-center justify-between pb-5 border-b border-[#F3EEE3]/10 mb-6">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-emerald-400" />
-                  <span className="font-bold text-white text-sm">Super Admin Backoffice</span>
+                  <ShieldCheck className="h-5 w-5 text-[#D4A843]" />
+                  <span className="font-bold text-[#F3EEE3] text-sm">Super Admin Backoffice</span>
                 </div>
                 <button 
                   onClick={() => setMobileOpen(false)}
-                  className="p-1 text-zinc-500 hover:text-white"
+                  className="p-1 text-[#F3EEE3]/60 hover:text-[#F3EEE3]"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -131,7 +131,7 @@ export function AdminSidebarNav({
               {renderNavLinks()}
             </div>
 
-            <div className="pt-6 border-t border-zinc-800">
+            <div className="pt-6 border-t border-[#F3EEE3]/10">
               <AdminLogoutButton />
             </div>
           </div>
@@ -139,7 +139,7 @@ export function AdminSidebarNav({
       )}
 
       {/* Desktop Persistent Sidebar - Non-scrollable and locked to screen */}
-      <aside className="hidden lg:flex w-64 bg-[#080B09] border-r border-zinc-800/80 flex-col justify-between p-4 shrink-0 h-screen max-h-screen overflow-hidden sticky top-0 select-none">
+      <aside className="hidden lg:flex w-64 bg-[#0B3022] border-r border-[#F3EEE3]/10 flex-col justify-between p-4 shrink-0 h-screen max-h-screen overflow-hidden sticky top-0 select-none">
         <div className="space-y-4">
           {/* Logo & Super Admin Badge */}
           <div className="flex items-center gap-3 px-2 py-1">
@@ -152,12 +152,12 @@ export function AdminSidebarNav({
             />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg text-white font-serif tracking-tight">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
-                <span className="text-[9px] font-mono uppercase bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold">
+                <span className="font-bold text-lg text-[#F3EEE3] font-serif tracking-tight">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
+                <span className="text-[9px] font-mono uppercase bg-[#D4A843]/20 text-[#D4A843] px-1.5 py-0.5 rounded border border-[#D4A843]/40 font-bold">
                   OPS
                 </span>
               </div>
-              <p className="text-[10px] text-zinc-500 font-mono">Platform Admin Desk</p>
+              <p className="text-[10px] text-[#F3EEE3]/60 font-mono">Platform Admin Desk</p>
             </div>
           </div>
 
@@ -166,19 +166,19 @@ export function AdminSidebarNav({
         </div>
 
         {/* User Card & Logout */}
-        <div className="space-y-3 pt-3 border-t border-zinc-800/80">
+        <div className="space-y-3 pt-3 border-t border-[#F3EEE3]/10">
           <div className="flex items-center gap-2.5 px-1.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-[#D4A843]/20 border border-[#D4A843]/40 flex items-center justify-center text-[#D4A843] font-bold text-xs uppercase shrink-0">
               {adminName.charAt(0) || "A"}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-1">
-                <p className="text-xs font-bold text-white truncate">{adminName}</p>
+                <p className="text-xs font-bold text-[#F3EEE3] truncate">{adminName}</p>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[9px] text-[#C5A059] font-mono font-semibold uppercase">{adminRole || "Admin"}</span>
-                <span className="text-zinc-600 text-[9px]">•</span>
-                <p className="text-[10px] text-zinc-500 truncate">{adminEmail}</p>
+                <span className="text-[9px] text-[#D4A843] font-mono font-semibold uppercase">{adminRole || "Admin"}</span>
+                <span className="text-[#F3EEE3]/30 text-[9px]">•</span>
+                <p className="text-[10px] text-[#F3EEE3]/60 truncate">{adminEmail}</p>
               </div>
             </div>
           </div>

@@ -52,20 +52,20 @@ export default async function AdminTransactionsPage() {
 
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-800/80">
+    <div className="space-y-6 animate-in fade-in duration-500 font-sans text-[#0B3022]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#0B3022]/10">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">
+            <span className="text-xs font-mono font-bold text-[#D4A843] uppercase tracking-widest">
               Live Ledger
             </span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-xs text-zinc-400">Mono Open-Banking Gateway</span>
+            <span className="text-[#0B3022]/30">•</span>
+            <span className="text-xs text-[#0B3022]/60">Mono Open-Banking Gateway</span>
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-[#0B3022] tracking-tight">
             Transaction &amp; Sweep Monitor
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[#0B3022]/65 mt-1">
             Real-time tracking of member automated direct debit sweeps, turn disbursements, and exit penalties.
           </p>
         </div>

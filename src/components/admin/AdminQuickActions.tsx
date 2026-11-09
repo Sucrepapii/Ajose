@@ -71,26 +71,26 @@ export function AdminQuickActions() {
       <button
         onClick={handleTriggerSweepCheck}
         disabled={isSweeping}
-        className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-zinc-950 font-bold text-xs rounded-xl transition-all shadow-md cursor-pointer"
+        className="flex items-center gap-2 px-4 py-2.5 bg-[#0B3022] hover:bg-[#124532] disabled:opacity-50 text-[#F3EEE3] font-bold text-xs rounded-xl transition-all shadow-xs cursor-pointer"
       >
-        <RefreshCw className={`h-3.5 w-3.5 ${isSweeping ? "animate-spin" : ""}`} />
+        <RefreshCw className={`h-3.5 w-3.5 text-[#D4A843] ${isSweeping ? "animate-spin" : ""}`} />
         <span>{isSweeping ? "Auditing Sweeps..." : "Run Sweep Health Check"}</span>
       </button>
 
       <button
         onClick={handleVerifyWebhooks}
         disabled={isVerifyingWebhooks}
-        className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+        className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-[#F3EEE3]/50 border border-[#0B3022]/15 text-[#0B3022] font-semibold text-xs rounded-xl transition-colors cursor-pointer shadow-xs"
       >
-        <Zap className="h-3.5 w-3.5 text-[#C5A059]" />
+        <Zap className="h-3.5 w-3.5 text-[#D4A843]" />
         <span>{isVerifyingWebhooks ? "Verifying..." : "Verify Mono Webhooks"}</span>
       </button>
 
       <button
         onClick={handleExportAudit}
-        className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+        className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-[#F3EEE3]/50 border border-[#0B3022]/15 text-[#0B3022] font-semibold text-xs rounded-xl transition-colors cursor-pointer shadow-xs"
       >
-        <Download className="h-3.5 w-3.5 text-zinc-400" />
+        <Download className="h-3.5 w-3.5 text-[#0B3022]/60" />
         <span>Export Platform Audit</span>
       </button>
     </div>

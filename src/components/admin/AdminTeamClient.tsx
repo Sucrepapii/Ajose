@@ -146,15 +146,15 @@ export function AdminTeamClient({
     <div className="space-y-6">
       
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#0B3022]/10 pb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl font-bold text-white tracking-tight">Admin Team & Access</h1>
-            <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">
+            <h1 className="text-2xl font-bold font-serif text-[#0B3022] tracking-tight">Admin Team & Access</h1>
+            <span className="text-[10px] font-mono font-bold bg-[#0B3022]/10 text-[#0B3022] px-2 py-0.5 rounded border border-[#0B3022]/20">
               IDENTITY & ROLES
             </span>
           </div>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[#0B3022]/70">
             Provision staff administrator accounts, assign operational roles, and generate temporary credentials.
           </p>
         </div>
@@ -171,60 +171,60 @@ export function AdminTeamClient({
               });
               setIsModalOpen(true);
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-all shadow-md cursor-pointer self-start sm:self-auto"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#F3EEE3] font-bold text-xs transition-all shadow-xs cursor-pointer self-start sm:self-auto"
           >
-            <UserPlus className="h-4 w-4" />
-            Create New Administrator
+            <UserPlus className="h-4 w-4 text-[#D4A843]" />
+            <span>Create New Administrator</span>
           </button>
         )}
       </div>
 
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-          <p className="text-[11px] font-mono uppercase text-zinc-400 mb-1">Total Admin Staff</p>
-          <p className="text-2xl font-bold text-white font-mono">{admins.length}</p>
-          <p className="text-[10px] text-zinc-500 mt-1">Active platform operators</p>
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
+          <p className="text-[11px] font-mono uppercase text-[#0B3022]/60 mb-1">Total Admin Staff</p>
+          <p className="text-2xl font-bold text-[#0B3022] font-mono">{admins.length}</p>
+          <p className="text-[10px] text-[#0B3022]/50 mt-1">Active platform operators</p>
         </div>
 
-        <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-          <p className="text-[11px] font-mono uppercase text-emerald-400 mb-1">Super Admins</p>
-          <p className="text-2xl font-bold text-emerald-400 font-mono">{superAdminCount}</p>
-          <p className="text-[10px] text-zinc-500 mt-1">Full system authorization</p>
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
+          <p className="text-[11px] font-mono uppercase text-[#D4A843] mb-1">Super Admins</p>
+          <p className="text-2xl font-bold text-[#0B3022] font-mono">{superAdminCount}</p>
+          <p className="text-[10px] text-[#0B3022]/50 mt-1">Full system authorization</p>
         </div>
 
-        <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-          <p className="text-[11px] font-mono uppercase text-blue-400 mb-1">Operations Leads</p>
-          <p className="text-2xl font-bold text-blue-400 font-mono">{opsCount}</p>
-          <p className="text-[10px] text-zinc-500 mt-1">Circles & auto-debit sweeps</p>
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
+          <p className="text-[11px] font-mono uppercase text-blue-700 mb-1">Operations Leads</p>
+          <p className="text-2xl font-bold text-blue-800 font-mono">{opsCount}</p>
+          <p className="text-[10px] text-[#0B3022]/50 mt-1">Circles & auto-debit sweeps</p>
         </div>
 
-        <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-          <p className="text-[11px] font-mono uppercase text-amber-400 mb-1">Risk & Compliance</p>
-          <p className="text-2xl font-bold text-amber-400 font-mono">{riskCount}</p>
-          <p className="text-[10px] text-zinc-500 mt-1">15% exit fines & defaults</p>
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
+          <p className="text-[11px] font-mono uppercase text-amber-700 mb-1">Risk & Compliance</p>
+          <p className="text-2xl font-bold text-amber-800 font-mono">{riskCount}</p>
+          <p className="text-[10px] text-[#0B3022]/50 mt-1">15% exit fines & defaults</p>
         </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800 p-3 rounded-2xl">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white border border-[#0B3022]/10 p-3 rounded-2xl shadow-xs">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#0B3022]/40" />
           <input
             type="text"
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-zinc-950/80 border border-zinc-800 rounded-xl text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="w-full pl-9 pr-3 py-1.5 bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-[11px] text-zinc-500 font-medium">Role:</span>
+          <span className="text-[11px] text-[#0B3022]/60 font-medium">Role:</span>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="bg-zinc-950/80 border border-zinc-800 text-zinc-300 rounded-xl text-xs px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="bg-[#F3EEE3]/40 border border-[#0B3022]/15 text-[#0B3022] rounded-xl text-xs px-3 py-1.5 focus:outline-none focus:border-[#D4A843]"
           >
             <option value="all">All Roles</option>
             <option value="Super Admin">Super Admin</option>
@@ -236,10 +236,10 @@ export function AdminTeamClient({
       </div>
 
       {/* Admin Table */}
-      <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-[#0B3022]/10 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto min-h-[340px] pb-24">
-          <table className="w-full text-left text-xs text-zinc-300">
-            <thead className="bg-zinc-950/80 text-[10px] font-mono uppercase text-zinc-400 border-b border-zinc-800">
+          <table className="w-full text-left text-xs text-[#0B3022]">
+            <thead className="bg-[#F3EEE3]/60 text-[10px] font-mono uppercase text-[#0B3022]/70 border-b border-[#0B3022]/10">
               <tr>
                 <th className="px-5 py-3.5">Administrator</th>
                 <th className="px-5 py-3.5">Assigned Role</th>
@@ -249,10 +249,10 @@ export function AdminTeamClient({
                 <th className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60">
+            <tbody className="divide-y divide-[#0B3022]/10">
               {filteredAdmins.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center text-zinc-500 text-xs">
+                  <td colSpan={6} className="px-5 py-8 text-center text-[#0B3022]/50 text-xs">
                     No administrators match your search criteria.
                   </td>
                 </tr>
@@ -261,28 +261,28 @@ export function AdminTeamClient({
                   const isImmutable = admin.email.toLowerCase() === "samuel@paylodeservices.com";
                   const isNearBottom = filteredAdmins.length > 1 && index >= filteredAdmins.length - 2;
                   return (
-                    <tr key={admin.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={admin.id} className="hover:bg-[#F3EEE3]/30 transition-colors">
                       {/* Name & Email */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center font-bold text-emerald-400 uppercase text-xs shrink-0">
+                          <div className="w-9 h-9 rounded-xl bg-[#0B3022]/10 border border-[#0B3022]/20 flex items-center justify-center font-bold text-[#0B3022] uppercase text-xs shrink-0">
                             {admin.fullName.charAt(0) || "A"}
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-white text-xs">{admin.fullName}</span>
+                              <span className="font-bold text-[#0B3022] text-xs">{admin.fullName}</span>
                               {isImmutable && (
-                                <span className="text-[9px] font-mono text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/30 px-1.5 py-0.2 rounded uppercase">
+                                <span className="text-[9px] font-mono text-[#0B3022] bg-[#D4A843]/20 border border-[#D4A843]/40 px-1.5 py-0.2 rounded uppercase">
                                   Root • Immutable
                                 </span>
                               )}
                               {!isImmutable && admin.isSuperAdmin && (
-                                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.2 rounded uppercase">
+                                <span className="text-[9px] font-mono text-[#F3EEE3] bg-[#0B3022] border border-[#D4A843]/30 px-1.5 py-0.2 rounded uppercase">
                                   Super Admin
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] text-zinc-400 font-mono block truncate">{admin.email}</span>
+                            <span className="text-[11px] text-[#0B3022]/60 font-mono block truncate">{admin.email}</span>
                           </div>
                         </div>
                       </td>
@@ -291,12 +291,12 @@ export function AdminTeamClient({
                       <td className="px-5 py-4">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
                           admin.role === "Super Admin"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                            ? "bg-[#0B3022] text-[#F3EEE3] border border-[#D4A843]/30"
                             : admin.role === "Operations Lead"
-                            ? "bg-blue-500/10 text-blue-400 border border-blue-500/30"
+                            ? "bg-blue-500/10 text-blue-800 border border-blue-500/20"
                             : admin.role === "Risk & Compliance"
-                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
-                            : "bg-purple-500/10 text-purple-400 border border-purple-500/30"
+                            ? "bg-amber-500/10 text-amber-800 border border-amber-500/20"
+                            : "bg-purple-500/10 text-purple-800 border border-purple-500/20"
                         }`}>
                           <span className="w-1.5 h-1.5 rounded-full bg-current" />
                           {admin.role}
@@ -308,30 +308,30 @@ export function AdminTeamClient({
                         {admin.temporaryPassword ? (
                           <div className="space-y-1">
                             <div className="flex items-center gap-1.5">
-                              <span className="font-mono text-[11px] text-[#C5A059] bg-black/40 border border-zinc-800 px-2 py-0.5 rounded">
+                              <span className="font-mono text-[11px] text-[#0B3022] bg-[#F3EEE3] border border-[#0B3022]/15 px-2 py-0.5 rounded">
                                 {admin.temporaryPassword || "Temporary"}
                               </span>
                               {admin.temporaryPassword && (
                                 <button
                                   onClick={() => copyToClipboard(admin.temporaryPassword!, admin.id)}
-                                  className="p-1 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                  className="p-1 text-[#0B3022]/60 hover:text-[#0B3022] transition-colors cursor-pointer"
                                   title="Copy temporary password"
                                 >
                                   {copiedId === admin.id ? (
-                                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                                    <Check className="h-3.5 w-3.5 text-[#D4A843]" />
                                   ) : (
                                     <Copy className="h-3.5 w-3.5" />
                                   )}
                                 </button>
                               )}
                             </div>
-                            <span className="inline-block text-[9px] font-mono text-amber-400/90 bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">
+                            <span className="inline-block text-[9px] font-mono text-amber-800 bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">
                               Pending First-Login Change
                             </span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-mono">
-                            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                          <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 font-mono">
+                            <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
                             Permanent (Secured)
                           </div>
                         )}
@@ -339,14 +339,14 @@ export function AdminTeamClient({
 
                       {/* Status */}
                       <td className="px-5 py-4">
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-700">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
                           Active
                         </span>
                       </td>
 
                       {/* Date Created */}
-                      <td className="px-5 py-4 text-[11px] text-zinc-400 font-mono">
+                      <td className="px-5 py-4 text-[11px] text-[#0B3022]/60 font-mono">
                         {new Date(admin.createdAt).toLocaleDateString("en-NG", {
                           year: "numeric",
                           month: "short",
@@ -357,7 +357,7 @@ export function AdminTeamClient({
                       {/* Actions */}
                       <td className="px-5 py-4 text-right">
                         {isImmutable ? (
-                          <span className="text-[10px] font-mono font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/30 px-2 py-0.5 rounded">
+                          <span className="text-[10px] font-mono font-bold text-[#0B3022] bg-[#D4A843]/20 border border-[#D4A843]/40 px-2 py-0.5 rounded">
                             Immutable
                           </span>
                         ) : (
@@ -371,8 +371,8 @@ export function AdminTeamClient({
                                 }}
                                 className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
                                   openMenuAdminId === admin.id
-                                    ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
-                                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
+                                    ? "bg-[#F3EEE3] text-[#0B3022] border-[#0B3022]/20 shadow-xs"
+                                    : "text-[#0B3022]/60 hover:text-[#0B3022] hover:bg-[#F3EEE3]/80 border-transparent hover:border-[#0B3022]/10"
                                 }`}
                                 title="Staff Actions"
                               >
@@ -389,11 +389,11 @@ export function AdminTeamClient({
                                     }}
                                   />
 
-                                  <div className={`absolute right-0 z-40 w-48 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl ${
+                                  <div className={`absolute right-0 z-40 w-48 bg-[#0B3022] border border-[#D4A843]/30 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl ${
                                     isNearBottom ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
                                   }`}>
-                                  <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
-                                    <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Staff Actions</p>
+                                  <div className="px-3 py-1.5 border-b border-white/10 mb-1">
+                                    <p className="text-[10px] font-mono uppercase tracking-wider text-[#F3EEE3]/60">Staff Actions</p>
                                     <p className="text-xs font-bold text-white truncate">{admin.fullName}</p>
                                   </div>
 
@@ -404,16 +404,16 @@ export function AdminTeamClient({
                                         setOpenMenuAdminId(null);
                                         copyToClipboard(admin.temporaryPassword!, admin.id);
                                       }}
-                                      className="w-full px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                      className="w-full px-3 py-2 text-xs font-semibold text-[#F3EEE3]/80 hover:text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
                                     >
-                                      <Copy className="h-3.5 w-3.5 text-[#C5A059]" />
+                                      <Copy className="h-3.5 w-3.5 text-[#D4A843]" />
                                       <span>Copy Temp Password</span>
                                     </button>
                                   )}
 
                                   {isSuperAdmin ? (
                                     <>
-                                      {admin.temporaryPassword && <div className="my-1 border-t border-zinc-800/80" />}
+                                      {admin.temporaryPassword && <div className="my-1 border-t border-white/10" />}
                                       <button
                                         type="button"
                                         onClick={() => {
@@ -421,14 +421,14 @@ export function AdminTeamClient({
                                           setAdminToRevoke({ id: admin.id, email: admin.email, fullName: admin.fullName });
                                           setRevokeDoubleOptInAgreed(false);
                                         }}
-                                        className="w-full px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                        className="w-full px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/20 flex items-center gap-2.5 transition-colors cursor-pointer"
                                       >
-                                        <Trash2 className="h-3.5 w-3.5" />
+                                        <Trash2 className="h-3.5 w-3.5 text-red-400" />
                                         <span>Revoke Access</span>
                                       </button>
                                     </>
                                   ) : (
-                                    <div className="px-3 py-1.5 text-[11px] text-zinc-500 italic">
+                                    <div className="px-3 py-1.5 text-[11px] text-[#F3EEE3]/50 italic">
                                       Requires Super Admin
                                     </div>
                                   )}
@@ -450,23 +450,23 @@ export function AdminTeamClient({
 
       {/* CREATE NEW ADMIN MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-[#080B09] border border-zinc-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 relative">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-[#C5A059] to-emerald-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 relative text-[#F3EEE3]">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#D4A843] via-[#dfba59] to-[#D4A843]" />
 
-            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+            <div className="p-6 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <div className="w-9 h-9 rounded-xl bg-[#D4A843]/15 border border-[#D4A843]/30 flex items-center justify-center text-[#D4A843]">
                   <UserPlus className="h-4 w-4" />
                 </div>
                 <div>
                   <h3 className="font-bold text-white text-base">Create Administrator</h3>
-                  <p className="text-[11px] text-zinc-400">Grant access to the Àjọṣe backoffice</p>
+                  <p className="text-[11px] text-[#F3EEE3]/70">Grant access to the Àjọṣe backoffice</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-zinc-500 hover:text-white p-1 rounded-lg"
+                className="text-[#F3EEE3]/60 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -475,42 +475,42 @@ export function AdminTeamClient({
             {createdAdmin ? (
               /* Success Screen with Credentials Box */
               <div className="p-6 space-y-4">
-                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 text-center space-y-2">
-                  <div className="mx-auto w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center space-y-2">
+                  <div className="mx-auto w-10 h-10 rounded-full bg-[#D4A843]/20 text-[#D4A843] flex items-center justify-center">
                     <Check className="h-5 w-5" />
                   </div>
                   <h4 className="font-bold text-white text-sm">Administrator Created & Emailed!</h4>
-                  <p className="text-xs text-emerald-300/90 leading-relaxed">
+                  <p className="text-xs text-[#F3EEE3]/90 leading-relaxed">
                     Credentials have been generated and an invitation email has been dispatched to <strong>{createdAdmin.email}</strong>.
                   </p>
                 </div>
 
-                <div className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 space-y-2.5 font-mono text-xs text-zinc-300">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2.5 font-mono text-xs text-[#F3EEE3]">
                   <div className="flex justify-between items-center">
-                    <span className="text-zinc-500">Name:</span>
+                    <span className="text-[#F3EEE3]/60">Name:</span>
                     <span className="text-white font-bold">{createdAdmin.fullName}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-zinc-500">Email:</span>
-                    <span className="text-emerald-400 font-bold">{createdAdmin.email}</span>
+                    <span className="text-[#F3EEE3]/60">Email:</span>
+                    <span className="text-[#D4A843] font-bold">{createdAdmin.email}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-zinc-500">Role:</span>
-                    <span className="text-[#C5A059] font-bold">{createdAdmin.role}</span>
+                    <span className="text-[#F3EEE3]/60">Role:</span>
+                    <span className="text-[#D4A843] font-bold">{createdAdmin.role}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-zinc-500">Temporary Password:</span>
-                    <span className="text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                    <span className="text-[#F3EEE3]/60">Temporary Password:</span>
+                    <span className="text-[#0B3022] font-bold bg-[#D4A843] px-2 py-0.5 rounded">
                       {createdAdmin.temporaryPassword}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center pt-2 border-t border-zinc-800">
-                    <span className="text-zinc-500">Login Portal:</span>
-                    <span className="text-zinc-300 text-[11px]">/login</span>
+                  <div className="flex justify-between items-center pt-2 border-t border-white/10">
+                    <span className="text-[#F3EEE3]/60">Login Portal:</span>
+                    <span className="text-[#F3EEE3] text-[11px]">/login</span>
                   </div>
                 </div>
 
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-[11px] text-amber-300/90 leading-relaxed">
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-[11px] text-amber-200 leading-relaxed">
                   <strong>🔒 First-Time Security Requirement:</strong><br/>
                   The administrator will be prompted to create their permanent password immediately upon their first sign-in.
                 </div>
@@ -520,7 +520,7 @@ export function AdminTeamClient({
                     `Àjọṣe Operations Admin Access:\nName: ${createdAdmin.fullName}\nEmail: ${createdAdmin.email}\nTemporary Password: ${createdAdmin.temporaryPassword}\nLogin Portal: /login\n(Note: You will be prompted to change this temporary password on your first sign-in)`,
                     "full_creds"
                   )}
-                  className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Copy className="h-3.5 w-3.5" />
                   {copiedId === "full_creds" ? "Copied Credentials!" : "Copy Full Login Credentials"}
@@ -528,7 +528,7 @@ export function AdminTeamClient({
 
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                  className="w-full py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
                 >
                   Done
                 </button>
@@ -537,8 +537,8 @@ export function AdminTeamClient({
               /* Create Admin Form */
               <form onSubmit={handleCreateAdmin} className="p-6 space-y-4 text-xs">
                 <div>
-                  <label className="block text-zinc-300 font-bold mb-1.5 flex items-center gap-1.5">
-                    <User className="h-3.5 w-3.5 text-zinc-500" />
+                  <label className="block text-[#F3EEE3]/90 font-bold mb-1.5 flex items-center gap-1.5">
+                    <User className="h-3.5 w-3.5 text-[#F3EEE3]/60" />
                     Full Name
                   </label>
                   <input
@@ -547,13 +547,13 @@ export function AdminTeamClient({
                     placeholder="e.g. Adewale Adeleke"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-[#F3EEE3]/40 focus:outline-none focus:border-[#D4A843]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-300 font-bold mb-1.5 flex items-center gap-1.5">
-                    <Mail className="h-3.5 w-3.5 text-zinc-500" />
+                  <label className="block text-[#F3EEE3]/90 font-bold mb-1.5 flex items-center gap-1.5">
+                    <Mail className="h-3.5 w-3.5 text-[#F3EEE3]/60" />
                     Corporate / Admin Email
                   </label>
                   <input
@@ -562,19 +562,19 @@ export function AdminTeamClient({
                     placeholder="e.g. adewale@ajose.ng"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-mono"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-[#F3EEE3]/40 focus:outline-none focus:border-[#D4A843] font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-300 font-bold mb-1.5 flex items-center gap-1.5">
-                    <ShieldCheck className="h-3.5 w-3.5 text-zinc-500" />
+                  <label className="block text-[#F3EEE3]/90 font-bold mb-1.5 flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-[#F3EEE3]/60" />
                     Operational Role & Permissions
                   </label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value as AdminRole })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B3022] border border-white/20 text-white focus:outline-none focus:border-[#D4A843]"
                   >
                     <option value="Operations Lead">Operations Lead (Manage circles, payouts & sweeps)</option>
                     <option value="Risk & Compliance">Risk & Compliance (15% fines, defaults & CRC)</option>
@@ -585,14 +585,14 @@ export function AdminTeamClient({
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-zinc-300 font-bold flex items-center gap-1.5">
-                      <KeyRound className="h-3.5 w-3.5 text-zinc-500" />
+                    <label className="text-[#F3EEE3]/90 font-bold flex items-center gap-1.5">
+                      <KeyRound className="h-3.5 w-3.5 text-[#F3EEE3]/60" />
                       Temporary Password
                     </label>
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, temporaryPassword: generatePassword() })}
-                      className="text-[10px] text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-[10px] text-[#D4A843] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <RefreshCw className="h-2.5 w-2.5" />
                       Regenerate
@@ -603,10 +603,10 @@ export function AdminTeamClient({
                     required
                     value={formData.temporaryPassword}
                     onChange={(e) => setFormData({ ...formData, temporaryPassword: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[#C5A059] font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-[#D4A843] font-mono focus:outline-none focus:border-[#D4A843]"
                   />
-                  <p className="text-[10px] text-zinc-400 mt-1.5 flex items-center gap-1.5">
-                    <Mail className="h-3 w-3 text-emerald-400 shrink-0" />
+                  <p className="text-[10px] text-[#F3EEE3]/70 mt-1.5 flex items-center gap-1.5">
+                    <Mail className="h-3 w-3 text-[#D4A843] shrink-0" />
                     <span>These credentials will be emailed to the administrator. They will be prompted to change this temporary password upon first login.</span>
                   </p>
                 </div>
@@ -615,14 +615,14 @@ export function AdminTeamClient({
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="w-1/2 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 font-bold rounded-xl text-xs transition-colors"
+                    className="w-1/2 py-2.5 bg-white/10 hover:bg-white/20 text-[#F3EEE3] font-bold rounded-xl text-xs transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-1/2 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-1/2 py-2.5 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {isSubmitting ? "Creating..." : "Create Admin"}
                   </button>
@@ -635,31 +635,31 @@ export function AdminTeamClient({
 
       {/* In-App Double Opt-in Revocation Modal */}
       {adminToRevoke && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-[#080B09] border border-red-500/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 p-6 space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-[#0B3022] border border-red-500/40 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 p-6 space-y-5 text-[#F3EEE3]">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0">
                 <ShieldAlert className="h-6 w-6" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-bold text-white tracking-tight">Revoke Administrator Access</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-xs text-[#F3EEE3]/70 leading-relaxed">
                   You are about to revoke platform operations privileges for <span className="text-white font-bold">{adminToRevoke.email}</span>.
                 </p>
               </div>
             </div>
 
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 text-xs text-red-200/90 leading-relaxed">
+            <div className="bg-red-950/40 border border-red-500/30 rounded-xl p-3.5 text-xs text-red-200 leading-relaxed">
               This user will immediately be barred from the Super Admin command center and all platform operations consoles.
             </div>
 
             {/* Double Opt-In Checkbox */}
-            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 cursor-pointer text-xs text-zinc-300 select-none hover:border-zinc-700 transition-colors">
+            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-white/5 border border-white/10 cursor-pointer text-xs text-[#F3EEE3]/80 select-none hover:border-white/20 transition-colors">
               <input
                 type="checkbox"
                 checked={revokeDoubleOptInAgreed}
                 onChange={(e) => setRevokeDoubleOptInAgreed(e.target.checked)}
-                className="w-4 h-4 rounded border-zinc-700 text-red-600 focus:ring-red-500 bg-zinc-950 cursor-pointer"
+                className="w-4 h-4 rounded border-white/20 text-red-500 focus:ring-red-500 bg-white/10 cursor-pointer"
               />
               <span>I confirm revocation of all operational desk access</span>
             </label>
@@ -671,7 +671,7 @@ export function AdminTeamClient({
                   setAdminToRevoke(null);
                   setRevokeDoubleOptInAgreed(false);
                 }}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#F3EEE3]/70 hover:text-white bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -679,7 +679,7 @@ export function AdminTeamClient({
                 type="button"
                 disabled={!revokeDoubleOptInAgreed || isRevoking}
                 onClick={confirmRevokeAdmin}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-red-600/20 flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md flex items-center gap-2 cursor-pointer"
               >
                 {isRevoking ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                 <span>Revoke Administrator</span>

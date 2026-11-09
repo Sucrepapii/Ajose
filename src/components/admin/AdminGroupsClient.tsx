@@ -83,15 +83,15 @@ export function AdminGroupsClient({
     <div className="space-y-6">
       
       {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#0C120E] p-4 rounded-2xl border border-zinc-800/90">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-[#0B3022]/10 shadow-xs">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+          <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#0B3022]/40" />
           <input
             type="text"
             placeholder="Search by circle name or ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-2 text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
           />
         </div>
 
@@ -103,8 +103,8 @@ export function AdminGroupsClient({
               onClick={() => setFilterStatus(status)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
                 filterStatus === status
-                  ? "bg-emerald-500 text-zinc-950 shadow-sm"
-                  : "bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                  ? "bg-[#0B3022] text-[#F3EEE3] shadow-xs"
+                  : "bg-[#F3EEE3]/60 text-[#0B3022]/70 hover:text-[#0B3022] hover:bg-[#F3EEE3]"
               }`}
             >
               {status} ({status === "all" ? groupList.length : groupList.filter(g => g.status === status).length})
@@ -114,16 +114,16 @@ export function AdminGroupsClient({
       </div>
 
       {/* Groups Table */}
-      <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#0B3022]/10 rounded-2xl overflow-hidden shadow-xs">
         {filteredGroups.length === 0 ? (
-          <div className="p-16 text-center text-zinc-500 text-xs">
+          <div className="p-16 text-center text-[#0B3022]/50 text-xs">
             No contribution circles matching the current criteria.
           </div>
         ) : (
           <div className="overflow-x-auto min-h-[360px] pb-24">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-zinc-900/60 text-zinc-400 font-mono uppercase tracking-wider border-b border-zinc-800 text-[10px]">
+                <tr className="bg-[#F3EEE3]/60 text-[#0B3022]/70 font-mono uppercase tracking-wider border-b border-[#0B3022]/10 text-[10px]">
                   <th className="px-5 py-4">Circle Details</th>
                   <th className="px-5 py-4">Contribution &amp; Pool</th>
                   <th className="px-5 py-4">Roster Capacity</th>
@@ -132,7 +132,7 @@ export function AdminGroupsClient({
                   <th className="px-5 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-[#0B3022]/10">
                 {filteredGroups.map((group, index) => {
                   const contrib = Number(group.contribution_amount || 0);
                   const maxMem = Number(group.max_members || 1);
@@ -141,45 +141,45 @@ export function AdminGroupsClient({
                   const isNearBottom = filteredGroups.length > 1 && index >= filteredGroups.length - 2;
 
                   return (
-                    <tr key={group.id} className="hover:bg-zinc-900/40 transition-colors">
+                    <tr key={group.id} className="hover:bg-[#F3EEE3]/30 transition-colors">
                       <td className="px-5 py-4">
-                        <p className="font-bold text-white text-sm">
+                        <p className="font-bold text-[#0B3022] text-sm">
                           {group.name}
                         </p>
-                        <p className="text-[11px] font-mono text-zinc-500 mt-0.5 truncate max-w-[200px]">
+                        <p className="text-[11px] font-mono text-[#0B3022]/60 mt-0.5 truncate max-w-[200px]">
                           ID: {group.id}
                         </p>
                       </td>
 
                       <td className="px-5 py-4">
-                        <p className="font-bold text-emerald-400 font-mono text-sm">
-                          ₦{contrib.toLocaleString()} <span className="text-[10px] text-zinc-500 font-normal">/turn</span>
+                        <p className="font-bold text-[#0B3022] font-mono text-sm">
+                          ₦{contrib.toLocaleString()} <span className="text-[10px] text-[#0B3022]/50 font-normal">/turn</span>
                         </p>
-                        <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
+                        <p className="text-[11px] text-[#0B3022]/70 font-mono mt-0.5">
                           Pool: ₦{poolSize.toLocaleString()}
                         </p>
                       </td>
 
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-white">
+                          <span className="font-bold text-[#0B3022]">
                             {memberCount} / {maxMem}
                           </span>
-                          <span className="text-[10px] text-zinc-500">seats</span>
+                          <span className="text-[10px] text-[#0B3022]/60">seats</span>
                         </div>
-                        <div className="w-24 bg-zinc-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
+                        <div className="w-24 bg-[#F3EEE3] h-1.5 rounded-full mt-1.5 overflow-hidden">
                           <div 
-                            className="bg-emerald-500 h-full rounded-full transition-all"
+                            className="bg-[#D4A843] h-full rounded-full transition-all"
                             style={{ width: `${Math.min(100, Math.round((memberCount / maxMem) * 100))}%` }}
                           />
                         </div>
                       </td>
 
                       <td className="px-5 py-4">
-                        <span className="capitalize font-medium text-zinc-300">
+                        <span className="capitalize font-medium text-[#0B3022]/80">
                           {group.frequency || "Monthly"}
                         </span>
-                        <p className="text-[10px] text-zinc-500 mt-0.5">
+                        <p className="text-[10px] text-[#0B3022]/50 mt-0.5">
                           {maxMem} Rounds Total
                         </p>
                       </td>
@@ -187,10 +187,10 @@ export function AdminGroupsClient({
                       <td className="px-5 py-4">
                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold capitalize ${
                           group.status === "active"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            ? "bg-emerald-500/10 text-emerald-800 border border-emerald-500/20"
                             : group.status === "completed"
-                            ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                            : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                            ? "bg-blue-500/10 text-blue-800 border border-blue-500/20"
+                            : "bg-amber-500/10 text-amber-800 border border-amber-500/20"
                         }`}>
                           {group.status}
                         </span>
@@ -208,8 +208,8 @@ export function AdminGroupsClient({
                               }}
                               className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
                                 openMenuGroupId === group.id
-                                  ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
-                                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
+                                  ? "bg-[#F3EEE3] text-[#0B3022] border-[#0B3022]/20 shadow-xs"
+                                  : "text-[#0B3022]/60 hover:text-[#0B3022] hover:bg-[#F3EEE3]/80 border-transparent hover:border-[#0B3022]/10"
                               }`}
                               title="Circle Actions"
                             >
@@ -228,12 +228,12 @@ export function AdminGroupsClient({
                                 />
 
                                 {/* Mini Dropdown Menu - Anchored directly to button */}
-                                <div className={`absolute right-0 z-40 w-52 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl ${
+                                <div className={`absolute right-0 z-40 w-52 bg-[#0B3022] border border-[#D4A843]/30 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl ${
                                   isNearBottom ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
                                 }`}>
-                                <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
-                                  <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Circle Actions</p>
-                                  <p className="text-xs font-bold text-white truncate">{group.name}</p>
+                                <div className="px-3 py-1.5 border-b border-white/10 mb-1">
+                                  <p className="text-[10px] font-mono uppercase tracking-wider text-[#F3EEE3]/60">Circle Actions</p>
+                                  <p className="text-xs font-bold text-[#F3EEE3] truncate">{group.name}</p>
                                 </div>
 
                                 <button
@@ -242,9 +242,9 @@ export function AdminGroupsClient({
                                     setOpenMenuGroupId(null);
                                     setInspectingGroup(group);
                                   }}
-                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                  className="w-full px-3 py-2 text-xs font-semibold text-[#F3EEE3]/80 hover:text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
                                 >
-                                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                                  <ShieldCheck className="h-3.5 w-3.5 text-[#D4A843]" />
                                   <span>Inspect Circle</span>
                                 </button>
 
@@ -253,9 +253,9 @@ export function AdminGroupsClient({
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={() => setOpenMenuGroupId(null)}
-                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors"
+                                  className="w-full px-3 py-2 text-xs font-semibold text-[#F3EEE3]/80 hover:text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors"
                                 >
-                                  <ExternalLink className="h-3.5 w-3.5 text-emerald-400" />
+                                  <ExternalLink className="h-3.5 w-3.5 text-[#D4A843]" />
                                   <span>Open Live Circle</span>
                                 </a>
 
@@ -265,12 +265,12 @@ export function AdminGroupsClient({
                                     setOpenMenuGroupId(null);
                                     copyId(group.id);
                                   }}
-                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                  className="w-full px-3 py-2 text-xs font-semibold text-[#F3EEE3]/80 hover:text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
                                 >
                                   {copiedId === group.id ? (
-                                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                                    <Check className="h-3.5 w-3.5 text-[#D4A843]" />
                                   ) : (
-                                    <Copy className="h-3.5 w-3.5 text-zinc-400" />
+                                    <Copy className="h-3.5 w-3.5 text-[#F3EEE3]/60" />
                                   )}
                                   <span>Copy Circle ID</span>
                                 </button>
@@ -280,15 +280,15 @@ export function AdminGroupsClient({
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={() => setOpenMenuGroupId(null)}
-                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors"
+                                  className="w-full px-3 py-2 text-xs font-semibold text-[#F3EEE3]/80 hover:text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors"
                                 >
-                                  <ExternalLink className="h-3.5 w-3.5 text-blue-400" />
+                                  <ExternalLink className="h-3.5 w-3.5 text-[#D4A843]" />
                                   <span>Public Invite Link</span>
                                 </a>
 
                                 {isSuperAdmin && (
                                   <>
-                                    <div className="my-1 border-t border-zinc-800/80" />
+                                    <div className="my-1 border-t border-white/10" />
 
                                     <button
                                       type="button"
@@ -296,9 +296,9 @@ export function AdminGroupsClient({
                                         setOpenMenuGroupId(null);
                                         setDeletingGroup(group);
                                       }}
-                                      className="w-full px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                      className="w-full px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/20 flex items-center gap-2.5 transition-colors cursor-pointer"
                                     >
-                                      <Trash2 className="h-3.5 w-3.5" />
+                                      <Trash2 className="h-3.5 w-3.5 text-red-400" />
                                       <span>Delete Circle</span>
                                     </button>
                                   </>
@@ -320,70 +320,70 @@ export function AdminGroupsClient({
 
       {/* In-App Circle Inspector Modal (Keeps Admin in Backoffice) */}
       {inspectingGroup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-[#080B09] border border-zinc-800 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 p-6 space-y-6">
-            <div className="flex items-start justify-between border-b border-zinc-800 pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 p-6 space-y-6 text-[#F3EEE3]">
+            <div className="flex items-start justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <div className="w-10 h-10 rounded-2xl bg-[#D4A843]/15 border border-[#D4A843]/30 flex items-center justify-center text-[#D4A843]">
                   <Users className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight">{inspectingGroup.name}</h3>
-                  <p className="text-xs text-zinc-400 font-mono">Circle ID: {inspectingGroup.id}</p>
+                  <p className="text-xs text-[#F3EEE3]/60 font-mono">Circle ID: {inspectingGroup.id}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectingGroup(null)}
-                className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-900 transition-colors"
+                className="p-1.5 text-[#F3EEE3]/60 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-              <div className="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80">
-                <span className="text-zinc-500 text-[10px] uppercase font-mono">Contribution</span>
-                <p className="text-emerald-400 font-bold font-mono text-sm mt-0.5">
+              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                <span className="text-[#F3EEE3]/60 text-[10px] uppercase font-mono">Contribution</span>
+                <p className="text-[#D4A843] font-bold font-mono text-sm mt-0.5">
                   ₦{Number(inspectingGroup.contribution_amount || 0).toLocaleString()}
                 </p>
               </div>
 
-              <div className="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80">
-                <span className="text-zinc-500 text-[10px] uppercase font-mono">Total Pool Size</span>
+              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                <span className="text-[#F3EEE3]/60 text-[10px] uppercase font-mono">Total Pool Size</span>
                 <p className="text-white font-bold font-mono text-sm mt-0.5">
                   ₦{(Number(inspectingGroup.contribution_amount || 0) * Number(inspectingGroup.max_members || 1)).toLocaleString()}
                 </p>
               </div>
 
-              <div className="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80">
-                <span className="text-zinc-500 text-[10px] uppercase font-mono">Occupancy</span>
+              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                <span className="text-[#F3EEE3]/60 text-[10px] uppercase font-mono">Occupancy</span>
                 <p className="text-white font-bold text-sm mt-0.5">
                   {inspectingGroup.memberships?.length || 0} / {inspectingGroup.max_members || 1} Members
                 </p>
               </div>
 
-              <div className="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80">
-                <span className="text-zinc-500 text-[10px] uppercase font-mono">Cycle Cadence</span>
-                <p className="text-zinc-300 font-bold capitalize mt-0.5">{inspectingGroup.frequency || "Monthly"}</p>
+              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                <span className="text-[#F3EEE3]/60 text-[10px] uppercase font-mono">Cycle Cadence</span>
+                <p className="text-[#F3EEE3]/90 font-bold capitalize mt-0.5">{inspectingGroup.frequency || "Monthly"}</p>
               </div>
 
-              <div className="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80">
-                <span className="text-zinc-500 text-[10px] uppercase font-mono">Operational Status</span>
-                <p className="text-emerald-400 font-bold capitalize mt-0.5">{inspectingGroup.status || "Pending"}</p>
+              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                <span className="text-[#F3EEE3]/60 text-[10px] uppercase font-mono">Operational Status</span>
+                <p className="text-[#D4A843] font-bold capitalize mt-0.5">{inspectingGroup.status || "Pending"}</p>
               </div>
 
-              <div className="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80">
-                <span className="text-zinc-500 text-[10px] uppercase font-mono">Created On</span>
-                <p className="text-zinc-300 font-medium mt-0.5">
+              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                <span className="text-[#F3EEE3]/60 text-[10px] uppercase font-mono">Created On</span>
+                <p className="text-[#F3EEE3]/80 font-medium mt-0.5">
                   {inspectingGroup.created_at ? new Date(inspectingGroup.created_at).toLocaleDateString() : "Recent"}
                 </p>
               </div>
             </div>
 
-            <div className="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800 space-y-2">
+            <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-300">Admin Trustee Reference</span>
+                <span className="text-xs font-semibold text-[#F3EEE3]/90">Admin Trustee Reference</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -392,13 +392,13 @@ export function AdminGroupsClient({
                     toast.success("Copied ID to clipboard");
                     setTimeout(() => setCopied(false), 2000);
                   }}
-                  className="text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-mono"
+                  className="text-[11px] text-[#D4A843] hover:underline flex items-center gap-1 font-mono"
                 >
                   {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                   <span>{copied ? "Copied" : "Copy ID"}</span>
                 </button>
               </div>
-              <p className="text-xs font-mono text-zinc-400 truncate">
+              <p className="text-xs font-mono text-[#F3EEE3]/70 truncate">
                 {inspectingGroup.admin_id ? `Admin UID: ${inspectingGroup.admin_id}` : "System Pool"}
               </p>
             </div>
@@ -412,7 +412,7 @@ export function AdminGroupsClient({
                     setInspectingGroup(null);
                     setDeletingGroup(grp);
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-bold transition-colors cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   <span>Delete Circle</span>
@@ -422,7 +422,7 @@ export function AdminGroupsClient({
               <button
                 type="button"
                 onClick={() => setInspectingGroup(null)}
-                className="px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs transition-colors cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-xs transition-colors cursor-pointer"
               >
                 Close Audit View
               </button>
@@ -433,8 +433,8 @@ export function AdminGroupsClient({
 
       {/* Super Admin Delete Confirmation Modal */}
       {deletingGroup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-[#0C100D] border border-red-500/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 p-6 space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-[#0B3022] border border-red-500/40 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 p-6 space-y-5 text-[#F3EEE3]">
             <div className="flex items-start gap-3.5">
               <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0">
                 <AlertTriangle className="h-6 w-6" />
@@ -443,20 +443,20 @@ export function AdminGroupsClient({
                 <h3 className="text-base font-bold text-white tracking-tight">
                   Permanently Delete Circle?
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                <p className="text-xs text-[#F3EEE3]/70 mt-1 leading-relaxed">
                   You are about to delete <strong className="text-white">{deletingGroup.name}</strong>.
                 </p>
-                <p className="text-[11px] font-mono text-zinc-500 mt-0.5">
+                <p className="text-[11px] font-mono text-[#F3EEE3]/50 mt-0.5">
                   ID: {deletingGroup.id}
                 </p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-red-950/25 border border-red-500/20 text-[11px] text-red-300 space-y-1.5 leading-relaxed">
+            <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-500/30 text-[11px] text-red-200 space-y-1.5 leading-relaxed">
               <p className="font-bold flex items-center gap-1.5 text-red-400">
                 <span>⚠️ Super Administrator Irreversible Action</span>
               </p>
-              <p className="text-zinc-400">
+              <p className="text-[#F3EEE3]/70">
                 This will permanently eradicate this circle from the platform, remove all member seats ({deletingGroup.memberships?.length || 0} members), and purge all rotational ledger records.
               </p>
             </div>
@@ -466,7 +466,7 @@ export function AdminGroupsClient({
                 type="button"
                 disabled={isDeleting}
                 onClick={() => setDeletingGroup(null)}
-                className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer border border-zinc-800"
+                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-[#F3EEE3] text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer border border-white/10"
               >
                 Cancel
               </button>
@@ -474,7 +474,7 @@ export function AdminGroupsClient({
                 type="button"
                 disabled={isDeleting}
                 onClick={handleDeleteCircle}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer shadow-lg shadow-red-950"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer shadow-lg shadow-red-950/50"
               >
                 {isDeleting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

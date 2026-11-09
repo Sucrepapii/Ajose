@@ -247,15 +247,15 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
     <div className="space-y-6">
       
       {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-[#0C120E] p-4 rounded-2xl border border-zinc-800/90">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-[#0B3022]/10 shadow-xs">
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+          <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#0B3022]/40" />
           <input
             type="text"
             placeholder="Search by name, email, next of kin..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-2 text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
           />
         </div>
 
@@ -264,7 +264,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500 cursor-pointer"
+            className="bg-[#F3EEE3]/40 border border-[#0B3022]/15 text-[#0B3022] text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-[#D4A843] cursor-pointer"
           >
             <option value="all">All Account Statuses</option>
             <option value="active">Active Members Only</option>
@@ -275,7 +275,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
           <select
             value={kycFilter}
             onChange={(e) => setKycFilter(e.target.value)}
-            className="bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500 cursor-pointer"
+            className="bg-[#F3EEE3]/40 border border-[#0B3022]/15 text-[#0B3022] text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-[#D4A843] cursor-pointer"
           >
             <option value="all">All Verification States</option>
             <option value="fully_verified">Fully Verified (BVN &amp; NIN)</option>
@@ -289,28 +289,28 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
       </div>
 
       {/* Users Table */}
-      <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#0B3022]/10 rounded-2xl overflow-hidden shadow-xs">
         {userList.length === 0 ? (
           <div className="p-16 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-[#0B3022]/10 border border-[#0B3022]/20 text-[#0B3022] mx-auto flex items-center justify-center">
               <Users className="h-6 w-6" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white">Live Registry Active</h4>
-              <p className="text-xs text-zinc-400 mt-1 max-w-md mx-auto">
+              <h4 className="text-sm font-bold text-[#0B3022]">Live Registry Active</h4>
+              <p className="text-xs text-[#0B3022]/60 mt-1 max-w-md mx-auto">
                 No registered members currently in the database. When members complete onboarding, their verified KYC records, Next of Kin, trust scores, and linked bank accounts will appear here automatically.
               </p>
             </div>
           </div>
         ) : filteredUsers.length === 0 ? (
-          <div className="p-16 text-center text-zinc-500 text-xs">
+          <div className="p-16 text-center text-[#0B3022]/50 text-xs">
             No registered users matching the selected search or filter criteria.
           </div>
         ) : (
           <div className="overflow-x-auto min-h-[360px] pb-24">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-zinc-900/60 text-zinc-400 font-mono uppercase tracking-wider border-b border-zinc-800 text-[10px]">
+                <tr className="bg-[#F3EEE3]/60 text-[#0B3022]/70 font-mono uppercase tracking-wider border-b border-[#0B3022]/10 text-[10px]">
                   <th className="px-5 py-4">User Details</th>
                   <th className="px-5 py-4">Contact</th>
                   <th className="px-5 py-4">Identity KYC</th>
@@ -321,23 +321,23 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-[#0B3022]/10">
                 {filteredUsers.map((u, index) => {
                   const fullName = `${u.first_name || ""} ${u.last_name || ""}`.trim() || "Unregistered Member";
                   const isNearBottom = filteredUsers.length > 1 && index >= filteredUsers.length - 2;
 
                   return (
-                    <tr key={u.id} className="hover:bg-zinc-900/40 transition-colors">
+                    <tr key={u.id} className="hover:bg-[#F3EEE3]/30 transition-colors">
                       {/* User Details */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase">
+                          <div className="w-8 h-8 rounded-full bg-[#0B3022]/10 border border-[#0B3022]/20 flex items-center justify-center text-[#0B3022] font-bold text-xs uppercase">
                             {fullName.charAt(0)}
                           </div>
                           <div>
-                            <p className="font-bold text-white text-sm">{fullName}</p>
+                            <p className="font-bold text-[#0B3022] text-sm">{fullName}</p>
                             {u.nickname && (
-                              <p className="text-[10px] text-[#C5A059] font-medium">
+                              <p className="text-[10px] text-[#D4A843] font-medium">
                                 Alias: &quot;{u.nickname}&quot;
                               </p>
                             )}
@@ -347,8 +347,8 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
 
                       {/* Contact */}
                       <td className="px-5 py-4">
-                        <p className="text-zinc-300 font-medium">{u.email || "No email"}</p>
-                        <p className="text-[11px] font-mono text-zinc-500 mt-0.5">{u.phone || "No phone"}</p>
+                        <p className="text-[#0B3022] font-medium">{u.email || "No email"}</p>
+                        <p className="text-[11px] font-mono text-[#0B3022]/60 mt-0.5">{u.phone || "No phone"}</p>
                       </td>
 
                       {/* Identity KYC */}
@@ -357,8 +357,8 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                           <div className="flex items-center gap-1.5">
                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
                               u.bvn_verified 
-                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
-                                : "bg-zinc-800 text-zinc-400"
+                                ? "bg-emerald-500/10 text-emerald-800 border border-emerald-500/20" 
+                                : "bg-[#F3EEE3] text-[#0B3022]/60 border border-[#0B3022]/10"
                             }`}>
                               <ShieldCheck className="h-3 w-3" />
                               {u.bvn_verified ? "BVN Verified" : "BVN Pending"}
@@ -368,8 +368,8 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                           <div className="flex items-center gap-1.5">
                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
                               u.nin_verified 
-                                ? "bg-blue-500/10 text-blue-400 border border-blue-500/20" 
-                                : "bg-zinc-800 text-zinc-400"
+                                ? "bg-blue-500/10 text-blue-800 border border-blue-500/20" 
+                                : "bg-[#F3EEE3] text-[#0B3022]/60 border border-[#0B3022]/10"
                             }`}>
                               <ShieldCheck className="h-3 w-3" />
                               {u.nin_verified ? "NIN Verified" : "NIN Pending"}
@@ -382,16 +382,16 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                       <td className="px-5 py-4">
                         {u.next_of_kin_name ? (
                           <div className="space-y-0.5">
-                            <p className="font-bold text-white text-xs flex items-center gap-1">
-                              <HeartHandshake className="h-3 w-3 text-blue-400" />
+                            <p className="font-bold text-[#0B3022] text-xs flex items-center gap-1">
+                              <HeartHandshake className="h-3 w-3 text-[#D4A843]" />
                               {u.next_of_kin_name}
                             </p>
-                            <p className="text-[10px] text-zinc-400">
+                            <p className="text-[10px] text-[#0B3022]/60">
                               {u.next_of_kin_relationship || "Family"} • {u.next_of_kin_phone || "No phone"}
                             </p>
                           </div>
                         ) : (
-                          <span className="text-zinc-500 text-[11px] italic">Not provided</span>
+                          <span className="text-[#0B3022]/40 text-[11px] italic">Not provided</span>
                         )}
                       </td>
 
@@ -402,17 +402,17 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                           <div>
                             {u.is_suspended ? (
                               <div className="space-y-0.5">
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-700 border border-red-500/20">
                                   <Ban className="h-3 w-3" /> Suspended
                                 </span>
                                 {u.suspended_reason && (
-                                  <p className="text-[10px] text-zinc-400 truncate max-w-[130px]" title={u.suspended_reason}>
+                                  <p className="text-[10px] text-[#0B3022]/60 truncate max-w-[130px]" title={u.suspended_reason}>
                                     {u.suspended_reason}
                                   </p>
                                 )}
                               </div>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
                                 <CheckCircle2 className="h-3 w-3" /> Active
                               </span>
                             )}
@@ -421,11 +421,11 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                           {/* PIN Security */}
                           <div>
                             {u.has_pin ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
                                 <KeyRound className="h-3 w-3" /> PIN Active
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-800 border border-amber-500/20">
                                 <AlertCircle className="h-3 w-3" /> No PIN
                               </span>
                             )}
@@ -436,26 +436,26 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                             {u.custom_platform_fee_pct !== null && u.custom_platform_fee_pct !== undefined ? (
                               <div className="space-y-0.5">
                                 <span 
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#C5A059]/15 text-[#C5A059] border border-[#C5A059]/30"
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#D4A843]/15 text-[#0B3022] border border-[#D4A843]/40"
                                   title={u.custom_fee_note ? `VIP Note: ${u.custom_fee_note}` : "SuperAdmin Custom VIP Fee"}
                                 >
-                                  <Sparkles className="h-2.5 w-2.5 text-[#C5A059]" /> VIP: {u.custom_platform_fee_pct.toFixed(1)}%
+                                  <Sparkles className="h-2.5 w-2.5 text-[#D4A843]" /> VIP: {u.custom_platform_fee_pct.toFixed(1)}%
                                 </span>
                                 {(u.managed_groups_count || 0) > 0 && (
-                                  <p className="text-[9px] text-zinc-500 font-mono">
+                                  <p className="text-[9px] text-[#0B3022]/50 font-mono">
                                     {u.managed_groups_count} {u.managed_groups_count === 1 ? 'circle' : 'circles'}
                                   </p>
                                 )}
                               </div>
                             ) : (u.managed_groups_count || 0) > 0 ? (
                               <div className="space-y-0.5">
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
-                                  <Landmark className="h-2.5 w-2.5 text-emerald-400" />
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#F3EEE3] text-[#0B3022] border border-[#0B3022]/15">
+                                  <Landmark className="h-2.5 w-2.5 text-[#0B3022]" />
                                   {u.managed_groups_count} {u.managed_groups_count === 1 ? 'Circle' : 'Circles'} ({u.managed_groups_count > 10 ? '1.0%' : u.managed_groups_count >= 6 ? '1.5%' : '2.0%'})
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-[10px] text-zinc-500 font-mono">Member (2.0%)</span>
+                              <span className="text-[10px] text-[#0B3022]/50 font-mono">Member (2.0%)</span>
                             )}
                           </div>
                         </div>
@@ -465,11 +465,11 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                       <td className="px-5 py-4">
                         {u.bank_name || u.account_number ? (
                           <div>
-                            <p className="font-bold text-white text-xs">{u.bank_name || "Commercial Bank"}</p>
-                            <p className="text-[11px] font-mono text-zinc-400 mt-0.5">{u.account_number || "••••••••••"}</p>
+                            <p className="font-bold text-[#0B3022] text-xs">{u.bank_name || "Commercial Bank"}</p>
+                            <p className="text-[11px] font-mono text-[#0B3022]/60 mt-0.5">{u.account_number || "••••••••••"}</p>
                           </div>
                         ) : (
-                          <span className="text-zinc-500 text-xs">No bank account</span>
+                          <span className="text-[#0B3022]/40 text-xs">No bank account</span>
                         )}
                       </td>
 
@@ -485,8 +485,8 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                               }}
                               className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
                                 openMenuUserId === u.id
-                                  ? "bg-zinc-800 text-white border-zinc-600 shadow-sm"
-                                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-transparent hover:border-zinc-700"
+                                  ? "bg-[#F3EEE3] text-[#0B3022] border-[#0B3022]/20 shadow-xs"
+                                  : "text-[#0B3022]/60 hover:text-[#0B3022] hover:bg-[#F3EEE3]/80 border-transparent hover:border-[#0B3022]/10"
                               }`}
                               title="Actions Menu"
                             >
@@ -505,12 +505,12 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                                 />
 
                                 {/* Mini Dropdown Menu - Anchored with dynamic upward/downward direction */}
-                                <div className={`absolute right-0 z-40 w-52 bg-[#0C120E] border border-zinc-700/80 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl ${
+                                <div className={`absolute right-0 z-40 w-52 bg-[#0B3022] border border-[#D4A843]/30 rounded-xl shadow-2xl py-1 text-left animate-in fade-in zoom-in-95 duration-100 backdrop-blur-xl ${
                                   isNearBottom ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
                                 }`}>
-                                <div className="px-3 py-1.5 border-b border-zinc-800/80 mb-1">
-                                  <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Actions</p>
-                                  <p className="text-xs font-bold text-white truncate">{u.first_name ? `${u.first_name} ${u.last_name || ''}`.trim() : u.email}</p>
+                                <div className="px-3 py-1.5 border-b border-white/10 mb-1">
+                                  <p className="text-[10px] font-mono uppercase tracking-wider text-[#F3EEE3]/60">Actions</p>
+                                  <p className="text-xs font-bold text-[#F3EEE3] truncate">{u.first_name ? `${u.first_name} ${u.last_name || ''}`.trim() : u.email}</p>
                                 </div>
 
                                 <button
@@ -519,15 +519,15 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                                     setOpenMenuUserId(null);
                                     setSelectedUser(u);
                                   }}
-                                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-800/80 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                  className="w-full px-3 py-2 text-xs font-semibold text-[#F3EEE3]/80 hover:text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
                                 >
-                                  <Eye className="h-3.5 w-3.5 text-emerald-400" />
+                                  <Eye className="h-3.5 w-3.5 text-[#D4A843]" />
                                   <span>View KYC Dossier</span>
                                 </button>
 
                                 {isSuperAdmin && (
                                   <>
-                                    <div className="my-1 border-t border-zinc-800/80" />
+                                    <div className="my-1 border-t border-white/10" />
 
                                     {/* Configure Platform Fee Rate */}
                                     <button
@@ -542,13 +542,13 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                                         );
                                         setFeeNoteInput(u.custom_fee_note || "");
                                       }}
-                                      className="w-full px-3 py-2 text-xs font-semibold text-[#C5A059] hover:bg-[#C5A059]/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                      className="w-full px-3 py-2 text-xs font-semibold text-[#D4A843] hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
                                     >
-                                      <Percent className="h-3.5 w-3.5 text-[#C5A059]" />
+                                      <Percent className="h-3.5 w-3.5 text-[#D4A843]" />
                                       <span>Configure Fee Rate</span>
                                     </button>
 
-                                    <div className="my-1 border-t border-zinc-800/80" />
+                                    <div className="my-1 border-t border-white/10" />
 
                                     {u.is_suspended ? (
                                       <button
@@ -558,12 +558,12 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                                           handleUnsuspendUser(u);
                                         }}
                                         disabled={reactivatingUserId === u.id}
-                                        className="w-full px-3 py-2 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/10 flex items-center gap-2.5 transition-colors cursor-pointer disabled:opacity-50"
+                                        className="w-full px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 flex items-center gap-2.5 transition-colors cursor-pointer disabled:opacity-50"
                                       >
                                         {reactivatingUserId === u.id ? (
                                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                         ) : (
-                                          <ShieldCheck className="h-3.5 w-3.5" />
+                                          <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
                                         )}
                                         <span>Restore Access</span>
                                       </button>
@@ -575,14 +575,14 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                                           setUserToSuspend(u);
                                           setSuspensionReason("");
                                         }}
-                                        className="w-full px-3 py-2 text-xs font-semibold text-amber-400 hover:bg-amber-500/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                        className="w-full px-3 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 flex items-center gap-2.5 transition-colors cursor-pointer"
                                       >
-                                        <Ban className="h-3.5 w-3.5" />
+                                        <Ban className="h-3.5 w-3.5 text-amber-400" />
                                         <span>Suspend Member</span>
                                       </button>
                                     )}
 
-                                    <div className="my-1 border-t border-zinc-800/80" />
+                                    <div className="my-1 border-t border-white/10" />
 
                                     <button
                                       type="button"
@@ -591,9 +591,9 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                                         setUserToDelete(u);
                                         setDeleteConfirmChecked(false);
                                       }}
-                                      className="w-full px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 flex items-center gap-2.5 transition-colors cursor-pointer"
+                                      className="w-full px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/20 flex items-center gap-2.5 transition-colors cursor-pointer"
                                     >
-                                      <Trash2 className="h-3.5 w-3.5" />
+                                      <Trash2 className="h-3.5 w-3.5 text-red-400" />
                                       <span>Delete Member</span>
                                     </button>
                                   </>
@@ -615,35 +615,35 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
 
       {/* Suspend Member Modal */}
       {userToSuspend && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0C120E] border border-amber-500/30 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0B3022] border border-amber-500/30 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative text-[#F3EEE3]">
             <button
               type="button"
               onClick={() => setUserToSuspend(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-[#F3EEE3]/60 hover:text-white transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center">
                 <Ban className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Suspend Member Access</h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[#F3EEE3]/70">
                   {userToSuspend.first_name} {userToSuspend.last_name} ({userToSuspend.email || "No email"})
                 </p>
               </div>
             </div>
 
-            <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-300/90 leading-relaxed">
+            <div className="bg-amber-950/40 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-200 leading-relaxed">
               Suspending this member invalidates active sessions, prevents subsequent logins, and halts rotational participation until compliance review is completed.
             </div>
 
             <form onSubmit={handleSuspendUser} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/70 mb-1.5">
                   Suspension Reason / Compliance Flag
                 </label>
                 <input
@@ -651,7 +651,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                   value={suspensionReason}
                   onChange={(e) => setSuspensionReason(e.target.value)}
                   placeholder="e.g. KYC Discrepancy, Disputed Transaction, Suspicious Activity"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs text-white placeholder-[#F3EEE3]/40 focus:outline-none focus:border-[#D4A843]"
                 />
                 {/* Quick presets */}
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -660,7 +660,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                       key={preset}
                       type="button"
                       onClick={() => setSuspensionReason(preset)}
-                      className="px-2 py-0.5 bg-zinc-900 hover:bg-zinc-800 text-[10px] text-zinc-400 hover:text-white rounded-md border border-zinc-800 transition-colors cursor-pointer"
+                      className="px-2 py-0.5 bg-white/10 hover:bg-white/20 text-[10px] text-[#F3EEE3]/80 hover:text-white rounded-md border border-white/10 transition-colors cursor-pointer"
                     >
                       {preset}
                     </button>
@@ -668,18 +668,18 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setUserToSuspend(null)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#F3EEE3]/70 hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSuspending}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold text-xs shadow-md cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-[#0B3022] font-bold text-xs shadow-md cursor-pointer disabled:opacity-50"
                 >
                   {isSuspending ? (
                     <>
@@ -701,60 +701,60 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
 
       {/* Delete Member Modal (Double Opt-In) */}
       {userToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0C120E] border border-red-500/30 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0B3022] border border-red-500/40 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative text-[#F3EEE3]">
             <button
               type="button"
               onClick={() => {
                 setUserToDelete(null);
                 setDeleteConfirmChecked(false);
               }}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-[#F3EEE3]/60 hover:text-white transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 flex items-center justify-center">
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Permanently Delete Member</h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[#F3EEE3]/70">
                   {userToDelete.first_name} {userToDelete.last_name} ({userToDelete.email || "No email"})
                 </p>
               </div>
             </div>
 
-            <div className="bg-red-950/20 border border-red-500/20 rounded-xl p-3 text-xs text-red-300/90 leading-relaxed space-y-1.5">
+            <div className="bg-red-950/40 border border-red-500/30 rounded-xl p-3 text-xs text-red-200 leading-relaxed space-y-1.5">
               <p className="font-bold">⚠️ Warning: This action cannot be undone.</p>
-              <p className="text-[11px] text-zinc-400">
+              <p className="text-[11px] text-[#F3EEE3]/70">
                 Permanently deletes the user authentication record, identity profile, notifications, and group associations. Active circle trustees cannot be deleted until the circle is resolved or reassigned.
               </p>
             </div>
 
             <div className="pt-1">
-              <label className="flex items-start gap-2.5 p-3 rounded-xl bg-zinc-950 border border-zinc-800 cursor-pointer select-none">
+              <label className="flex items-start gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={deleteConfirmChecked}
                   onChange={(e) => setDeleteConfirmChecked(e.target.checked)}
-                  className="mt-0.5 rounded border-zinc-700 text-red-500 focus:ring-red-500 cursor-pointer"
+                  className="mt-0.5 rounded border-white/30 text-red-500 focus:ring-red-500 cursor-pointer"
                 />
-                <span className="text-xs text-zinc-300">
+                <span className="text-xs text-[#F3EEE3]/90">
                   I understand this deletion is <strong className="text-white">permanent and irreversible</strong>.
                 </span>
               </label>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
               <button
                 type="button"
                 onClick={() => {
                   setUserToDelete(null);
                   setDeleteConfirmChecked(false);
                 }}
-                className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold text-[#F3EEE3]/70 hover:text-white cursor-pointer"
               >
                 Cancel
               </button>
@@ -783,38 +783,38 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
 
       {/* Configure Platform Fee Rate Modal (SuperAdmin VIP Custom Override) */}
       {userToSetFee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0C120E] border border-[#C5A059]/40 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0B3022] border border-[#D4A843]/40 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl relative text-[#F3EEE3]">
             <button
               type="button"
               onClick={() => setUserToSetFee(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-[#F3EEE3]/60 hover:text-white transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#C5A059]/10 border border-[#C5A059]/30 text-[#C5A059] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-[#D4A843]/15 border border-[#D4A843]/30 text-[#D4A843] flex items-center justify-center">
                 <Percent className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Configure Platform Fee Rate</h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[#F3EEE3]/70">
                   {userToSetFee.first_name || ""} {userToSetFee.last_name || ""} ({userToSetFee.email || "No email"}) •{" "}
-                  <span className="text-[#C5A059] font-semibold">
+                  <span className="text-[#D4A843] font-semibold">
                     {userToSetFee.managed_groups_count || 0} {userToSetFee.managed_groups_count === 1 ? "Circle" : "Circles"} Managed
                   </span>
                 </p>
               </div>
             </div>
 
-            <div className="bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-xl p-3 text-xs text-[#E6C687] leading-relaxed">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-[#F3EEE3]/90 leading-relaxed">
               <strong>SuperAdmin Fee Override:</strong> Monthly circles have a default 2.0% platform fee (dropping automatically to 1.5% for 6–10 circles and 1.0% for &gt;10 circles), capped at ₦10,000 max. Set a negotiated custom rate here for high-volume partners or strategic organizers. Daily and Weekly circles remain 0% payout fee.
             </div>
 
             <form onSubmit={handleSaveFeeRate} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                   Platform Fee Percentage (%)
                 </label>
                 <div className="relative">
@@ -826,40 +826,40 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                     value={feeRateInput}
                     onChange={(e) => setFeeRateInput(e.target.value)}
                     placeholder="e.g. 1.0 (Leave empty to reset to automatic volume tier)"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 pr-8 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C5A059]"
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 pr-8 text-xs text-white placeholder-[#F3EEE3]/40 focus:outline-none focus:border-[#D4A843]"
                   />
-                  <span className="absolute right-3 top-2.5 text-xs text-zinc-500 font-mono font-bold">%</span>
+                  <span className="absolute right-3 top-2.5 text-xs text-[#D4A843] font-mono font-bold">%</span>
                 </div>
 
                 {/* Quick Presets */}
                 <div className="mt-2.5">
-                  <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1.5">Quick Presets:</p>
+                  <p className="text-[10px] text-[#F3EEE3]/60 font-mono uppercase tracking-wider mb-1.5">Quick Presets:</p>
                   <div className="flex flex-wrap gap-1.5">
                     <button
                       type="button"
                       onClick={() => setFeeRateInput("1.0")}
-                      className="px-2.5 py-1 bg-zinc-900 hover:bg-[#C5A059]/20 text-[10px] font-semibold text-zinc-300 hover:text-[#C5A059] rounded-lg border border-zinc-800 hover:border-[#C5A059]/40 transition-colors cursor-pointer"
+                      className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-[10px] font-semibold text-[#F3EEE3] rounded-lg border border-white/15 transition-colors cursor-pointer"
                     >
                       ⭐ 1.0% (VIP High Volume)
                     </button>
                     <button
                       type="button"
                       onClick={() => setFeeRateInput("1.5")}
-                      className="px-2.5 py-1 bg-zinc-900 hover:bg-emerald-500/20 text-[10px] font-semibold text-zinc-300 hover:text-emerald-400 rounded-lg border border-zinc-800 hover:border-emerald-500/40 transition-colors cursor-pointer"
+                      className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-[10px] font-semibold text-[#F3EEE3] rounded-lg border border-white/15 transition-colors cursor-pointer"
                     >
                       🤝 1.5% (Partner Rate)
                     </button>
                     <button
                       type="button"
                       onClick={() => setFeeRateInput("0.5")}
-                      className="px-2.5 py-1 bg-zinc-900 hover:bg-blue-500/20 text-[10px] font-semibold text-zinc-300 hover:text-blue-400 rounded-lg border border-zinc-800 hover:border-blue-500/40 transition-colors cursor-pointer"
+                      className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-[10px] font-semibold text-[#F3EEE3] rounded-lg border border-white/15 transition-colors cursor-pointer"
                     >
                       🏛️ 0.5% (Institutional)
                     </button>
                     <button
                       type="button"
                       onClick={() => setFeeRateInput("0.0")}
-                      className="px-2.5 py-1 bg-zinc-900 hover:bg-purple-500/20 text-[10px] font-semibold text-zinc-300 hover:text-purple-400 rounded-lg border border-zinc-800 hover:border-purple-500/40 transition-colors cursor-pointer"
+                      className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-[10px] font-semibold text-[#F3EEE3] rounded-lg border border-white/15 transition-colors cursor-pointer"
                     >
                       🎁 0.0% (Zero Fee Promo)
                     </button>
@@ -869,7 +869,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                         setFeeRateInput("");
                         setFeeNoteInput("");
                       }}
-                      className="px-2.5 py-1 bg-zinc-900 hover:bg-red-500/20 text-[10px] font-semibold text-zinc-400 hover:text-red-400 rounded-lg border border-zinc-800 hover:border-red-500/40 transition-colors cursor-pointer"
+                      className="px-2.5 py-1 bg-white/10 hover:bg-red-500/20 text-[10px] font-semibold text-red-300 rounded-lg border border-white/15 transition-colors cursor-pointer"
                     >
                       ↺ Reset to Auto Tier
                     </button>
@@ -878,7 +878,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-300 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3EEE3]/80 mb-1.5">
                   Administrative Reason / Partnership Note
                 </label>
                 <input
@@ -886,14 +886,14 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                   value={feeNoteInput}
                   onChange={(e) => setFeeNoteInput(e.target.value)}
                   placeholder="e.g. VIP partner agreement signed; managing 12 diaspora circles"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C5A059]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs text-white placeholder-[#F3EEE3]/40 focus:outline-none focus:border-[#D4A843]"
                 />
               </div>
 
               {/* Status Preview */}
-              <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-xl p-3 text-xs space-y-1">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-xs space-y-1">
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-500">Selected Rate:</span>
+                  <span className="text-[#F3EEE3]/60">Selected Rate:</span>
                   <span className="font-bold text-white">
                     {feeRateInput.trim() === ""
                       ? `Automatic Volume Tier (${(userToSetFee.managed_groups_count || 0) > 10 ? "1.0%" : (userToSetFee.managed_groups_count || 0) >= 6 ? "1.5%" : "2.0%"})`
@@ -901,23 +901,23 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-zinc-500">Max Cap per Payout:</span>
-                  <span className="text-[#C5A059] font-mono font-bold">₦10,000 maximum</span>
+                  <span className="text-[#F3EEE3]/60">Max Cap per Payout:</span>
+                  <span className="text-[#D4A843] font-mono font-bold">₦10,000 maximum</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setUserToSetFee(null)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#F3EEE3]/70 hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingFee}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#C5A059] hover:bg-[#b08e4a] text-zinc-950 font-bold text-xs shadow-md cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-xs shadow-md cursor-pointer disabled:opacity-50"
                 >
                   {isSavingFee ? (
                     <>
@@ -939,56 +939,56 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
 
       {/* Member Full KYC & Social Dossier Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg p-6 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-2xl w-full max-w-lg p-6 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto text-[#F3EEE3]">
             <button
               type="button"
               onClick={() => setSelectedUser(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-[#F3EEE3]/60 hover:text-white transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <div className="flex items-center gap-3 border-b border-zinc-800 pb-4">
-              <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-base flex items-center justify-center">
+            <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+              <div className="w-12 h-12 rounded-full bg-[#D4A843]/15 border border-[#D4A843]/30 text-[#D4A843] font-bold text-base flex items-center justify-center">
                 {selectedUser.first_name ? selectedUser.first_name.charAt(0) : "U"}
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">
                   {selectedUser.first_name || ""} {selectedUser.last_name || ""}
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[#F3EEE3]/70">
                   {selectedUser.nickname ? `Alias: "${selectedUser.nickname}" • ` : ""}
-                  Member ID: <span className="font-mono text-emerald-400">{selectedUser.id?.slice(0, 8)}...</span>
+                  Member ID: <span className="font-mono text-[#D4A843]">{selectedUser.id?.slice(0, 8)}...</span>
                 </p>
               </div>
             </div>
 
             {/* Circle Management & Platform Fee Tier Card */}
             {((selectedUser.managed_groups_count || 0) > 0 || (selectedUser.custom_platform_fee_pct !== null && selectedUser.custom_platform_fee_pct !== undefined)) && (
-              <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-2 text-xs">
-                <div className="flex items-center justify-between text-[#C5A059] font-bold">
+              <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-2 text-xs">
+                <div className="flex items-center justify-between text-[#D4A843] font-bold">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4" />
                     <span>Circle Management &amp; Fee Tier</span>
                   </div>
                   {selectedUser.custom_platform_fee_pct !== null && selectedUser.custom_platform_fee_pct !== undefined ? (
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/40 font-mono">
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-[#D4A843]/20 text-[#D4A843] border border-[#D4A843]/40 font-mono">
                       VIP Override: {selectedUser.custom_platform_fee_pct.toFixed(1)}%
                     </span>
                   ) : (
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono">
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/10 text-white font-mono">
                       Auto Volume Tier
                     </span>
                   )}
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Circles Managed:</span>
+                  <span className="text-[#F3EEE3]/60">Circles Managed:</span>
                   <span className="font-bold text-white">{selectedUser.managed_groups_count || 0} Circles</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Effective Monthly Fee:</span>
-                  <span className="font-bold text-emerald-400">
+                  <span className="text-[#F3EEE3]/60">Effective Monthly Fee:</span>
+                  <span className="font-bold text-[#D4A843]">
                     {selectedUser.custom_platform_fee_pct !== null && selectedUser.custom_platform_fee_pct !== undefined
                       ? `${selectedUser.custom_platform_fee_pct.toFixed(1)}% (SuperAdmin VIP Custom Rate)` 
                       : (selectedUser.managed_groups_count || 0) > 10 
@@ -1000,8 +1000,8 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                 </div>
                 {selectedUser.custom_fee_note && (
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Admin Note:</span>
-                    <span className="text-zinc-300 text-right max-w-[220px] truncate">{selectedUser.custom_fee_note}</span>
+                    <span className="text-[#F3EEE3]/60">Admin Note:</span>
+                    <span className="text-[#F3EEE3]/80 text-right max-w-[220px] truncate">{selectedUser.custom_fee_note}</span>
                   </div>
                 )}
               </div>
@@ -1009,8 +1009,8 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
 
             {/* Identity & KYC Badges */}
             <div className="grid grid-cols-2 gap-2.5">
-              <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-1">
-                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">BVN &amp; NIN</span>
+              <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
+                <span className="text-[10px] text-[#F3EEE3]/60 uppercase tracking-wider font-mono">BVN &amp; NIN</span>
                 <p className="text-xs font-bold text-white flex items-center gap-1">
                   {selectedUser.bvn_verified ? (
                     <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Verified</span>
@@ -1020,15 +1020,15 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                 </p>
               </div>
 
-              <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-1">
-                <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Status &amp; Security</span>
+              <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
+                <span className="text-[10px] text-[#F3EEE3]/60 uppercase tracking-wider font-mono">Status &amp; Security</span>
                 <div className="flex items-center gap-2 flex-wrap">
                   {selectedUser.is_suspended ? (
                     <span className="text-red-400 flex items-center gap-1 text-xs font-bold"><Ban className="h-3.5 w-3.5" /> Suspended</span>
                   ) : (
                     <span className="text-emerald-400 flex items-center gap-1 text-xs font-bold"><CheckCircle2 className="h-3.5 w-3.5" /> Active</span>
                   )}
-                  <span className="text-zinc-600 font-mono">•</span>
+                  <span className="text-[#F3EEE3]/30 font-mono">•</span>
                   {selectedUser.has_pin ? (
                     <span className="text-emerald-400 flex items-center gap-1 text-xs font-bold"><ShieldCheck className="h-3.5 w-3.5" /> PIN Active</span>
                   ) : (
@@ -1039,11 +1039,11 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
             </div>
 
             {selectedUser.is_suspended && selectedUser.suspended_reason && (
-              <div className="p-3 rounded-xl bg-red-950/20 border border-red-500/20 text-xs">
+              <div className="p-3 rounded-xl bg-red-950/40 border border-red-500/30 text-xs">
                 <span className="text-[10px] font-mono font-bold text-red-400 uppercase">Suspension Reason:</span>
-                <p className="text-zinc-200 mt-0.5">{selectedUser.suspended_reason}</p>
+                <p className="text-[#F3EEE3] mt-0.5">{selectedUser.suspended_reason}</p>
                 {selectedUser.suspended_at && (
-                  <p className="text-[10px] text-zinc-500 mt-1">
+                  <p className="text-[10px] text-[#F3EEE3]/50 mt-1">
                     Flagged on: {new Date(selectedUser.suspended_at).toLocaleString()}
                   </p>
                 )}
@@ -1051,84 +1051,84 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
             )}
 
             {/* Next of Kin Section */}
-            <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
-              <div className="flex items-center gap-2 text-blue-400 font-bold text-xs">
+            <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
+              <div className="flex items-center gap-2 text-[#D4A843] font-bold text-xs">
                 <HeartHandshake className="h-4 w-4" />
                 <span>Next of Kin &amp; Emergency Contact</span>
               </div>
               {selectedUser.next_of_kin_name ? (
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Name:</span>
+                    <span className="text-[#F3EEE3]/60">Name:</span>
                     <span className="font-bold text-white">{selectedUser.next_of_kin_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Relationship:</span>
-                    <span className="text-zinc-300">{selectedUser.next_of_kin_relationship || "Family"}</span>
+                    <span className="text-[#F3EEE3]/60">Relationship:</span>
+                    <span className="text-[#F3EEE3]/80">{selectedUser.next_of_kin_relationship || "Family"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Phone:</span>
-                    <span className="font-mono text-emerald-400">{selectedUser.next_of_kin_phone || "N/A"}</span>
+                    <span className="text-[#F3EEE3]/60">Phone:</span>
+                    <span className="font-mono text-[#D4A843]">{selectedUser.next_of_kin_phone || "N/A"}</span>
                   </div>
                   {selectedUser.next_of_kin_email && (
                     <div className="flex justify-between">
-                      <span className="text-zinc-500">Email:</span>
-                      <span className="text-zinc-300">{selectedUser.next_of_kin_email}</span>
+                      <span className="text-[#F3EEE3]/60">Email:</span>
+                      <span className="text-[#F3EEE3]/80">{selectedUser.next_of_kin_email}</span>
                     </div>
                   )}
                   {selectedUser.next_of_kin_address && (
                     <div className="flex justify-between">
-                      <span className="text-zinc-500">Address:</span>
-                      <span className="text-zinc-300 text-right max-w-[200px] truncate">{selectedUser.next_of_kin_address}</span>
+                      <span className="text-[#F3EEE3]/60">Address:</span>
+                      <span className="text-[#F3EEE3]/80 text-right max-w-[200px] truncate">{selectedUser.next_of_kin_address}</span>
                     </div>
                   )}
                 </div>
               ) : (
-                <p className="text-xs text-zinc-500 italic">No Next of Kin registered yet.</p>
+                <p className="text-xs text-[#F3EEE3]/50 italic">No Next of Kin registered yet.</p>
               )}
             </div>
 
             {/* Social Guarantor */}
             {selectedUser.guarantor_name && (
-              <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-2 text-xs">
-                <div className="flex items-center gap-2 text-amber-400 font-bold">
+              <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-2 text-xs">
+                <div className="flex items-center gap-2 text-[#D4A843] font-bold">
                   <Users className="h-4 w-4" />
                   <span>Social Guarantor Endorsement</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Name:</span>
+                  <span className="text-[#F3EEE3]/60">Name:</span>
                   <span className="font-bold text-white">{selectedUser.guarantor_name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Phone:</span>
-                  <span className="font-mono text-emerald-400">{selectedUser.guarantor_phone || "N/A"}</span>
+                  <span className="text-[#F3EEE3]/60">Phone:</span>
+                  <span className="font-mono text-[#D4A843]">{selectedUser.guarantor_phone || "N/A"}</span>
                 </div>
                 {selectedUser.guarantor_relationship && (
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Relationship:</span>
-                    <span className="text-zinc-300">{selectedUser.guarantor_relationship}</span>
+                    <span className="text-[#F3EEE3]/60">Relationship:</span>
+                    <span className="text-[#F3EEE3]/80">{selectedUser.guarantor_relationship}</span>
                   </div>
                 )}
               </div>
             )}
 
             {/* Settlement Bank */}
-            <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-2 text-xs">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold">
+            <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-2 text-xs">
+              <div className="flex items-center gap-2 text-[#D4A843] font-bold">
                 <Landmark className="h-4 w-4" />
                 <span>Settlement Bank Account</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Bank:</span>
+                <span className="text-[#F3EEE3]/60">Bank:</span>
                 <span className="font-bold text-white">{selectedUser.bank_name || "N/A"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">NUBAN:</span>
-                <span className="font-mono text-emerald-400">{selectedUser.account_number || "N/A"}</span>
+                <span className="text-[#F3EEE3]/60">NUBAN:</span>
+                <span className="font-mono text-[#D4A843]">{selectedUser.account_number || "N/A"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Account Name:</span>
-                <span className="text-zinc-300">{selectedUser.account_name || "N/A"}</span>
+                <span className="text-[#F3EEE3]/60">Account Name:</span>
+                <span className="text-[#F3EEE3]/80">{selectedUser.account_name || "N/A"}</span>
               </div>
             </div>
 
@@ -1136,7 +1136,7 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
-                className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                className="w-full py-2.5 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold rounded-xl text-xs transition-colors cursor-pointer"
               >
                 Close Dossier
               </button>

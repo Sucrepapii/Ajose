@@ -227,18 +227,18 @@ export function AdminDefaultsClient({
     <div className="space-y-6">
       
       {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[#0B3022]/10 pb-3">
         <button
           onClick={() => setActiveTab("defaulters")}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === "defaulters"
-              ? "bg-red-500/20 text-red-400 border border-red-500/30 shadow-sm"
-              : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+              ? "bg-red-500/15 text-red-800 border border-red-500/30 shadow-xs"
+              : "text-[#0B3022]/60 hover:text-[#0B3022] hover:bg-[#F3EEE3]"
           }`}
         >
           <ShieldAlert className="w-3.5 h-3.5" />
           <span>Defaulters &amp; Credit Bureau Desk</span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] bg-red-500/30 text-red-300 font-mono">
+          <span className="px-2 py-0.5 rounded-full text-[10px] bg-red-500/20 text-red-800 font-mono">
             {groupedDefaulters.length} {groupedDefaulters.length === 1 ? "Member" : "Members"}
           </span>
         </button>
@@ -247,13 +247,13 @@ export function AdminDefaultsClient({
           onClick={() => setActiveTab("fines")}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === "fines"
-              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm"
-              : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+              ? "bg-[#0B3022] text-[#F3EEE3] shadow-xs"
+              : "text-[#0B3022]/60 hover:text-[#0B3022] hover:bg-[#F3EEE3]"
           }`}
         >
           <Coins className="w-3.5 h-3.5" />
           <span>15% Exit Fine Breakdown (10% Àjọṣe • 5% Admin)</span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 font-mono">
+          <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-[#F3EEE3] font-mono">
             {fines.length}
           </span>
         </button>
@@ -263,13 +263,13 @@ export function AdminDefaultsClient({
         <div className="space-y-6">
           
           {/* Policy Overview Callout */}
-          <div className="bg-[#0C120E] border border-red-500/30 rounded-2xl p-5 flex items-start gap-4 shadow-sm">
-            <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0 mt-0.5">
+          <div className="bg-white border border-red-500/30 rounded-2xl p-5 flex items-start gap-4 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-600 shrink-0 mt-0.5">
               <ShieldAlert className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-sm">Defaulter Enforcement &amp; Credit Bureau Recovery</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+              <h3 className="font-bold text-[#0B3022] text-sm">Defaulter Enforcement &amp; Credit Bureau Recovery</h3>
+              <p className="text-xs text-[#0B3022]/70 mt-1 leading-relaxed">
                 Members who collect rotational funds early and miss subsequent contributions undergo automated multi-bank recovery sweeps via Mono Open-Banking. Consolidated accounts can be submitted to CRC Credit Bureau &amp; FirstCentral with platform-wide circle restrictions.
               </p>
             </div>
@@ -277,52 +277,52 @@ export function AdminDefaultsClient({
 
           {/* KPI Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-[#0C120E] border border-zinc-800 rounded-2xl p-4">
-              <div className="flex items-center justify-between text-zinc-400 mb-1">
+            <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
+              <div className="flex items-center justify-between text-[#0B3022]/60 mb-1">
                 <span className="text-xs font-mono uppercase tracking-wider">Unique Defaulters</span>
-                <Users className="w-4 h-4 text-red-400" />
+                <Users className="w-4 h-4 text-red-500" />
               </div>
-              <p className="text-2xl font-black text-white">{groupedDefaulters.length}</p>
-              <p className="text-[11px] text-zinc-500 mt-1">Grouped by verified identity</p>
+              <p className="text-2xl font-black text-[#0B3022]">{groupedDefaulters.length}</p>
+              <p className="text-[11px] text-[#0B3022]/50 mt-1">Grouped by verified identity</p>
             </div>
 
-            <div className="bg-[#0C120E] border border-zinc-800 rounded-2xl p-4">
-              <div className="flex items-center justify-between text-zinc-400 mb-1">
+            <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
+              <div className="flex items-center justify-between text-[#0B3022]/60 mb-1">
                 <span className="text-xs font-mono uppercase tracking-wider">Total Unrecovered Debt</span>
-                <Coins className="w-4 h-4 text-[#C5A059]" />
+                <Coins className="w-4 h-4 text-[#D4A843]" />
               </div>
-              <p className="text-2xl font-black text-red-400 font-mono">₦{totalDebt.toLocaleString()}</p>
-              <p className="text-[11px] text-zinc-500 mt-1">Sum of verified overdue turn obligations</p>
+              <p className="text-2xl font-black text-red-600 font-mono">₦{totalDebt.toLocaleString()}</p>
+              <p className="text-[11px] text-[#0B3022]/50 mt-1">Sum of verified overdue turn obligations</p>
             </div>
 
-            <div className="bg-[#0C120E] border border-zinc-800 rounded-2xl p-4">
-              <div className="flex items-center justify-between text-zinc-400 mb-1">
+            <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
+              <div className="flex items-center justify-between text-[#0B3022]/60 mb-1">
                 <span className="text-xs font-mono uppercase tracking-wider">Failed Debit Records</span>
-                <Layers className="w-4 h-4 text-amber-400" />
+                <Layers className="w-4 h-4 text-amber-600" />
               </div>
-              <p className="text-2xl font-black text-amber-400 font-mono">{defaulters.length}</p>
-              <p className="text-[11px] text-zinc-500 mt-1">Collection retry attempt logs</p>
+              <p className="text-2xl font-black text-amber-700 font-mono">{defaulters.length}</p>
+              <p className="text-[11px] text-[#0B3022]/50 mt-1">Collection retry attempt logs</p>
             </div>
           </div>
 
           {/* Grouped Defaulters Section */}
-          <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
             {/* Header with Search and Expand All */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#0B3022]/10">
               <div>
-                <h4 className="font-bold text-white text-sm">Grouped Member Default Registry</h4>
-                <p className="text-xs text-zinc-400">
+                <h4 className="font-bold text-[#0B3022] text-sm">Grouped Member Default Registry</h4>
+                <p className="text-xs text-[#0B3022]/60">
                   Consolidated by member so debt, circles, and turns are tracked under a single profile.
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 {groupedDefaulters.length > 0 && (
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                  <div className="flex items-center gap-1.5 text-xs text-[#0B3022]/60">
                     <button
                       type="button"
                       onClick={expandAll}
-                      className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 hover:text-white transition-colors"
+                      className="px-2.5 py-1 rounded-lg bg-[#F3EEE3] hover:bg-[#F3EEE3]/80 hover:text-[#0B3022] transition-colors cursor-pointer"
                     >
                       Expand All
                     </button>
@@ -330,7 +330,7 @@ export function AdminDefaultsClient({
                     <button
                       type="button"
                       onClick={collapseAll}
-                      className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 hover:text-white transition-colors"
+                      className="px-2.5 py-1 rounded-lg bg-[#F3EEE3] hover:bg-[#F3EEE3]/80 hover:text-[#0B3022] transition-colors cursor-pointer"
                     >
                       Collapse All
                     </button>
@@ -342,27 +342,27 @@ export function AdminDefaultsClient({
             {/* Search Input */}
             {groupedDefaulters.length > 0 && (
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#0B3022]/40" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Filter by member name, phone, email, or circle..."
-                  className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-red-500/50"
+                  className="w-full bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
                 />
               </div>
             )}
 
             {filteredGroupedDefaulters.length === 0 ? (
               <div className="p-12 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 mx-auto flex items-center justify-center">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white">
+                  <h4 className="text-sm font-bold text-[#0B3022]">
                     {searchQuery ? "No Matching Defaulters Found" : "No Active Defaulters"}
                   </h4>
-                  <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+                  <p className="text-xs text-[#0B3022]/50 mt-1 max-w-sm mx-auto">
                     {searchQuery 
                       ? "Try searching with a different name, phone, or circle keyword."
                       : "Live system audit reports 100% scheduled debit clearing health. No accounts are in default."}
@@ -384,43 +384,43 @@ export function AdminDefaultsClient({
                   return (
                     <div
                       key={group.userId}
-                      className="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-zinc-700/80 transition-all shadow-sm"
+                      className="bg-[#F3EEE3]/30 border border-[#0B3022]/10 rounded-2xl overflow-hidden hover:border-[#0B3022]/20 transition-all shadow-xs"
                     >
                       {/* Main Group Header Row */}
                       <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                         
                         {/* Member Identity & Details */}
                         <div className="flex items-start gap-3.5">
-                          <div className="w-11 h-11 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 font-bold text-xs shrink-0 mt-0.5">
+                          <div className="w-11 h-11 rounded-2xl bg-red-500/10 border border-red-500/25 flex items-center justify-center text-red-700 font-bold text-xs shrink-0 mt-0.5">
                             {initials}
                           </div>
 
                           <div className="space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h5 className="font-bold text-white text-sm">{group.memberName}</h5>
+                              <h5 className="font-bold text-[#0B3022] text-sm">{group.memberName}</h5>
                               
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-red-500/15 text-red-400 border border-red-500/30">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-red-500/10 text-red-700 border border-red-500/20">
                                 {group.unpaidTurnsCount} {group.unpaidTurnsCount === 1 ? "Unpaid Turn" : "Unpaid Turns"} ({group.failedCount} {group.failedCount === 1 ? "Attempt" : "Attempts"})
                               </span>
 
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-amber-500/10 text-amber-800 border border-amber-500/20">
                                 Trust Score: {group.creditScore}
                               </span>
                             </div>
 
-                            <div className="flex items-center gap-2 text-[11px] text-zinc-400 flex-wrap">
+                            <div className="flex items-center gap-2 text-[11px] text-[#0B3022]/70 flex-wrap">
                               {group.phone && <span>{group.phone}</span>}
                               {group.phone && group.email && <span>•</span>}
                               {group.email && <span>{group.email}</span>}
                             </div>
 
-                            <div className="flex items-center gap-2 text-[11px] text-zinc-500 pt-0.5 flex-wrap">
+                            <div className="flex items-center gap-2 text-[11px] text-[#0B3022]/60 pt-0.5 flex-wrap">
                               <span>Linked Account:</span>
-                              <strong className="text-zinc-300 font-medium">{group.bankName}</strong>
+                              <strong className="text-[#0B3022] font-medium">{group.bankName}</strong>
                               <span>({group.accountNumber})</span>
                               <span>•</span>
                               <span>Circles:</span>
-                              <strong className="text-emerald-400 font-medium">
+                              <strong className="text-[#0B3022] font-semibold">
                                 {group.circles.join(", ") || "General Circle"}
                               </strong>
                             </div>
@@ -428,10 +428,10 @@ export function AdminDefaultsClient({
                         </div>
 
                         {/* Total Debt & Primary Actions */}
-                        <div className="flex items-center justify-between lg:justify-end gap-3 pt-3 lg:pt-0 border-t lg:border-t-0 border-zinc-800/80">
+                        <div className="flex items-center justify-between lg:justify-end gap-3 pt-3 lg:pt-0 border-t lg:border-t-0 border-[#0B3022]/10">
                           <div className="text-left lg:text-right">
-                            <span className="text-[10px] font-mono uppercase text-zinc-500 block">Total Overdue</span>
-                            <span className="text-lg font-black font-mono text-red-400">
+                            <span className="text-[10px] font-mono uppercase text-[#0B3022]/50 block">Total Overdue</span>
+                            <span className="text-lg font-black font-mono text-red-600">
                               ₦{group.totalAmountOwed.toLocaleString()}
                             </span>
                           </div>
@@ -449,10 +449,10 @@ export function AdminDefaultsClient({
                                 });
                                 setSweepOptInAgreed(false);
                               }}
-                              className="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/60 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                              className="px-3 py-2 bg-white hover:bg-[#F3EEE3] text-[#0B3022] border border-[#0B3022]/15 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
                               title="Trigger automated sweep across BVN linked accounts"
                             >
-                              <RefreshCw className="w-3 h-3 text-red-400" />
+                              <RefreshCw className="w-3 h-3 text-red-600" />
                               <span className="hidden sm:inline">Sweep</span> Mono
                             </button>
 
@@ -478,7 +478,7 @@ export function AdminDefaultsClient({
                             <button
                               type="button"
                               onClick={() => toggleExpand(group.userId)}
-                              className="p-2 text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer"
+                              className="p-2 text-[#0B3022]/60 hover:text-[#0B3022] bg-white hover:bg-[#F3EEE3] border border-[#0B3022]/10 rounded-xl transition-colors cursor-pointer"
                               aria-label={isExpanded ? "Collapse failed debits" : "Expand failed debits"}
                               title={isExpanded ? "Hide breakdown" : "View individual debits breakdown"}
                             >
@@ -491,8 +491,8 @@ export function AdminDefaultsClient({
 
                       {/* Expandable Breakdown of Individual Failed Transactions */}
                       {isExpanded && (
-                        <div className="border-t border-zinc-800/80 bg-zinc-950 p-4 sm:p-5 space-y-3 animate-in fade-in duration-200">
-                          <div className="flex items-center justify-between text-xs text-zinc-400 font-mono pb-2 border-b border-zinc-900">
+                        <div className="border-t border-[#0B3022]/10 bg-white p-4 sm:p-5 space-y-3 animate-in fade-in duration-200">
+                          <div className="flex items-center justify-between text-xs text-[#0B3022]/70 font-mono pb-2 border-b border-[#0B3022]/10">
                             <span>Collection Retry History ({group.records.length} {group.records.length === 1 ? "attempt" : "attempts"} logged across {group.unpaidTurnsCount} {group.unpaidTurnsCount === 1 ? "turn" : "turns"})</span>
                             <span>Latest Attempt: {group.latestTimestamp ? new Date(group.latestTimestamp).toLocaleDateString() : "Recent"}</span>
                           </div>
@@ -500,7 +500,7 @@ export function AdminDefaultsClient({
                           <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse text-xs">
                               <thead>
-                                <tr className="text-zinc-500 font-mono uppercase tracking-wider text-[10px] border-b border-zinc-900">
+                                <tr className="text-[#0B3022]/50 font-mono uppercase tracking-wider text-[10px] border-b border-[#0B3022]/10">
                                   <th className="py-2 px-3">Circle</th>
                                   <th className="py-2 px-3">Turn</th>
                                   <th className="py-2 px-3">Turn Obligation</th>
@@ -510,29 +510,29 @@ export function AdminDefaultsClient({
                                   <th className="py-2 px-3 text-right">Status</th>
                                 </tr>
                               </thead>
-                              <tbody className="divide-y divide-zinc-900">
+                              <tbody className="divide-y divide-[#0B3022]/5">
                                 {group.records.map((rec) => (
-                                  <tr key={rec.id} className="hover:bg-zinc-900/40 text-zinc-300">
-                                    <td className="py-2.5 px-3 font-semibold text-white">
+                                  <tr key={rec.id} className="hover:bg-[#F3EEE3]/40 text-[#0B3022]/80">
+                                    <td className="py-2.5 px-3 font-semibold text-[#0B3022]">
                                       {rec.groupName}
                                     </td>
                                     <td className="py-2.5 px-3 font-mono">
                                       Turn {rec.turn}
                                     </td>
-                                    <td className="py-2.5 px-3 font-mono font-bold text-red-400">
+                                    <td className="py-2.5 px-3 font-mono font-bold text-red-600">
                                       ₦{rec.amountOwed.toLocaleString()}
                                     </td>
-                                    <td className="py-2.5 px-3 font-mono text-zinc-400">
+                                    <td className="py-2.5 px-3 font-mono text-[#0B3022]/60">
                                       ₦{(rec.attemptAmount || rec.amountOwed).toLocaleString()}
                                     </td>
-                                    <td className="py-2.5 px-3 font-mono text-[11px] text-zinc-500">
+                                    <td className="py-2.5 px-3 font-mono text-[11px] text-[#0B3022]/50">
                                       {rec.reference}
                                     </td>
-                                    <td className="py-2.5 px-3 text-[11px] text-zinc-400">
+                                    <td className="py-2.5 px-3 text-[11px] text-[#0B3022]/60">
                                       {rec.timestamp ? new Date(rec.timestamp).toLocaleDateString() : "Recent"}
                                     </td>
                                     <td className="py-2.5 px-3 text-right">
-                                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-700 border border-red-500/20">
                                         Failed
                                       </span>
                                     </td>
@@ -541,7 +541,7 @@ export function AdminDefaultsClient({
                               </tbody>
                             </table>
                           </div>
-                          <p className="text-[11px] text-zinc-500 italic pt-1">
+                          <p className="text-[11px] text-[#0B3022]/50 italic pt-1">
                             Note: Multiple records for the same turn reflect automated retry collection sweeps by the sweep scheduler.
                           </p>
                         </div>
@@ -559,34 +559,34 @@ export function AdminDefaultsClient({
         <div className="space-y-6">
           
           {/* Policy Overview Callout */}
-          <div className="bg-[#0C120E] border border-[#C5A059]/30 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059] shrink-0 mt-0.5">
+              <div className="w-10 h-10 rounded-xl bg-[#D4A843]/15 border border-[#D4A843]/30 flex items-center justify-center text-[#D4A843] shrink-0 mt-0.5">
                 <Coins className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-white text-sm">15% Early Departure Split Policy</h3>
-                <p className="text-xs text-zinc-400 mt-1 max-w-2xl leading-relaxed">
-                  When a member leaves mid-cycle, a 15% exit fine is levied. <strong className="text-[#C5A059]">10%</strong> is retained by Àjọṣe platform handling, and <strong className="text-emerald-400">5%</strong> is credited to the circle Admin trustee as compensation for re-balancing the roster. Members awaiting payout must wait their turn to collect net funds.
+                <h3 className="font-bold text-[#0B3022] text-sm">15% Early Departure Split Policy</h3>
+                <p className="text-xs text-[#0B3022]/70 mt-1 max-w-2xl leading-relaxed">
+                  When a member leaves mid-cycle, a 15% exit fine is levied. <strong className="text-[#D4A843]">10%</strong> is retained by Àjọṣe platform handling, and <strong className="text-[#0B3022]">5%</strong> is credited to the circle Admin trustee as compensation for re-balancing the roster. Members awaiting payout must wait their turn to collect net funds.
                 </p>
               </div>
             </div>
             <div className="text-right shrink-0">
-              <p className="text-[10px] uppercase font-mono text-zinc-500">Fine Revenue Share</p>
-              <p className="text-lg font-black text-[#C5A059]">10% Àjọṣe • 5% Admin</p>
+              <p className="text-[10px] uppercase font-mono text-[#0B3022]/50">Fine Revenue Share</p>
+              <p className="text-lg font-black text-[#D4A843]">10% Àjọṣe • 5% Admin</p>
             </div>
           </div>
 
           {/* Fines Table */}
-          <div className="bg-[#0C120E] border border-zinc-800/90 rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-white border border-[#0B3022]/10 rounded-2xl overflow-hidden shadow-xs">
             {fines.length === 0 ? (
               <div className="p-16 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+                <div className="w-12 h-12 rounded-2xl bg-[#0B3022]/10 border border-[#0B3022]/20 text-[#0B3022] mx-auto flex items-center justify-center">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white">Zero Active Departure Fines</h4>
-                  <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+                  <h4 className="text-sm font-bold text-[#0B3022]">Zero Active Departure Fines</h4>
+                  <p className="text-xs text-[#0B3022]/50 mt-1 max-w-sm mx-auto">
                     Live Supabase ledger reports zero mid-cycle departure penalties. All circles are progressing without early exits.
                   </p>
                 </div>
@@ -595,7 +595,7 @@ export function AdminDefaultsClient({
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="bg-zinc-900/60 text-zinc-400 font-mono uppercase tracking-wider border-b border-zinc-800 text-[10px]">
+                    <tr className="bg-[#F3EEE3]/60 text-[#0B3022]/70 font-mono uppercase tracking-wider border-b border-[#0B3022]/10 text-[10px]">
                       <th className="px-5 py-4">Exited Member &amp; Circle</th>
                       <th className="px-5 py-4">Exit Type &amp; Status</th>
                       <th className="px-5 py-4">Total 15% Fine</th>
@@ -605,46 +605,46 @@ export function AdminDefaultsClient({
                       <th className="px-5 py-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/60">
+                  <tbody className="divide-y divide-[#0B3022]/10">
                     {fines.map((fine) => (
-                      <tr key={fine.id} className="hover:bg-zinc-900/40 transition-colors">
+                      <tr key={fine.id} className="hover:bg-[#F3EEE3]/30 transition-colors">
                         <td className="px-5 py-4">
-                          <p className="font-bold text-white text-sm">{fine.memberName}</p>
-                          <p className="text-[11px] text-zinc-400 mt-0.5">{fine.groupName}</p>
-                          <p className="text-[10px] font-mono text-zinc-500">{fine.phone}</p>
+                          <p className="font-bold text-[#0B3022] text-sm">{fine.memberName}</p>
+                          <p className="text-[11px] text-[#0B3022]/60 mt-0.5">{fine.groupName}</p>
+                          <p className="text-[10px] font-mono text-[#0B3022]/50">{fine.phone}</p>
                         </td>
 
                         <td className="px-5 py-4">
                           <span className={`inline-block px-2.5 py-0.5 rounded text-[10px] font-mono font-bold ${
                             fine.status === "Settled"
-                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                              : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                              ? "bg-emerald-500/10 text-emerald-800 border border-emerald-500/20"
+                              : "bg-amber-500/10 text-amber-800 border border-amber-500/20"
                           }`}>
                             {fine.status}
                           </span>
-                          <p className="text-[11px] text-zinc-400 mt-1">
+                          <p className="text-[11px] text-[#0B3022]/70 mt-1">
                             Turn {fine.payoutTurn}
                           </p>
                         </td>
 
-                        <td className="px-5 py-4 font-mono font-bold text-white text-sm">
+                        <td className="px-5 py-4 font-mono font-bold text-[#0B3022] text-sm">
                           ₦{fine.totalFine15Pct.toLocaleString()}
-                          <p className="text-[10px] text-zinc-500 font-normal">of ₦{fine.poolAmount.toLocaleString()}</p>
+                          <p className="text-[10px] text-[#0B3022]/50 font-normal">of ₦{fine.poolAmount.toLocaleString()}</p>
                         </td>
 
-                        <td className="px-5 py-4 font-mono font-bold text-[#C5A059] text-sm">
+                        <td className="px-5 py-4 font-mono font-bold text-[#D4A843] text-sm">
                           ₦{(fine.ajoseCut10Pct ?? fine.ajoseCut5Pct ?? 0).toLocaleString()}
-                          <p className="text-[10px] text-zinc-500 font-normal">Platform Fee</p>
+                          <p className="text-[10px] text-[#0B3022]/50 font-normal">Platform Fee</p>
                         </td>
 
-                        <td className="px-5 py-4 font-mono font-bold text-emerald-400 text-sm">
+                        <td className="px-5 py-4 font-mono font-bold text-[#0B3022] text-sm">
                           ₦{(fine.adminCut5Pct ?? fine.adminCut10Pct ?? 0).toLocaleString()}
-                          <p className="text-[10px] text-zinc-500 font-normal">To Admin Bank</p>
+                          <p className="text-[10px] text-[#0B3022]/50 font-normal">To Admin Bank</p>
                         </td>
 
-                        <td className="px-5 py-4 text-zinc-300">
+                        <td className="px-5 py-4 text-[#0B3022]/80">
                           <p className="text-xs leading-relaxed">{fine.payoutAction}</p>
-                          <p className="text-[10px] font-mono text-zinc-500 mt-1">{fine.recoveryStatus}</p>
+                          <p className="text-[10px] font-mono text-[#0B3022]/50 mt-1">{fine.recoveryStatus}</p>
                         </td>
 
                         <td className="px-5 py-4 text-right">
@@ -655,7 +655,7 @@ export function AdminDefaultsClient({
                                 setSweepModalTarget(fine);
                                 setSweepOptInAgreed(false);
                               }}
-                              className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                              className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-700 border border-red-500/30 rounded-lg text-xs font-bold transition-colors cursor-pointer"
                             >
                               Sweep Mono
                             </button>
@@ -674,40 +674,40 @@ export function AdminDefaultsClient({
 
       {/* In-App Double Opt-in Modal: Sweep Recovery */}
       {sweepModalTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-[#080B09] border border-red-500/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-5 text-[#F3EEE3]">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-[#D4A843]/15 border border-[#D4A843]/30 flex items-center justify-center text-[#D4A843] shrink-0">
                 <RefreshCw className="h-6 w-6" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-bold text-white tracking-tight">Authorize Direct Debit Recovery</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-xs text-[#F3EEE3]/70 leading-relaxed">
                   Trigger on-demand automated Mono direct debit sweep against <strong className="text-white">{sweepModalTarget.memberName}</strong>.
                 </p>
               </div>
             </div>
 
-            <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-zinc-800 text-xs space-y-1.5">
-              <div className="flex justify-between text-zinc-400">
+            <div className="bg-white/5 p-3.5 rounded-xl border border-white/10 text-xs space-y-1.5">
+              <div className="flex justify-between text-[#F3EEE3]/70">
                 <span>Circle Target:</span>
                 <span className="text-white font-semibold">{sweepModalTarget.groupName}</span>
               </div>
-              <div className="flex justify-between text-zinc-400">
+              <div className="flex justify-between text-[#F3EEE3]/70">
                 <span>Target Amount:</span>
-                <span className="text-emerald-400 font-mono font-bold">
+                <span className="text-[#D4A843] font-mono font-bold">
                   ₦{(sweepModalTarget.amountOwed || sweepModalTarget.totalFine15Pct || 0).toLocaleString()}
                 </span>
               </div>
             </div>
 
             {/* Double Opt-In Checkbox */}
-            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 cursor-pointer text-xs text-zinc-300 select-none hover:border-zinc-700 transition-colors">
+            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-white/5 border border-white/10 cursor-pointer text-xs text-[#F3EEE3]/80 select-none hover:border-white/20 transition-colors">
               <input
                 type="checkbox"
                 checked={sweepOptInAgreed}
                 onChange={(e) => setSweepOptInAgreed(e.target.checked)}
-                className="w-4 h-4 rounded border-zinc-700 text-red-600 focus:ring-red-500 bg-zinc-950 cursor-pointer"
+                className="w-4 h-4 rounded border-white/20 text-[#D4A843] focus:ring-[#D4A843] bg-white/10 cursor-pointer"
               />
               <span>I authorize executing live multi-bank automated sweep</span>
             </label>
@@ -719,7 +719,7 @@ export function AdminDefaultsClient({
                   setSweepModalTarget(null);
                   setSweepOptInAgreed(false);
                 }}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#F3EEE3]/70 hover:text-white bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -727,7 +727,7 @@ export function AdminDefaultsClient({
                 type="button"
                 disabled={!sweepOptInAgreed || isSweeping}
                 onClick={executeSweepRecovery}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-red-600/20 flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-[#0B3022] bg-[#D4A843] hover:bg-[#dfba59] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md flex items-center gap-2 cursor-pointer"
               >
                 {isSweeping ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />}
                 <span>Execute Recovery Sweep</span>
@@ -739,31 +739,31 @@ export function AdminDefaultsClient({
 
       {/* In-App Double Opt-in Modal: Credit Bureau Blacklisting */}
       {bureauModalTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-[#080B09] border border-red-500/40 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-[#0B3022] border border-red-500/40 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-5 text-[#F3EEE3]">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0">
                 <ShieldAlert className="h-6 w-6" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-bold text-white tracking-tight">Defaulter Platform Restriction</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-xs text-[#F3EEE3]/70 leading-relaxed">
                   Record permanent non-compliance default for <strong className="text-white">{bureauModalTarget.memberName}</strong> on platform risk registry.
                 </p>
               </div>
             </div>
 
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 text-xs text-red-200/90 leading-relaxed">
+            <div className="bg-red-950/40 border border-red-500/30 rounded-xl p-3.5 text-xs text-red-200 leading-relaxed">
               This action severely penalizes the user&apos;s Àjọṣe Trust Score and restricts them from joining or creating circles on the platform.
             </div>
 
             {/* Double Opt-In Checkbox */}
-            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 cursor-pointer text-xs text-zinc-300 select-none hover:border-zinc-700 transition-colors">
+            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-white/5 border border-white/10 cursor-pointer text-xs text-[#F3EEE3]/80 select-none hover:border-white/20 transition-colors">
               <input
                 type="checkbox"
                 checked={bureauOptInAgreed}
                 onChange={(e) => setBureauOptInAgreed(e.target.checked)}
-                className="w-4 h-4 rounded border-zinc-700 text-red-600 focus:ring-red-500 bg-zinc-950 cursor-pointer"
+                className="w-4 h-4 rounded border-white/20 text-red-500 focus:ring-red-500 bg-white/10 cursor-pointer"
               />
               <span>I confirm submission of default record to CRC Bureau</span>
             </label>
@@ -775,7 +775,7 @@ export function AdminDefaultsClient({
                   setBureauModalTarget(null);
                   setBureauOptInAgreed(false);
                 }}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#F3EEE3]/70 hover:text-white bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -783,7 +783,7 @@ export function AdminDefaultsClient({
                 type="button"
                 disabled={!bureauOptInAgreed || isReporting}
                 onClick={executeBureauReport}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-red-600/20 flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md flex items-center gap-2 cursor-pointer"
               >
                 {isReporting ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Building2 className="h-3.5 w-3.5" />}
                 <span>Submit to Bureau</span>
