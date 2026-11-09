@@ -433,7 +433,7 @@ export default function InvitePage(props: {
     <div className="min-h-screen flex bg-[#F3EEE3] text-[#0B3022] font-sans">
       
       {/* Left Pane - Editorial Branding & Visuals */}
-      <div className="hidden lg:flex w-1/2 relative bg-[#0B3022] flex-col justify-between p-12 xl:p-16 overflow-hidden border-r border-[#F3EEE3]/10">
+      <div className="hidden lg:flex w-[45%] relative bg-[#0B3022] items-center justify-center overflow-hidden border-r border-[#F3EEE3]/10">
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
@@ -445,24 +445,7 @@ export default function InvitePage(props: {
         <Image src="/custom-signup-bg.jpg" alt="Invite Background" fill className="object-cover opacity-35 mix-blend-luminosity" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B3022] via-[#0B3022]/80 to-[#0B3022]/65" />
 
-        {/* Top: Brand Logo */}
-        <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity">
-            <Image 
-              src="/ajose-brand-pot.png" 
-              alt="Àjọṣe Logo" 
-              width={52} 
-              height={52} 
-              className="object-contain w-auto h-13 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
-            />
-            <span className="text-[#F3EEE3] font-bold text-3xl font-serif tracking-tight">
-              Àjọ<span className="text-[#D4A843]">ṣe</span>
-            </span>
-          </Link>
-        </div>
-
-        {/* Middle: Editorial Headline & Features */}
-        <div className="relative z-10 text-left flex flex-col max-w-lg my-auto">
+        <div className="relative z-10 p-12 text-left flex flex-col max-w-lg">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 mb-6 w-max">
             <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
             <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[#F3EEE3]">Turn by turn, no wahala</span>
@@ -475,87 +458,86 @@ export default function InvitePage(props: {
             </span>
           </h1>
 
-          <p className="text-[#F3EEE3]/75 text-base leading-relaxed mb-6">
+          <p className="text-[#F3EEE3]/75 text-base leading-relaxed mb-8">
             Join <strong className="text-[#F3EEE3]">{group?.name || urlGroupName || "Ajose Circle"}</strong> — Nigeria&apos;s trusted digital platform for rotational contributions.
           </p>
 
-          <div className="w-full bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/10 rounded-2xl p-5 backdrop-blur-md text-left space-y-3">
+          <div className="w-full bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/10 rounded-2xl p-6 backdrop-blur-md text-left space-y-3.5">
             <div className="flex items-center gap-3 text-sm text-[#F3EEE3]/90">
-              <div className="w-7 h-7 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <span>Institutional-grade tracking &amp; accountability</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-[#F3EEE3]/90">
-              <div className="w-7 h-7 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
                 <Sparkles className="w-4 h-4" />
               </div>
               <span>Fair turn-by-turn payout rotation</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-[#F3EEE3]/90">
-              <div className="w-7 h-7 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
                 <Lock className="w-4 h-4" />
               </div>
               <span>Verified open-banking identity via Mono</span>
             </div>
           </div>
         </div>
-
-        {/* Bottom: Trust Strip */}
-        <div className="relative z-10 flex items-center gap-6 pt-6 border-t border-[#F3EEE3]/10 text-xs font-mono uppercase tracking-wider text-[#F3EEE3]/55">
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
-            BVN-Verified
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
-            Automated Debits
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
-            Direct Bank Payouts
-          </span>
-        </div>
       </div>
 
       {/* Right Pane - Content Card */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between p-6 sm:p-10 xl:p-14 overflow-y-auto min-h-screen relative">
+      <div className="w-full lg:w-[55%] flex flex-col justify-between pt-8 sm:pt-10 pb-12 px-6 sm:px-12 md:px-16 xl:px-20 overflow-y-auto min-h-screen relative overflow-hidden">
         
-        {/* Mobile Top Navigation Header */}
-        <div className="lg:hidden flex items-center justify-between w-full mb-6">
-          <Link href="/" className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
-            <Image 
-              src="/ajose-brand-pot.png" 
-              alt="Àjọṣe Logo" 
-              width={32} 
-              height={32} 
-              className="object-contain w-auto h-8 drop-shadow-sm"
-            />
-            <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">
-              Àjọ<span className="text-[#D4A843]">ṣe</span>
-            </span>
-          </Link>
-
-          <Link href="/" className="flex items-center gap-1.5 text-xs font-bold text-[#0B3022] bg-white px-3.5 py-1.5 rounded-full border border-[#0B3022]/15 shadow-xs transition-colors">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Home
-          </Link>
+        {/* Subtle Architectural Grid & Brand Watermark */}
+        <div
+          className="absolute inset-0 opacity-[0.025] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #0B3022 1px, transparent 1px), linear-gradient(to bottom, #0B3022 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+        <div className="absolute -right-24 -bottom-24 w-[480px] h-[480px] lg:w-[560px] lg:h-[560px] pointer-events-none opacity-[0.04] select-none">
+          <Image
+            src="/ajose-brand-pot.png"
+            alt=""
+            fill
+            className="object-contain"
+            priority={false}
+          />
         </div>
 
-        {/* Desktop Top Navigation Header */}
-        <div className="hidden lg:flex items-center justify-between w-full mb-6">
+        {/* Header & Logo */}
+        <div className="flex items-center justify-between w-full mb-8 relative z-10 pt-1">
           <Link href="/" className="inline-flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs">
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home
           </Link>
-          <div className="flex items-center gap-2 text-[11px] font-mono text-[#0B3022]/55 uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
-            Valid Invitation
+
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-[#0B3022]/10 text-[11px] font-mono text-[#0B3022]/70 tracking-wider">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0B3022]" />
+              <span>Verified Invitation</span>
+            </div>
+
+            <Link href="/" className="inline-flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
+              <Image 
+                src="/ajose-brand-pot.png" 
+                alt="Àjọṣe Logo" 
+                width={36} 
+                height={36} 
+                className="object-contain w-auto h-9 drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+              />
+              <span className="text-[#0B3022] font-bold text-2xl font-serif tracking-tight">
+                Àjọ<span className="text-[#D4A843]">ṣe</span>
+              </span>
+            </Link>
           </div>
         </div>
 
-        <div className="my-auto w-full max-w-xl mx-auto py-4">
-          <div className="bg-white rounded-3xl p-7 sm:p-9 shadow-[0_12px_32px_rgba(11,48,34,0.05)] border border-[#0B3022]/10 relative overflow-hidden">
+        <div className="w-full max-w-2xl mx-auto my-auto relative z-10">
+          
+          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_12px_32px_rgba(11,48,34,0.05)] border border-[#0B3022]/10 relative overflow-hidden">
             
             {/* Header Badge */}
             <div className="text-center mb-8">
@@ -738,9 +720,9 @@ export default function InvitePage(props: {
           </div>
         </div>
 
-        {/* Security & Copyright Footer */}
-        <div className="text-center pt-3 pb-2 text-[11px] font-mono text-[#0B3022]/45">
-          Secured with 256-bit SSL encryption · Àjọṣe Technologies
+        {/* Footer Note */}
+        <div className="relative z-10 mt-8 text-center text-xs font-mono text-[#0B3022]/50 tracking-wide">
+          <span>© 2026 Àjọṣe Technologies Ltd · NDPR Compliant · Automated Direct Debit Routing</span>
         </div>
       </div>
 
