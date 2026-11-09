@@ -50,15 +50,7 @@ export default function Home() {
     <main className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-[#F3EEE3] text-[#111613]">
       {/* Hero Section — Deep Forest (#0B3022), Warm Cream (#F3EEE3), Burnished Gold (#D4A843) */}
       <section className="w-full bg-[#0B3022] pt-16 pb-20 md:pt-24 md:pb-28 relative z-10 overflow-hidden border-b border-white/10">
-        {/* Subtle Architectural Grid & Ambient Glow */}
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
+        {/* Ambient Glow */}
         <div className="absolute top-[-15%] right-[-5%] w-[560px] h-[560px] bg-[#D4A843]/10 blur-[140px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-15%] left-[10%] w-[440px] h-[440px] bg-emerald-400/5 blur-[130px] rounded-full pointer-events-none" />
 
@@ -77,10 +69,10 @@ export default function Home() {
                 className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/15 backdrop-blur-md mb-8"
               >
                 <span className="px-2 py-0.5 rounded-full bg-[#D4A843] text-[#0B3022] text-[10px] font-black uppercase tracking-wider">
-                  New
+                  Turn by turn, no wahala
                 </span>
                 <span className="text-xs sm:text-sm font-medium text-[#F3EEE3]/90 tracking-tight">
-                  Turn by turn, no wahala — Automated Ajo for Home &amp; Diaspora
+                  Automated Ajo for Home &amp; Diaspora
                 </span>
               </motion.div>
 

@@ -10,15 +10,7 @@ export function MobileAppShowcase() {
       id="mobile-app"
       className="w-full py-24 md:py-32 bg-[#071F16] text-[#F3EEE3] relative z-10 overflow-hidden border-b border-white/10"
     >
-      {/* Subtle Architectural Grid & Ambient Glow */}
-      <div
-        className="absolute inset-0 opacity-[0.035] pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
-        }}
-      />
+      {/* Ambient Glow */}
       <div className="absolute bottom-[-15%] right-[-5%] w-[560px] h-[560px] bg-[#D4A843]/10 blur-[140px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-6 lg:px-12 max-w-7xl relative z-10">

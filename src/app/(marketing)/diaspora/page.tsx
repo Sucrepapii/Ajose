@@ -41,14 +41,6 @@ export default function DiasporaPage() {
       
       {/* Hero Section — Deep Forest */}
       <section className="w-full py-20 md:py-28 bg-[#0B3022] text-[#F3EEE3] relative z-10 border-b border-[#F3EEE3]/10 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
-            backgroundSize: "72px 72px",
-          }}
-        />
         <div className="container mx-auto px-6 lg:px-12 max-w-6xl text-center relative z-10">
           
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 text-[#F3EEE3] text-[11px] font-mono uppercase tracking-[0.16em] mb-7">
