@@ -6,156 +6,138 @@ import { Smartphone, Check } from "lucide-react";
 
 export function MobileAppShowcase() {
   return (
-    <section id="mobile-app" className="w-full py-20 sm:py-28 md:py-36 bg-[#04130C] relative z-10 overflow-hidden border-t border-emerald-950/60">
-      {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-[-10%] w-[520px] h-[520px] bg-teal-500/10 blur-[140px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#C5A059]/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_0%,rgba(16,185,129,0.06),rgba(0,0,0,0))] pointer-events-none" />
+    <section
+      id="mobile-app"
+      className="w-full py-24 md:py-32 bg-[#071F16] text-[#F3EEE3] relative z-10 overflow-hidden border-b border-white/10"
+    >
+      {/* Subtle Architectural Grid & Ambient Glow */}
+      <div
+        className="absolute inset-0 opacity-[0.035] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
+      <div className="absolute bottom-[-15%] right-[-5%] w-[560px] h-[560px] bg-[#D4A843]/10 blur-[140px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-6 lg:px-12 max-w-7xl relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
-          {/* Left Column: Copy & Coming Soon Status */}
+          {/* Left Column: Editorial Copy & Coming Soon Status */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
-            
             {/* Pill Badge: Mobile App */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0d2a20]/90 border border-teal-500/30 text-teal-300 text-xs font-semibold backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_20px_rgba(20,184,166,0.18)]"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/15 text-[#F3EEE3] text-xs font-mono uppercase tracking-widest mb-6 sm:mb-8"
             >
-              <Smartphone className="w-3.5 h-3.5 text-teal-400" />
-              <span>Mobile App</span>
+              <Smartphone className="w-3.5 h-3.5 text-[#D4A843]" />
+              <span>Native Mobile Experience</span>
             </motion.div>
 
-            {/* Main Headline */}
-            <motion.h2 
+            {/* Main Headline — Sans + Italic Editorial Serif + Gold Underline */}
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.08] mb-6"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.03em] text-[#F3EEE3] leading-[1.08] mb-6"
             >
-              Turn-by-turn contribution,
-              <br />
-              <span className="text-[#2DD4BF]">in your </span>
-              <span className="text-[#FBBF24]">pocket.</span>
+              Turn-by-turn contribution,{" "}
+              <span className="block mt-1">
+                in your{" "}
+                <span className="relative inline-block font-editorial italic font-normal text-white pr-1">
+                  pocket.
+                  <svg
+                    className="absolute -bottom-1.5 left-0 w-full h-2.5 text-[#D4A843]"
+                    viewBox="0 0 180 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M3 9C48 3 122 2.5 177 7.5"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+              </span>
             </motion.h2>
 
             {/* Body Description */}
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-gray-300/90 text-base sm:text-lg leading-relaxed max-w-xl mb-8"
+              className="text-[#F3EEE3]/75 text-base sm:text-lg leading-relaxed max-w-xl mb-8"
             >
-              Take your contribution circle wherever you go. Track turns on the fly, automate daily and monthly sweeps seamlessly, and get real-time payout notifications directly to your phone.
+              Take your contribution circle wherever you go. Track turns on the fly, automate daily and monthly sweeps seamlessly, and get real-time payout alerts directly to your phone.
             </motion.p>
 
             {/* Core Value Highlights */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10 w-full max-w-lg"
             >
-              <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 backdrop-blur-xs">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-xs font-medium text-gray-200">Real-Time Turn Notifications</span>
-              </div>
-              <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 backdrop-blur-xs">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-xs font-medium text-gray-200">Zero WhatsApp Chasing</span>
-              </div>
-              <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 backdrop-blur-xs">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-xs font-medium text-gray-200">Automated Direct Debit Sweeps</span>
-              </div>
-              <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 backdrop-blur-xs">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-xs font-medium text-gray-200">Bank-Grade Biometrics &amp; BVN</span>
-              </div>
+              {[
+                "Real-Time Turn Notifications",
+                "Zero WhatsApp Chasing",
+                "Automated Direct Debit Sweeps",
+                "Bank-Grade Biometrics & BVN",
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/10"
+                >
+                  <Check className="w-4 h-4 text-[#D4A843] shrink-0" />
+                  <span className="text-xs font-medium text-[#F3EEE3]/90">{item}</span>
+                </div>
+              ))}
             </motion.div>
 
-            {/* Bottom Controls: Currently "Coming Soon", Store buttons ready below when launched */}
-            <motion.div 
+            {/* Coming Soon Pill Card */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="pt-2"
+              className="pt-1"
             >
-              {/* CURRENT ACTIVE STATE: Coming Soon Badge */}
-              <div className="inline-flex flex-col items-start px-6 py-4 rounded-2xl bg-white/[0.05] border border-white/10 backdrop-blur-xl shadow-xl hover:border-white/20 transition-all">
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-widest">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="inline-flex items-center gap-4 px-5 py-3.5 rounded-full bg-[#F3EEE3] text-[#111613] shadow-lg">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]">
+                  <span className="w-2 h-2 rounded-full bg-[#0B3022] animate-pulse" />
                   <span>iOS &amp; Android</span>
                 </div>
-                <span className="text-sm sm:text-base font-black text-[#FBBF24] tracking-wider mt-1">
-                  COMING SOON
+                <span className="h-4 w-px bg-[#111613]/15" />
+                <span className="text-xs font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#D4A843] text-[#0B3022]">
+                  Coming Soon
                 </span>
               </div>
-
-              {/* 
-              ========================================================================
-              PRODUCTION STORE BUTTONS (Uncomment when App Store / Play Store / APK are ready)
-              ========================================================================
-              <div className="flex flex-wrap items-center gap-3.5 mt-4">
-                // Apple App Store / TestFlight
-                <a
-                  href="https://apps.apple.com/app/ajose/idXXXXXXXXX" // OR TestFlight: "https://testflight.apple.com/join/XXXXXX"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white shadow-xl transition-all hover:scale-105 active:scale-95 group"
-                >
-                  <svg className="w-6 h-6 fill-current text-white" viewBox="0 0 24 24">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.76 1.05-1.82.93-2.88-.91.04-2.02.61-2.67 1.37-.58.67-1.09 1.75-.95 2.79 1.02.08 2.06-.52 2.69-1.28z" />
-                  </svg>
-                  <div className="text-left">
-                    <div className="text-[10px] uppercase font-semibold text-gray-400 tracking-wider">Download on the</div>
-                    <div className="text-sm font-bold text-white tracking-wide">App Store</div>
-                  </div>
-                </a>
-
-                // Google Play / Android APK
-                <a
-                  href="https://play.google.com/store/apps/details?id=com.ajose.ng" // OR APK direct download: "/downloads/ajose.apk"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white shadow-xl transition-all hover:scale-105 active:scale-95 group"
-                >
-                  <svg className="w-6 h-6 fill-current text-white" viewBox="0 0 24 24">
-                    <path d="M3.609 1.814L13.792 12 3.61 22.186c-.378-.344-.61-.837-.61-1.386V3.2c0-.549.232-1.042.609-1.386zm11.238 11.242l2.368 2.368-12.04 6.949 9.672-9.317zm0-2.112L5.175 1.627l12.04 6.949-2.368 2.368zm1.055 1.056l3.522 2.032c.983.567.983 1.492 0 2.06l-3.522 2.032-2.128-2.128 2.128-2.128z" />
-                  </svg>
-                  <div className="text-left">
-                    <div className="text-[10px] uppercase font-semibold text-gray-400 tracking-wider">GET IT ON</div>
-                    <div className="text-sm font-bold text-white tracking-wide">Google Play</div>
-                  </div>
-                </a>
-              </div>
-              */}
             </motion.div>
-
           </div>
 
-          {/* Right Column: 3D Phone Mockup Visual */}
+          {/* Right Column: Layered Mockup Visual with Offset Gold Frame */}
           <div className="lg:col-span-6 relative flex items-center justify-center">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 20 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
               className="relative w-full max-w-2xl group"
             >
-              {/* Outer halo and glow effect */}
-              <div className="absolute -inset-1.5 bg-gradient-to-r from-teal-500/20 via-emerald-500/15 to-[#C5A059]/25 rounded-3xl blur-2xl opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300" />
-              
+              {/* Offset Burnished Gold Architectural Frame */}
+              <div className="absolute inset-0 rounded-3xl border-2 border-[#D4A843]/45 translate-x-3 translate-y-3 pointer-events-none" />
+
               {/* Mockup Frame */}
-              <div className="relative rounded-3xl overflow-hidden border border-emerald-500/25 bg-[#03100B] shadow-[0_25px_80px_rgba(0,0,0,0.85)]">
+              <div className="relative rounded-3xl overflow-hidden border border-white/15 bg-[#0B3022] shadow-[0_25px_70px_rgba(0,0,0,0.65)]">
                 <Image
                   src="/mobile-app-showcase.jpg"
                   alt="Àjọṣe Rotational Savings Mobile App Mockup"
@@ -166,28 +148,35 @@ export function MobileAppShowcase() {
                 />
 
                 {/* Floating Micro Badge 1 - Top Left */}
-                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 px-3.5 py-2 rounded-2xl bg-[#061811]/90 backdrop-blur-md border border-emerald-500/40 shadow-xl flex items-center gap-2.5 pointer-events-none">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 px-4 py-2.5 rounded-2xl bg-[#111613]/95 backdrop-blur-md border border-white/15 shadow-xl flex items-center gap-2.5 pointer-events-none">
+                  <div className="w-2 h-2 rounded-full bg-[#D4A843] animate-pulse" />
                   <div className="text-left">
-                    <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Next Payout Ready</div>
-                    <div className="text-xs font-black text-white">₦1,500,000 • In 2 Days</div>
+                    <div className="text-[10px] font-mono text-[#D4A843] font-bold uppercase tracking-wider">
+                      Next Payout Ready
+                    </div>
+                    <div className="text-xs font-mono font-bold text-[#F3EEE3]">
+                      ₦1,500,000 &bull; In 2 Days
+                    </div>
                   </div>
                 </div>
 
                 {/* Floating Micro Badge 2 - Bottom Right */}
-                <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 px-3.5 py-2 rounded-2xl bg-[#061811]/90 backdrop-blur-md border border-[#C5A059]/50 shadow-xl flex items-center gap-2.5 pointer-events-none">
-                  <div className="w-7 h-7 rounded-xl bg-[#C5A059]/20 border border-[#C5A059]/40 flex items-center justify-center text-xs">
-                    ⚡
+                <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 px-4 py-2.5 rounded-2xl bg-[#F3EEE3] text-[#111613] border border-[#111613]/15 shadow-xl flex items-center gap-2.5 pointer-events-none">
+                  <div className="w-7 h-7 rounded-full bg-[#0B3022] text-[#D4A843] flex items-center justify-center text-xs font-bold">
+                    ✓
                   </div>
                   <div className="text-left">
-                    <div className="text-[10px] text-[#F3E5C8] font-bold uppercase tracking-wider">Automated Sweep</div>
-                    <div className="text-xs font-black text-white">Mono Direct Debit Active</div>
+                    <div className="text-[10px] font-mono text-[#111613]/60 font-bold uppercase tracking-wider">
+                      Automated Sweep
+                    </div>
+                    <div className="text-xs font-bold text-[#0B3022]">
+                      Mono Direct Debit Active
+                    </div>
                   </div>
                 </div>
               </div>
             </motion.div>
           </div>
-
         </div>
       </div>
     </section>

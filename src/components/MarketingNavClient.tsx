@@ -45,11 +45,11 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
         <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white" href="/#features">
           Features
         </Link>
-        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white flex items-center gap-1.5" href="/#mobile-app">
+        <Link className="text-sm font-medium hover:text-[#D4A843] transition-colors text-[#F3EEE3] flex items-center gap-1.5" href="/#mobile-app">
           <span>Mobile App</span>
-          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded-full font-bold">Soon</span>
+          <span className="text-[10px] font-mono bg-[#D4A843]/20 text-[#D4A843] border border-[#D4A843]/35 px-1.5 py-0.2 rounded-full font-bold">Soon</span>
         </Link>
-        <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white" href="/about">
+        <Link className="text-sm font-medium hover:text-[#D4A843] transition-colors text-[#F3EEE3]" href="/about">
           About
         </Link>
         {/* DIASPORA PORTAL (Commented out until international payment rail is connected)
@@ -61,7 +61,7 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
         
         {isLoggedIn ? (
           <Link
-            className="text-sm font-bold bg-[#C5A059] text-[#0B3022] px-6 py-3 rounded-xl hover:bg-[#A48243] transition-all shadow-md flex items-center gap-2"
+            className="text-sm font-bold bg-[#D4A843] text-[#0B3022] px-6 py-2.5 rounded-full hover:bg-[#e0b654] transition-all shadow-md flex items-center gap-2"
             href="/dashboard"
           >
             <span>Dashboard</span>
@@ -71,12 +71,12 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
           <div className="flex items-center gap-4">
             <Link 
               href="/login" 
-              className="text-sm font-medium text-white/90 hover:text-[#C5A059] transition-colors"
+              className="text-sm font-medium text-[#F3EEE3]/90 hover:text-[#D4A843] transition-colors"
             >
               Log in
             </Link>
             <Link
-              className="text-sm font-bold bg-[#C5A059] text-[#0B3022] px-6 py-3 rounded-xl hover:bg-[#A48243] transition-all shadow-md"
+              className="text-sm font-bold bg-[#D4A843] text-[#0B3022] px-6 py-2.5 rounded-full hover:bg-[#e0b654] transition-all shadow-md"
               href="/signup"
             >
               Create a Group Free
@@ -90,14 +90,14 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
         {isLoggedIn ? (
           <Link
             href="/dashboard"
-            className="text-xs font-bold bg-[#C5A059] text-[#0B3022] px-3.5 py-2 rounded-lg shadow-sm"
+            className="text-xs font-bold bg-[#D4A843] text-[#0B3022] px-4 py-2 rounded-full shadow-sm"
           >
             Dashboard
           </Link>
         ) : (
           <Link
             href="/signup"
-            className="text-xs font-bold bg-[#C5A059] text-[#0B3022] px-3.5 py-2 rounded-lg shadow-sm"
+            className="text-xs font-bold bg-[#D4A843] text-[#0B3022] px-4 py-2 rounded-full shadow-sm"
           >
             Start Free
           </Link>
