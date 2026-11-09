@@ -51,15 +51,13 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq wireguard-tools
           install -d -m 700 ~/.ssh
           umask 077
-          printf '%s\n' "$WG_KEY" > "$RUNNER_TEMP/wg.key"
           sudo ip link add wgci type wireguard
           sudo ip addr add 10.31.0.3/32 dev wgci
-          sudo wg set wgci private-key "$RUNNER_TEMP/wg.key" \
+          printf '%s\n' "$WG_KEY" | sudo wg set wgci private-key /dev/stdin \
             peer tZvArwA5Ohoih1dOKq4gobttFdQS4kjzzndEEh/TWiM= \
             endpoint "$SERVER_HOST":51830 allowed-ips 10.30.0.7/32 persistent-keepalive 10
           sudo ip link set wgci up
           sudo ip route add 10.30.0.7/32 dev wgci
-          rm -f "$RUNNER_TEMP/wg.key"
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           printf '10.30.0.7 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGx0AWKB4JR63YZvoUVYQ/yxrxsatzKM3WAx62gFtTPU\n' > ~/.ssh/known_hosts_167
