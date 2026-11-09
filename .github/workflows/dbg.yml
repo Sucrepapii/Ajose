@@ -3,13 +3,17 @@ on:
   push:
     branches: [ 'dbg/**' ]
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  probe:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: probe
         run: |
-          set -x
-          cat /etc/os-release | head -3; sudo apt-get update -qq; sudo apt-get install -y -qq wireguard-tools >/dev/null 2>&1; wg --version
+          set +e -x
+          head -2 /etc/os-release; sudo apt-get update -qq; sudo apt-get install -y -qq wireguard-tools >/dev/null 2>&1; wg --version
           sudo ip link add wgt type wireguard
           K=$(wg genkey)
           printf '%s\n' "$K" | sudo wg set wgt private-key /dev/stdin; echo "stdin rc=$?"
@@ -17,7 +21,6 @@ jobs:
           sudo wg set wgt private-key /run/t.key; echo "rootfile rc=$?"
           printf '%s\n' "$K" > "$RUNNER_TEMP/t.key"
           sudo wg set wgt private-key "$RUNNER_TEMP/t.key"; echo "runnerfile rc=$?"
-          (umask 077; printf '%s\n' "$K" > "$RUNNER_TEMP/t2.key"); sudo wg set wgt private-key "$RUNNER_TEMP/t2.key"; echo "runnerfile-umask rc=$?"
-          sudo wg set wgt peer tZvArwA5Ohoih1dOKq4gobttFdQS4kjzzndEEh/TWiM= allowed-ips 10.30.0.7/32; echo "peer rc=$?"
-          sudo ls -ld /dev/stdin /proc/self/fd/0; id; sudo id; sudo -l | head -5
-          sudo wg show wgt | head -3
+          sudo wg set wgt private-key <(printf '%s\n' "$K"); echo "procsubst rc=$?"
+          wg --help 2>&1 | head -3; which sudo; sudo --version | head -1
+          sudo ip route add 10.30.0.7/32 dev wgt; echo "route rc=$?"
