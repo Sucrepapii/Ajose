@@ -230,10 +230,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F3EEE3] text-[#0B3022] font-sans">
+    <div className="min-h-screen flex bg-[#F3EEE3] text-[#0B3022] font-sans">
       
-      {/* Full-Width Editorial Header & Hero Band (#0B3022) */}
-      <div className="relative bg-[#0B3022] text-[#F3EEE3] pt-6 pb-24 px-5 sm:px-10 overflow-hidden border-b border-[#F3EEE3]/10">
+      {/* Left Pane - Editorial Brand Showcase */}
+      <div className="hidden lg:flex w-1/2 relative bg-[#0B3022] flex-col justify-between p-12 xl:p-16 overflow-hidden border-r border-[#F3EEE3]/10">
+        {/* Subtle Architectural Grid */}
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
@@ -242,60 +243,93 @@ export default function LoginPage() {
             backgroundSize: "64px 64px",
           }}
         />
+        <Image src="/custom-login-bg.jpg" alt="Login Background" fill className="object-cover opacity-35 mix-blend-luminosity" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B3022] via-[#0B3022]/80 to-[#0B3022]/65" />
 
-        {/* Top Navigation Bar */}
-        <div className="relative z-10 max-w-6xl mx-auto flex items-center justify-between mb-10 sm:mb-12">
-          <Link href="/" className="inline-flex items-center gap-3 group hover:opacity-90 transition-opacity">
+        {/* Top: Brand Logo */}
+        <div className="relative z-10">
+          <Link href="/" className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity">
             <Image 
               src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
-              width={44} 
-              height={44} 
-              className="object-contain w-auto h-10 sm:h-11 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+              width={52} 
+              height={52} 
+              className="object-contain w-auto h-13 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             />
-            <span className="text-[#F3EEE3] font-bold text-2xl sm:text-3xl font-serif tracking-tight">
+            <span className="text-[#F3EEE3] font-bold text-3xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4A843]">ṣe</span>
+            </span>
+          </Link>
+        </div>
+
+        {/* Middle: Editorial Headline */}
+        <div className="relative z-10 max-w-lg my-auto flex flex-col items-start">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 text-[#F3EEE3] text-[11px] font-mono uppercase tracking-[0.16em] mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+            Turn by turn, no wahala
+          </div>
+          
+          <h1 className="text-5xl xl:text-[56px] font-bold text-[#F3EEE3] leading-[1.06] tracking-[-0.03em] mb-5">
+            Secure your financial future,{" "}
+            <span className="font-editorial italic font-normal text-[#D4A843]">
+              together.
+            </span>
+          </h1>
+          <p className="text-[#F3EEE3]/70 text-base leading-relaxed max-w-md">
+            Log in to track your rotational circles, automated direct debits, and upcoming turn payouts in real time.
+          </p>
+        </div>
+
+        {/* Bottom: Trust Strip */}
+        <div className="relative z-10 flex items-center gap-6 pt-6 border-t border-[#F3EEE3]/10 text-xs font-mono uppercase tracking-wider text-[#F3EEE3]/55">
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
+            BVN-Verified
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
+            Automated Debits
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
+            Direct Bank Payouts
+          </span>
+        </div>
+      </div>
+
+      {/* Right Pane - Dynamic Form */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-14 md:px-20 xl:px-28 py-10 lg:py-0 relative min-h-screen">
+        
+        {/* Mobile Top Navigation Header */}
+        <div className="lg:hidden flex items-center justify-between w-full mb-8 pt-2">
+          <Link href="/" className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
+            <Image 
+              src="/ajose-brand-pot.png" 
+              alt="Àjọṣe Logo" 
+              width={32} 
+              height={32} 
+              className="object-contain w-auto h-8 drop-shadow-sm"
+            />
+            <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">
               Àjọ<span className="text-[#D4A843]">ṣe</span>
             </span>
           </Link>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/signup"
-              className="hidden sm:inline-flex items-center px-4 py-2 rounded-full bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-xs transition-colors"
-            >
-              Create Account
-            </Link>
-            <Link 
-              href="/" 
-              className="inline-flex items-center gap-2 text-[#F3EEE3]/85 hover:text-[#F3EEE3] transition-colors font-semibold text-xs bg-[#F3EEE3]/[0.08] hover:bg-[#F3EEE3]/[0.14] px-4 py-2 rounded-full border border-[#F3EEE3]/15"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Back to Home
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center gap-1.5 text-xs font-bold text-[#0B3022] bg-white px-3.5 py-1.5 rounded-full border border-[#0B3022]/15 shadow-xs transition-colors">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Home
+          </Link>
         </div>
 
-        {/* Centered Editorial Headline */}
-        <div className="relative z-10 max-w-2xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 text-[#F3EEE3] text-[11px] font-mono uppercase tracking-[0.16em] mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
-            Turn by turn, no wahala
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#F3EEE3] leading-[1.08] tracking-[-0.03em] mb-3">
-            Welcome back to your{" "}
-            <span className="font-editorial italic font-normal text-[#D4A843]">
-              circle.
-            </span>
-          </h1>
-          <p className="text-[#F3EEE3]/70 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-            Log in to track your rotational contributions, automated direct debits, and upcoming turn payouts in real time.
-          </p>
+        {/* Desktop Back button */}
+        <div className="hidden lg:flex absolute top-8 left-8 items-center gap-4 z-10">
+          <Link href="/" className="flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back to Home
+          </Link>
         </div>
-      </div>
 
-      {/* Centered Form Container */}
-      <div className="flex-1 w-full px-5 sm:px-8 pb-16 -mt-14 relative z-20 flex flex-col items-center">
-        <div className="w-full max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white p-7 sm:p-10 rounded-3xl border border-[#0B3022]/10 shadow-[0_18px_45px_rgba(11,48,34,0.08)]">
+        <div className="w-full max-w-[440px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white p-7 sm:p-9 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.05)]">
           
           {/* STEP 2: MANDATORY ADMIN FIRST-TIME PASSWORD CHANGE */}
           {isPasswordChangeRequired && pendingAdminInfo ? (
@@ -381,7 +415,7 @@ export default function LoginPage() {
           ) : (
             /* STEP 1: UNIFIED LOGIN FORM */
             <>
-              <div className="mb-7">
+              <div className="mb-7 text-center">
                 <h2 className="text-3xl sm:text-4xl font-bold text-[#0B3022] tracking-tight mb-1.5">
                   Welcome{" "}
                   <span className="font-editorial italic font-normal text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-4">
@@ -494,10 +528,6 @@ export default function LoginPage() {
           )}
 
         </div>
-
-        <p className="mt-6 text-center text-xs font-mono uppercase tracking-[0.14em] text-[#0B3022]/55">
-          BVN-Verified Identity · Paystack &amp; Mono Protected · Non-Custodial Settlement
-        </p>
       </div>
       
     </div>
