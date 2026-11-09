@@ -63,7 +63,7 @@ export default async function GroupSettingsPage(props: { params: Promise<{ id: s
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-20 max-w-3xl mx-auto">
+    <div className="space-y-6 animate-in fade-in duration-500 pb-20 w-full">
       
       {/* Header */}
       <div className="flex items-center gap-4">

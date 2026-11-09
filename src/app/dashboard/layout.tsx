@@ -95,24 +95,26 @@ export default async function DashboardLayout({
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#F3EEE3]">
         {/* Topbar */}
-        <div className="h-20 bg-[#F3EEE3]/85 backdrop-blur-md border-b border-[#0B3022]/10 flex items-center justify-between px-8 hidden md:flex shrink-0 relative z-40">
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-bold text-[#0B3022] tracking-tight">Member</h1>
-            <span className="font-editorial italic font-normal text-2xl text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-4">
-              Workspace.
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <NotificationBell userId={user.id} />
-            <div className="flex items-center gap-3 pl-4 border-l border-[#0B3022]/12">
-              <div className="w-10 h-10 rounded-full bg-[#0B3022] flex items-center justify-center text-[#D4A843] font-bold border border-[#0B3022] text-xs font-mono uppercase">
-                {initials}
-              </div>
-              <div className="hidden lg:block">
-                <p className="text-sm font-bold text-[#0B3022] truncate max-w-[150px]">{displayName}</p>
-                <p className="text-[11px] font-mono uppercase tracking-wider text-[#0B3022]/65 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]"></span> Verified Member
-                </p>
+        <div className="h-20 bg-[#F3EEE3]/85 backdrop-blur-md border-b border-[#0B3022]/10 flex items-center px-8 hidden md:flex shrink-0 relative z-40">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl font-bold text-[#0B3022] tracking-tight">Member</h1>
+              <span className="font-editorial italic font-normal text-2xl text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-4">
+                Workspace.
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <NotificationBell userId={user.id} />
+              <div className="flex items-center gap-3 pl-4 border-l border-[#0B3022]/12">
+                <div className="w-10 h-10 rounded-full bg-[#0B3022] flex items-center justify-center text-[#D4A843] font-bold border border-[#0B3022] text-xs font-mono uppercase">
+                  {initials}
+                </div>
+                <div className="hidden lg:block">
+                  <p className="text-sm font-bold text-[#0B3022] truncate max-w-[150px]">{displayName}</p>
+                  <p className="text-[11px] font-mono uppercase tracking-wider text-[#0B3022]/65 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]"></span> Verified Member
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -120,7 +122,9 @@ export default async function DashboardLayout({
         
         {/* Page Content with Mobile Bottom Nav Clearance */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-28 md:pb-8 overscroll-contain">
-          {children}
+          <div className="max-w-7xl mx-auto w-full">
+            {children}
+          </div>
         </div>
       </main>
 

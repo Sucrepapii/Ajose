@@ -212,7 +212,7 @@ export default function CreateGroupPage() {
   const collectorReceives = Math.max(0, totalPool - adminFee - platformFee);
 
   return (
-    <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">

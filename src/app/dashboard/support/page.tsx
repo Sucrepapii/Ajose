@@ -39,7 +39,7 @@ export default function SupportPage() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="w-full space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0B3022] text-[#F3EEE3] text-[10px] font-mono uppercase tracking-[0.16em] mb-3">
           <HelpCircle className="w-3.5 h-3.5 text-[#D4A843]" />

@@ -71,9 +71,9 @@ export default function FeedbackPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="text-center">
-        <div className="w-14 h-14 bg-[#0B3022] rounded-2xl flex items-center justify-center mx-auto mb-4">
+    <div className="w-full space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div>
+        <div className="w-14 h-14 bg-[#0B3022] rounded-2xl flex items-center justify-center mb-4">
           <MessageSquare className="w-6 h-6 text-[#D4A843]" />
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-[#0B3022] tracking-tight">
@@ -82,10 +82,10 @@ export default function FeedbackPage() {
             feedback.
           </span>
         </h1>
-        <p className="text-[#0B3022]/65 text-sm mt-2">Help us improve Àjọṣe by sharing your thoughts, feature requests, or reporting issues.</p>
+        <p className="text-[#0B3022]/65 text-sm mt-2 max-w-xl">Help us improve Àjọṣe by sharing your thoughts, feature requests, or reporting issues.</p>
       </div>
 
-      <div className="bg-white rounded-3xl p-6 md:p-8 border border-[#0B3022]/10 shadow-[0_16px_48px_rgba(11,48,34,0.06)]">
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-[#0B3022]/10 shadow-[0_16px_48px_rgba(11,48,34,0.06)] max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-2">Category</label>

@@ -132,7 +132,7 @@ export function ReferralDashboardClient({ initialSummary }: ReferralDashboardCli
   const currentDiscountPct = getTierDiscountPct(summary.tier.feePct);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-20 max-w-5xl mx-auto">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20 w-full">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">

@@ -93,7 +93,7 @@ export default async function VerifyPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in pb-20 mt-4">
+    <div className="w-full space-y-8 animate-in fade-in pb-20 mt-4">
       <div>
         <div className="flex items-center gap-2 mb-3">
           <span className="text-[10px] font-mono font-bold text-[#F3EEE3] bg-[#0B3022] px-3 py-1 rounded-full uppercase tracking-[0.16em]">
