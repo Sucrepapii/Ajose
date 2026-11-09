@@ -4,7 +4,7 @@ import { FooterNewsletter } from "@/components/FooterNewsletter";
 
 export function MarketingFooter() {
   return (
-    <footer className="pt-20 pb-10 border-t border-[#C5A059]/20 bg-[#082319] text-sm">
+    <footer className="pt-20 pb-10 border-t border-[#F3EEE3]/10 bg-[#0B3022] text-sm">
       <div className="container mx-auto px-6 lg:px-12">
         {/* Newsletter Subscription Feature */}
         <div className="mb-16">
@@ -23,12 +23,14 @@ export function MarketingFooter() {
                 height={48} 
                 className="object-contain w-auto h-11 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
               />
-              <span className="font-extrabold text-3xl tracking-tight text-white font-serif drop-shadow-sm">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
+              <span className="font-extrabold text-3xl tracking-tight text-[#F3EEE3] font-serif drop-shadow-sm">
+                Àjọ<span className="text-[#D4A843]">ṣe</span>
+              </span>
             </Link>
-            <p className="text-[#C5A059] font-medium text-sm mb-4 italic">
+            <p className="font-editorial italic text-[#D4A843] text-lg mb-4">
               &ldquo;Turn by turn, no wahala.&rdquo;
             </p>
-            <p className="text-gray-300 leading-relaxed max-w-sm mb-6">
+            <p className="text-[#F3EEE3]/65 leading-relaxed max-w-sm mb-6">
               Àjọṣe is a digital Ajo platform that automates contributions, turns and payouts for savings groups. Turn by turn, no wahala.
             </p>
 
@@ -39,7 +41,7 @@ export function MarketingFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow Àjọṣe on Instagram (@ajoseapp)"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:border-[#C5A059]/50 hover:bg-[#C5A059]/15 text-gray-300 hover:text-[#C5A059] transition-all flex items-center justify-center group"
+                className="w-10 h-10 rounded-xl bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/10 hover:border-[#D4A843]/50 hover:bg-[#D4A843]/15 text-[#F3EEE3]/75 hover:text-[#D4A843] transition-all flex items-center justify-center group"
                 title="Instagram (@ajoseapp)"
               >
                 <svg className="w-4 h-4 fill-none stroke-current stroke-2 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
@@ -54,7 +56,7 @@ export function MarketingFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow Àjọṣe on X / Twitter (@ajoseapp)"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:border-[#C5A059]/50 hover:bg-[#C5A059]/15 text-gray-300 hover:text-[#C5A059] transition-all flex items-center justify-center group"
+                className="w-10 h-10 rounded-xl bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/10 hover:border-[#D4A843]/50 hover:bg-[#D4A843]/15 text-[#F3EEE3]/75 hover:text-[#D4A843] transition-all flex items-center justify-center group"
                 title="X / Twitter (@ajoseapp)"
               >
                 <svg className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
@@ -67,7 +69,7 @@ export function MarketingFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Connect with Àjọṣe on LinkedIn"
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:border-[#C5A059]/50 hover:bg-[#C5A059]/15 text-gray-300 hover:text-[#C5A059] transition-all flex items-center justify-center group"
+                className="w-10 h-10 rounded-xl bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/10 hover:border-[#D4A843]/50 hover:bg-[#D4A843]/15 text-[#F3EEE3]/75 hover:text-[#D4A843] transition-all flex items-center justify-center group"
                 title="LinkedIn (Àjọṣe)"
               >
                 <svg className="w-4 h-4 fill-none stroke-current stroke-2 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
@@ -81,36 +83,38 @@ export function MarketingFooter() {
 
           {/* Column 2 - Product */}
           <div>
-            <h4 className="text-white font-bold mb-5 uppercase tracking-wider text-xs">Product</h4>
+            <h4 className="text-[#F3EEE3] font-bold mb-5 uppercase tracking-[0.16em] text-[11px] font-mono">Product</h4>
             <ul className="space-y-4">
-              <li><Link href="/#features" className="text-gray-400 hover:text-[#C5A059] transition-colors">Features</Link></li>
-              <li><Link href="/#mobile-app" className="text-gray-400 hover:text-[#C5A059] transition-colors flex items-center gap-1.5"><span>Mobile App</span><span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded-full font-bold">Soon</span></Link></li>
-              <li><Link href="/#how-it-works" className="text-gray-400 hover:text-[#C5A059] transition-colors">How it Works</Link></li>
+              <li><Link href="/#features" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Features</Link></li>
               <li>
-                <Link href="/referrals" className="text-gray-400 hover:text-[#C5A059] transition-colors flex items-center gap-1.5">
-                  <span>Referral Program</span>
-                  <span className="text-[10px] bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/40 px-1.5 py-0.2 rounded-full font-bold">Earn</span>
+                <Link href="/#mobile-app" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors flex items-center gap-1.5">
+                  <span>Mobile App</span>
+                  <span className="text-[10px] bg-[#D4A843]/15 text-[#D4A843] border border-[#D4A843]/30 px-1.5 py-0.5 rounded-full font-bold">Soon</span>
                 </Link>
               </li>
-              <li><Link href="/security" className="text-gray-400 hover:text-[#C5A059] transition-colors">Security</Link></li>
-              <li><Link href="/pricing" className="text-gray-400 hover:text-[#C5A059] transition-colors">Pricing</Link></li>
-              <li><Link href="/contact#faq" className="text-gray-400 hover:text-[#C5A059] transition-colors">FAQ</Link></li>
-              {/* DIASPORA PORTAL (Commented out until international payment rail is connected)
-              <li><Link href="/diaspora" className="text-gray-400 hover:text-[#C5A059] transition-colors">Diaspora Circles</Link></li>
-              */}
+              <li><Link href="/#how-it-works" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">How it Works</Link></li>
+              <li>
+                <Link href="/referrals" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors flex items-center gap-1.5">
+                  <span>Referral Program</span>
+                  <span className="text-[10px] bg-[#D4A843]/15 text-[#D4A843] border border-[#D4A843]/35 px-1.5 py-0.5 rounded-full font-bold">Earn</span>
+                </Link>
+              </li>
+              <li><Link href="/security" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Security</Link></li>
+              <li><Link href="/pricing" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Pricing</Link></li>
+              <li><Link href="/contact#faq" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">FAQ</Link></li>
             </ul>
           </div>
 
           {/* Column 3 - Company */}
           <div>
-            <h4 className="text-white font-bold mb-5 uppercase tracking-wider text-xs">Company</h4>
+            <h4 className="text-[#F3EEE3] font-bold mb-5 uppercase tracking-[0.16em] text-[11px] font-mono">Company</h4>
             <ul className="space-y-4">
-              <li><Link href="/about" className="text-gray-400 hover:text-[#C5A059] transition-colors">About Us</Link></li>
-              <li><Link href="/referrals" className="text-gray-400 hover:text-[#C5A059] transition-colors">Referral Rewards</Link></li>
-              <li><Link href="/contact" className="text-gray-400 hover:text-[#C5A059] transition-colors">Contact</Link></li>
-              <li><Link href="/contact#faq" className="text-gray-400 hover:text-[#C5A059] transition-colors">Help &amp; FAQ</Link></li>
+              <li><Link href="/about" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">About Us</Link></li>
+              <li><Link href="/referrals" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Referral Rewards</Link></li>
+              <li><Link href="/contact" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Contact</Link></li>
+              <li><Link href="/contact#faq" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Help &amp; FAQ</Link></li>
               <li>
-                <Link href="/feedback" className="text-gray-400 hover:text-[#C5A059] transition-colors inline-flex items-center gap-1.5">
+                <Link href="/feedback" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors inline-flex items-center gap-1.5">
                   <span>Share Feedback</span>
                 </Link>
               </li>
@@ -119,50 +123,49 @@ export function MarketingFooter() {
 
           {/* Column 4 - Legal */}
           <div>
-            <h4 className="text-white font-bold mb-5 uppercase tracking-wider text-xs">Legal</h4>
+            <h4 className="text-[#F3EEE3] font-bold mb-5 uppercase tracking-[0.16em] text-[11px] font-mono">Legal</h4>
             <ul className="space-y-4">
-              <li><Link href="/terms" className="text-gray-400 hover:text-[#C5A059] transition-colors">Terms of Service</Link></li>
-              <li><Link href="/privacy" className="text-gray-400 hover:text-[#C5A059] transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/cookies" className="text-gray-400 hover:text-[#C5A059] transition-colors">Cookie Policy</Link></li>
-              <li><Link href="/security" className="text-gray-400 hover:text-[#C5A059] transition-colors">Security</Link></li>
+              <li><Link href="/terms" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Terms of Service</Link></li>
+              <li><Link href="/privacy" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/cookies" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Cookie Policy</Link></li>
+              <li><Link href="/security" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Security</Link></li>
             </ul>
           </div>
           
         </div>
 
-
-        {/* Bottom Bar with Concise Partner Trust Badges & Social Links */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-xs text-gray-400">
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-[#F3EEE3]/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-xs text-[#F3EEE3]/50">
             <p>© {new Date().getFullYear()} Àjọṣe Technologies (BN: 9965199). All rights reserved.</p>
           </div>
 
           {/* Social Quick Links */}
-          <div className="flex items-center gap-3 text-xs text-gray-400">
-            <span className="text-gray-500 font-medium hidden lg:inline">Connect:</span>
+          <div className="flex items-center gap-3 text-xs text-[#F3EEE3]/60">
+            <span className="text-[#F3EEE3]/40 font-medium hidden lg:inline">Connect:</span>
             <a
               href="https://www.instagram.com/ajoseapp?utm_source=qr"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#C5A059] transition-colors"
+              className="hover:text-[#D4A843] transition-colors"
             >
               Instagram
             </a>
-            <span className="text-white/20">•</span>
+            <span className="text-[#F3EEE3]/20">•</span>
             <a
               href="https://x.com/ajoseapp?s=11&t=QnoqdrIaByUDrhoWj0KuLA"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#C5A059] transition-colors"
+              className="hover:text-[#D4A843] transition-colors"
             >
               X (Twitter)
             </a>
-            <span className="text-white/20">•</span>
+            <span className="text-[#F3EEE3]/20">•</span>
             <a
               href="https://www.linkedin.com/company/%C3%A0j%E1%BB%8D%E1%B9%A3e/?viewAsMember=true"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#C5A059] transition-colors"
+              className="hover:text-[#D4A843] transition-colors"
             >
               LinkedIn
             </a>

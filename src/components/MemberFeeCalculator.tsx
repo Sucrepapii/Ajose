@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Calculator, ArrowRight, ShieldCheck, CheckCircle2, Sparkles, AlertCircle } from "lucide-react";
+import { Calculator, ArrowRight, ShieldCheck } from "lucide-react";
 
 type Schedule = "DAILY" | "WEEKLY" | "MONTHLY";
 
@@ -17,7 +17,6 @@ export function MemberFeeCalculator() {
   let feeDescription = "";
   
   if (schedule === "MONTHLY") {
-    // 2% standard capped at 10,000 total
     totalFee = Math.min(totalPot * 0.02, 10000);
     feeDescription = totalPot * 0.02 > 10000 ? "2% Capped at ₦10,000 Max" : "2% Open-Banking Protection Fee";
   } else if (schedule === "WEEKLY") {
@@ -30,31 +29,28 @@ export function MemberFeeCalculator() {
 
   const memberFee = totalFee / members;
   const memberTotalDebit = contribution + memberFee;
-  const netPayout = totalPot; // Additive model: Payout is exactly the base pot!
-  const effectivePercentage = totalPot > 0 ? ((totalFee / totalPot) * 100).toFixed(2) : "0";
+  const netPayout = totalPot;
 
   return (
-    <div className="bg-[#0B3022] rounded-3xl p-6 sm:p-10 border-2 border-[#C5A059]/40 text-white shadow-2xl relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-[#C5A059]/10 rounded-full blur-[80px] pointer-events-none" />
-
+    <div className="bg-[#0B3022] rounded-3xl p-6 sm:p-10 border border-[#F3EEE3]/10 text-[#F3EEE3] shadow-[0_24px_60px_rgba(11,48,34,0.2)] relative overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-[#F3EEE3]/10">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C5A059]/20 border border-[#C5A059]/40 text-[#C5A059] text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4A843]/15 border border-[#D4A843]/30 text-[#D4A843] text-[11px] font-mono font-bold uppercase tracking-[0.14em] mb-3">
             <Calculator className="w-3.5 h-3.5" />
             <span>Interactive Payout Simulator</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black font-serif text-white">
-            Calculate Your Pot &amp; Protection Fee
+          <h3 className="text-2xl sm:text-4xl font-bold text-[#F3EEE3] tracking-[-0.025em]">
+            Calculate your pot &amp;{" "}
+            <span className="font-editorial italic font-normal text-[#D4A843]">protection fee.</span>
           </h3>
-          <p className="text-xs sm:text-sm text-gray-300 mt-1">
+          <p className="text-xs sm:text-sm text-[#F3EEE3]/65 mt-1">
             See exactly how much arrives in your bank account when it&rsquo;s your turn to collect.
           </p>
         </div>
 
         {/* Schedule Selector */}
-        <div className="flex items-center bg-black/30 p-1.5 rounded-2xl border border-white/10 shrink-0">
+        <div className="flex items-center bg-[#F3EEE3]/[0.06] p-1.5 rounded-full border border-[#F3EEE3]/10 shrink-0">
           {(["DAILY", "WEEKLY", "MONTHLY"] as Schedule[]).map((s) => (
             <button
               key={s}
@@ -65,10 +61,10 @@ export function MemberFeeCalculator() {
                 if (s === "WEEKLY" && contribution > 150000) setContribution(25000);
                 if (s === "MONTHLY" && contribution < 20000) setContribution(50000);
               }}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 schedule === s
-                  ? "bg-[#C5A059] text-[#0B3022] shadow-md scale-102"
-                  : "text-white/80 hover:text-white hover:bg-white/10"
+                  ? "bg-[#D4A843] text-[#0B3022] shadow-md"
+                  : "text-[#F3EEE3]/75 hover:text-[#F3EEE3]"
               }`}
             >
               {s === "DAILY" ? "Daily" : s === "WEEKLY" ? "Weekly" : "Monthly"}
@@ -84,10 +80,10 @@ export function MemberFeeCalculator() {
           {/* Contribution Slider */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-300">
+              <label className="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-[#F3EEE3]/70">
                 Contribution Per Member ({schedule.toLowerCase()})
               </label>
-              <span className="font-mono text-xl sm:text-2xl font-black text-[#C5A059]">
+              <span className="font-mono text-xl sm:text-2xl font-bold text-[#D4A843]">
                 ₦{contribution.toLocaleString()}
               </span>
             </div>
@@ -98,10 +94,10 @@ export function MemberFeeCalculator() {
               step={schedule === "DAILY" ? 1000 : 5000}
               value={contribution}
               onChange={(e) => setContribution(Number(e.target.value))}
-              className="w-full h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#C5A059]"
+              className="w-full h-2 bg-[#F3EEE3]/15 rounded-lg appearance-none cursor-pointer accent-[#D4A843]"
             />
             {/* Presets */}
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-2 mt-2.5">
               {(schedule === "DAILY"
                 ? [2000, 5000, 10000, 20000]
                 : schedule === "WEEKLY"
@@ -112,10 +108,10 @@ export function MemberFeeCalculator() {
                   key={preset}
                   type="button"
                   onClick={() => setContribution(preset)}
-                  className={`text-[11px] px-2.5 py-1 rounded-lg border transition-colors ${
+                  className={`text-[11px] font-mono px-3 py-1 rounded-full border transition-colors cursor-pointer ${
                     contribution === preset
-                      ? "bg-[#C5A059]/30 border-[#C5A059] text-[#C5A059] font-bold"
-                      : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                      ? "bg-[#D4A843]/25 border-[#D4A843] text-[#D4A843] font-bold"
+                      : "bg-[#F3EEE3]/[0.05] border-[#F3EEE3]/10 text-[#F3EEE3]/70 hover:bg-[#F3EEE3]/10"
                   }`}
                 >
                   ₦{preset.toLocaleString()}
@@ -127,11 +123,11 @@ export function MemberFeeCalculator() {
           {/* Members Count Slider */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-300">
+              <label className="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-[#F3EEE3]/70">
                 Circle Size (Total Savers)
               </label>
-              <span className="font-mono text-xl sm:text-2xl font-black text-white">
-                {members} <span className="text-sm font-normal text-gray-400">members</span>
+              <span className="font-mono text-xl sm:text-2xl font-bold text-[#F3EEE3]">
+                {members} <span className="text-sm font-normal text-[#F3EEE3]/50">members</span>
               </span>
             </div>
             <input
@@ -141,19 +137,19 @@ export function MemberFeeCalculator() {
               step={1}
               value={members}
               onChange={(e) => setMembers(Number(e.target.value))}
-              className="w-full h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#C5A059]"
+              className="w-full h-2 bg-[#F3EEE3]/15 rounded-lg appearance-none cursor-pointer accent-[#D4A843]"
             />
             {/* Member Presets */}
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-wrap gap-2 mt-2.5">
               {[5, 8, 10, 12, 15].map((m) => (
                 <button
                   key={m}
                   type="button"
                   onClick={() => setMembers(m)}
-                  className={`text-[11px] px-3 py-1 rounded-lg border transition-colors ${
+                  className={`text-[11px] font-mono px-3 py-1 rounded-full border transition-colors cursor-pointer ${
                     members === m
-                      ? "bg-[#C5A059]/30 border-[#C5A059] text-[#C5A059] font-bold"
-                      : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                      ? "bg-[#D4A843]/25 border-[#D4A843] text-[#D4A843] font-bold"
+                      : "bg-[#F3EEE3]/[0.05] border-[#F3EEE3]/10 text-[#F3EEE3]/70 hover:bg-[#F3EEE3]/10"
                   }`}
                 >
                   {m} savers
@@ -163,65 +159,65 @@ export function MemberFeeCalculator() {
           </div>
 
           {/* Value Callout */}
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-3 text-xs text-gray-300">
-            <ShieldCheck className="w-5 h-5 text-[#C5A059] shrink-0 mt-0.5" />
+          <div className="p-4 rounded-2xl bg-[#F3EEE3]/[0.04] border border-[#F3EEE3]/10 flex items-start gap-3 text-xs text-[#F3EEE3]/70">
+            <ShieldCheck className="w-5 h-5 text-[#D4A843] shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-white block">What does this fee cover?</span>
-              Mono Open-Banking direct account sweeps, BVN identity lock, Trust Score enforcement, and 100% direct bank payout. Standard baseline rate shown (can be reduced lower via referral tiers or custom Admin partner rates). Funds never sit in an omnibus holding account.
+              <span className="font-bold text-[#F3EEE3] block mb-0.5">What does this fee cover?</span>
+              Mono Open-Banking direct account sweeps, BVN identity lock, Trust Score enforcement, and 100% direct bank payout. Standard baseline rate shown (can be reduced lower via referral tiers or custom Admin partner rates).
             </div>
           </div>
 
         </div>
 
         {/* Right: Net Payout Card */}
-        <div className="lg:col-span-5 bg-white rounded-2xl p-6 sm:p-7 text-[#0B3022] shadow-xl flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-[#F3EEE3] rounded-3xl p-6 sm:p-7 text-[#0B3022] shadow-xl flex flex-col justify-between border border-[#0B3022]/10">
           <div>
-            <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <div className="flex justify-between items-center mb-4 pb-4 border-b border-[#0B3022]/10">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0B3022]/60">
                 Total Member Debit (Base + Fee)
               </span>
-              <span className="font-mono text-base font-black text-rose-600">
+              <span className="font-mono text-base font-bold text-[#0B3022]">
                 ₦{memberTotalDebit.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} /saver
               </span>
             </div>
 
-            <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
+            <div className="flex justify-between items-center mb-4 pb-4 border-b border-[#0B3022]/10">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-500 block">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0B3022]/60 block">
                   Platform Automation Fee
                 </span>
-                <span className="text-[10px] text-gray-400 font-semibold">{feeDescription} (Charged on debit)</span>
+                <span className="text-[10px] text-[#0B3022]/50 font-semibold">{feeDescription}</span>
               </div>
-              <span className="font-mono text-base font-black text-gray-500">
+              <span className="font-mono text-base font-bold text-[#0B3022]/70">
                 +₦{totalFee.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}
               </span>
             </div>
 
             {/* Net Payout Highlight */}
-            <div className="p-4 rounded-xl bg-[#0B3022]/5 border border-[#0B3022]/10 mb-6">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-black uppercase tracking-wider text-[#0B3022]">
+            <div className="p-5 rounded-2xl bg-white border border-[#0B3022]/10 mb-6">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0B3022]">
                   Target Pot Payout
                 </span>
-                <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-mono font-bold text-[#0B3022] bg-[#D4A843]/25 px-2.5 py-0.5 rounded-full">
                   100% Disbursed
                 </span>
               </div>
-              <div className="font-mono text-3xl sm:text-4xl font-black text-[#0B3022] tracking-tight">
+              <div className="font-mono text-3xl sm:text-4xl font-bold text-[#0B3022] tracking-tight">
                 ₦{netPayout.toLocaleString()}
               </div>
-              <p className="text-[11px] text-gray-600 mt-1">
-                The full target savings pot disbursed directly to the recipient's verified bank account.
+              <p className="text-[11px] text-[#0B3022]/65 mt-1.5">
+                The full target savings pot disbursed directly to the recipient&apos;s verified bank account.
               </p>
             </div>
           </div>
 
           <Link
             href="/signup"
-            className="w-full py-3.5 px-6 bg-[#0B3022] hover:bg-[#154634] text-white font-bold text-center rounded-xl transition-all shadow-md flex items-center justify-center gap-2 group text-sm"
+            className="w-full py-3.5 px-6 bg-[#0B3022] hover:bg-[#154634] text-[#F3EEE3] font-bold text-center rounded-full transition-all shadow-md flex items-center justify-center gap-2 group text-sm"
           >
             <span>Launch This Circle</span>
-            <ArrowRight className="w-4 h-4 text-[#C5A059] group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 text-[#D4A843] group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </div>

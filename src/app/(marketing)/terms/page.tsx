@@ -12,62 +12,71 @@ export const metadata: Metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <main className="flex-1 bg-[#FDFBF7] text-[#1F2937] py-24 md:py-32">
+    <main className="flex-1 bg-[#F3EEE3] text-[#0B3022] py-24 md:py-32">
       <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-[#0B3022] mb-4">Terms of Service</h1>
-        <p className="text-[#C5A059] font-bold tracking-wide uppercase text-sm mb-10 border-b border-gray-200 pb-4">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B3022]/[0.06] border border-[#0B3022]/15 text-[#0B3022] text-[11px] font-mono font-bold uppercase tracking-[0.16em] mb-4">
+          <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+          Legal Framework
+        </div>
+        <h1 className="text-4xl md:text-6xl font-bold tracking-[-0.03em] text-[#0B3022] mb-3">
+          Terms of{" "}
+          <span className="font-editorial italic font-normal text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-8">
+            Service.
+          </span>
+        </h1>
+        <p className="text-[#0B3022]/60 font-mono font-bold tracking-wider uppercase text-xs mb-10 border-b border-[#0B3022]/10 pb-5">
           Effective Date: October 25, 2026
         </p>
 
         {/* Core Principles & Important Notice Callout */}
-        <div className="bg-white border-2 border-[#C5A059]/40 rounded-2xl p-6 md:p-8 shadow-sm mb-12 space-y-5">
-          <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#C5A059]/15 flex items-center justify-center shrink-0">
-              <ShieldAlert className="h-5 w-5 text-[#0B3022]" />
+        <div className="bg-white border border-[#0B3022]/15 rounded-3xl p-6 md:p-8 shadow-xs mb-12 space-y-5">
+          <div className="flex items-center gap-3 border-b border-[#0B3022]/10 pb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#0B3022] flex items-center justify-center shrink-0">
+              <ShieldAlert className="h-5 w-5 text-[#D4A843]" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-[#0B3022] tracking-tight">Core Principles &amp; Important Notice</h2>
-              <p className="text-xs text-[#1F2937]/70 font-medium">Please read these key terms carefully before creating or joining an Ajo group.</p>
+              <p className="text-xs text-[#0B3022]/65 font-medium">Please read these key terms carefully before creating or joining an Ajo group.</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed text-[#1F2937]">
-            <div className="p-4 rounded-xl bg-[#FDFBF7] border border-gray-200/80 space-y-1.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed text-[#0B3022]">
+            <div className="p-4 rounded-2xl bg-[#F3EEE3]/70 border border-[#0B3022]/10 space-y-1.5">
               <div className="flex items-center gap-2 font-bold text-[#0B3022] text-sm">
-                <ShieldCheck className="h-4 w-4 text-[#C5A059]" />
+                <ShieldCheck className="h-4 w-4 text-[#D4A843]" />
                 1. Management Platform Only
               </div>
-              <p className="text-[#1F2937]/80">
+              <p className="text-[#0B3022]/75">
                 Àjọṣe provides technology and software tools to make Ajo management easier, automated, and more transparent. Àjọṣe is <strong>not</strong> a bank, lender, trustee, escrow custodian, or guarantor of group funds.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#FDFBF7] border border-gray-200/80 space-y-1.5">
+            <div className="p-4 rounded-2xl bg-[#F3EEE3]/70 border border-[#0B3022]/10 space-y-1.5">
               <div className="flex items-center gap-2 font-bold text-[#0B3022] text-sm">
-                <Users className="h-4 w-4 text-[#0B3022]" />
+                <Users className="h-4 w-4 text-[#D4A843]" />
                 2. Admin Sole Responsibility
               </div>
-              <p className="text-[#1F2937]/80">
+              <p className="text-[#0B3022]/75">
                 The Ajo Admin creates, owns, and manages their group. The Admin takes full responsibility for managing all contributions, vetting participants, tracking collections, and administering circle rules.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#FDFBF7] border border-gray-200/80 space-y-1.5">
+            <div className="p-4 rounded-2xl bg-[#F3EEE3]/70 border border-[#0B3022]/10 space-y-1.5">
               <div className="flex items-center gap-2 font-bold text-[#0B3022] text-sm">
-                <ShieldAlert className="h-4 w-4 text-amber-600" />
+                <ShieldAlert className="h-4 w-4 text-[#D4A843]" />
                 3. Know Your Admin First
               </div>
-              <p className="text-[#1F2937]/80">
+              <p className="text-[#0B3022]/75">
                 Anyone joining an Ajo group <strong>must make sure they personally know and trust the Ajo Admin well</strong> before committing funds. Participation in any group is strictly at your own discretion and risk.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#FDFBF7] border border-gray-200/80 space-y-1.5">
+            <div className="p-4 rounded-2xl bg-[#F3EEE3]/70 border border-[#0B3022]/10 space-y-1.5">
               <div className="flex items-center gap-2 font-bold text-[#0B3022] text-sm">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <AlertTriangle className="h-4 w-4 text-[#D4A843]" />
                 4. No Platform Liability
               </div>
-              <p className="text-[#1F2937]/80">
+              <p className="text-[#0B3022]/75">
                 <strong>Àjọṣe will not be responsible or liable for late or unpaid contributions.</strong> We do not absorb peer-to-peer credit risk. Any collection recovery or disputes remain strictly between members and their Ajo Admin.
               </p>
             </div>
@@ -75,7 +84,7 @@ export default function TermsOfServicePage() {
         </div>
 
         {/* Detailed Legal Contract */}
-        <div className="prose prose-lg max-w-none text-[#1F2937]/90 marker:text-[#0B3022]">
+        <div className="prose prose-lg max-w-none text-[#0B3022]/85 marker:text-[#0B3022]">
           <p className="lead font-medium">
             This Terms of Service Agreement (&quot;Agreement&quot;) constitutes a legally binding commercial contract between you (&quot;User&quot;, &quot;Admin&quot;, &quot;Contributor&quot;, or &quot;Member&quot;) and Ajose Technologies (&quot;Company&quot;, &quot;We&quot;, &quot;Us&quot;, or &quot;Our&quot;), the operator of the Àjọṣe web and mobile application (&quot;Platform&quot;).
           </p>
@@ -131,8 +140,8 @@ export default function TermsOfServicePage() {
           </p>
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">5. Disclaimer of Warranties &amp; Platform Non-Liability for Contributions</h2>
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-5 my-6 text-sm text-[#1F2937] leading-relaxed">
-            <strong className="text-red-700 block text-base mb-1">IMPORTANT DISCLAIMER OF FINANCIAL LIABILITY</strong>
+          <div className="bg-[#0B3022] text-[#F3EEE3] border border-[#D4A843]/40 rounded-2xl p-6 my-6 text-sm leading-relaxed">
+            <strong className="text-[#D4A843] font-mono uppercase tracking-wider block text-xs mb-1.5">Important Disclaimer of Financial Liability</strong>
             Àjọṣe Technologies provides management software on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis. Àjọṣe does not underwrite, guarantee, insure, or indemnify any member&apos;s contributions, turns, or payouts. 
           </div>
           <p>
@@ -196,8 +205,8 @@ export default function TermsOfServicePage() {
           </p>
           <p className="font-semibold mt-2">
             Ajose Technologies<br />
-            Email: <a href="mailto:ajoseapp@gmail.com" className="text-[#C5A059] hover:underline font-bold">ajoseapp@gmail.com</a><br />
-            Website: <Link href="/" className="text-[#0B3022] hover:underline">https://ajose.ng</Link>
+            Email: <a href="mailto:ajoseapp@gmail.com" className="text-[#0B3022] underline decoration-[#D4A843] font-bold">ajoseapp@gmail.com</a><br />
+            Website: <Link href="/" className="text-[#0B3022] underline decoration-[#D4A843]">https://ajose.ng</Link>
           </p>
         </div>
       </div>
