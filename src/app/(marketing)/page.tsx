@@ -1301,6 +1301,47 @@ export default function Home() {
         id="testimonials"
         className="w-full py-24 md:py-32 bg-[#F3EEE3] relative z-10 border-b border-[#111613]/10 overflow-hidden"
       >
+        {/* Multi-layered Atmospheric Background of Country Flags */}
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+          {/* Ambient Lighting Gradients */}
+          <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[#D4A843]/12 blur-[130px] rounded-full" />
+          <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#0B3022]/8 blur-[120px] rounded-full" />
+
+          {/* Faint Subtle World Flag Tapestry Watermark Pattern */}
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-multiply flex flex-wrap items-center justify-around gap-16 p-12 scale-105">
+            {["NG", "GB", "US", "CA", "GH", "KE", "ZA", "JM", "CM", "TT", "IE", "AE", "NG", "GB", "GH", "CA"].map((code, i) => (
+              <div key={i} className="transform rotate-[-8deg] filter grayscale contrast-125">
+                <CountryFlag code={code} size="lg" rounded={true} />
+              </div>
+            ))}
+          </div>
+
+          {/* Floating Glassmorphic Country Flag Badges (Global Diaspora Circles) */}
+          {[
+            { code: "NG", name: "Nigeria", tag: "Àjọ / Esusu", pos: "top-[6%] left-[3%] lg:left-[6%]", anim: "animate-float-slow" },
+            { code: "GB", name: "UK Diaspora", tag: "Pardna", pos: "top-[8%] right-[3%] lg:right-[7%]", anim: "animate-float-reverse" },
+            { code: "US", name: "United States", tag: "Rotational Fund", pos: "top-[20%] left-[2%] lg:left-[5%]", anim: "animate-float-reverse" },
+            { code: "CA", name: "Canada", tag: "Diaspora Circle", pos: "top-[22%] right-[2%] lg:right-[6%]", anim: "animate-float-slow" },
+            { code: "GH", name: "Ghana", tag: "Susu Pool", pos: "bottom-[5%] left-[4%] lg:left-[8%]", anim: "animate-float-slow" },
+            { code: "KE", name: "Kenya", tag: "Chama Circle", pos: "bottom-[6%] right-[4%] lg:right-[8%]", anim: "animate-float-reverse" },
+            { code: "ZA", name: "South Africa", tag: "Stokvel", pos: "top-[14%] left-[18%] hidden 2xl:flex", anim: "animate-float-slow" },
+            { code: "JM", name: "Jamaica", tag: "Partner Scheme", pos: "bottom-[5%] right-[20%] hidden lg:flex", anim: "animate-float-reverse" },
+            { code: "CM", name: "Cameroon", tag: "Njangi", pos: "bottom-[4%] left-[24%] hidden lg:flex", anim: "animate-float-reverse" },
+            { code: "TT", name: "Trinidad", tag: "Sou-sou", pos: "top-[5%] right-[20%] hidden xl:flex", anim: "animate-float-slow" },
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              className={`absolute ${item.pos} ${item.anim} hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#FAF7F0]/85 backdrop-blur-md border border-[#111613]/15 shadow-[0_6px_20px_rgba(11,48,34,0.08)] z-0`}
+            >
+              <CountryFlag code={item.code} size="xs" rounded={true} />
+              <div className="flex flex-col text-left leading-tight">
+                <span className="text-[11px] font-bold text-[#0B3022] tracking-tight">{item.name}</span>
+                <span className="text-[9px] font-mono text-[#111613]/65 font-semibold tracking-wide">{item.tag}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -1309,13 +1350,14 @@ export default function Home() {
           className="container mx-auto px-6 lg:px-12 max-w-7xl relative z-10"
         >
           <motion.div variants={fadeIn} className="text-center mb-16">
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#FAF7F0] border border-[#111613]/12 mb-5">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#FAF7F0] border border-[#111613]/12 shadow-2xs mb-5">
               <div className="flex items-center gap-1.5">
                 <CountryFlag code="NG" size="xs" />
                 <CountryFlag code="GB" size="xs" />
                 <CountryFlag code="US" size="xs" />
                 <CountryFlag code="CA" size="xs" />
                 <CountryFlag code="GH" size="xs" />
+                <CountryFlag code="KE" size="xs" />
               </div>
               <span className="text-xs font-bold text-[#0B3022] tracking-tight">
                 Built for Circles at Home &amp; Across the Diaspora
