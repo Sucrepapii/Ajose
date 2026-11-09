@@ -66,13 +66,13 @@ export default async function AdminDashboardLayout({
         {/* Top Banner Status Bar */}
         <div className="h-14 border-b border-[#0B3022]/10 px-6 sm:px-8 flex items-center justify-between bg-white/85 backdrop-blur-md sticky top-0 z-40 shrink-0">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-            <span className="text-xs font-mono font-medium text-[#0B3022]/80">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
+            <span className="text-xs sm:text-sm font-mono font-medium text-[#0B3022]/90">
               Live Operations Environment &bull; Mono Open-Banking Engine Active
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-[#0B3022] bg-[#D4A843]/20 border border-[#D4A843]/40 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+            <span className="text-xs font-mono text-[#0B3022] bg-[#D4A843]/20 border border-[#D4A843]/40 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
               {displayRole}
             </span>
           </div>

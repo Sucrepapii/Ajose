@@ -91,17 +91,17 @@ export function AdminGroupsClient({
             placeholder="Search by circle name or ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-2 text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
+            className="w-full bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
           />
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           {["all", "active", "pending", "completed"].map((status) => (
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
+              className={`px-3.5 py-2 rounded-xl text-sm font-bold capitalize transition-all cursor-pointer ${
                 filterStatus === status
                   ? "bg-[#0B3022] text-[#F3EEE3] shadow-xs"
                   : "bg-[#F3EEE3]/60 text-[#0B3022]/70 hover:text-[#0B3022] hover:bg-[#F3EEE3]"
@@ -116,20 +116,20 @@ export function AdminGroupsClient({
       {/* Groups Table */}
       <div className="bg-white border border-[#0B3022]/10 rounded-2xl overflow-hidden shadow-xs">
         {filteredGroups.length === 0 ? (
-          <div className="p-16 text-center text-[#0B3022]/50 text-xs">
+          <div className="p-16 text-center text-[#0B3022]/60 text-sm">
             No contribution circles matching the current criteria.
           </div>
         ) : (
           <div className="overflow-x-auto min-h-[360px] pb-24">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="bg-[#F3EEE3]/60 text-[#0B3022]/70 font-mono uppercase tracking-wider border-b border-[#0B3022]/10 text-[10px]">
-                  <th className="px-5 py-4">Circle Details</th>
-                  <th className="px-5 py-4">Contribution &amp; Pool</th>
-                  <th className="px-5 py-4">Roster Capacity</th>
-                  <th className="px-5 py-4">Cycle Frequency</th>
-                  <th className="px-5 py-4">Status</th>
-                  <th className="px-5 py-4 text-right">Actions</th>
+                <tr className="bg-[#F3EEE3]/60 text-[#0B3022]/75 font-mono uppercase tracking-wider border-b border-[#0B3022]/10 text-xs font-bold">
+                  <th className="px-6 py-4">Circle Details</th>
+                  <th className="px-6 py-4">Contribution &amp; Pool</th>
+                  <th className="px-6 py-4">Roster Capacity</th>
+                  <th className="px-6 py-4">Cycle Frequency</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#0B3022]/10">
@@ -142,32 +142,32 @@ export function AdminGroupsClient({
 
                   return (
                     <tr key={group.id} className="hover:bg-[#F3EEE3]/30 transition-colors">
-                      <td className="px-5 py-4">
-                        <p className="font-bold text-[#0B3022] text-sm">
+                      <td className="px-6 py-4">
+                        <p className="font-bold text-[#0B3022] text-sm sm:text-base">
                           {group.name}
                         </p>
-                        <p className="text-[11px] font-mono text-[#0B3022]/60 mt-0.5 truncate max-w-[200px]">
+                        <p className="text-xs font-mono text-[#0B3022]/65 mt-0.5 truncate max-w-[220px]">
                           ID: {group.id}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <p className="font-bold text-[#0B3022] font-mono text-sm">
-                          ₦{contrib.toLocaleString()} <span className="text-[10px] text-[#0B3022]/50 font-normal">/turn</span>
+                      <td className="px-6 py-4">
+                        <p className="font-bold text-[#0B3022] font-mono text-sm sm:text-base">
+                          ₦{contrib.toLocaleString()} <span className="text-xs text-[#0B3022]/60 font-normal">/turn</span>
                         </p>
-                        <p className="text-[11px] text-[#0B3022]/70 font-mono mt-0.5">
+                        <p className="text-xs text-[#0B3022]/75 font-mono mt-0.5">
                           Pool: ₦{poolSize.toLocaleString()}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-[#0B3022]">
+                          <span className="font-bold text-sm sm:text-base text-[#0B3022]">
                             {memberCount} / {maxMem}
                           </span>
-                          <span className="text-[10px] text-[#0B3022]/60">seats</span>
+                          <span className="text-xs text-[#0B3022]/70 font-medium">seats</span>
                         </div>
-                        <div className="w-24 bg-[#F3EEE3] h-1.5 rounded-full mt-1.5 overflow-hidden">
+                        <div className="w-28 bg-[#F3EEE3] h-2 rounded-full mt-2 overflow-hidden">
                           <div 
                             className="bg-[#D4A843] h-full rounded-full transition-all"
                             style={{ width: `${Math.min(100, Math.round((memberCount / maxMem) * 100))}%` }}
@@ -175,17 +175,17 @@ export function AdminGroupsClient({
                         </div>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <span className="capitalize font-medium text-[#0B3022]/80">
+                      <td className="px-6 py-4">
+                        <span className="capitalize font-semibold text-xs sm:text-sm text-[#0B3022]/85">
                           {group.frequency || "Monthly"}
                         </span>
-                        <p className="text-[10px] text-[#0B3022]/50 mt-0.5">
+                        <p className="text-xs text-[#0B3022]/60 mt-0.5">
                           {maxMem} Rounds Total
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold capitalize ${
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold capitalize ${
                           group.status === "active"
                             ? "bg-emerald-500/10 text-emerald-800 border border-emerald-500/20"
                             : group.status === "completed"

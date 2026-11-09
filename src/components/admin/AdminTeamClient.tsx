@@ -180,51 +180,51 @@ export function AdminTeamClient({
       </div>
 
       {/* KPI Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
-          <p className="text-[11px] font-mono uppercase text-[#0B3022]/60 mb-1">Total Admin Staff</p>
-          <p className="text-2xl font-bold text-[#0B3022] font-mono">{admins.length}</p>
-          <p className="text-[10px] text-[#0B3022]/50 mt-1">Active platform operators</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
+          <p className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#0B3022]/70 mb-1.5">Total Admin Staff</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#0B3022] font-mono">{admins.length}</p>
+          <p className="text-xs text-[#0B3022]/65 mt-1">Active platform operators</p>
         </div>
 
-        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
-          <p className="text-[11px] font-mono uppercase text-[#D4A843] mb-1">Super Admins</p>
-          <p className="text-2xl font-bold text-[#0B3022] font-mono">{superAdminCount}</p>
-          <p className="text-[10px] text-[#0B3022]/50 mt-1">Full system authorization</p>
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
+          <p className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#D4A843] mb-1.5">Super Admins</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#0B3022] font-mono">{superAdminCount}</p>
+          <p className="text-xs text-[#0B3022]/65 mt-1">Full system authorization</p>
         </div>
 
-        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
-          <p className="text-[11px] font-mono uppercase text-blue-700 mb-1">Operations Leads</p>
-          <p className="text-2xl font-bold text-blue-800 font-mono">{opsCount}</p>
-          <p className="text-[10px] text-[#0B3022]/50 mt-1">Circles & auto-debit sweeps</p>
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
+          <p className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-blue-700 mb-1.5">Operations Leads</p>
+          <p className="text-2xl sm:text-3xl font-black text-blue-800 font-mono">{opsCount}</p>
+          <p className="text-xs text-[#0B3022]/65 mt-1">Circles & auto-debit sweeps</p>
         </div>
 
-        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-4 shadow-xs">
-          <p className="text-[11px] font-mono uppercase text-amber-700 mb-1">Risk & Compliance</p>
-          <p className="text-2xl font-bold text-amber-800 font-mono">{riskCount}</p>
-          <p className="text-[10px] text-[#0B3022]/50 mt-1">15% exit fines & defaults</p>
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
+          <p className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-amber-700 mb-1.5">Risk & Compliance</p>
+          <p className="text-2xl sm:text-3xl font-black text-amber-800 font-mono">{riskCount}</p>
+          <p className="text-xs text-[#0B3022]/65 mt-1">15% exit fines & defaults</p>
         </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white border border-[#0B3022]/10 p-3 rounded-2xl shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-[#0B3022]/10 p-4 rounded-2xl shadow-xs">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#0B3022]/40" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#0B3022]/40" />
           <input
             type="text"
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#F3EEE3]/40 border border-[#0B3022]/15 rounded-xl text-sm font-medium text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843]"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-[11px] text-[#0B3022]/60 font-medium">Role:</span>
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <span className="text-xs sm:text-sm text-[#0B3022]/75 font-semibold">Role:</span>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="bg-[#F3EEE3]/40 border border-[#0B3022]/15 text-[#0B3022] rounded-xl text-xs px-3 py-1.5 focus:outline-none focus:border-[#D4A843]"
+            className="bg-[#F3EEE3]/40 border border-[#0B3022]/15 text-[#0B3022] rounded-xl text-sm font-medium px-4 py-2.5 focus:outline-none focus:border-[#D4A843]"
           >
             <option value="all">All Roles</option>
             <option value="Super Admin">Super Admin</option>
@@ -238,21 +238,21 @@ export function AdminTeamClient({
       {/* Admin Table */}
       <div className="bg-white border border-[#0B3022]/10 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto min-h-[340px] pb-24">
-          <table className="w-full text-left text-xs text-[#0B3022]">
-            <thead className="bg-[#F3EEE3]/60 text-[10px] font-mono uppercase text-[#0B3022]/70 border-b border-[#0B3022]/10">
+          <table className="w-full text-left text-sm text-[#0B3022]">
+            <thead className="bg-[#F3EEE3]/60 text-xs font-mono font-bold uppercase text-[#0B3022]/75 border-b border-[#0B3022]/10">
               <tr>
-                <th className="px-5 py-3.5">Administrator</th>
-                <th className="px-5 py-3.5">Assigned Role</th>
-                <th className="px-5 py-3.5">Temporary Credentials</th>
-                <th className="px-5 py-3.5">Status</th>
-                <th className="px-5 py-3.5">Date Created</th>
-                <th className="px-5 py-3.5 text-right">Actions</th>
+                <th className="px-6 py-4">Administrator</th>
+                <th className="px-6 py-4">Assigned Role</th>
+                <th className="px-6 py-4">Temporary Credentials</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Date Created</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#0B3022]/10">
               {filteredAdmins.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center text-[#0B3022]/50 text-xs">
+                  <td colSpan={6} className="px-6 py-12 text-center text-[#0B3022]/60 text-sm">
                     No administrators match your search criteria.
                   </td>
                 </tr>
@@ -263,33 +263,33 @@ export function AdminTeamClient({
                   return (
                     <tr key={admin.id} className="hover:bg-[#F3EEE3]/30 transition-colors">
                       {/* Name & Email */}
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-[#0B3022]/10 border border-[#0B3022]/20 flex items-center justify-center font-bold text-[#0B3022] uppercase text-xs shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-[#0B3022]/10 border border-[#0B3022]/20 flex items-center justify-center font-bold text-[#0B3022] uppercase text-sm shrink-0">
                             {admin.fullName.charAt(0) || "A"}
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-[#0B3022] text-xs">{admin.fullName}</span>
+                              <span className="font-bold text-[#0B3022] text-sm sm:text-base">{admin.fullName}</span>
                               {isImmutable && (
-                                <span className="text-[9px] font-mono text-[#0B3022] bg-[#D4A843]/20 border border-[#D4A843]/40 px-1.5 py-0.2 rounded uppercase">
+                                <span className="text-xs font-mono text-[#0B3022] bg-[#D4A843]/20 border border-[#D4A843]/40 px-2 py-0.5 rounded uppercase font-bold">
                                   Root • Immutable
                                 </span>
                               )}
                               {!isImmutable && admin.isSuperAdmin && (
-                                <span className="text-[9px] font-mono text-[#F3EEE3] bg-[#0B3022] border border-[#D4A843]/30 px-1.5 py-0.2 rounded uppercase">
+                                <span className="text-xs font-mono text-[#F3EEE3] bg-[#0B3022] border border-[#D4A843]/30 px-2 py-0.5 rounded uppercase font-bold">
                                   Super Admin
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] text-[#0B3022]/60 font-mono block truncate">{admin.email}</span>
+                            <span className="text-xs text-[#0B3022]/70 font-mono block truncate mt-0.5">{admin.email}</span>
                           </div>
                         </div>
                       </td>
 
                       {/* Role Badge */}
-                      <td className="px-5 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider ${
                           admin.role === "Super Admin"
                             ? "bg-[#0B3022] text-[#F3EEE3] border border-[#D4A843]/30"
                             : admin.role === "Operations Lead"

@@ -45,7 +45,7 @@ export function AdminSidebarNav({
 
   const renderNavLinks = () => (
     <div className="space-y-1">
-      <div className="px-3 pb-1.5 text-[10px] font-mono uppercase tracking-widest text-[#D4A843] font-bold">
+      <div className="px-3 pb-2 text-xs font-mono uppercase tracking-widest text-[#D4A843] font-bold">
         Operations Navigation
       </div>
       {adminNavItems.map((item) => {
@@ -59,16 +59,16 @@ export function AdminSidebarNav({
             key={item.href}
             href={item.href}
             onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2 rounded-xl font-medium text-xs transition-all duration-200 ${
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 ${
               isActive
                 ? "bg-[#D4A843]/15 text-[#F3EEE3] border border-[#D4A843]/35 font-bold shadow-xs"
-                : "text-[#F3EEE3]/70 hover:text-[#F3EEE3] hover:bg-[#F3EEE3]/[0.08]"
+                : "text-[#F3EEE3]/80 hover:text-[#F3EEE3] hover:bg-[#F3EEE3]/[0.08] font-medium"
             }`}
           >
-            <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#D4A843]" : "text-[#F3EEE3]/50"}`} />
+            <Icon className={`h-4.5 w-4.5 shrink-0 ${isActive ? "text-[#D4A843]" : "text-[#F3EEE3]/60"}`} />
             <span className="truncate">{item.label}</span>
             {isActive && (
-              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D4A843] animate-pulse shrink-0" />
+              <span className="ml-auto w-2 h-2 rounded-full bg-[#D4A843] animate-pulse shrink-0" />
             )}
           </Link>
         );
@@ -90,7 +90,7 @@ export function AdminSidebarNav({
           />
           <div className="flex items-center gap-2">
             <span className="font-bold text-[#F3EEE3] font-serif tracking-tight text-base">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
-            <span className="text-[10px] font-mono uppercase bg-[#D4A843]/20 text-[#D4A843] px-2 py-0.5 rounded border border-[#D4A843]/40 font-bold">
+            <span className="text-xs font-mono uppercase bg-[#D4A843]/20 text-[#D4A843] px-2.5 py-0.5 rounded-full border border-[#D4A843]/40 font-bold">
               ADMIN
             </span>
           </div>
@@ -152,12 +152,12 @@ export function AdminSidebarNav({
             />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg text-[#F3EEE3] font-serif tracking-tight">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
-                <span className="text-[9px] font-mono uppercase bg-[#D4A843]/20 text-[#D4A843] px-1.5 py-0.5 rounded border border-[#D4A843]/40 font-bold">
+                <span className="font-bold text-xl text-[#F3EEE3] font-serif tracking-tight">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
+                <span className="text-xs font-mono uppercase bg-[#D4A843]/20 text-[#D4A843] px-2 py-0.5 rounded border border-[#D4A843]/40 font-bold">
                   OPS
                 </span>
               </div>
-              <p className="text-[10px] text-[#F3EEE3]/60 font-mono">Platform Admin Desk</p>
+              <p className="text-xs text-[#F3EEE3]/70 font-mono">Platform Admin Desk</p>
             </div>
           </div>
 
@@ -168,17 +168,17 @@ export function AdminSidebarNav({
         {/* User Card & Logout */}
         <div className="space-y-3 pt-3 border-t border-[#F3EEE3]/10">
           <div className="flex items-center gap-2.5 px-1.5">
-            <div className="w-8 h-8 rounded-lg bg-[#D4A843]/20 border border-[#D4A843]/40 flex items-center justify-center text-[#D4A843] font-bold text-xs uppercase shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#D4A843]/20 border border-[#D4A843]/40 flex items-center justify-center text-[#D4A843] font-bold text-sm uppercase shrink-0">
               {adminName.charAt(0) || "A"}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-1">
-                <p className="text-xs font-bold text-[#F3EEE3] truncate">{adminName}</p>
+                <p className="text-sm font-bold text-[#F3EEE3] truncate">{adminName}</p>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[9px] text-[#D4A843] font-mono font-semibold uppercase">{adminRole || "Admin"}</span>
-                <span className="text-[#F3EEE3]/30 text-[9px]">•</span>
-                <p className="text-[10px] text-[#F3EEE3]/60 truncate">{adminEmail}</p>
+                <span className="text-xs text-[#D4A843] font-mono font-bold uppercase">{adminRole || "Admin"}</span>
+                <span className="text-[#F3EEE3]/30 text-xs">•</span>
+                <p className="text-xs text-[#F3EEE3]/70 truncate">{adminEmail}</p>
               </div>
             </div>
           </div>

@@ -308,16 +308,16 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
           </div>
         ) : (
           <div className="overflow-x-auto min-h-[360px] pb-24">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="bg-[#F3EEE3]/60 text-[#0B3022]/70 font-mono uppercase tracking-wider border-b border-[#0B3022]/10 text-[10px]">
-                  <th className="px-5 py-4">User Details</th>
-                  <th className="px-5 py-4">Contact</th>
-                  <th className="px-5 py-4">Identity KYC</th>
-                  <th className="px-5 py-4">Next of Kin &amp; Social</th>
-                  <th className="px-5 py-4">Status &amp; Security</th>
-                  <th className="px-5 py-4">Linked Bank Account</th>
-                  <th className="px-5 py-4 text-right">Actions</th>
+                <tr className="bg-[#F3EEE3]/60 text-[#0B3022]/75 font-mono uppercase tracking-wider border-b border-[#0B3022]/10 text-xs font-bold">
+                  <th className="px-6 py-4">User Details</th>
+                  <th className="px-6 py-4">Contact</th>
+                  <th className="px-6 py-4">Identity KYC</th>
+                  <th className="px-6 py-4">Next of Kin &amp; Social</th>
+                  <th className="px-6 py-4">Status &amp; Security</th>
+                  <th className="px-6 py-4">Linked Bank Account</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
 
@@ -329,15 +329,15 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                   return (
                     <tr key={u.id} className="hover:bg-[#F3EEE3]/30 transition-colors">
                       {/* User Details */}
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[#0B3022]/10 border border-[#0B3022]/20 flex items-center justify-center text-[#0B3022] font-bold text-xs uppercase">
+                          <div className="w-9 h-9 rounded-full bg-[#0B3022]/10 border border-[#0B3022]/20 flex items-center justify-center text-[#0B3022] font-bold text-sm uppercase">
                             {fullName.charAt(0)}
                           </div>
                           <div>
-                            <p className="font-bold text-[#0B3022] text-sm">{fullName}</p>
+                            <p className="font-bold text-[#0B3022] text-sm sm:text-base">{fullName}</p>
                             {u.nickname && (
-                              <p className="text-[10px] text-[#D4A843] font-medium">
+                              <p className="text-xs text-[#D4A843] font-semibold mt-0.5">
                                 Alias: &quot;{u.nickname}&quot;
                               </p>
                             )}
@@ -346,32 +346,32 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                       </td>
 
                       {/* Contact */}
-                      <td className="px-5 py-4">
-                        <p className="text-[#0B3022] font-medium">{u.email || "No email"}</p>
-                        <p className="text-[11px] font-mono text-[#0B3022]/60 mt-0.5">{u.phone || "No phone"}</p>
+                      <td className="px-6 py-4">
+                        <p className="text-[#0B3022] font-semibold text-sm">{u.email || "No email"}</p>
+                        <p className="text-xs font-mono text-[#0B3022]/70 mt-0.5">{u.phone || "No phone"}</p>
                       </td>
 
                       {/* Identity KYC */}
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-4">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-1.5">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold ${
                               u.bvn_verified 
                                 ? "bg-emerald-500/10 text-emerald-800 border border-emerald-500/20" 
                                 : "bg-[#F3EEE3] text-[#0B3022]/60 border border-[#0B3022]/10"
                             }`}>
-                              <ShieldCheck className="h-3 w-3" />
+                              <ShieldCheck className="h-3.5 w-3.5" />
                               {u.bvn_verified ? "BVN Verified" : "BVN Pending"}
                             </span>
                           </div>
 
                           <div className="flex items-center gap-1.5">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold ${
                               u.nin_verified 
                                 ? "bg-blue-500/10 text-blue-800 border border-blue-500/20" 
                                 : "bg-[#F3EEE3] text-[#0B3022]/60 border border-[#0B3022]/10"
                             }`}>
-                              <ShieldCheck className="h-3 w-3" />
+                              <ShieldCheck className="h-3.5 w-3.5" />
                               {u.nin_verified ? "NIN Verified" : "NIN Pending"}
                             </span>
                           </div>
@@ -379,41 +379,41 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                       </td>
 
                       {/* Next of Kin */}
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-4">
                         {u.next_of_kin_name ? (
                           <div className="space-y-0.5">
-                            <p className="font-bold text-[#0B3022] text-xs flex items-center gap-1">
-                              <HeartHandshake className="h-3 w-3 text-[#D4A843]" />
+                            <p className="font-bold text-[#0B3022] text-sm flex items-center gap-1.5">
+                              <HeartHandshake className="h-3.5 w-3.5 text-[#D4A843]" />
                               {u.next_of_kin_name}
                             </p>
-                            <p className="text-[10px] text-[#0B3022]/60">
+                            <p className="text-xs text-[#0B3022]/70">
                               {u.next_of_kin_relationship || "Family"} • {u.next_of_kin_phone || "No phone"}
                             </p>
                           </div>
                         ) : (
-                          <span className="text-[#0B3022]/40 text-[11px] italic">Not provided</span>
+                          <span className="text-[#0B3022]/50 text-xs italic">Not provided</span>
                         )}
                       </td>
 
                       {/* Status & Security */}
-                      <td className="px-5 py-4">
-                        <div className="space-y-1.5">
+                      <td className="px-6 py-4">
+                        <div className="space-y-2">
                           {/* Account Standing */}
                           <div>
                             {u.is_suspended ? (
                               <div className="space-y-0.5">
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/10 text-red-700 border border-red-500/20">
-                                  <Ban className="h-3 w-3" /> Suspended
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-red-500/10 text-red-700 border border-red-500/20">
+                                  <Ban className="h-3.5 w-3.5" /> Suspended
                                 </span>
                                 {u.suspended_reason && (
-                                  <p className="text-[10px] text-[#0B3022]/60 truncate max-w-[130px]" title={u.suspended_reason}>
+                                  <p className="text-xs text-[#0B3022]/70 truncate max-w-[140px] mt-0.5" title={u.suspended_reason}>
                                     {u.suspended_reason}
                                   </p>
                                 )}
                               </div>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
-                                <CheckCircle2 className="h-3 w-3" /> Active
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Active
                               </span>
                             )}
                           </div>
@@ -421,12 +421,12 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                           {/* PIN Security */}
                           <div>
                             {u.has_pin ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
-                                <KeyRound className="h-3 w-3" /> PIN Active
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
+                                <KeyRound className="h-3.5 w-3.5" /> PIN Active
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-800 border border-amber-500/20">
-                                <AlertCircle className="h-3 w-3" /> No PIN
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-amber-500/10 text-amber-800 border border-amber-500/20">
+                                <AlertCircle className="h-3.5 w-3.5" /> No PIN
                               </span>
                             )}
                           </div>
@@ -436,40 +436,40 @@ export function AdminUsersClient({ users, isSuperAdmin = false }: AdminUsersClie
                             {u.custom_platform_fee_pct !== null && u.custom_platform_fee_pct !== undefined ? (
                               <div className="space-y-0.5">
                                 <span 
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#D4A843]/15 text-[#0B3022] border border-[#D4A843]/40"
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-[#D4A843]/15 text-[#0B3022] border border-[#D4A843]/40"
                                   title={u.custom_fee_note ? `VIP Note: ${u.custom_fee_note}` : "SuperAdmin Custom VIP Fee"}
                                 >
-                                  <Sparkles className="h-2.5 w-2.5 text-[#D4A843]" /> VIP: {u.custom_platform_fee_pct.toFixed(1)}%
+                                  <Sparkles className="h-3 w-3 text-[#D4A843]" /> VIP: {u.custom_platform_fee_pct.toFixed(1)}%
                                 </span>
                                 {(u.managed_groups_count || 0) > 0 && (
-                                  <p className="text-[9px] text-[#0B3022]/50 font-mono">
+                                  <p className="text-xs text-[#0B3022]/65 font-mono mt-0.5">
                                     {u.managed_groups_count} {u.managed_groups_count === 1 ? 'circle' : 'circles'}
                                   </p>
                                 )}
                               </div>
                             ) : (u.managed_groups_count || 0) > 0 ? (
                               <div className="space-y-0.5">
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#F3EEE3] text-[#0B3022] border border-[#0B3022]/15">
-                                  <Landmark className="h-2.5 w-2.5 text-[#0B3022]" />
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-[#F3EEE3] text-[#0B3022] border border-[#0B3022]/15">
+                                  <Landmark className="h-3 w-3 text-[#0B3022]" />
                                   {u.managed_groups_count} {u.managed_groups_count === 1 ? 'Circle' : 'Circles'} ({u.managed_groups_count > 10 ? '1.0%' : u.managed_groups_count >= 6 ? '1.5%' : '2.0%'})
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-[10px] text-[#0B3022]/50 font-mono">Member (2.0%)</span>
+                              <span className="text-xs text-[#0B3022]/65 font-mono font-medium">Member (2.0%)</span>
                             )}
                           </div>
                         </div>
                       </td>
 
                       {/* Linked Bank Account */}
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-4">
                         {u.bank_name || u.account_number ? (
                           <div>
-                            <p className="font-bold text-[#0B3022] text-xs">{u.bank_name || "Commercial Bank"}</p>
-                            <p className="text-[11px] font-mono text-[#0B3022]/60 mt-0.5">{u.account_number || "••••••••••"}</p>
+                            <p className="font-bold text-[#0B3022] text-sm">{u.bank_name || "Commercial Bank"}</p>
+                            <p className="text-xs font-mono text-[#0B3022]/70 mt-0.5">{u.account_number || "••••••••••"}</p>
                           </div>
                         ) : (
-                          <span className="text-[#0B3022]/40 text-xs">No bank account</span>
+                          <span className="text-[#0B3022]/50 text-xs">No bank account</span>
                         )}
                       </td>
 

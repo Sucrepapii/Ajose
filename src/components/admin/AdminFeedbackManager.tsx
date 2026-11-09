@@ -318,48 +318,48 @@ export function AdminFeedbackManager({
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-[#0B3022]/60 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider">Total Feedbacks</span>
-            <MessageSquare className="h-4 w-4 text-[#0B3022]" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-6 shadow-xs">
+          <div className="flex items-center justify-between text-[#0B3022]/70 mb-2">
+            <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider">Total Feedbacks</span>
+            <MessageSquare className="h-5 w-5 text-[#0B3022]" />
           </div>
-          <div className="text-2xl font-black text-[#0B3022]">{totalCount}</div>
-          <p className="text-[11px] text-[#0B3022]/50 mt-1">From web footer &amp; in-app</p>
+          <div className="text-2xl sm:text-3xl font-black text-[#0B3022]">{totalCount}</div>
+          <p className="text-xs text-[#0B3022]/65 mt-1.5">From web footer &amp; in-app</p>
         </div>
 
-        <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-2xl p-5 shadow-xs relative overflow-hidden text-[#F3EEE3]">
+        <div className="bg-[#0B3022] border border-[#D4A843]/30 rounded-2xl p-6 shadow-xs relative overflow-hidden text-[#F3EEE3]">
           <div className="absolute top-0 right-0 w-24 h-24 bg-[#D4A843]/15 rounded-full blur-xl pointer-events-none" />
-          <div className="flex items-center justify-between text-[#F3EEE3]/70 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#D4A843]">Live in Community</span>
-            <Sparkles className="h-4 w-4 text-[#D4A843]" />
+          <div className="flex items-center justify-between text-[#F3EEE3]/80 mb-2">
+            <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#D4A843]">Live in Community</span>
+            <Sparkles className="h-5 w-5 text-[#D4A843]" />
           </div>
-          <div className="text-2xl font-black text-[#D4A843]">{featuredCount}</div>
-          <p className="text-[11px] text-[#F3EEE3]/70 mt-1">Published on homepage</p>
+          <div className="text-2xl sm:text-3xl font-black text-[#D4A843]">{featuredCount}</div>
+          <p className="text-xs text-[#F3EEE3]/80 mt-1.5">Published on homepage</p>
         </div>
 
-        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-[#0B3022]/60 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider">Average Rating</span>
-            <Star className="h-4 w-4 text-[#D4A843] fill-[#D4A843]" />
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-6 shadow-xs">
+          <div className="flex items-center justify-between text-[#0B3022]/70 mb-2">
+            <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider">Average Rating</span>
+            <Star className="h-5 w-5 text-[#D4A843] fill-[#D4A843]" />
           </div>
-          <div className="text-2xl font-black text-[#0B3022]">{avgRating} <span className="text-xs font-normal text-[#0B3022]/50">/ 5.0</span></div>
-          <p className="text-[11px] text-[#0B3022]/50 mt-1">Contributor satisfaction</p>
+          <div className="text-2xl sm:text-3xl font-black text-[#0B3022]">{avgRating} <span className="text-sm font-normal text-[#0B3022]/60">/ 5.0</span></div>
+          <p className="text-xs text-[#0B3022]/65 mt-1.5">Contributor satisfaction</p>
         </div>
 
-        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-[#0B3022]/60 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider">Feature Requests</span>
-            <Lightbulb className="h-4 w-4 text-blue-600" />
+        <div className="bg-white border border-[#0B3022]/10 rounded-2xl p-6 shadow-xs">
+          <div className="flex items-center justify-between text-[#0B3022]/70 mb-2">
+            <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider">Feature Requests</span>
+            <Lightbulb className="h-5 w-5 text-blue-600" />
           </div>
-          <div className="text-2xl font-black text-blue-600">{ideasCount}</div>
-          <p className="text-[11px] text-[#0B3022]/50 mt-1">Product roadmap ideas</p>
+          <div className="text-2xl sm:text-3xl font-black text-blue-600">{ideasCount}</div>
+          <p className="text-xs text-[#0B3022]/65 mt-1.5">Product roadmap ideas</p>
         </div>
       </div>
 
       {/* Filter Tabs & Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {[
             { id: "all", label: `All (${totalCount})` },
             { id: "featured", label: `⭐ Loved by Communities (${featuredCount})` },
@@ -370,9 +370,9 @@ export function AdminFeedbackManager({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                 activeTab === tab.id
-                  ? "bg-[#0B3022] text-[#F3EEE3] font-bold shadow-xs"
+                  ? "bg-[#0B3022] text-[#F3EEE3] shadow-xs"
                   : "bg-white text-[#0B3022]/70 hover:text-[#0B3022] hover:bg-[#F3EEE3] border border-[#0B3022]/10"
               }`}
             >
@@ -381,14 +381,14 @@ export function AdminFeedbackManager({
           ))}
         </div>
 
-        <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 text-[#0B3022]/40 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full sm:w-72">
+          <Search className="w-4 h-4 text-[#0B3022]/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search feedback or author..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-white border border-[#0B3022]/15 rounded-xl text-xs text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843] transition-all shadow-xs"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#0B3022]/15 rounded-xl text-sm font-medium text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:border-[#D4A843] transition-all shadow-xs"
           />
         </div>
       </div>
