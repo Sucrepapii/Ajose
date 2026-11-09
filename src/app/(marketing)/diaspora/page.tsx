@@ -4,18 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { 
   Globe, 
-  Coins, 
   ArrowRight, 
   ShieldCheck, 
-  CheckCircle2, 
-  Sparkles, 
-  Clock, 
   Building2, 
-  Users, 
-  Check, 
   Plane,
-  Calculator,
-  Lock
+  Calculator
 } from "lucide-react";
 import { CountryFlag } from "@/components/CountryFlag";
 
@@ -44,59 +37,65 @@ export default function DiasporaPage() {
   const potInNgn = potInForeign * currentFx.rateToNgn;
 
   return (
-    <main className="flex-1 flex flex-col items-center bg-[#FDFBF7] text-[#1F2937] relative overflow-hidden">
+    <main className="flex-1 flex flex-col items-center bg-[#F3EEE3] text-[#0B3022] relative overflow-hidden">
       
-      {/* Background Glows */}
-      <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-[#0B3022]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 left-0 w-[450px] h-[450px] bg-[#C5A059]/10 rounded-full blur-[100px] pointer-events-none" />
-
-      {/* Hero Section */}
-      <section className="w-full py-20 md:py-28 relative z-10 border-b border-gray-200/80">
-        <div className="container mx-auto px-6 lg:px-12 max-w-6xl text-center">
+      {/* Hero Section — Deep Forest */}
+      <section className="w-full py-20 md:py-28 bg-[#0B3022] text-[#F3EEE3] relative z-10 border-b border-[#F3EEE3]/10 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
+            backgroundSize: "72px 72px",
+          }}
+        />
+        <div className="container mx-auto px-6 lg:px-12 max-w-6xl text-center relative z-10">
           
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0B3022]/10 border border-[#0B3022]/15 text-[#0B3022] text-xs font-bold uppercase tracking-wider mb-6">
-            <Globe className="w-3.5 h-3.5 text-[#C5A059]" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 text-[#F3EEE3] text-[11px] font-mono uppercase tracking-[0.16em] mb-7">
+            <Globe className="w-3.5 h-3.5 text-[#D4A843]" />
             Cross-Border Thrift Circles &bull; Diaspora Portal
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-[#0B3022] font-serif mb-6 leading-[1.1]">
-            Save with Family &amp; Friends Back Home. <br />
-            <span className="text-[#C5A059]">From Anywhere in the World.</span>
+          <h1 className="text-4xl sm:text-6xl lg:text-[68px] font-bold tracking-[-0.03em] text-[#F3EEE3] mb-6 leading-[1.05]">
+            Save with family &amp; friends back home. <br />
+            <span className="font-editorial italic font-normal text-[#D4A843]">
+              From anywhere in the world.
+            </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-[#1F2937]/80 max-w-3xl mx-auto leading-relaxed font-medium mb-10">
-            Contribute in <strong>GBP (£)</strong>, <strong>USD ($)</strong>, <strong>CAD (C$)</strong>, or <strong>EUR (€)</strong>. Recipient collects their full bulk pot directly in <strong>Naira (₦)</strong> with bank-grade security, automated accounting, and zero remittance stress.
+          <p className="text-base sm:text-lg text-[#F3EEE3]/70 max-w-3xl mx-auto leading-relaxed mb-10">
+            Contribute in <strong className="text-[#F3EEE3]">GBP (£)</strong>, <strong className="text-[#F3EEE3]">USD ($)</strong>, <strong className="text-[#F3EEE3]">CAD (C$)</strong>, or <strong className="text-[#F3EEE3]">EUR (€)</strong>. The collector receives their full bulk pot directly in <strong className="text-[#D4A843]">Naira (₦)</strong> with bank-grade security, automated accounting, and zero remittance stress.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/signup"
-              className="w-full sm:w-auto py-4 px-8 bg-[#0B3022] hover:bg-[#154634] text-white font-bold text-base rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2.5 group"
+              className="w-full sm:w-auto py-4 px-8 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-bold text-sm rounded-full transition-all flex items-center justify-center gap-2.5 group"
             >
               <span>Launch a Diaspora Circle</span>
-              <ArrowRight className="w-4 h-4 text-[#C5A059] group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-[#0B3022] group-hover:translate-x-1 transition-transform" />
             </Link>
 
             <a
               href="#calculator"
-              className="w-full sm:w-auto py-4 px-8 bg-white hover:bg-gray-50 text-[#0B3022] border-2 border-gray-200 font-bold text-base rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2"
+              className="w-full sm:w-auto py-4 px-8 bg-[#F3EEE3]/[0.06] hover:bg-[#F3EEE3]/[0.12] text-[#F3EEE3] border border-[#F3EEE3]/20 font-semibold text-sm rounded-full transition-all flex items-center justify-center gap-2"
             >
-              <Calculator className="w-4 h-4 text-[#C5A059]" />
+              <Calculator className="w-4 h-4 text-[#D4A843]" />
               <span>Simulate FX Payout</span>
             </a>
           </div>
 
           {/* Supported Diaspora Hubs */}
-          <div className="mt-12 pt-8 border-t border-gray-200/80 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-bold text-[#0B3022]">
-            <div className="flex items-center gap-2">
+          <div className="mt-14 pt-8 border-t border-[#F3EEE3]/10 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-mono uppercase tracking-wider text-[#F3EEE3]/75">
+            <div className="flex items-center gap-2.5">
               <CountryFlag code="GB" className="w-5 h-3.5 rounded-xs shadow-xs" />
               <span>United Kingdom (London, Manchester)</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <CountryFlag code="US" className="w-5 h-3.5 rounded-xs shadow-xs" />
               <span>United States (Atlanta, Houston, NY)</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <CountryFlag code="CA" className="w-5 h-3.5 rounded-xs shadow-xs" />
               <span>Canada (Toronto, Calgary)</span>
             </div>
@@ -106,27 +105,30 @@ export default function DiasporaPage() {
       </section>
 
       {/* Interactive FX & Diaspora Calculator Section */}
-      <section id="calculator" className="w-full py-20 bg-white border-b border-gray-200 relative z-10">
+      <section id="calculator" className="w-full py-24 bg-[#F3EEE3] border-b border-[#0B3022]/10 relative z-10">
         <div className="container mx-auto px-6 lg:px-12 max-w-5xl">
           
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] block mb-2">
+            <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#0B3022]/60 block mb-2.5">
               Live Currency Calculator
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#0B3022] font-serif">
-              Calculate Your Cross-Border Pot
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.03em] text-[#0B3022]">
+              Calculate your{" "}
+              <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+                cross-border pot.
+              </span>
             </h2>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-[#0B3022]/65 mt-3">
               See what each member contributes abroad and what the collector receives in Nigeria.
             </p>
           </div>
 
           {/* Calculator Card */}
-          <div className="bg-[#0B3022] rounded-3xl p-6 sm:p-10 border-2 border-[#C5A059]/40 text-white shadow-2xl">
+          <div className="bg-[#0B3022] rounded-3xl p-6 sm:p-10 border border-[#0B3022] text-[#F3EEE3] shadow-[0_24px_60px_rgba(11,48,34,0.12)]">
             
             {/* Currency Selector */}
             <div className="mb-8">
-              <label className="block text-xs font-bold uppercase tracking-wider text-white/70 mb-3">
+              <label className="block text-[11px] font-mono uppercase tracking-[0.16em] text-[#F3EEE3]/60 mb-3">
                 Select Your Contribution Currency
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -135,31 +137,31 @@ export default function DiasporaPage() {
                     key={fx.code}
                     type="button"
                     onClick={() => setSelectedCurrency(fx.code)}
-                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                       selectedCurrency === fx.code
-                        ? "bg-[#C5A059] text-[#0B3022] border-[#C5A059] shadow-lg scale-102"
-                        : "bg-white/10 hover:bg-white/15 text-white border-white/10"
+                        ? "bg-[#D4A843] text-[#0B3022] border-[#D4A843] shadow-lg"
+                        : "bg-[#F3EEE3]/[0.05] hover:bg-[#F3EEE3]/[0.1] text-[#F3EEE3] border-[#F3EEE3]/12"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono text-sm font-black">{fx.code}</span>
+                      <span className="font-mono text-sm font-bold">{fx.code}</span>
                       <CountryFlag code={fx.flagCode} className="w-4 h-3 rounded-xs" />
                     </div>
                     <span className="text-xs block font-bold truncate">{fx.symbol} {fx.name}</span>
-                    <span className="text-[10px] opacity-75 block mt-1">1 {fx.code} ≈ ₦{fx.rateToNgn.toLocaleString()}</span>
+                    <span className="text-[11px] font-mono opacity-75 block mt-1">1 {fx.code} ≈ ₦{fx.rateToNgn.toLocaleString()}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Sliders */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pb-8 border-b border-white/10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pb-8 border-b border-[#F3EEE3]/10">
               
               {/* Contribution Slider */}
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-white/80">Monthly Contribution / Member</span>
-                  <span className="text-lg font-black text-[#C5A059] px-3 py-1 bg-white/10 rounded-xl font-mono">
+                <div className="flex justify-between items-center mb-2.5">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#F3EEE3]/75">Monthly Contribution / Member</span>
+                  <span className="text-lg font-bold text-[#D4A843] px-3 py-1 bg-[#F3EEE3]/[0.08] border border-[#F3EEE3]/12 rounded-xl font-mono">
                     {currentFx.symbol}{monthlyContribution}
                   </span>
                 </div>
@@ -170,9 +172,9 @@ export default function DiasporaPage() {
                   step="25"
                   value={monthlyContribution}
                   onChange={(e) => setMonthlyContribution(parseInt(e.target.value))}
-                  className="w-full h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#C5A059]"
+                  className="w-full h-2 bg-[#F3EEE3]/20 rounded-lg appearance-none cursor-pointer accent-[#D4A843]"
                 />
-                <div className="flex justify-between text-[11px] text-white/50 mt-1">
+                <div className="flex justify-between text-[11px] font-mono text-[#F3EEE3]/45 mt-1.5">
                   <span>{currentFx.symbol}50</span>
                   <span>{currentFx.symbol}500</span>
                   <span>{currentFx.symbol}1,500</span>
@@ -181,9 +183,9 @@ export default function DiasporaPage() {
 
               {/* Members Slider */}
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-white/80">Circle Members</span>
-                  <span className="text-lg font-black text-[#C5A059] px-3 py-1 bg-white/10 rounded-xl font-mono">
+                <div className="flex justify-between items-center mb-2.5">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#F3EEE3]/75">Circle Members</span>
+                  <span className="text-lg font-bold text-[#D4A843] px-3 py-1 bg-[#F3EEE3]/[0.08] border border-[#F3EEE3]/12 rounded-xl font-mono">
                     {membersCount} Savers
                   </span>
                 </div>
@@ -193,9 +195,9 @@ export default function DiasporaPage() {
                   max="20"
                   value={membersCount}
                   onChange={(e) => setMembersCount(parseInt(e.target.value))}
-                  className="w-full h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#C5A059]"
+                  className="w-full h-2 bg-[#F3EEE3]/20 rounded-lg appearance-none cursor-pointer accent-[#D4A843]"
                 />
-                <div className="flex justify-between text-[11px] text-white/50 mt-1">
+                <div className="flex justify-between text-[11px] font-mono text-[#F3EEE3]/45 mt-1.5">
                   <span>3 Savers</span>
                   <span>10 Savers</span>
                   <span>20 Savers</span>
@@ -206,29 +208,29 @@ export default function DiasporaPage() {
 
             {/* Results Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-              <div className="bg-white/10 rounded-2xl p-5 text-left space-y-2 text-xs">
-                <div className="flex justify-between text-white/80">
+              <div className="bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/12 rounded-2xl p-5 text-left space-y-2.5 text-xs">
+                <div className="flex justify-between text-[#F3EEE3]/75">
                   <span>Foreign Pool Collected:</span>
-                  <strong className="text-white font-mono text-sm">{currentFx.symbol}{potInForeign.toLocaleString()}</strong>
+                  <strong className="text-[#F3EEE3] font-mono text-sm">{currentFx.symbol}{potInForeign.toLocaleString()}</strong>
                 </div>
-                <div className="flex justify-between text-white/80">
+                <div className="flex justify-between text-[#F3EEE3]/75">
                   <span>Current Indicative Rate:</span>
-                  <strong className="text-[#C5A059] font-mono">1 {currentFx.code} = ₦{currentFx.rateToNgn.toLocaleString()}</strong>
+                  <strong className="text-[#D4A843] font-mono">1 {currentFx.code} = ₦{currentFx.rateToNgn.toLocaleString()}</strong>
                 </div>
-                <div className="flex justify-between text-white/80">
+                <div className="flex justify-between text-[#F3EEE3]/75">
                   <span>Settlement Method:</span>
-                  <strong className="text-emerald-300">Direct NIP Bank Deposit in Nigeria</strong>
+                  <strong className="text-[#F3EEE3]">Direct NIP Bank Deposit in Nigeria</strong>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-[#124230] to-[#0D3526] p-6 rounded-2xl border border-[#C5A059] text-center">
-                <span className="text-xs font-bold uppercase tracking-wider text-white/70 block mb-1">
+              <div className="bg-[#F3EEE3]/[0.06] p-6 rounded-2xl border border-[#D4A843]/50 text-center">
+                <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[#F3EEE3]/65 block mb-1">
                   Total Recipient Payout in Nigeria
                 </span>
-                <div className="text-3xl sm:text-4xl font-black text-[#C5A059] tracking-tight my-1">
+                <div className="text-3xl sm:text-4xl font-bold font-mono text-[#D4A843] tracking-tight my-1">
                   ₦{potInNgn.toLocaleString()}
                 </div>
-                <p className="text-[11px] text-emerald-300 font-medium">
+                <p className="text-[11px] font-mono text-[#F3EEE3]/65">
                   Direct to recipient account upon round maturity
                 </p>
               </div>
@@ -240,46 +242,49 @@ export default function DiasporaPage() {
       </section>
 
       {/* 3 Core Value Pillars for Diaspora */}
-      <section className="w-full py-20 bg-[#FDFBF7] relative z-10 border-b border-gray-200">
+      <section className="w-full py-24 bg-[#F3EEE3] relative z-10 border-b border-[#0B3022]/10">
         <div className="container mx-auto px-6 lg:px-12 max-w-6xl">
           
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#0B3022] font-serif">
-              Why Diaspora Groups Choose Àjọṣe
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.03em] text-[#0B3022]">
+              Why diaspora circles choose{" "}
+              <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+                Àjọṣe.
+              </span>
             </h2>
-            <p className="text-gray-600 mt-2 text-base">
+            <p className="text-[#0B3022]/65 mt-3 text-base">
               Say goodbye to uncoordinated bank transfers, manual spreadsheets, and trust issues.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-800 mb-6">
-                <Plane className="w-6 h-6" />
+            <div className="bg-white p-8 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.04)]">
+              <div className="w-12 h-12 rounded-2xl bg-[#0B3022] flex items-center justify-center text-[#D4A843] mb-6">
+                <Plane className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-bold text-[#0B3022] mb-3">Seamless Remote Collections</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-bold text-[#0B3022] mb-2.5">Seamless Remote Collections</h3>
+              <p className="text-sm text-[#0B3022]/65 leading-relaxed">
                 Members in London, Atlanta, and Toronto contribute on schedule. No more chasing relatives for monthly remittance proofs.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-2xl bg-[#C5A059]/20 flex items-center justify-center text-[#0B3022] mb-6">
-                <ShieldCheck className="w-6 h-6 text-[#C5A059]" />
+            <div className="bg-white p-8 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.04)]">
+              <div className="w-12 h-12 rounded-2xl bg-[#0B3022] flex items-center justify-center text-[#D4A843] mb-6">
+                <ShieldCheck className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-bold text-[#0B3022] mb-3">100% Transparent Ledger</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-bold text-[#0B3022] mb-2.5">100% Transparent Ledger</h3>
+              <p className="text-sm text-[#0B3022]/65 leading-relaxed">
                 Every member across time zones sees the exact rotation schedule, whose turn is next, and verified transaction receipts.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-800 mb-6">
-                <Building2 className="w-6 h-6" />
+            <div className="bg-white p-8 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.04)]">
+              <div className="w-12 h-12 rounded-2xl bg-[#0B3022] flex items-center justify-center text-[#D4A843] mb-6">
+                <Building2 className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-bold text-[#0B3022] mb-3">Direct Pass-Through to Nigeria</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-bold text-[#0B3022] mb-2.5">Direct Pass-Through to Nigeria</h3>
+              <p className="text-sm text-[#0B3022]/65 leading-relaxed">
                 When it’s the recipient’s turn, funds are paid straight into their Nigerian bank account without high traditional remittance fees.
               </p>
             </div>
@@ -290,14 +295,14 @@ export default function DiasporaPage() {
       </section>
 
       {/* Community Testimonials Highlight */}
-      <section className="w-full py-20 bg-white relative z-10 border-b border-gray-200">
+      <section className="w-full py-20 bg-white relative z-10 border-b border-[#0B3022]/10">
         <div className="container mx-auto px-6 lg:px-12 max-w-4xl text-center">
           
-          <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] block mb-2">
+          <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#D4A843] block mb-3">
             Diaspora Voice
           </span>
           
-          <blockquote className="text-xl sm:text-2xl font-serif text-[#0B3022] italic leading-relaxed mb-6">
+          <blockquote className="text-2xl sm:text-3xl font-editorial italic text-[#0B3022] leading-relaxed mb-6">
             &ldquo;Managing our family circle between London and Lagos used to cause endless WhatsApp confusion. With Àjọṣe, everyone knows their turn, contributions are recorded instantly, and the pot lands directly in our parents&rsquo; account when it&rsquo;s their turn.&rdquo;
           </blockquote>
 
@@ -310,17 +315,20 @@ export default function DiasporaPage() {
       </section>
 
       {/* CTA Footer */}
-      <section className="w-full py-20 bg-[#0B3022] text-white text-center relative z-10">
+      <section className="w-full py-24 bg-[#0B3022] text-[#F3EEE3] text-center relative z-10">
         <div className="container mx-auto px-6 lg:px-12 max-w-3xl">
-          <h2 className="text-3xl sm:text-5xl font-black font-serif text-white mb-6">
-            Ready to Start Your Diaspora Circle?
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.03em] text-[#F3EEE3] mb-5">
+            Ready to start your{" "}
+            <span className="font-editorial italic font-normal text-[#D4A843]">
+              diaspora circle?
+            </span>
           </h2>
-          <p className="text-base text-white/80 mb-8 max-w-xl mx-auto">
+          <p className="text-base text-[#F3EEE3]/70 mb-8 max-w-xl mx-auto">
             Set your rules, invite members from anywhere in the world, and experience stress-free rotational thrift.
           </p>
           <Link
             href="/signup"
-            className="inline-flex py-4 px-8 bg-[#C5A059] hover:bg-[#A48243] text-[#0B3022] font-black text-base rounded-2xl transition-all shadow-xl items-center gap-2 group"
+            className="inline-flex py-4 px-8 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-bold text-sm rounded-full transition-all items-center gap-2 group"
           >
             <span>Create a Group Free</span>
             <ArrowRight className="w-4 h-4 text-[#0B3022] group-hover:translate-x-1 transition-transform" />
