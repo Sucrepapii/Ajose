@@ -20,7 +20,6 @@ export default function FeedbackPage() {
       if (user) {
         setUserEmail(user.email || "");
         
-        // Fetch user profile for full name
         const { data: profile } = await supabase
           .from("users")
           .select("first_name, last_name")
@@ -74,22 +73,27 @@ export default function FeedbackPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="text-center">
-        <div className="w-16 h-16 bg-[#C5A059]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <MessageSquare className="w-8 h-8 text-[#C5A059]" />
+        <div className="w-14 h-14 bg-[#0B3022] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <MessageSquare className="w-6 h-6 text-[#D4A843]" />
         </div>
-        <h1 className="text-3xl font-bold text-[#0B3022]">We value your feedback</h1>
-        <p className="text-gray-500 mt-2">Help us improve Àjọṣe by sharing your thoughts, feature requests, or reporting issues.</p>
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#0B3022] tracking-tight">
+          We value your{" "}
+          <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+            feedback.
+          </span>
+        </h1>
+        <p className="text-[#0B3022]/65 text-sm mt-2">Help us improve Àjọṣe by sharing your thoughts, feature requests, or reporting issues.</p>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-xl">
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-[#0B3022]/10 shadow-[0_16px_48px_rgba(11,48,34,0.06)]">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-2">Category</label>
             <select 
               required 
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] font-medium text-gray-900"
+              className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4A843] font-medium text-[#0B3022] text-sm"
             >
               <option value="">Select a category...</option>
               <option value="feature">Feature Request</option>
@@ -100,13 +104,13 @@ export default function FeedbackPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Your Feedback</label>
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-2">Your Feedback</label>
             <textarea 
               required 
               rows={5} 
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] font-medium text-gray-900 placeholder-gray-400"
+              className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4A843] font-medium text-[#0B3022] placeholder-[#0B3022]/40 text-sm"
               placeholder="Tell us what's on your mind..."
             ></textarea>
           </div>
@@ -114,11 +118,11 @@ export default function FeedbackPage() {
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className="w-full py-4 bg-[#0B3022] hover:bg-[#072117] text-white font-bold text-lg rounded-xl transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70"
+            className="w-full py-4 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-bold text-sm rounded-full transition-all flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer"
           >
             {isSubmitting ? "Submitting..." : (
               <>
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4" />
                 Submit Feedback
               </>
             )}

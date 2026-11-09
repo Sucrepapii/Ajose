@@ -41,48 +41,59 @@ export default function SupportPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h1 className="text-2xl font-bold text-[#0B3022] flex items-center gap-2">
-          <HelpCircle className="w-6 h-6 text-[#C5A059]" />
-          Help & Support
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0B3022] text-[#F3EEE3] text-[10px] font-mono uppercase tracking-[0.16em] mb-3">
+          <HelpCircle className="w-3.5 h-3.5 text-[#D4A843]" />
+          Member Concierge
+        </div>
+        <h1 className="text-3xl font-bold text-[#0B3022] tracking-tight">
+          Help &amp;{" "}
+          <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+            Support.
+          </span>
         </h1>
-        <p className="text-gray-500 mt-1 text-sm">Find answers or contact our support team.</p>
+        <p className="text-[#0B3022]/65 mt-1 text-sm">Find answers or contact our support team.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Contact Support */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col gap-6">
+        <div className="bg-white rounded-3xl p-7 border border-[#0B3022]/10 flex flex-col gap-6">
           <h2 className="text-lg font-bold text-[#0B3022]">Contact Us</h2>
           <div className="space-y-4">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-[#C5A059]/10 flex items-center justify-center shrink-0">
-                <Mail className="w-5 h-5 text-[#C5A059]" />
+              <div className="w-11 h-11 rounded-2xl bg-[#0B3022] flex items-center justify-center shrink-0">
+                <Mail className="w-5 h-5 text-[#D4A843]" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-gray-900">Email Support</h3>
-                <p className="text-xs text-gray-500 mb-1">Response within 24 hours</p>
-                <a href="mailto:ajoseapp@gmail.com" className="text-sm text-[#0B3022] font-semibold hover:underline">ajoseapp@gmail.com</a>
+                <h3 className="text-sm font-bold text-[#0B3022]">Email Support</h3>
+                <p className="text-xs text-[#0B3022]/60 mb-1">Response within 24 hours</p>
+                <a href="mailto:ajoseapp@gmail.com" className="text-sm text-[#0B3022] font-bold underline decoration-[#D4A843]">ajoseapp@gmail.com</a>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-[#C5A059]/10 flex items-center justify-center shrink-0">
-                <MessageCircle className="w-5 h-5 text-[#C5A059]" />
+              <div className="w-11 h-11 rounded-2xl bg-[#0B3022] flex items-center justify-center shrink-0">
+                <MessageCircle className="w-5 h-5 text-[#D4A843]" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-gray-900">WhatsApp Support</h3>
-                <p className="text-xs text-gray-500 mb-1">Mon-Fri, 9am - 5pm</p>
-                <a href="https://wa.me/2348125225352" target="_blank" rel="noopener noreferrer" className="text-sm text-[#0B3022] font-semibold hover:underline">Chat on WhatsApp</a>
+                <h3 className="text-sm font-bold text-[#0B3022]">WhatsApp Support</h3>
+                <p className="text-xs text-[#0B3022]/60 mb-1">Mon-Fri, 9am - 5pm</p>
+                <a href="https://wa.me/2348125225352" target="_blank" rel="noopener noreferrer" className="text-sm text-[#0B3022] font-bold underline decoration-[#D4A843]">Chat on WhatsApp</a>
               </div>
             </div>
           </div>
         </div>
 
         {/* Quick Feedback link */}
-        <div className="bg-[#0B3022] rounded-2xl p-6 border border-[#0B3022] shadow-xl text-white flex flex-col justify-between">
+        <div className="bg-[#0B3022] rounded-3xl p-7 border border-[#0B3022] text-[#F3EEE3] flex flex-col justify-between">
           <div>
-            <h2 className="text-lg font-bold mb-2">Have a suggestion?</h2>
-            <p className="text-sm text-gray-300">We want to hear from you. Tell us how we can improve your experience.</p>
+            <h2 className="text-xl font-bold mb-2">
+              Have a{" "}
+              <span className="font-editorial italic font-normal text-[#D4A843]">
+                suggestion?
+              </span>
+            </h2>
+            <p className="text-sm text-[#F3EEE3]/70 leading-relaxed">We want to hear from you. Tell us how we can improve your experience.</p>
           </div>
-          <a href="/dashboard/feedback" className="inline-flex items-center justify-center gap-2 mt-6 py-3 px-4 bg-[#C5A059] hover:bg-[#b5924d] text-[#0B3022] font-bold rounded-xl transition-all">
+          <a href="/dashboard/feedback" className="inline-flex items-center justify-center gap-2 mt-6 py-3.5 px-6 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] text-sm font-bold rounded-full transition-all">
             <MessageSquare className="w-4 h-4" />
             Share Feedback
           </a>
@@ -90,13 +101,18 @@ export default function SupportPage() {
       </div>
 
       {/* FAQs */}
-      <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm mt-8">
-        <h2 className="text-xl font-bold text-[#0B3022] mb-6">Frequently Asked Questions</h2>
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-[#0B3022]/10 mt-8">
+        <h2 className="text-2xl font-bold text-[#0B3022] mb-6 tracking-tight">
+          Frequently asked{" "}
+          <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+            questions.
+          </span>
+        </h2>
         <div className="space-y-6">
           {faqs.map((faq, i) => (
-            <div key={i} className="pb-6 border-b border-gray-100 last:border-0 last:pb-0">
-              <h3 className="text-sm font-bold text-gray-900 mb-2">{faq.q}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{faq.a}</p>
+            <div key={i} className="pb-6 border-b border-[#0B3022]/10 last:border-0 last:pb-0">
+              <h3 className="text-sm font-bold text-[#0B3022] mb-2">{faq.q}</h3>
+              <p className="text-sm text-[#0B3022]/70 leading-relaxed">{faq.a}</p>
             </div>
           ))}
         </div>

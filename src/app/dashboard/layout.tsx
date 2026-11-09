@@ -1,14 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { 
-  PiggyBank, 
-  LayoutDashboard, 
-  Users, 
-  ArrowRightLeft, 
-  Settings, 
-  Bell
-} from "lucide-react";
 import { LogoutButton } from "@/components/LogoutButton";
 import { SidebarNav } from "@/components/SidebarNav";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -56,13 +48,13 @@ export default async function DashboardLayout({
     : (email ? email.substring(0, 2).toUpperCase() : "ME");
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] flex flex-col md:flex-row font-sans text-[#1F2937] relative">
+    <div className="min-h-screen bg-[#F3EEE3] flex flex-col md:flex-row font-sans text-[#0B3022] relative">
       <AutoLogout />
       <OnboardingTour />
       <PushNotificationManager userId={user.id} />
       {/* Sidebar for Desktop */}
-      <aside className="w-64 bg-[#0B3022] border-r border-[#0B3022]/10 hidden md:flex flex-col shadow-xl z-50 relative">
-        <div className="h-20 flex items-center px-6 border-b border-white/10">
+      <aside className="w-64 bg-[#0B3022] border-r border-[#F3EEE3]/10 hidden md:flex flex-col z-50 relative">
+        <div className="h-20 flex items-center px-6 border-b border-[#F3EEE3]/10">
           <div className="relative">
             <Link className="flex items-center gap-3 group relative hover:opacity-90 transition-opacity py-1" href="/">
               <Image 
@@ -72,12 +64,12 @@ export default async function DashboardLayout({
                 height={32} 
                 className="object-contain w-auto h-8 drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
               />
-              <span className="font-bold text-xl text-white font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
+              <span className="font-bold text-xl text-[#F3EEE3] font-serif tracking-tight">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
 
               {/* Pop-out motto on hover */}
               <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out z-50 whitespace-nowrap">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#061B13]/95 backdrop-blur-md border border-[#C5A059]/60 shadow-2xl text-[11px] font-medium tracking-wide text-[#F3E5C8]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse"></span>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B3022] border border-[#D4A843]/50 shadow-2xl text-[11px] font-mono uppercase tracking-wider text-[#F3EEE3]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843] animate-pulse"></span>
                   Turn by turn, no wahala.
                 </div>
               </div>
@@ -87,7 +79,7 @@ export default async function DashboardLayout({
         
         <SidebarNav />
 
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-[#F3EEE3]/10">
           <LogoutButton />
         </div>
       </aside>
@@ -101,20 +93,25 @@ export default async function DashboardLayout({
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#FDFBF7]">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#F3EEE3]">
         {/* Topbar */}
-        <div className="h-20 bg-white/50 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-8 hidden md:flex shrink-0 relative z-40">
-          <h1 className="text-xl font-bold text-[#0B3022]">Dashboard</h1>
+        <div className="h-20 bg-[#F3EEE3]/85 backdrop-blur-md border-b border-[#0B3022]/10 flex items-center justify-between px-8 hidden md:flex shrink-0 relative z-40">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl font-bold text-[#0B3022] tracking-tight">Member</h1>
+            <span className="font-editorial italic font-normal text-2xl text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-4">
+              Workspace.
+            </span>
+          </div>
           <div className="flex items-center gap-4">
             <NotificationBell userId={user.id} />
-            <div className="flex items-center gap-3 pl-4 border-l border-gray-300">
-              <div className="w-10 h-10 rounded-full bg-[#C5A059]/10 flex items-center justify-center text-[#C5A059] font-bold border border-[#C5A059]/30 shadow-sm uppercase">
+            <div className="flex items-center gap-3 pl-4 border-l border-[#0B3022]/12">
+              <div className="w-10 h-10 rounded-full bg-[#0B3022] flex items-center justify-center text-[#D4A843] font-bold border border-[#0B3022] text-xs font-mono uppercase">
                 {initials}
               </div>
               <div className="hidden lg:block">
                 <p className="text-sm font-bold text-[#0B3022] truncate max-w-[150px]">{displayName}</p>
-                <p className="text-xs text-[#1F2937]/70 font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> Verified Member
+                <p className="text-[11px] font-mono uppercase tracking-wider text-[#0B3022]/65 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A843]"></span> Verified Member
                 </p>
               </div>
             </div>

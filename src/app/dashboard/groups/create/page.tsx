@@ -187,8 +187,8 @@ export default function CreateGroupPage() {
       const createdId = data.groupId || data.group?.id || data.id || "";
       setNewGroupId(createdId);
       setShowConfirm(false);
-      setStep(3); // Success
-      toast.success("Rotational group created successfully!");
+      setStep(3);
+      toast.success("Rotational circle created successfully!");
 
     } catch (err: any) {
       toast.error(err.message || "Failed to create group.");
@@ -205,11 +205,7 @@ export default function CreateGroupPage() {
   const isWeekly = formData.frequency === "weekly";
   const isMonthly = formData.frequency === "monthly" || formData.frequency === "biweekly";
 
-  // Commercial Pricing Model:
-  // - Monthly Groups: 2% platform fee (or custom admin rate) added to monthly auto-debit (0% at payout).
-  // - Weekly Groups: 0% payout fees! Flat ₦300 automated processing fee per transaction.
-  // - Daily Groups: 0% payout fees! Flat ₦100 automated processing fee per transaction.
-  const platformFee = 0; // 0% at payout across all frequencies!
+  const platformFee = 0;
   const automationFeePerTx = isDaily ? 100 : isWeekly ? 300 : isMonthly ? Math.round(cont * 0.02) : 0;
   const commPctNumber = parseFloat(formData.adminCommission) || 0;
   const adminFee = totalPool * (commPctNumber / 100);
@@ -220,28 +216,33 @@ export default function CreateGroupPage() {
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/dashboard" className="p-2 rounded-xl bg-white border border-gray-200 text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-50 transition-colors shadow-sm">
+        <Link href="/dashboard" className="p-2.5 rounded-full bg-white border border-[#0B3022]/15 text-[#0B3022] hover:border-[#D4A843] transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#0B3022]">Create Rotational Contribution Group</h1>
-          <p className="text-[#1F2937]/70 text-sm">Set up terms, determine your commission percentage, and tender your settlement account.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0B3022] tracking-tight">
+            Create{" "}
+            <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+              Rotational Circle.
+            </span>
+          </h1>
+          <p className="text-[#0B3022]/65 text-sm">Set up terms, determine your commission percentage, and tender your settlement account.</p>
         </div>
       </div>
 
       {step < 3 ? (
-        <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 md:p-8">
+        <div className="bg-white border border-[#0B3022]/10 rounded-3xl p-6 md:p-8 shadow-[0_16px_48px_rgba(11,48,34,0.06)]">
           
           {/* Progress */}
-          <div className="flex items-center mb-8 pb-8 border-b border-gray-100">
-            <div className={`flex flex-col items-center flex-1 ${step >= 1 ? 'text-[#0B3022]' : 'text-gray-400'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold mb-2 ${step >= 1 ? 'bg-[#C5A059]/20 text-[#0B3022] border border-[#C5A059]' : 'bg-gray-100 text-gray-500'}`}>1</div>
-              <span className="text-sm font-bold">Group Details</span>
+          <div className="flex items-center mb-8 pb-8 border-b border-[#0B3022]/10">
+            <div className={`flex flex-col items-center flex-1 ${step >= 1 ? 'text-[#0B3022]' : 'text-[#0B3022]/40'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs mb-2 ${step >= 1 ? 'bg-[#0B3022] text-[#D4A843]' : 'bg-[#F3EEE3] text-[#0B3022]/50'}`}>1</div>
+              <span className="text-xs font-mono uppercase tracking-wider font-bold">Circle Details</span>
             </div>
-            <div className={`h-0.5 w-16 ${step >= 2 ? 'bg-[#C5A059]' : 'bg-gray-200'}`}></div>
-            <div className={`flex flex-col items-center flex-1 ${step >= 2 ? 'text-[#0B3022]' : 'text-gray-400'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold mb-2 ${step >= 2 ? 'bg-[#C5A059]/20 text-[#0B3022] border border-[#C5A059]' : 'bg-gray-100 text-gray-500'}`}>2</div>
-              <span className="text-sm font-bold">Commission & Settlement</span>
+            <div className={`h-0.5 w-16 ${step >= 2 ? 'bg-[#D4A843]' : 'bg-[#0B3022]/15'}`}></div>
+            <div className={`flex flex-col items-center flex-1 ${step >= 2 ? 'text-[#0B3022]' : 'text-[#0B3022]/40'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs mb-2 ${step >= 2 ? 'bg-[#0B3022] text-[#D4A843]' : 'bg-[#F3EEE3] text-[#0B3022]/50'}`}>2</div>
+              <span className="text-xs font-mono uppercase tracking-wider font-bold">Commission &amp; Settlement</span>
             </div>
           </div>
 
@@ -250,41 +251,41 @@ export default function CreateGroupPage() {
             <div className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-[#0B3022]">Group Name</label>
+                  <label className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022]">Circle Name</label>
                   <input 
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     type="text" 
                     placeholder="e.g., December Rent Circle" 
-                    className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg px-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium" 
+                    className="w-full bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl px-4 py-3 text-[#0B3022] focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-all font-medium text-sm" 
                   />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-[#0B3022]">Contribution Amount (₦)</label>
+                    <label className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022]">Contribution Amount (₦)</label>
                     <div className="relative">
-                      <Wallet className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
+                      <Wallet className="absolute left-3.5 top-3.5 h-4 w-4 text-[#0B3022]/45" />
                       <input 
                         name="contributionAmount"
                         value={formData.contributionAmount}
                         onChange={handleChange}
                         type="number" 
                         placeholder="50000" 
-                        className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium" 
+                        className="w-full bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-3 text-[#0B3022] font-mono focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-all font-bold text-sm" 
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-bold text-[#0B3022]">Total Members (Including You)</label>
-                      <span className="text-xs font-bold text-[#0B3022] bg-[#C5A059]/20 px-2 py-0.5 rounded-full">
+                      <label className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022]">Total Members</label>
+                      <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#0B3022] bg-[#D4A843]/25 px-2.5 py-0.5 rounded-full">
                         {formData.maxMembers || "0"} Members
                       </span>
                     </div>
                     <div className="relative">
-                      <Users className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
+                      <Users className="absolute left-3.5 top-3.5 h-4 w-4 text-[#0B3022]/45" />
                       <input 
                         name="maxMembers"
                         value={formData.maxMembers}
@@ -292,7 +293,7 @@ export default function CreateGroupPage() {
                         type="number"
                         min="2"
                         placeholder="Enter any member count (e.g. 15, 50)" 
-                        className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium"
+                        className="w-full bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-3 text-[#0B3022] font-mono focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-all font-bold text-sm"
                       />
                     </div>
                     {/* Quick Preset Chips */}
@@ -302,10 +303,10 @@ export default function CreateGroupPage() {
                           type="button"
                           key={num}
                           onClick={() => setFormData(prev => ({ ...prev, maxMembers: num.toString() }))}
-                          className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                          className={`px-3 py-1 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${
                             formData.maxMembers === num.toString()
-                              ? 'bg-[#0B3022] text-[#C5A059]'
-                              : 'bg-[#FDFBF7] border border-gray-200 text-[#1F2937]/70 hover:bg-gray-100'
+                              ? 'bg-[#0B3022] text-[#D4A843]'
+                              : 'bg-[#F3EEE3] border border-[#0B3022]/10 text-[#0B3022]/75 hover:bg-[#0B3022]/10'
                           }`}
                         >
                           {num}
@@ -316,14 +317,14 @@ export default function CreateGroupPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-[#0B3022]">Contribution Frequency</label>
+                  <label className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022]">Contribution Frequency</label>
                   <div className="relative">
-                    <CalendarDays className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
+                    <CalendarDays className="absolute left-3.5 top-3.5 h-4 w-4 text-[#0B3022]/45" />
                     <select 
                       name="frequency"
                       value={formData.frequency}
                       onChange={handleChange}
-                      className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all appearance-none font-medium"
+                      className="w-full bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-3 text-[#0B3022] focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-all appearance-none font-medium text-sm"
                     >
                       <option value="daily">Daily</option>
                       <option value="weekly">Weekly</option>
@@ -334,30 +335,30 @@ export default function CreateGroupPage() {
 
                   {/* Dynamic Pricing Rule Guidance */}
                   {formData.frequency === "daily" && (
-                    <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2.5 text-xs text-amber-900 animate-in fade-in">
-                      <Sparkles className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                    <div className="p-4 bg-[#F3EEE3]/70 border border-[#D4A843]/40 rounded-2xl flex items-start gap-2.5 text-xs text-[#0B3022] animate-in fade-in">
+                      <Sparkles className="h-4 w-4 text-[#D4A843] shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold block text-[#0B3022]">Daily Group: Admin-Directed Payout Transfer</span>
+                        <span className="font-bold block text-[#0B3022]">Daily Circle: Admin-Directed Payout Transfer</span>
                         A flat <strong>₦100 automation fee</strong> applies to each daily debit (<strong>0% payout fees!</strong>). For turn payouts, <strong>you (the Admin) choose the exact day to transfer</strong> the accumulated pool to the turn collector instead of mandatory immediate auto-credit.
                       </div>
                     </div>
                   )}
 
                   {formData.frequency === "weekly" && (
-                    <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2.5 text-xs text-amber-900 animate-in fade-in">
-                      <Sparkles className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                    <div className="p-4 bg-[#F3EEE3]/70 border border-[#D4A843]/40 rounded-2xl flex items-start gap-2.5 text-xs text-[#0B3022] animate-in fade-in">
+                      <Sparkles className="h-4 w-4 text-[#D4A843] shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold block text-[#0B3022]">Weekly Group Pricing Rule:</span>
-                        A flat <strong>₦300 automation fee</strong> applies to each weekly debit to secure and auto-verify your contributions via open banking. <span className="font-bold text-emerald-800">0% payout fees!</span>
+                        <span className="font-bold block text-[#0B3022]">Weekly Circle Pricing Rule:</span>
+                        A flat <strong>₦300 automation fee</strong> applies to each weekly debit to secure and auto-verify your contributions via open banking. <span className="font-bold">0% payout fees!</span>
                       </div>
                     </div>
                   )}
 
                   {(formData.frequency === "monthly" || formData.frequency === "biweekly") && (
-                    <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-2.5 text-xs text-emerald-900 animate-in fade-in">
-                      <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0 mt-0.5" />
+                    <div className="p-4 bg-[#F3EEE3]/70 border border-[#0B3022]/15 rounded-2xl flex items-start gap-2.5 text-xs text-[#0B3022] animate-in fade-in">
+                      <ShieldCheck className="h-4 w-4 text-[#0B3022] shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold block text-[#0B3022]">Monthly Group Pricing Rule:</span>
+                        <span className="font-bold block text-[#0B3022]">Monthly Circle Pricing Rule:</span>
                         A <strong>2% platform fee</strong> (or admin custom rate) is included at auto-debit. <strong>0% payout fee</strong> so turn collectors receive 100% of the guaranteed savings pot!
                       </div>
                     </div>
@@ -368,9 +369,9 @@ export default function CreateGroupPage() {
               <div className="pt-4 flex justify-end">
                 <button 
                   onClick={handleNext}
-                  className="bg-[#C5A059] hover:bg-[#A48243] text-[#0B3022] font-bold py-3 px-8 rounded-lg transition-all shadow-md"
+                  className="bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-bold text-sm py-3.5 px-8 rounded-full transition-all cursor-pointer"
                 >
-                  Next: Commission & Settlement
+                  Next: Commission &amp; Settlement
                 </button>
               </div>
             </div>
@@ -381,29 +382,29 @@ export default function CreateGroupPage() {
             <div className="space-y-6 animate-in fade-in duration-300">
               
               {/* Platform Notice Banner */}
-              <div className="bg-[#0B3022]/5 border border-[#0B3022]/15 rounded-xl p-4 flex gap-3 text-sm text-[#0B3022]">
-                <ShieldCheck className="h-6 w-6 text-[#C5A059] flex-shrink-0 mt-0.5" />
+              <div className="bg-[#0B3022] rounded-2xl p-5 flex gap-3.5 text-sm text-[#F3EEE3]">
+                <ShieldCheck className="h-5 w-5 text-[#D4A843] flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <p className="font-bold">Automated Collection &amp; Payout Architecture</p>
-                  <p className="text-[#1F2937]/80 text-xs leading-relaxed">
+                  <p className="text-[#F3EEE3]/75 text-xs leading-relaxed">
                     Contributions are collected automatically by bank debit through Mono on the contribution date. Once NIBSS settles the funds into Àjọṣe&apos;s wallet, the payout is credited automatically to the member whose turn it is. Àjọṣe doesn&apos;t hold onto group funds.
                   </p>
                 </div>
               </div>
 
-              {/* Flexible Admin Commission (Req 4) */}
-              <div className="space-y-3 p-5 rounded-xl border border-gray-200 bg-[#FDFBF7]">
+              {/* Flexible Admin Commission */}
+              <div className="space-y-3 p-5 rounded-2xl border border-[#0B3022]/10 bg-[#F3EEE3]/60">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-[#0B3022] flex items-center gap-2">
-                    <Percent className="h-4 w-4 text-[#C5A059]" />
+                    <Percent className="h-4 w-4 text-[#D4A843]" />
                     Admin Commission (Determine Your Percentage)
                   </label>
-                  <span className="text-xs font-bold text-[#0B3022] bg-[#C5A059]/20 px-2.5 py-0.5 rounded-full">
+                  <span className="text-xs font-mono font-bold text-[#0B3022] bg-[#D4A843]/25 px-2.5 py-0.5 rounded-full">
                     {commPctNumber}% Cut
                   </span>
                 </div>
-                <p className="text-xs text-[#1F2937]/70 font-medium">
-                  As the group admin, determine the percentage fee you receive from each cycle to compensate for your management and governance.
+                <p className="text-xs text-[#0B3022]/65">
+                  As the circle admin, determine the percentage fee you receive from each cycle to compensate for your management and governance.
                 </p>
 
                 {/* Preset Chips */}
@@ -413,10 +414,10 @@ export default function CreateGroupPage() {
                       type="button"
                       key={pct}
                       onClick={() => handleCommissionPreset(pct)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${
                         formData.adminCommission === pct.toString()
-                          ? 'bg-[#0B3022] text-[#C5A059] shadow-sm'
-                          : 'bg-white border border-gray-200 text-[#1F2937]/80 hover:bg-gray-50'
+                          ? 'bg-[#0B3022] text-[#D4A843]'
+                          : 'bg-white border border-[#0B3022]/15 text-[#0B3022]/80 hover:border-[#D4A843]'
                       }`}
                     >
                       {pct === 0 ? "0% (Free)" : `${pct}%`}
@@ -426,7 +427,7 @@ export default function CreateGroupPage() {
 
                 {/* Custom Percentage Input */}
                 <div className="pt-2">
-                  <label className="text-xs font-bold text-[#1F2937]/60 block mb-1">Custom Percentage Input</label>
+                  <label className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022]/60 block mb-1">Custom Percentage Input</label>
                   <div className="relative max-w-xs">
                     <input 
                       name="adminCommission"
@@ -437,42 +438,38 @@ export default function CreateGroupPage() {
                       min="0"
                       max="50"
                       placeholder="e.g. 3.5"
-                      className="w-full bg-white border border-gray-200 rounded-lg pl-4 pr-10 py-2.5 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-bold text-sm"
+                      className="w-full bg-white border border-[#0B3022]/15 rounded-xl pl-4 pr-10 py-2.5 text-[#0B3022] font-mono focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-all font-bold text-sm"
                     />
-                    <span className="absolute right-3 top-2.5 text-sm font-bold text-[#1F2937]/50">%</span>
+                    <span className="absolute right-3 top-2.5 text-sm font-mono font-bold text-[#0B3022]/50">%</span>
                   </div>
                 </div>
               </div>
 
-              {/* Admin Tendered Settlement Account (Req 7) */}
-              <div className={`space-y-4 p-5 rounded-xl border transition-all ${
-                isVerifiedBank 
-                  ? "border-emerald-500/25 bg-gray-50/70" 
-                  : "border-emerald-500/30 bg-emerald-50/20"
-              }`}>
+              {/* Admin Tendered Settlement Account */}
+              <div className="space-y-4 p-5 rounded-2xl border border-[#0B3022]/15 bg-[#F3EEE3]/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-[#0B3022]">
-                    <Landmark className="h-5 w-5 text-emerald-700" />
+                    <Landmark className="h-5 w-5 text-[#D4A843]" />
                     <h3 className="text-sm font-bold">Admin Tendered Settlement Bank Account</h3>
                   </div>
                   {isVerifiedBank ? (
-                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 shadow-2xs">
-                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Verified via Mono (Locked)
+                    <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-[#D4A843] bg-[#0B3022] px-3 py-1 rounded-full inline-flex items-center gap-1">
+                      <ShieldCheck className="h-3.5 w-3.5 text-[#D4A843]" /> Verified via Mono (Locked)
                     </span>
                   ) : (
-                    <Link href="/dashboard/verify" className="text-xs text-emerald-700 hover:underline font-bold">
+                    <Link href="/dashboard/verify" className="text-xs text-[#0B3022] underline decoration-[#D4A843] font-bold">
                       Link via Mono &rarr;
                     </Link>
                   )}
                 </div>
-                <p className="text-xs text-[#1F2937]/70 leading-relaxed font-medium">
+                <p className="text-xs text-[#0B3022]/65 leading-relaxed">
                   {isVerifiedBank ? (
                     <>
                       This official settlement account is verified via Mono Open-Banking and locked to your profile for security and compliance. Turn disbursements and automated debits are routed through this account.
                     </>
                   ) : (
                     <>
-                      Tender the official bank account for this group. Contributions will be paid into this account, and automated debits will disburse turn payouts from this account.
+                      Tender the official bank account for this circle. Contributions will be paid into this account, and automated debits will disburse turn payouts from this account.
                     </>
                   )}
                 </p>
@@ -482,8 +479,8 @@ export default function CreateGroupPage() {
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold text-[#0B3022]">Settlement Bank Name</label>
                       {isVerifiedBank && (
-                        <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                          <Lock className="h-2.5 w-2.5 text-gray-400" /> Verified
+                        <span className="text-[10px] text-[#0B3022]/55 font-mono flex items-center gap-1">
+                          <Lock className="h-2.5 w-2.5" /> Verified
                         </span>
                       )}
                     </div>
@@ -495,10 +492,10 @@ export default function CreateGroupPage() {
                       readOnly={isVerifiedBank}
                       list={isVerifiedBank ? undefined : "banks-list"}
                       placeholder="e.g. Guaranty Trust Bank"
-                      className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                      className={`w-full rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
                         isVerifiedBank 
-                          ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none" 
-                          : "bg-white text-[#1F2937] border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                          ? "bg-[#F3EEE3] text-[#0B3022]/65 border border-[#0B3022]/10 cursor-not-allowed select-none" 
+                          : "bg-white text-[#0B3022] border border-[#0B3022]/15 focus:outline-none focus:ring-2 focus:ring-[#D4A843]"
                       }`}
                     />
                     {!isVerifiedBank && (
@@ -514,8 +511,8 @@ export default function CreateGroupPage() {
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold text-[#0B3022]">10-Digit NUBAN Account Number</label>
                       {isVerifiedBank && (
-                        <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                          <Lock className="h-2.5 w-2.5 text-gray-400" /> Verified
+                        <span className="text-[10px] text-[#0B3022]/55 font-mono flex items-center gap-1">
+                          <Lock className="h-2.5 w-2.5" /> Verified
                         </span>
                       )}
                     </div>
@@ -528,10 +525,10 @@ export default function CreateGroupPage() {
                       type="text"
                       maxLength={10}
                       placeholder="0123456789"
-                      className={`w-full rounded-lg px-3 py-2 text-sm font-mono font-bold transition-colors ${
+                      className={`w-full rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold transition-colors ${
                         isVerifiedBank 
-                          ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none tracking-wider" 
-                          : "bg-white text-[#1F2937] border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                          ? "bg-[#F3EEE3] text-[#0B3022]/65 border border-[#0B3022]/10 cursor-not-allowed select-none tracking-wider" 
+                          : "bg-white text-[#0B3022] border border-[#0B3022]/15 focus:outline-none focus:ring-2 focus:ring-[#D4A843]"
                       }`}
                     />
                   </div>
@@ -541,8 +538,8 @@ export default function CreateGroupPage() {
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-[#0B3022]">Settlement Account Holder Name</label>
                     {isVerifiedBank && (
-                      <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                        <Lock className="h-2.5 w-2.5 text-gray-400" /> Verified
+                      <span className="text-[10px] text-[#0B3022]/55 font-mono flex items-center gap-1">
+                        <Lock className="h-2.5 w-2.5" /> Verified
                       </span>
                     )}
                   </div>
@@ -553,28 +550,28 @@ export default function CreateGroupPage() {
                     disabled={isVerifiedBank}
                     readOnly={isVerifiedBank}
                     placeholder="Full Account Name as registered with bank"
-                    className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    className={`w-full rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
                       isVerifiedBank 
-                        ? "bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none" 
-                        : "bg-white text-[#1F2937] border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                        ? "bg-[#F3EEE3] text-[#0B3022]/65 border border-[#0B3022]/10 cursor-not-allowed select-none" 
+                        : "bg-white text-[#0B3022] border border-[#0B3022]/15 focus:outline-none focus:ring-2 focus:ring-[#D4A843]"
                     }`}
                   />
                 </div>
 
                 {isVerifiedBank && (
-                  <div className="flex items-center justify-between pt-1 text-[11px] text-gray-500">
+                  <div className="flex items-center justify-between pt-1 text-[11px] text-[#0B3022]/60">
                     <span className="flex items-center gap-1.5">
-                      <Lock className="h-3 w-3 text-gray-400" />
+                      <Lock className="h-3 w-3" />
                       Locked to prevent tampering. Payouts and debits use this account.
                     </span>
-                    <Link href="/dashboard/settings" className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline">
+                    <Link href="/dashboard/settings" className="font-bold text-[#0B3022] underline decoration-[#D4A843]">
                       Manage bank in Settings &rarr;
                     </Link>
                   </div>
                 )}
 
                 {/* Auto-Debit Mandate Authorization Checkbox */}
-                <div className="pt-2 border-t border-emerald-500/20">
+                <div className="pt-3 border-t border-[#0B3022]/10">
                   <div className="flex items-start gap-2.5">
                     <input 
                       type="checkbox"
@@ -582,9 +579,9 @@ export default function CreateGroupPage() {
                       name="adminTenderAgreed"
                       checked={formData.adminTenderAgreed}
                       onChange={handleChange}
-                      className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                      className="mt-1 h-4 w-4 rounded border-[#0B3022]/25 accent-[#0B3022] cursor-pointer"
                     />
-                    <label htmlFor="adminTenderAgreed" className="text-xs text-[#1F2937]/90 leading-relaxed cursor-pointer select-none font-medium">
+                    <label htmlFor="adminTenderAgreed" className="text-xs text-[#0B3022]/85 leading-relaxed cursor-pointer select-none">
                       <strong>Admin Management &amp; Mandate Authorization:</strong> As the Circle Admin, I take full responsibility for managing this Ajo circle, vetting members, and overseeing contributions. I acknowledge that Àjọṣe provides management software to make circle tracking easier and is not liable for late, defaulted, or unpaid contributions. I tender this account as the designated settlement repository and authorize automated debits for scheduled member cycle payouts.
                     </label>
                   </div>
@@ -593,55 +590,54 @@ export default function CreateGroupPage() {
 
               {/* Minimum Trust Score Required */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-[#0B3022]">Minimum Trust Score Required</label>
-                <p className="text-xs text-[#1F2937]/60 mb-1 font-medium">Only members with this score or higher can join. Default is 0.</p>
+                <label className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022]">Minimum Trust Score Required</label>
+                <p className="text-xs text-[#0B3022]/60 mb-1">Only members with this score or higher can join. Default is 0.</p>
                 <div className="relative">
-                  <ShieldCheck className="absolute left-3 top-3.5 h-5 w-5 text-[#1F2937]/40" />
+                  <ShieldCheck className="absolute left-3.5 top-3.5 h-4 w-4 text-[#0B3022]/45" />
                   <input 
                     name="minCreditScore"
                     value={formData.minCreditScore}
                     onChange={handleChange}
                     type="number"
                     min="0"
-                    className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50 focus:border-[#C5A059] transition-all font-medium"
+                    className="w-full bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl pl-10 pr-4 py-3 text-[#0B3022] font-mono focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-all font-bold text-sm"
                   />
                 </div>
               </div>
 
               {/* Dynamic Financial Summary */}
-              <div className="bg-[#FDFBF7] p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/5 rounded-full blur-2xl"></div>
-                <h4 className="text-sm font-bold text-[#0B3022] mb-4 uppercase tracking-wider relative z-10">Institutional Breakdown</h4>
-                <div className="space-y-3 text-sm relative z-10">
-                  <div className="flex justify-between font-medium">
-                    <span className="text-[#1F2937]/70">Contribution per Member</span>
-                    <span className="text-[#0B3022]">₦{cont.toLocaleString()} / <span className="capitalize">{formData.frequency}</span></span>
+              <div className="bg-[#0B3022] p-6 rounded-2xl border border-[#0B3022] text-[#F3EEE3] relative overflow-hidden">
+                <h4 className="text-xs font-mono font-bold text-[#D4A843] mb-4 uppercase tracking-[0.16em] relative z-10">Institutional Breakdown</h4>
+                <div className="space-y-3 text-xs relative z-10">
+                  <div className="flex justify-between">
+                    <span className="text-[#F3EEE3]/70">Contribution per Member</span>
+                    <span className="text-[#F3EEE3] font-mono font-bold">₦{cont.toLocaleString()} / <span className="capitalize font-sans">{formData.frequency}</span></span>
                   </div>
                   {automationFeePerTx > 0 && (
-                    <div className="flex justify-between font-medium text-xs bg-amber-500/10 p-2.5 rounded-lg text-amber-900 border border-amber-500/20">
+                    <div className="flex justify-between text-xs bg-[#F3EEE3]/[0.06] p-2.5 rounded-xl text-[#F3EEE3] border border-[#F3EEE3]/10">
                       <span>Open-Banking Automation Fee</span>
-                      <span className="font-bold">₦{automationFeePerTx} / transaction (0% at payout)</span>
+                      <span className="font-mono font-bold text-[#D4A843]">₦{automationFeePerTx} / transaction (0% at payout)</span>
                     </div>
                   )}
-                  <div className="flex justify-between font-medium">
-                    <span className="text-[#1F2937]/70">Total Members</span>
-                    <span className="text-[#0B3022]">{mems}</span>
+                  <div className="flex justify-between">
+                    <span className="text-[#F3EEE3]/70">Total Members</span>
+                    <span className="text-[#F3EEE3] font-mono font-bold">{mems}</span>
                   </div>
-                  <div className="flex justify-between font-medium">
-                    <span className="text-[#1F2937]/70">Total Pool per Cycle</span>
-                    <span className="text-[#0B3022] font-bold">₦{totalPool.toLocaleString()}</span>
+                  <div className="flex justify-between">
+                    <span className="text-[#F3EEE3]/70">Total Pool per Cycle</span>
+                    <span className="text-[#F3EEE3] font-mono font-bold">₦{totalPool.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between border-t border-gray-200 pt-3 mt-3 font-medium">
-                    <span className="text-[#1F2937]/70">Platform Payout Fee</span>
-                    <span className="text-emerald-700 font-bold">₦0 (0% Payout Fee • 100% Complete Pot)</span>
+                  <div className="flex justify-between border-t border-[#F3EEE3]/10 pt-3 mt-3">
+                    <span className="text-[#F3EEE3]/70">Platform Payout Fee</span>
+                    <span className="text-[#D4A843] font-mono font-bold">₦0 (0% Payout Fee • 100% Complete Pot)</span>
                   </div>
-                  <div className="flex justify-between font-medium">
-                    <span className="text-[#1F2937]/70">Your Admin Cut ({commPctNumber}%)</span>
-                    <span className="text-green-700 font-bold">+₦{adminFee.toLocaleString()}</span>
+                  <div className="flex justify-between">
+                    <span className="text-[#F3EEE3]/70">Your Admin Cut ({commPctNumber}%)</span>
+                    <span className="text-[#D4A843] font-mono font-bold">+₦{adminFee.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between border-t border-gray-200 pt-3 mt-3">
-                    <span className="text-[#0B3022] font-bold text-base">Turn Collector Receives</span>
-                    <span className="text-[#0B3022] font-black text-lg">₦{collectorReceives.toLocaleString()}</span>
+                  <div className="flex justify-between border-t border-[#F3EEE3]/10 pt-3 mt-3">
+                    <span className="text-[#F3EEE3] font-bold text-sm">Turn Collector Receives</span>
+                    <span className="text-[#D4A843] font-mono font-bold text-lg">₦{collectorReceives.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -650,16 +646,16 @@ export default function CreateGroupPage() {
                 <button 
                   disabled={isSubmitting}
                   onClick={handleBack}
-                  className="px-6 py-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[#0B3022] font-bold transition-all shadow-sm disabled:opacity-50"
+                  className="px-6 py-3 rounded-full border border-[#0B3022]/15 bg-white hover:border-[#0B3022] text-[#0B3022] text-sm font-bold transition-all disabled:opacity-50 cursor-pointer"
                 >
                   Back
                 </button>
                 <button 
                   disabled={isSubmitting || !formData.adminTenderAgreed}
                   onClick={handleProceedToConfirm}
-                  className="bg-[#C5A059] hover:bg-[#A48243] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-[#0B3022] font-bold py-3 px-8 rounded-lg transition-all shadow-md"
+                  className="bg-[#D4A843] hover:bg-[#dfba5b] disabled:opacity-50 disabled:cursor-not-allowed text-[#0B3022] text-sm font-bold py-3.5 px-8 rounded-full transition-all cursor-pointer"
                 >
-                  Review & Create Group
+                  Review &amp; Create Circle
                 </button>
               </div>
             </div>
@@ -668,16 +664,18 @@ export default function CreateGroupPage() {
         </div>
       ) : (
         /* Success State */
-        <div className="bg-white border border-gray-200 shadow-xl rounded-2xl p-10 text-center animate-in zoom-in-95 duration-500 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A059]/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0B3022]/5 rounded-full blur-3xl"></div>
-          
-          <div className="mx-auto w-20 h-20 bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-full flex items-center justify-center mb-6 relative z-10">
-            <CheckCircle2 className="h-10 w-10 text-[#C5A059]" />
+        <div className="bg-white border border-[#0B3022]/10 rounded-3xl p-10 text-center animate-in zoom-in-95 duration-500 relative overflow-hidden">
+          <div className="mx-auto w-20 h-20 bg-[#0B3022] rounded-2xl flex items-center justify-center mb-6 relative z-10">
+            <CheckCircle2 className="h-10 w-10 text-[#D4A843]" />
           </div>
-          <h2 className="text-2xl font-bold text-[#0B3022] mb-2 relative z-10">Group Created Successfully!</h2>
-          <p className="text-[#1F2937]/70 mb-8 max-w-md mx-auto font-medium relative z-10">
-            Your rotational group is ready. Invite members by sharing the unique invite link. Members will review and accept the Terms & Conditions before joining.
+          <h2 className="text-3xl font-bold text-[#0B3022] mb-2 relative z-10">
+            Circle created{" "}
+            <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+              successfully!
+            </span>
+          </h2>
+          <p className="text-[#0B3022]/65 text-sm mb-8 max-w-md mx-auto relative z-10">
+            Your rotational circle is ready. Invite members by sharing the unique invite link. Members will review and accept the Terms &amp; Conditions before joining.
           </p>
           
           {(() => {
@@ -693,7 +691,7 @@ export default function CreateGroupPage() {
             const inviteUrl = newGroupId ? `${baseUrl}/invite/${newGroupId}${queryString ? `?${queryString}` : ""}` : "";
 
             return (
-              <div className="bg-[#FDFBF7] p-3 md:p-4 rounded-xl border border-gray-200 shadow-inner flex items-center justify-between mb-8 max-w-md mx-auto relative z-10 gap-3">
+              <div className="bg-[#F3EEE3]/70 p-3 md:p-4 rounded-2xl border border-[#0B3022]/15 flex items-center justify-between mb-8 max-w-md mx-auto relative z-10 gap-3">
                 <span className="text-[#0B3022] font-mono text-xs md:text-sm font-bold truncate text-left flex-1 select-all">
                   {inviteUrl || "Loading invite link..."}
                 </span>
@@ -705,7 +703,7 @@ export default function CreateGroupPage() {
                     navigator.clipboard.writeText(inviteUrl);
                     toast.success("Invite link copied to clipboard!");
                   }}
-                  className="text-[#0B3022] bg-[#C5A059] hover:bg-[#A48243] disabled:opacity-50 text-xs font-bold px-3.5 py-2 rounded-lg transition-colors cursor-pointer shadow-sm flex items-center gap-1.5 shrink-0"
+                  className="text-[#0B3022] bg-[#D4A843] hover:bg-[#dfba5b] disabled:opacity-50 text-xs font-bold px-4 py-2 rounded-full transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
                 >
                   <Copy className="h-3.5 w-3.5" />
                   COPY LINK
@@ -716,91 +714,91 @@ export default function CreateGroupPage() {
 
           <Link 
             href={`/dashboard/groups/${newGroupId}`}
-            className="inline-flex bg-[#0B3022] hover:bg-[#0B3022]/90 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-md relative z-10"
+            className="inline-flex bg-[#0B3022] hover:bg-[#124532] text-[#F3EEE3] text-sm font-bold py-3.5 px-8 rounded-full transition-all relative z-10"
           >
-            Manage Group & View Roster
+            Manage Circle &amp; View Roster
           </Link>
         </div>
       )}
 
       {/* Confirmation Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-[#0B3022]/10 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
             
-            <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-[#FDFBF7]">
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="h-5 w-5 text-[#C5A059]" />
+            <div className="p-6 border-b border-[#0B3022]/10 flex justify-between items-start bg-[#0B3022] text-[#F3EEE3]">
+              <div className="flex gap-3.5">
+                <div className="w-10 h-10 rounded-2xl bg-[#D4A843]/20 border border-[#D4A843]/40 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-[#D4A843]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#0B3022]">Confirm Group & Settlement</h3>
-                  <p className="text-[#1F2937]/70 font-medium text-xs mt-1">Review your settlement mandate before creation</p>
+                  <h3 className="text-lg font-bold text-[#F3EEE3]">Confirm Circle &amp; Settlement</h3>
+                  <p className="text-[#F3EEE3]/70 text-xs mt-0.5">Review your settlement mandate before creation</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowConfirm(false)}
                 disabled={isSubmitting}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-[#F3EEE3]/60 hover:text-[#F3EEE3] transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             
-            <div className="p-6 space-y-4 text-xs text-[#1F2937]/80">
-              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm space-y-2.5 text-xs">
-                <div className="flex justify-between font-medium">
-                  <span className="text-[#1F2937]/60">Group Name</span>
+            <div className="p-6 space-y-4 text-xs text-[#0B3022]/80">
+              <div className="bg-[#F3EEE3]/60 rounded-2xl p-4 border border-[#0B3022]/10 space-y-2.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-[#0B3022]/60">Circle Name</span>
                   <span className="text-[#0B3022] font-bold">{formData.name}</span>
                 </div>
-                <div className="flex justify-between font-medium">
-                  <span className="text-[#1F2937]/60">Pool Per Cycle</span>
-                  <span className="text-[#0B3022] font-bold">₦{totalPool.toLocaleString()}</span>
+                <div className="flex justify-between">
+                  <span className="text-[#0B3022]/60">Pool Per Cycle</span>
+                  <span className="text-[#0B3022] font-mono font-bold">₦{totalPool.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between font-medium">
-                  <span className="text-[#1F2937]/60">Admin Commission</span>
-                  <span className="text-emerald-700 font-bold">{commPctNumber}% (+₦{adminFee.toLocaleString()})</span>
+                <div className="flex justify-between">
+                  <span className="text-[#0B3022]/60">Admin Commission</span>
+                  <span className="text-[#0B3022] font-mono font-bold">{commPctNumber}% (+₦{adminFee.toLocaleString()})</span>
                 </div>
-                <div className="flex justify-between font-medium">
-                  <span className="text-[#1F2937]/60">Pricing Plan</span>
+                <div className="flex justify-between">
+                  <span className="text-[#0B3022]/60">Pricing Plan</span>
                   <span className="text-[#0B3022] font-bold capitalize">
                     {formData.frequency} ({isDaily ? "₦100/tx • 0% payout" : isWeekly ? "₦300/tx • 0% payout" : "2%/tx • 0% payout"})
                   </span>
                 </div>
-                <div className="flex justify-between font-medium border-t border-gray-100 pt-2">
-                  <span className="text-[#1F2937]/60">Tendered Bank</span>
-                  <span className="text-[#0B3022] font-semibold">{formData.adminBankName}</span>
+                <div className="flex justify-between border-t border-[#0B3022]/10 pt-2">
+                  <span className="text-[#0B3022]/60">Tendered Bank</span>
+                  <span className="text-[#0B3022] font-bold">{formData.adminBankName}</span>
                 </div>
-                <div className="flex justify-between font-medium">
-                  <span className="text-[#1F2937]/60">Account Number</span>
-                  <span className="text-[#0B3022] font-mono font-semibold">{formData.adminAccountNumber}</span>
+                <div className="flex justify-between">
+                  <span className="text-[#0B3022]/60">Account Number</span>
+                  <span className="text-[#0B3022] font-mono font-bold">{formData.adminAccountNumber}</span>
                 </div>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-800 text-[11px] leading-relaxed">
+              <div className="bg-[#F3EEE3] border border-[#D4A843]/40 rounded-2xl p-3.5 text-[#0B3022] text-[11px] leading-relaxed">
                 <strong>Notice:</strong> Your tendered account will be charged via auto-debit on payout dates. If an automated debit fails, all members will be transparently alerted in real time.
               </div>
             </div>
 
-            <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
+            <div className="p-4 border-t border-[#0B3022]/10 flex justify-end gap-3 bg-[#F3EEE3]/40">
               <button 
                 onClick={() => setShowConfirm(false)}
                 disabled={isSubmitting}
-                className="px-4 py-2 rounded-lg font-bold text-[#1F2937]/70 hover:text-[#0B3022] hover:bg-gray-100 transition-colors text-xs disabled:opacity-50"
+                className="px-5 py-2.5 rounded-full font-bold text-[#0B3022]/70 hover:text-[#0B3022] transition-colors text-xs disabled:opacity-50 cursor-pointer"
               >
                 Back to Edit
               </button>
               <button 
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="bg-[#C5A059] hover:bg-[#A48243] text-[#0B3022] font-bold px-6 py-2.5 rounded-lg transition-all shadow-md text-xs disabled:opacity-70 flex items-center gap-2"
+                className="bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-bold px-6 py-2.5 rounded-full transition-all text-xs disabled:opacity-70 flex items-center gap-2 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-[#0B3022] border-t-transparent rounded-full animate-spin"></div>
-                    Creating Group...
+                    Creating Circle...
                   </>
-                ) : "Confirm & Authorize Group"}
+                ) : "Confirm & Authorize Circle"}
               </button>
             </div>
 

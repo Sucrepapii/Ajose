@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { 
-  CreditCard, 
   Wallet, 
   TrendingUp, 
   CheckCircle2, 
@@ -38,10 +37,8 @@ export default async function DashboardOverview() {
 
   const dbScore = profile?.credit_score;
   const creditScore = (dbScore === null || dbScore === undefined || dbScore === 0) ? 85 : dbScore;
-  const isAutoSweep = profile?.auto_sweep_enabled || false;
 
   // Fetch the user's active memberships with the related group data
-  // Note: We use an inner join on groups to get the group details
   const { data: memberships } = await supabase
     .from('memberships')
     .select(`
@@ -146,12 +143,9 @@ export default async function DashboardOverview() {
     if (membership.role === 'admin' && membership.groups) {
       adminGroupCount++;
       const group = membership.groups;
-      // Formula: (Contribution * (Members - 1)) * (Commission / 100) * (Members - 1) 
-      // Wait, let's keep it simpler: Pool size per cycle * Admin Commission * Number of Cycles
-      // Pool Size per cycle = contribution_amount * max_members (even if admin doesn't contribute, let's assume they take a cut of the total expected pool size)
       const poolPerCycle = group.contribution_amount * group.max_members;
       const commissionPerCycle = poolPerCycle * ((group.admin_commission_pct || 0) / 100);
-      const totalCommission = commissionPerCycle * group.max_members; // max_members is the number of cycles
+      const totalCommission = commissionPerCycle * group.max_members;
       
       totalAdminEarnings += totalCommission;
     }
@@ -162,21 +156,21 @@ export default async function DashboardOverview() {
       
       {/* Verification Banner */}
       {!profile?.bvn_verified && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+        <div className="bg-white border border-[#D4A843] rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
-              <AlertCircle className="h-6 w-6 text-amber-600" />
+            <div className="w-12 h-12 bg-[#D4A843]/15 rounded-2xl flex items-center justify-center shrink-0">
+              <AlertCircle className="h-6 w-6 text-[#0B3022]" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-amber-900 mb-1">Action Required: Connect Your Bank</h3>
-              <p className="text-amber-800/80 text-sm font-medium max-w-2xl">
+              <h3 className="text-lg font-bold text-[#0B3022] mb-1">Action Required: Connect Your Bank</h3>
+              <p className="text-[#0B3022]/70 text-sm max-w-2xl">
                 You must verify your BVN and establish a direct debit mandate via Mono before you can create or join Ajo cycles.
               </p>
             </div>
           </div>
           <Link 
             href="/dashboard/verify"
-            className="shrink-0 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-all shadow-md text-center w-full md:w-auto"
+            className="shrink-0 px-6 py-3 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-bold text-sm rounded-full transition-all text-center w-full md:w-auto"
           >
             Verify Now
           </Link>
@@ -187,87 +181,89 @@ export default async function DashboardOverview() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Trust Score Card */}
-        <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/10 transition-colors"></div>
+        <div className="bg-white border border-[#0B3022]/10 rounded-3xl p-6 relative overflow-hidden">
           <div className="flex items-center justify-between mb-4 relative z-10">
-            <h3 className="text-[#1F2937]/70 font-medium">Àjọṣe Trust Score</h3>
-            <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
-              <TrendingUp className="h-5 w-5 text-[#0B3022]" />
+            <h3 className="text-xs font-mono uppercase tracking-[0.14em] text-[#0B3022]/60 font-bold">Àjọṣe Trust Score</h3>
+            <div className="p-2.5 bg-[#F3EEE3] rounded-xl border border-[#0B3022]/10">
+              <TrendingUp className="h-4 w-4 text-[#0B3022]" />
             </div>
           </div>
           <div className="flex items-end gap-2 relative z-10">
-            <span className="text-4xl font-bold text-[#0B3022]">{creditScore}</span>
-            <span className="text-[#1F2937]/50 font-semibold mb-1">/ 100</span>
-            <span className="text-green-600 font-bold mb-1 ml-1">
+            <span className="text-4xl font-bold font-mono text-[#0B3022]">{creditScore}</span>
+            <span className="text-[#0B3022]/45 font-mono text-sm mb-1">/ 100</span>
+            <span className="text-xs font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#D4A843]/20 text-[#0B3022] font-bold mb-1.5 ml-1">
               {creditScore >= 80 ? 'Excellent' : creditScore >= 60 ? 'Good' : 'Fair'}
             </span>
           </div>
-          <div className="mt-4 pt-4 border-t border-gray-100 relative z-10">
-            <p className="text-sm text-[#1F2937]/70 flex items-center gap-1.5 font-medium">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              Eligible for all Pro groups
+          <div className="mt-4 pt-4 border-t border-[#0B3022]/10 relative z-10">
+            <p className="text-xs text-[#0B3022]/70 flex items-center gap-1.5 font-medium">
+              <CheckCircle2 className="h-4 w-4 text-[#D4A843]" />
+              Eligible for all Pro circles
             </p>
           </div>
         </div>
 
         {/* Total Contributions */}
-        <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 group hover:shadow-md transition-shadow relative overflow-hidden">
-          <div className="absolute -left-4 -bottom-4 w-32 h-32 bg-[#C5A059]/5 rounded-full blur-2xl group-hover:bg-[#C5A059]/10 transition-colors"></div>
+        <div className="bg-white border border-[#0B3022]/10 rounded-3xl p-6 relative overflow-hidden">
           <div className="flex items-center justify-between mb-4 relative z-10">
-            <h3 className="text-[#1F2937]/70 font-medium">Total Saved</h3>
-            <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
-              <Wallet className="h-5 w-5 text-[#C5A059]" />
+            <h3 className="text-xs font-mono uppercase tracking-[0.14em] text-[#0B3022]/60 font-bold">Total Saved</h3>
+            <div className="p-2.5 bg-[#F3EEE3] rounded-xl border border-[#0B3022]/10">
+              <Wallet className="h-4 w-4 text-[#D4A843]" />
             </div>
           </div>
           <div className="flex items-end gap-3 relative z-10">
-            <span className="text-4xl font-bold text-[#0B3022]">₦{totalSaved.toLocaleString()}</span>
+            <span className="text-4xl font-bold font-mono text-[#0B3022]">₦{totalSaved.toLocaleString()}</span>
           </div>
-          <div className="mt-4 pt-4 border-t border-gray-100 relative z-10">
-            <p className="text-sm text-[#1F2937]/70 font-medium">Across {activeGroups.length} active groups</p>
+          <div className="mt-4 pt-4 border-t border-[#0B3022]/10 relative z-10">
+            <p className="text-xs text-[#0B3022]/70 font-medium">Across {activeGroups.length} active circles</p>
           </div>
         </div>
 
         {/* Admin Earnings Status */}
-        <div className="bg-gradient-to-br from-[#0B3022] to-[#0B3022]/90 border border-[#0B3022]/20 rounded-2xl p-6 relative overflow-hidden shadow-lg">
-          <div className="absolute right-0 top-0 w-32 h-32 rounded-full blur-3xl bg-[#C5A059]/20"></div>
+        <div className="bg-[#0B3022] border border-[#0B3022] rounded-3xl p-6 relative overflow-hidden text-[#F3EEE3]">
           <div className="flex items-center justify-between mb-4 relative z-10">
-            <h3 className="font-medium text-white/80">Projected Earnings</h3>
-            <div className="px-2.5 py-1 text-xs font-bold rounded-full bg-[#C5A059]/20 text-[#C5A059] flex items-center gap-1 border border-[#C5A059]/30">
+            <h3 className="text-xs font-mono uppercase tracking-[0.14em] text-[#F3EEE3]/65 font-bold">Projected Earnings</h3>
+            <div className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider font-bold rounded-full bg-[#D4A843]/20 text-[#D4A843] flex items-center gap-1 border border-[#D4A843]/30">
               <Coins className="h-3 w-3" /> ADMIN
             </div>
           </div>
           <div className="flex flex-col gap-1 relative z-10">
-            <span className="text-3xl font-bold text-white mb-2 tracking-tight">
+            <span className="text-3xl font-bold font-mono text-[#D4A843] mb-1 tracking-tight">
               ₦{totalAdminEarnings.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </span>
-            <span className="text-white/70 text-sm flex items-center gap-2 font-medium">
-              <Users className="h-4 w-4 text-[#C5A059]" />
+            <span className="text-[#F3EEE3]/70 text-xs flex items-center gap-2 font-medium">
+              <Users className="h-3.5 w-3.5 text-[#D4A843]" />
               Managing {adminGroupCount} active {adminGroupCount === 1 ? 'Ajo' : 'Ajos'}
             </span>
           </div>
-          <div className="mt-4 pt-4 border-t border-white/10 relative z-10">
-            <p className="text-xs text-[#C5A059]/90 font-medium">
-              Total commission expected over the life of your groups.
+          <div className="mt-4 pt-4 border-t border-[#F3EEE3]/10 relative z-10">
+            <p className="text-xs text-[#F3EEE3]/65">
+              Total commission expected over the life of your circles.
             </p>
           </div>
         </div>
 
       </div>
 
-      {/* Clean Referral Promotion Strip */}
-      <div className="bg-gradient-to-r from-[#0B3022] to-[#124230] rounded-2xl p-4 sm:p-5 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[#C5A059]/30">
-        <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#C5A059]/20 flex items-center justify-center shrink-0 border border-[#C5A059]/30">
-            <Gift className="w-5 h-5 text-[#C5A059]" />
+      {/* Referral Promotion Strip */}
+      <div className="bg-[#0B3022] rounded-3xl p-5 sm:p-6 text-[#F3EEE3] flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[#0B3022]">
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 rounded-2xl bg-[#D4A843]/15 flex items-center justify-center shrink-0 border border-[#D4A843]/30">
+            <Gift className="w-5 h-5 text-[#D4A843]" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h4 className="font-bold text-sm sm:text-base text-white">Refer Friends &amp; Slash Your Fees</h4>
-              <span className="text-[10px] font-black uppercase tracking-wider bg-[#C5A059] text-[#0B3022] px-2 py-0.5 rounded-full">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h4 className="font-bold text-sm sm:text-base text-[#F3EEE3]">
+                Refer friends &amp;{" "}
+                <span className="font-editorial italic font-normal text-[#D4A843]">
+                  slash your fees
+                </span>
+              </h4>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider bg-[#D4A843] text-[#0B3022] px-2.5 py-0.5 rounded-full">
                 Down to 0.5%
               </span>
             </div>
-            <p className="text-xs text-white/70 font-medium mt-0.5">
+            <p className="text-xs text-[#F3EEE3]/65 mt-0.5">
               Invite your circle members. Unlock tiered discounts on your monthly rotational payouts.
             </p>
           </div>
@@ -275,7 +271,7 @@ export default async function DashboardOverview() {
 
         <Link
           href="/dashboard/referrals"
-          className="shrink-0 px-4 py-2.5 bg-[#C5A059] hover:bg-[#d8b56f] text-[#0B3022] font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 self-start sm:self-auto"
+          className="shrink-0 px-5 py-2.5 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-bold text-xs rounded-full transition-all flex items-center justify-center gap-1.5 self-start sm:self-auto"
         >
           <span>View Referrals</span>
           <ArrowRight className="w-3.5 h-3.5" />
@@ -288,22 +284,27 @@ export default async function DashboardOverview() {
         {/* Main List */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-[#0B3022]">Active Ajos</h2>
-            <Link href="/dashboard/groups" className="text-sm font-bold text-[#C5A059] hover:text-[#A48243] flex items-center gap-1 transition-colors">
-              View all <ArrowRight className="h-4 w-4" />
+            <h2 className="text-2xl font-bold text-[#0B3022] tracking-tight">
+              Active{" "}
+              <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+                Circles.
+              </span>
+            </h2>
+            <Link href="/dashboard/groups" className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022] hover:text-[#D4A843] flex items-center gap-1 transition-colors">
+              View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
           <div className="space-y-4">
             
             {activeGroups.length === 0 ? (
-              <div className="bg-white border border-gray-200 border-dashed rounded-2xl p-8 text-center flex flex-col items-center justify-center">
-                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                  <Users className="h-8 w-8 text-gray-400" />
+              <div className="bg-white border border-[#0B3022]/15 border-dashed rounded-3xl p-10 text-center flex flex-col items-center justify-center">
+                <div className="w-14 h-14 bg-[#F3EEE3] rounded-2xl flex items-center justify-center mb-4 border border-[#0B3022]/10">
+                  <Users className="h-6 w-6 text-[#0B3022]" />
                 </div>
-                <h3 className="text-lg font-bold text-[#0B3022] mb-2">No Active Groups</h3>
-                <p className="text-[#1F2937]/70 text-sm max-w-sm">
-                  You haven't joined any Ajo contribution groups yet. Create an Admin-Managed group to get started.
+                <h3 className="text-lg font-bold text-[#0B3022] mb-1.5">No Active Circles</h3>
+                <p className="text-[#0B3022]/65 text-sm max-w-sm">
+                  You haven&apos;t joined any Ajo contribution circles yet. Create an Admin-Managed circle to get started.
                 </p>
               </div>
             ) : (
@@ -317,33 +318,32 @@ export default async function DashboardOverview() {
                 const isPending = group.status === 'pending';
                 
                 return (
-                  <Link key={membership.id} href={`/dashboard/groups/${group.id}`} className="block bg-white border border-gray-200 shadow-sm rounded-2xl p-5 hover:border-[#C5A059]/50 hover:shadow-md transition-all group">
+                  <Link key={membership.id} href={`/dashboard/groups/${group.id}`} className="block bg-white border border-[#0B3022]/10 rounded-3xl p-6 hover:border-[#D4A843] transition-all group">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-[#0B3022] rounded-xl flex items-center justify-center text-[#C5A059] font-bold text-xl uppercase shadow-inner group-hover:bg-[#C5A059] group-hover:text-[#0B3022] transition-colors">
+                        <div className="w-12 h-12 bg-[#0B3022] rounded-2xl flex items-center justify-center text-[#D4A843] font-bold text-lg font-mono uppercase group-hover:bg-[#D4A843] group-hover:text-[#0B3022] transition-colors">
                           {(group?.name || "A").substring(0, 1)}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
                             <h4 className="text-lg font-bold text-[#0B3022]">{group?.name || "Ajo Circle"}</h4>
                             {isAdmin && (
-                              <span className="text-[10px] font-black uppercase tracking-wider bg-[#C5A059]/20 text-[#0B3022] border border-[#C5A059]/40 px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] font-mono font-bold uppercase tracking-wider bg-[#D4A843]/20 text-[#0B3022] border border-[#D4A843]/40 px-2.5 py-0.5 rounded-full">
                                 Admin
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-[#1F2937]/70 font-medium">
+                          <p className="text-xs font-mono uppercase tracking-wider text-[#0B3022]/60 mt-0.5">
                             {isPending 
                               ? `${currentCount} of ${group.max_members} Members` 
                               : `${group.max_members} Members`} • <span className="capitalize">{group.frequency}</span>
-
                           </p>
                         </div>
                       </div>
                       <div className="flex flex-row md:flex-col items-center md:items-end justify-between gap-2">
                         <div className="text-left md:text-right">
-                          <p className="text-lg font-bold text-[#0B3022]">₦{group.contribution_amount.toLocaleString()}<span className="text-sm text-[#1F2937]/50 font-normal">/cycle</span></p>
-                          <p className="text-xs text-[#1F2937]/70 font-medium">Pool: <span className="font-bold text-[#0B3022]">₦{totalPool.toLocaleString()}</span></p>
+                          <p className="text-lg font-bold font-mono text-[#0B3022]">₦{group.contribution_amount.toLocaleString()}<span className="text-xs text-[#0B3022]/50 font-sans font-normal">/cycle</span></p>
+                          <p className="text-xs text-[#0B3022]/65">Pool: <span className="font-bold font-mono text-[#0B3022]">₦{totalPool.toLocaleString()}</span></p>
                         </div>
                         {isAdmin && (
                           <div>
@@ -362,31 +362,27 @@ export default async function DashboardOverview() {
                       </div>
                     </div>
                     
-                    <div className={`rounded-xl p-4 border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
-                      isPending && isFull 
-                        ? 'bg-emerald-50/70 border-emerald-200 group-hover:bg-emerald-50' 
-                        : 'bg-gray-50 border-gray-100 group-hover:bg-[#FDFBF7]'
-                    }`}>
+                    <div className="rounded-2xl p-4 border border-[#0B3022]/10 bg-[#F3EEE3]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-center gap-2">
                         {isPending ? (
                           isFull ? (
                             <>
-                              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                              <span className="text-sm text-[#0B3022] font-semibold">
+                              <CheckCircle2 className="h-4 w-4 text-[#0B3022]" />
+                              <span className="text-xs font-mono uppercase tracking-wider text-[#0B3022] font-bold">
                                 Roster Full ({currentCount}/{group.max_members})
                               </span>
                             </>
                           ) : (
                             <>
-                              <AlertCircle className="h-4 w-4 text-[#C5A059]" />
-                              <span className="text-sm text-[#1F2937] font-medium">
+                              <AlertCircle className="h-4 w-4 text-[#D4A843]" />
+                              <span className="text-xs font-mono uppercase tracking-wider text-[#0B3022]/75 font-bold">
                                 Awaiting members ({currentCount}/{group.max_members})
                               </span>
                             </>
                           )
                         ) : (
                           <>
-                            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                            <div className="w-2 h-2 rounded-full bg-[#D4A843]"></div>
                             {(() => {
                               const maxPaid = groupMaxPaidTurns.get(group.id) || 0;
                               const derivedTurn = maxPaid + 1;
@@ -394,38 +390,36 @@ export default async function DashboardOverview() {
 
                               if (isCompleted) {
                                 return (
-                                  <span className="text-sm font-bold text-emerald-800 flex items-center gap-1.5">
-                                    <span>🎉 All {group.max_members} Turns Completed</span>
+                                  <span className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022] flex items-center gap-1.5">
+                                    <span>All {group.max_members} Turns Completed</span>
                                   </span>
                                 );
                               }
 
                               if (isAdmin && !membership.payout_turn) {
                                 return (
-                                  <span className="text-sm text-[#1F2937] font-medium flex items-center gap-2 flex-wrap">
-                                    <span className="text-[11px] font-bold uppercase tracking-wider bg-[#0B3022]/10 text-[#0B3022] px-2 py-0.5 rounded-md">
+                                  <span className="text-xs text-[#0B3022]/80 font-medium flex items-center gap-2 flex-wrap">
+                                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider bg-[#0B3022] text-[#F3EEE3] px-2 py-0.5 rounded-md">
                                       Circle Trustee
                                     </span>
-                                    <span className="text-gray-300">•</span>
-                                    <span>Active Turn: <strong className="text-[#0B3022]">Turn {derivedTurn} of {group.max_members}</strong></span>
+                                    <span className="text-[#0B3022]/30">•</span>
+                                    <span>Active Turn: <strong className="text-[#0B3022] font-mono">Turn {derivedTurn} of {group.max_members}</strong></span>
                                   </span>
                                 );
                               }
 
                               return (
-                                <span className="text-sm text-[#1F2937] font-medium flex items-center gap-2 flex-wrap">
-                                  <span>Your Turn: <strong className="text-[#0B3022]">Turn {membership.payout_turn}</strong></span>
-                                  <span className="text-gray-300">•</span>
-                                  <span className="text-xs text-[#1F2937]/70">Now on: <strong className="text-[#0B3022]">Turn {derivedTurn}</strong></span>
+                                <span className="text-xs text-[#0B3022]/80 font-medium flex items-center gap-2 flex-wrap">
+                                  <span>Your Turn: <strong className="text-[#0B3022] font-mono">Turn {membership.payout_turn}</strong></span>
+                                  <span className="text-[#0B3022]/30">•</span>
+                                  <span>Now on: <strong className="text-[#0B3022] font-mono">Turn {derivedTurn}</strong></span>
                                 </span>
                               );
                             })()}
                           </>
                         )}
                       </div>
-                      <div className={`text-sm font-bold uppercase tracking-wide flex items-center gap-2 transition-colors ${
-                        isPending && isFull ? 'text-emerald-700 group-hover:text-emerald-800' : 'text-[#1F2937]/50 group-hover:text-[#C5A059]'
-                      }`}>
+                      <div className="text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022] group-hover:text-[#D4A843] flex items-center gap-1.5 transition-colors">
                         {isPending ? (
                           isFull ? (
                             isAdmin ? 'Launch Cycle →' : 'Ready to Start'
@@ -438,7 +432,7 @@ export default async function DashboardOverview() {
                           const isCompleted = derivedTurn > (group.max_members || 1);
                           return isCompleted ? 'Completed' : `Turn ${derivedTurn} Active`;
                         })()}
-                        <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity -ml-1 group-hover:ml-0" />
+                        <ArrowRight className="h-3.5 w-3.5" />
                       </div>
                     </div>
                   </Link>
@@ -446,33 +440,36 @@ export default async function DashboardOverview() {
               })
             )}
 
-
           </div>
         </div>
 
         {/* Sidebar Actions */}
         <div className="space-y-6">
-          <div className="bg-[#0B3022] border border-[#0B3022]/10 shadow-xl rounded-2xl p-6 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/10 rounded-full blur-2xl"></div>
-            <div className="w-16 h-16 bg-[#C5A059]/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-[#C5A059]/30 relative z-10">
-              <Plus className="h-8 w-8 text-[#C5A059]" />
+          <div className="bg-[#0B3022] border border-[#0B3022] rounded-3xl p-7 text-center relative overflow-hidden text-[#F3EEE3]">
+            <div className="w-14 h-14 bg-[#D4A843]/15 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#D4A843]/30 relative z-10">
+              <Plus className="h-6 w-6 text-[#D4A843]" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2 relative z-10">Create an Ajo</h3>
-            <p className="text-white/70 text-sm mb-6 relative z-10">
-              Start your own admin-managed group. Set the rules and invite trusted friends.
+            <h3 className="text-xl font-bold text-[#F3EEE3] mb-2 relative z-10">
+              Create a{" "}
+              <span className="font-editorial italic font-normal text-[#D4A843]">
+                circle.
+              </span>
+            </h3>
+            <p className="text-[#F3EEE3]/70 text-xs leading-relaxed mb-6 relative z-10">
+              Start your own admin-managed rotational circle. Set the rules and invite trusted friends.
             </p>
             <Link 
               href="/dashboard/groups/create"
-              className="block w-full bg-[#C5A059] hover:bg-[#A48243] text-[#0B3022] font-bold py-3 px-4 rounded-xl transition-all shadow-lg relative z-10"
+              className="block w-full bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-bold text-sm py-3.5 px-4 rounded-full transition-all relative z-10"
             >
-              Create Group
+              Create Circle
             </Link>
           </div>
 
-          <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6">
+          <div className="bg-white border border-[#0B3022]/10 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-[#0B3022]">Recent Activity</h3>
-              <Link href="/dashboard/transactions" className="text-xs font-semibold text-[#C5A059] hover:underline">
+              <h3 className="text-xs font-mono uppercase tracking-[0.14em] font-bold text-[#0B3022]">Recent Activity</h3>
+              <Link href="/dashboard/transactions" className="text-xs font-mono uppercase tracking-wider font-bold text-[#0B3022] hover:text-[#D4A843] underline decoration-[#D4A843]">
                 See all
               </Link>
             </div>
@@ -481,11 +478,10 @@ export default async function DashboardOverview() {
               {recentTxs && recentTxs.length > 0 ? (
                 recentTxs.map((tx: any) => {
                   const groupName = (tx.memberships as any)?.groups?.name || "Ajo Circle";
-                  const isSuccess = tx.status === 'successful' || tx.status === 'completed';
                   const isFailed = tx.status === 'failed';
                   const isPayout = tx.type === 'payout';
 
-                  const dotColor = isFailed ? 'bg-red-500' : isSuccess ? (isPayout ? 'bg-emerald-500' : 'bg-green-500') : 'bg-amber-500';
+                  const dotColor = isFailed ? 'bg-red-500' : isPayout ? 'bg-[#D4A843]' : 'bg-[#0B3022]';
                   const title = isPayout
                     ? `Turn ${tx.cycle_turn} Lump-Sum Payout`
                     : `Turn ${tx.cycle_turn} Contribution`;
@@ -497,12 +493,12 @@ export default async function DashboardOverview() {
                       <div className="flex items-start gap-3 min-w-0">
                         <div className={`w-2 h-2 rounded-full ${dotColor} mt-1.5 shrink-0`}></div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-[#1F2937] truncate">{title}</p>
-                          <p className="text-xs text-[#1F2937]/60 font-medium truncate">{groupName} • {dateStr}</p>
+                          <p className="text-sm font-bold text-[#0B3022] truncate">{title}</p>
+                          <p className="text-xs text-[#0B3022]/60 truncate">{groupName} • {dateStr}</p>
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className={`text-xs font-bold ${isFailed ? 'text-red-600' : isPayout ? 'text-emerald-700' : 'text-[#0B3022]'}`}>
+                        <span className={`text-xs font-mono font-bold ${isFailed ? 'text-red-600' : 'text-[#0B3022]'}`}>
                           {isPayout ? `+${amountStr}` : amountStr}
                         </span>
                         {isFailed && <p className="text-[10px] font-bold text-red-500">Failed</p>}
@@ -513,18 +509,18 @@ export default async function DashboardOverview() {
               ) : (
                 <>
                   <div className="flex gap-3">
-                    <div className="w-2 h-2 rounded-full bg-green-500 mt-2 shrink-0"></div>
+                    <div className="w-2 h-2 rounded-full bg-[#D4A843] mt-2 shrink-0"></div>
                     <div>
-                      <p className="text-sm font-bold text-[#1F2937]">Identity Verified</p>
-                      <p className="text-xs text-[#1F2937]/60 font-medium">Bank BVN connected</p>
+                      <p className="text-sm font-bold text-[#0B3022]">Identity Verified</p>
+                      <p className="text-xs text-[#0B3022]/60">Bank BVN connected</p>
                     </div>
                   </div>
                   {activeGroups.length > 0 && (
                     <div className="flex gap-3">
-                      <div className="w-2 h-2 rounded-full bg-[#C5A059] mt-2 shrink-0"></div>
+                      <div className="w-2 h-2 rounded-full bg-[#0B3022] mt-2 shrink-0"></div>
                       <div>
-                        <p className="text-sm font-bold text-[#1F2937]">Joined {activeGroups[0].groups?.name}</p>
-                        <p className="text-xs text-[#1F2937]/60 font-medium">Active Member</p>
+                        <p className="text-sm font-bold text-[#0B3022]">Joined {activeGroups[0].groups?.name}</p>
+                        <p className="text-xs text-[#0B3022]/60">Active Member</p>
                       </div>
                     </div>
                   )}

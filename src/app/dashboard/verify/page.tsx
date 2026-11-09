@@ -95,17 +95,20 @@ export default async function VerifyPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in pb-20 mt-4">
       <div>
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xs font-mono font-bold text-[#0B3022] bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300 uppercase tracking-widest">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-[10px] font-mono font-bold text-[#F3EEE3] bg-[#0B3022] px-3 py-1 rounded-full uppercase tracking-[0.16em]">
             Identity &amp; Compliance
           </span>
-          <span className="text-gray-400">•</span>
-          <span className="text-xs text-[#1F2937]/70 font-semibold">Mono Open-Banking Engine</span>
+          <span className="text-[#0B3022]/30">•</span>
+          <span className="text-xs font-mono uppercase tracking-wider text-[#0B3022]/65">Mono Open-Banking Engine</span>
         </div>
-        <h1 className="text-3xl font-bold text-[#0B3022] tracking-tight mb-2">
-          Identity &amp; Bank Verification
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#0B3022] tracking-tight mb-2">
+          Identity &amp;{" "}
+          <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+            Bank Verification.
+          </span>
         </h1>
-        <p className="text-[#1F2937]/80 text-sm font-medium leading-relaxed max-w-2xl">
+        <p className="text-[#0B3022]/70 text-sm leading-relaxed max-w-2xl">
           Your verified bank account serves as your official settlement account for rotational pool payouts and automated contribution debits. If you wish to change your settlement bank account, you must re-verify your identity with your new bank via Mono.
         </p>
       </div>

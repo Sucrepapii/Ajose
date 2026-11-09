@@ -28,10 +28,8 @@ export function SidebarNav() {
   ];
 
   return (
-    <nav className="flex-1 py-6 px-4 space-y-2">
+    <nav className="flex-1 py-6 px-4 space-y-1.5">
       {links.map((link) => {
-        // We consider it active if the pathname exactly matches the href for root /dashboard
-        // Or if the pathname starts with the href for subpages (e.g. /dashboard/groups/123)
         const isActive = link.href === "/dashboard" 
           ? pathname === "/dashboard"
           : pathname.startsWith(link.href);
@@ -42,13 +40,13 @@ export function SidebarNav() {
           <Link 
             key={link.href} 
             href={link.href} 
-            className={`${link.tourClass || ""} flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+            className={`${link.tourClass || ""} flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors ${
               isActive 
-                ? "bg-white/10 text-[#C5A059] font-bold" 
-                : "text-white/60 hover:bg-white/5 hover:text-white"
+                ? "bg-[#D4A843] text-[#0B3022] font-bold shadow-sm" 
+                : "text-[#F3EEE3]/65 hover:bg-[#F3EEE3]/[0.06] hover:text-[#F3EEE3] font-medium"
             }`}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className={`h-4 w-4 ${isActive ? "text-[#0B3022]" : "text-[#D4A843]"}`} />
             {link.label}
           </Link>
         );
