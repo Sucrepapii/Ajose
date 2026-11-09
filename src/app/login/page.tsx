@@ -298,10 +298,10 @@ export default function LoginPage() {
       </div>
 
       {/* Right Pane - Dynamic Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-14 md:px-20 xl:px-28 py-10 lg:py-0 relative min-h-screen">
+      <div className="w-full lg:w-1/2 flex flex-col justify-between p-6 sm:p-10 xl:p-14 overflow-y-auto min-h-screen relative">
         
         {/* Mobile Top Navigation Header */}
-        <div className="lg:hidden flex items-center justify-between w-full mb-8 pt-2">
+        <div className="lg:hidden flex items-center justify-between w-full mb-6">
           <Link href="/" className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
             <Image 
               src="/ajose-brand-pot.png" 
@@ -321,15 +321,20 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Desktop Back button */}
-        <div className="hidden lg:flex absolute top-8 left-8 items-center gap-4 z-10">
-          <Link href="/" className="flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs">
+        {/* Desktop Top Navigation Header */}
+        <div className="hidden lg:flex items-center justify-between w-full mb-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs">
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home
           </Link>
+          <div className="flex items-center gap-2 text-[11px] font-mono text-[#0B3022]/55 uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
+            Encrypted Session
+          </div>
         </div>
 
-        <div className="w-full max-w-[440px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white p-7 sm:p-9 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.05)]">
+        <div className="my-auto w-full max-w-[460px] mx-auto py-4">
+          <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white p-7 sm:p-9 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.05)]">
           
           {/* STEP 2: MANDATORY ADMIN FIRST-TIME PASSWORD CHANGE */}
           {isPasswordChangeRequired && pendingAdminInfo ? (
@@ -527,6 +532,12 @@ export default function LoginPage() {
             </>
           )}
 
+          </div>
+        </div>
+
+        {/* Security & Copyright Footer */}
+        <div className="text-center pt-3 pb-2 text-[11px] font-mono text-[#0B3022]/45">
+          Secured with 256-bit SSL encryption · Àjọṣe Technologies
         </div>
       </div>
       

@@ -636,7 +636,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex bg-[#F3EEE3] text-[#0B3022] font-sans">
       
       {/* Left Pane - Editorial Branding & Graphic */}
-      <div className="hidden lg:flex w-[45%] relative bg-[#0B3022] flex-col justify-between p-12 xl:p-16 overflow-hidden border-r border-[#F3EEE3]/10">
+      <div className="hidden lg:flex w-1/2 relative bg-[#0B3022] flex-col justify-between p-12 xl:p-16 overflow-hidden border-r border-[#F3EEE3]/10">
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
@@ -699,7 +699,7 @@ export default function SignupPage() {
       </div>
 
       {/* Right Pane - Form */}
-      <div className="w-full lg:w-[55%] flex flex-col pt-6 sm:pt-10 pb-16 px-5 sm:px-12 md:px-20 overflow-y-auto min-h-screen">
+      <div className="w-full lg:w-1/2 flex flex-col justify-between p-6 sm:p-10 xl:p-14 overflow-y-auto min-h-screen relative">
         
         {/* Mobile Top Navigation Header */}
         <div className="lg:hidden flex items-center justify-between w-full mb-6 pt-1">
@@ -726,20 +726,7 @@ export default function SignupPage() {
         </div>
 
         {/* Desktop Top Navigation Header */}
-        <div className="hidden lg:flex items-center justify-between mb-8 pt-2">
-          <Link href="/" className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity">
-            <Image 
-              src="/ajose-brand-pot.png" 
-              alt="Àjọṣe Logo" 
-              width={48} 
-              height={48} 
-              className="object-contain w-auto h-12 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
-            />
-            <span className="text-[#0B3022] font-bold text-3xl font-serif tracking-tight">
-              Àjọ<span className="text-[#D4A843]">ṣe</span>
-            </span>
-          </Link>
-
+        <div className="hidden lg:flex items-center justify-between w-full mb-6">
           <Link 
             href="/" 
             className="inline-flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs"
@@ -747,9 +734,14 @@ export default function SignupPage() {
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home
           </Link>
+          <div className="flex items-center gap-2 text-[11px] font-mono text-[#0B3022]/55 uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
+            NDPR Compliant
+          </div>
         </div>
 
-        <div className="w-full max-w-xl mx-auto flex-1 bg-white p-6 sm:p-9 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.05)]">
+        <div className="my-auto w-full max-w-xl mx-auto py-4">
+          <div className="w-full bg-white p-6 sm:p-9 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.05)]">
           
           {step < 3 && (
             <div className="mb-6 sm:mb-7 flex justify-center">
@@ -1344,6 +1336,12 @@ export default function SignupPage() {
             )}
 
           </div>
+        </div>
+      </div>
+
+      {/* Security & Copyright Footer */}
+        <div className="text-center pt-3 pb-2 text-[11px] font-mono text-[#0B3022]/45">
+          Secured with 256-bit SSL encryption · Àjọṣe Technologies
         </div>
       </div>
       
