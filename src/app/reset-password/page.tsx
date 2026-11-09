@@ -81,14 +81,6 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex bg-[#F3EEE3] text-[#0B3022] font-sans">
       {/* Left Pane - Editorial Branding */}
       <div className="hidden lg:flex w-[45%] relative bg-[#0B3022] flex-col justify-between p-12 xl:p-16 overflow-hidden border-r border-[#F3EEE3]/10">
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
         <Image 
           src="/custom-login-bg.jpg" 
           alt="Àjọṣe Password Reset" 
@@ -147,16 +139,8 @@ export default function ResetPasswordPage() {
       {/* Right Pane - Form */}
       <div className="w-full lg:w-[55%] flex flex-col justify-between pt-8 sm:pt-10 pb-12 px-6 sm:px-12 md:px-16 xl:px-20 overflow-y-auto min-h-screen relative overflow-hidden">
         
-        {/* Subtle Architectural Grid & Brand Watermark */}
-        <div
-          className="absolute inset-0 opacity-[0.025] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #0B3022 1px, transparent 1px), linear-gradient(to bottom, #0B3022 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute -right-24 -bottom-24 w-[480px] h-[480px] lg:w-[560px] lg:h-[560px] pointer-events-none opacity-[0.04] select-none">
+        {/* Subtle Brand Watermark */}
+        <div className="absolute -right-24 -bottom-24 w-[480px] h-[480px] lg:w-[560px] lg:h-[560px] pointer-events-none opacity-[0.045] select-none">
           <Image
             src="/ajose-brand-pot.png"
             alt=""
