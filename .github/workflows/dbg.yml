@@ -6,28 +6,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy over WireGuard
-        env:
-          DEPLOY_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          WG_KEY: ${{ secrets.WG_DEPLOY_KEY }}
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      - name: probe
         run: |
-          set -euxo pipefail
-          sudo apt-get update -qq && sudo apt-get install -y -qq wireguard-tools
-          install -d -m 700 ~/.ssh
-          umask 077
-          sudo ip link add wgci type wireguard
-          sudo ip addr add 10.31.0.3/32 dev wgci
-          printf '%s\n' "$WG_KEY" | sudo wg set wgci private-key /dev/stdin \
-            peer tZvArwA5Ohoih1dOKq4gobttFdQS4kjzzndEEh/TWiM= \
-            endpoint "$SERVER_HOST":51830 allowed-ips 10.30.0.7/32 persistent-keepalive 10
-          sudo ip link set wgci up
-          sudo ip route add 10.30.0.7/32 dev wgci
-          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          printf '10.30.0.7 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGx0AWKB4JR63YZvoUVYQ/yxrxsatzKM3WAx62gFtTPU\n' > ~/.ssh/known_hosts_167
-          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=30 \
-            -o UserKnownHostsFile=$HOME/.ssh/known_hosts_167 -o StrictHostKeyChecking=yes \
-            deploy-ajose@10.30.0.7 deploy
-          rm -f ~/.ssh/deploy_key
-          sudo ip link del wgci || true
+          set -x
+          cat /etc/os-release | head -3; sudo apt-get update -qq; sudo apt-get install -y -qq wireguard-tools >/dev/null 2>&1; wg --version
+          sudo ip link add wgt type wireguard
+          K=$(wg genkey)
+          printf '%s\n' "$K" | sudo wg set wgt private-key /dev/stdin; echo "stdin rc=$?"
+          printf '%s\n' "$K" | sudo tee /run/t.key >/dev/null; sudo chmod 600 /run/t.key
+          sudo wg set wgt private-key /run/t.key; echo "rootfile rc=$?"
+          printf '%s\n' "$K" > "$RUNNER_TEMP/t.key"
+          sudo wg set wgt private-key "$RUNNER_TEMP/t.key"; echo "runnerfile rc=$?"
+          (umask 077; printf '%s\n' "$K" > "$RUNNER_TEMP/t2.key"); sudo wg set wgt private-key "$RUNNER_TEMP/t2.key"; echo "runnerfile-umask rc=$?"
+          sudo wg set wgt peer tZvArwA5Ohoih1dOKq4gobttFdQS4kjzzndEEh/TWiM= allowed-ips 10.30.0.7/32; echo "peer rc=$?"
+          sudo ls -ld /dev/stdin /proc/self/fd/0; id; sudo id; sudo -l | head -5
+          sudo wg show wgt | head -3
