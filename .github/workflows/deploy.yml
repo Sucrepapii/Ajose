@@ -41,25 +41,29 @@ jobs:
     needs: ci
     if: github.ref == 'refs/heads/master'
     steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            set -e
-            cd /opt/ajose
-            git config --global --add safe.directory /opt/ajose || true
-            if [ ! -d ".git" ]; then
-              git init -b master
-              git remote add origin https://github.com/Sucrepapii/ajocore.git || git remote set-url origin https://github.com/Sucrepapii/ajocore.git
-            fi
-            git fetch origin master
-            git checkout -f master
-            git reset --hard origin/master
-            npm install --production=false
-            npm run build
-            sudo systemctl restart app-ajose || systemctl restart app-ajose || pm2 restart ajose || pm2 start npm --name "ajose" -- run start
-
-
+      - name: Deploy over WireGuard
+        env:
+          DEPLOY_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          WG_KEY: ${{ secrets.WG_DEPLOY_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq wireguard-tools
+          install -d -m 700 ~/.ssh
+          umask 077
+          printf '%s
+' "$WG_KEY" > "$RUNNER_TEMP/wg.key"
+          sudo ip link add wgci type wireguard
+          sudo ip addr add 10.31.0.3/32 dev wgci
+          sudo wg set wgci private-key "$RUNNER_TEMP/wg.key"             peer tZvArwA5Ohoih1dOKq4gobttFdQS4kjzzndEEh/TWiM=             endpoint "$SERVER_HOST":51830 allowed-ips 10.30.0.7/32 persistent-keepalive 10
+          sudo ip link set wgci up
+          sudo ip route add 10.30.0.7/32 dev wgci
+          rm -f "$RUNNER_TEMP/wg.key"
+          printf '%s
+' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '10.30.0.7 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGx0AWKB4JR63YZvoUVYQ/yxrxsatzKM3WAx62gFtTPU
+' > ~/.ssh/known_hosts_167
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=30             -o UserKnownHostsFile=$HOME/.ssh/known_hosts_167 -o StrictHostKeyChecking=yes             deploy-ajose@10.30.0.7 deploy
+          rm -f ~/.ssh/deploy_key
+          sudo ip link del wgci || true
