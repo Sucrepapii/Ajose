@@ -51,19 +51,20 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq wireguard-tools
           install -d -m 700 ~/.ssh
           umask 077
-          printf '%s
-' "$WG_KEY" > "$RUNNER_TEMP/wg.key"
+          printf '%s\n' "$WG_KEY" > "$RUNNER_TEMP/wg.key"
           sudo ip link add wgci type wireguard
           sudo ip addr add 10.31.0.3/32 dev wgci
-          sudo wg set wgci private-key "$RUNNER_TEMP/wg.key"             peer tZvArwA5Ohoih1dOKq4gobttFdQS4kjzzndEEh/TWiM=             endpoint "$SERVER_HOST":51830 allowed-ips 10.30.0.7/32 persistent-keepalive 10
+          sudo wg set wgci private-key "$RUNNER_TEMP/wg.key" \
+            peer tZvArwA5Ohoih1dOKq4gobttFdQS4kjzzndEEh/TWiM= \
+            endpoint "$SERVER_HOST":51830 allowed-ips 10.30.0.7/32 persistent-keepalive 10
           sudo ip link set wgci up
           sudo ip route add 10.30.0.7/32 dev wgci
           rm -f "$RUNNER_TEMP/wg.key"
-          printf '%s
-' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          printf '10.30.0.7 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGx0AWKB4JR63YZvoUVYQ/yxrxsatzKM3WAx62gFtTPU
-' > ~/.ssh/known_hosts_167
-          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=30             -o UserKnownHostsFile=$HOME/.ssh/known_hosts_167 -o StrictHostKeyChecking=yes             deploy-ajose@10.30.0.7 deploy
+          printf '10.30.0.7 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGx0AWKB4JR63YZvoUVYQ/yxrxsatzKM3WAx62gFtTPU\n' > ~/.ssh/known_hosts_167
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=30 \
+            -o UserKnownHostsFile=$HOME/.ssh/known_hosts_167 -o StrictHostKeyChecking=yes \
+            deploy-ajose@10.30.0.7 deploy
           rm -f ~/.ssh/deploy_key
           sudo ip link del wgci || true
