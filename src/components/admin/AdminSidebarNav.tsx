@@ -89,7 +89,7 @@ export function AdminSidebarNav({
             className="object-contain w-auto h-6"
           />
           <div className="flex items-center gap-2">
-            <span className="font-bold text-white font-serif tracking-tight text-base">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
+            <span className="font-bold text-white font-serif tracking-tight text-base">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
             <span className="text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30 font-bold">
               ADMIN
             </span>
@@ -152,7 +152,7 @@ export function AdminSidebarNav({
             />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg text-white font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
+                <span className="font-bold text-lg text-white font-serif tracking-tight">Àjọ<span className="text-[#D4A843]">ṣe</span></span>
                 <span className="text-[9px] font-mono uppercase bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold">
                   OPS
                 </span>
