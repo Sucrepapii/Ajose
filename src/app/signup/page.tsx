@@ -633,25 +633,42 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#FAFAFA] font-sans">
+    <div className="min-h-screen flex bg-[#F3EEE3] text-[#0B3022] font-sans">
       
-      {/* Left Pane - Branding & Graphic */}
-      <div className="hidden lg:flex w-[45%] relative bg-[#0B402B] items-center justify-center overflow-hidden">
-        
-        <Image src="/custom-signup-bg.jpg" alt="Signup Background" fill className="object-cover opacity-70 mix-blend-overlay" priority />
-        <div className="absolute inset-0 bg-[#0B402B]/30"></div>
+      {/* Left Pane - Editorial Branding & Graphic */}
+      <div className="hidden lg:flex w-[45%] relative bg-[#0B3022] items-center justify-center overflow-hidden border-r border-[#F3EEE3]/10">
+        <div
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        <Image src="/custom-signup-bg.jpg" alt="Signup Background" fill className="object-cover opacity-35 mix-blend-luminosity" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B3022] via-[#0B3022]/80 to-[#0B3022]/65" />
 
-        <div className="relative z-10 p-12 text-center flex flex-col items-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-            Join a trusted Ajo<br/>circle today.
+        <div className="relative z-10 p-12 max-w-md">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 text-[#F3EEE3] text-[11px] font-mono uppercase tracking-[0.16em] mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+            Verified Savings Circles
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-[#F3EEE3] leading-[1.08] tracking-[-0.03em] mb-4">
+            Join a trusted Ajo{" "}
+            <span className="font-editorial italic font-normal text-[#D4A843]">
+              circle today.
+            </span>
           </h1>
+          <p className="text-[#F3EEE3]/70 text-base leading-relaxed">
+            Every member is BVN-verified, every contribution is swept on schedule, and every turn payout lands straight in your bank account.
+          </p>
         </div>
       </div>
 
       {/* Right Pane - Form */}
       <div className="w-full lg:w-[55%] flex flex-col pt-6 sm:pt-10 pb-16 px-5 sm:px-12 md:px-20 overflow-y-auto min-h-screen">
         
-        {/* Mobile Top Navigation Header (In-flow so it never clashes with Step indicator) */}
+        {/* Mobile Top Navigation Header */}
         <div className="lg:hidden flex items-center justify-between w-full mb-6 pt-1">
           <Link href="/" className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
             <Image 
@@ -661,14 +678,14 @@ export default function SignupPage() {
               height={32} 
               className="object-contain w-auto h-8 drop-shadow-sm"
             />
-            <span className="text-[#0B402B] font-bold text-xl font-serif tracking-tight">
-              Àjọ<span className="text-[#D4AF37]">ṣe</span>
+            <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4A843]">ṣe</span>
             </span>
           </Link>
 
           <Link 
             href="/" 
-            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-[#0B402B] bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-xs transition-colors"
+            className="flex items-center gap-1.5 text-xs font-bold text-[#0B3022] bg-white px-3.5 py-1.5 rounded-full border border-[#0B3022]/15 shadow-xs transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Home
@@ -676,35 +693,36 @@ export default function SignupPage() {
         </div>
 
         {/* Desktop Top Navigation Header */}
-        <div className="hidden lg:flex items-center justify-between mb-10 pt-2">
+        <div className="hidden lg:flex items-center justify-between mb-8 pt-2">
           <Link href="/" className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity">
             <Image 
               src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
-              width={56} 
-              height={56} 
-              className="object-contain w-auto h-14 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+              width={48} 
+              height={48} 
+              className="object-contain w-auto h-12 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             />
-            <span className="text-[#0B402B] font-bold text-3xl font-serif tracking-tight">
-              Àjọ<span className="text-[#D4AF37]">ṣe</span>
+            <span className="text-[#0B3022] font-bold text-3xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4A843]">ṣe</span>
             </span>
           </Link>
 
           <Link 
             href="/" 
-            className="inline-flex items-center gap-2 text-[#1F2937]/60 hover:text-[#0B402B] transition-colors font-medium text-sm bg-white/80 hover:bg-white px-3.5 py-1.5 rounded-full border border-gray-200 shadow-xs"
+            className="inline-flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home
           </Link>
         </div>
 
-        <div className="w-full max-w-xl mx-auto flex-1">
+        <div className="w-full max-w-xl mx-auto flex-1 bg-white p-6 sm:p-9 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.05)]">
           
           {step < 3 && (
-            <div className="mb-6 sm:mb-8 flex justify-center">
-              <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white shadow-xs border border-gray-200">
-                <span className="text-xs sm:text-sm font-semibold text-[#D4AF37]">
+            <div className="mb-6 sm:mb-7 flex justify-center">
+              <div className="inline-flex items-center gap-2 justify-center px-4 py-1.5 rounded-full bg-[#F3EEE3] border border-[#0B3022]/15">
+                <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0B3022]">
                   Step {step} of 2: {step === 1 ? "Profile Setup" : bvnStep === "INITIATE" ? "Security & Identity" : bvnStep === "SELECT_METHOD" ? "Select OTP Method" : "Verify OTP"}
                 </span>
               </div>
@@ -715,15 +733,23 @@ export default function SignupPage() {
             
             {step === 1 && (
               <div className="space-y-6">
+                <div className="text-center mb-2">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-[#0B3022] tracking-tight">
+                    Create your{" "}
+                    <span className="font-editorial italic font-normal text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-4">
+                      account.
+                    </span>
+                  </h2>
+                </div>
 
                 <button 
                   type="button"
                   disabled={isGoogleLoading || isAppleLoading || isSubmitting}
                   onClick={handleGoogleSignup}
-                  className="w-full py-3.5 px-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer mb-3 disabled:opacity-70"
+                  className="w-full py-3.5 px-4 bg-[#F3EEE3]/60 border border-[#0B3022]/15 hover:border-[#D4A843] text-[#0B3022] font-semibold text-sm rounded-full transition-colors flex justify-center items-center gap-3 cursor-pointer mb-3 disabled:opacity-70"
                 >
                   {isGoogleLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
+                    <Loader2 className="w-5 h-5 animate-spin text-[#0B3022]" />
                   ) : (
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -739,10 +765,10 @@ export default function SignupPage() {
                   type="button"
                   disabled={isGoogleLoading || isAppleLoading || isSubmitting}
                   onClick={handleAppleSignup}
-                  className="w-full py-3.5 px-4 bg-black hover:bg-gray-900 text-white font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer disabled:opacity-70"
+                  className="w-full py-3.5 px-4 bg-[#0B3022] hover:bg-[#124532] text-[#F3EEE3] font-semibold text-sm rounded-full transition-colors flex justify-center items-center gap-3 cursor-pointer disabled:opacity-70"
                 >
                   {isAppleLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-white" />
+                    <Loader2 className="w-5 h-5 animate-spin text-[#F3EEE3]" />
                   ) : (
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M17.05 20.28c-.98.95-2.05 1.8-3.08 1.8-.95 0-1.25-.57-2.66-.57-1.4 0-1.76.55-2.66.57-1.07.03-2.28-.95-3.3-1.96-2.05-2.07-3.72-5.91-3.72-9.61 0-4.04 2.6-6.15 5.25-6.15 1.33 0 2.53.86 3.37.86.81 0 2.22-1 3.73-1 1.5 0 2.82.64 3.65 1.7-3.39 2.03-2.82 6.55.6 7.82-.77 2.07-1.93 4.32-3.18 6.54zm-2.92-15.69c.56-1.12.87-2.45.67-3.71-1.12.18-2.66.96-3.47 2.02-.7.91-1.12 2.31-.91 3.63 1.25.1 2.76-.75 3.71-1.94z"/>
@@ -752,84 +778,84 @@ export default function SignupPage() {
                 </button>
 
                 <div className="flex items-center gap-4">
-                  <div className="h-px bg-gray-200 flex-1"></div>
-                  <span className="text-sm text-gray-400 font-medium uppercase tracking-wider">Or register with email</span>
-                  <div className="h-px bg-gray-200 flex-1"></div>
+                  <div className="h-px bg-[#0B3022]/10 flex-1" />
+                  <span className="text-[11px] font-mono text-[#0B3022]/45 font-bold uppercase tracking-widest">Or register with email</span>
+                  <div className="h-px bg-[#0B3022]/10 flex-1" />
                 </div>
 
-                <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
+                <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
                   {existingProviderPrompt && existingProviderPrompt.email.toLowerCase() === formData.email.trim().toLowerCase() && (
-                    <div className="p-4 rounded-xl bg-[#0B402B]/5 border border-[#0B402B]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+                    <div className="p-4 rounded-2xl bg-[#F3EEE3] border border-[#0B3022]/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
                       <div>
-                        <p className="text-sm font-semibold text-[#0B402B]">
+                        <p className="text-sm font-bold text-[#0B3022]">
                           Account already exists with {existingProviderPrompt.provider === "google" ? "Google" : "Apple"}
                         </p>
-                        <p className="text-xs text-gray-600 mt-0.5">
+                        <p className="text-xs text-[#0B3022]/65 mt-0.5">
                           <strong>{formData.email}</strong> is linked to {existingProviderPrompt.provider === "google" ? "Google" : "Apple"} Sign-In.
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={existingProviderPrompt.provider === "google" ? handleGoogleSignup : handleAppleSignup}
-                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0B402B] text-[#D4AF37] font-semibold text-xs rounded-lg hover:bg-[#0B402B]/90 transition-colors shadow-xs shrink-0 cursor-pointer"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0B3022] text-[#D4A843] font-bold text-xs rounded-full hover:bg-[#124532] transition-colors shrink-0 cursor-pointer"
                       >
                         Continue with {existingProviderPrompt.provider === "google" ? "Google" : "Apple"} &rarr;
                       </button>
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">First Name</label>
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">First Name</label>
                       <input 
                         name="firstName" value={formData.firstName} onChange={handleChange} 
                         type="text" placeholder="John" 
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                        className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors text-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Last Name</label>
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Last Name</label>
                       <input 
                         name="lastName" value={formData.lastName} onChange={handleChange} 
                         type="text" placeholder="Doe" 
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                        className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors text-sm"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Email Address</label>
                       <input 
                         name="email" value={formData.email} onChange={handleChange} 
                         type="email" placeholder="john@example.com" 
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                        className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors text-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Phone Number</label>
                       <input 
                         name="phone" value={formData.phone} onChange={handleChange} 
                         type="tel" placeholder="+234 800 000 0000" 
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                        className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors text-sm"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center justify-between">
-                      Group Invite Code <span className="text-xs text-gray-400 font-normal">Optional</span>
+                    <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5 flex items-center justify-between">
+                      Group Invite Code <span className="text-[11px] text-[#0B3022]/45 font-normal">Optional</span>
                     </label>
                     <input 
                       name="inviteCode" value={formData.inviteCode} onChange={handleChange} 
                       type="text" placeholder="e.g. Samuel or paste invite link" 
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors"
+                      className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors text-sm"
                     />
                     {verifiedGroup && (
-                      <div className="mt-2 flex items-center gap-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 animate-in fade-in duration-200">
-                        <Users className="h-4 w-4 text-emerald-600 shrink-0" />
+                      <div className="mt-2 flex items-center gap-2 p-2.5 bg-[#D4A843]/15 border border-[#D4A843]/35 rounded-xl text-xs text-[#0B3022] animate-in fade-in duration-200">
+                        <Users className="h-4 w-4 text-[#0B3022] shrink-0" />
                         <span>
-                          Invited to join: <strong className="text-emerald-950 font-bold">{verifiedGroup.name}</strong>
+                          Invited to join: <strong className="font-bold">{verifiedGroup.name}</strong>
                           {verifiedGroup.contribution_amount && ` (₦${Number(verifiedGroup.contribution_amount).toLocaleString()} / ${verifiedGroup.frequency || "monthly"})`}
                         </span>
                       </div>
@@ -837,23 +863,26 @@ export default function SignupPage() {
                   </div>
                 </form>
 
-                <div className="pt-4">
+                <div className="pt-2">
                   <button 
                     onClick={handleNext}
                     disabled={isSubmitting}
-                    className="w-full py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 px-4 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-sm rounded-full transition-colors disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer shadow-[0_10px_24px_rgba(212,168,67,0.22)]"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="w-5 h-5 animate-spin text-[#0B402B]" />
+                        <Loader2 className="w-4 h-4 animate-spin text-[#0B3022]" />
                         <span>Verifying details...</span>
                       </>
                     ) : (
                       "Continue to Security"
                     )}
                   </button>
-                  <div className="mt-6 text-center text-lg text-gray-700 font-medium bg-gray-50 py-3 rounded-lg border border-gray-100">
-                    Already have an account? <Link href="/login" className="text-[#0B402B] font-extrabold hover:underline">Log In here</Link>
+                  <div className="mt-6 pt-5 border-t border-[#0B3022]/10 text-center text-sm text-[#0B3022]/65">
+                    Already have an account?{" "}
+                    <Link href="/login" className="text-[#0B3022] font-bold underline decoration-[#D4A843] hover:text-[#D4A843]">
+                      Log In here
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -866,21 +895,24 @@ export default function SignupPage() {
                 {bvnStep === "INITIATE" && (
                   <div className="space-y-6 animate-in fade-in duration-300">
                     <div className="text-center mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Security & Identity</h2>
-                      <p className="text-gray-500">Create your password and provide your 11-digit BVN.</p>
+                      <h2 className="text-2xl sm:text-3xl font-bold text-[#0B3022] mb-1.5 tracking-tight">
+                        Security &amp;{" "}
+                        <span className="font-editorial italic font-normal">identity.</span>
+                      </h2>
+                      <p className="text-sm text-[#0B3022]/65">Create your password and provide your 11-digit BVN.</p>
                     </div>
 
                     {/* Mono Identity Verification Banner */}
-                    <div className="p-4 rounded-xl bg-[#0B402B]/5 border border-[#0B402B]/15 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#0B402B] flex items-center justify-center text-[#D4AF37] shrink-0 shadow-sm">
+                    <div className="p-4 rounded-2xl bg-[#F3EEE3] border border-[#0B3022]/10 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#0B3022] flex items-center justify-center text-[#D4A843] shrink-0">
                         <ShieldCheck className="w-5 h-5" />
                       </div>
                       <div className="text-left flex-1">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-xs font-bold text-[#0B402B] uppercase tracking-wider">Mono Bank Verification</span>
-                          <span className="px-2 py-0.5 text-[10px] font-extrabold bg-[#D4AF37] text-[#0B402B] rounded-full">OTP SECURED</span>
+                          <span className="text-[11px] font-mono font-bold text-[#0B3022] uppercase tracking-wider">Mono Bank Verification</span>
+                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-[#D4A843] text-[#0B3022] rounded-full">OTP SECURED</span>
                         </div>
-                        <p className="text-xs text-gray-600 leading-snug">
+                        <p className="text-xs text-[#0B3022]/70 leading-snug">
                           A secure One-Time Password (OTP) will be dispatched to your BVN-registered phone line or email to verify your identity.
                         </p>
                       </div>
@@ -888,82 +920,82 @@ export default function SignupPage() {
                     
                     <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Create Password</label>
+                        <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Create Password</label>
                         <div className="relative">
                           <input 
                             name="password" value={formData.password} onChange={handleChange} 
                             type={showPassword ? "text" : "password"} placeholder="••••••••" 
-                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0B402B] focus:border-[#0B402B] transition-colors pr-10"
+                            className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors pr-10 text-sm"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#0B3022]/45 hover:text-[#0B3022] cursor-pointer"
                           >
-                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
                         </div>
                       </div>
 
                       <div>
                         <div className="flex justify-between items-center mb-1.5">
-                          <label className="block text-sm font-bold text-gray-700">Bank Verification Number (BVN)</label>
+                          <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75">Bank Verification Number (BVN)</label>
                           {formData.bvn.length === 11 && (
-                            <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5" /> 11 Digits Ready
+                            <span className="text-[11px] font-mono font-bold text-[#0B3022] flex items-center gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#D4A843]" /> 11 Digits Ready
                             </span>
                           )}
                         </div>
                         <input 
                           name="bvn" value={formData.bvn} onChange={handleChange} 
                           type="text" placeholder="Enter your 11-digit BVN" maxLength={11}
-                          className={`w-full px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 transition-colors ${formData.bvn.length === 11 ? "border-emerald-400 focus:ring-emerald-600" : "border-gray-200 focus:ring-[#0B402B] focus:border-[#0B402B]"}`}
+                          className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors font-mono text-sm"
                         />
                         {/* High-visibility BVN Retrieval Callout */}
-                        <div className="mt-3 p-3.5 bg-gradient-to-r from-amber-50/95 via-amber-50/70 to-emerald-50/50 border border-amber-300/80 rounded-xl shadow-xs">
+                        <div className="mt-3 p-3.5 bg-[#F3EEE3] border border-[#D4A843]/40 rounded-2xl">
                           <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-300/80 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
-                              <Lightbulb className="w-4 h-4 text-amber-700" />
+                            <div className="w-8 h-8 rounded-lg bg-[#D4A843]/20 border border-[#D4A843]/40 text-[#0B3022] flex items-center justify-center shrink-0 mt-0.5">
+                              <Lightbulb className="w-4 h-4 text-[#0B3022]" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
-                                <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-[#0B3022] flex items-center gap-1.5">
                                   Don&apos;t know your BVN?
                                 </span>
                                 <button
                                   type="button"
                                   onClick={handleCopyUssd}
-                                  className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0B402B] hover:text-[#062418] bg-white px-2 py-0.5 rounded-md border border-gray-200 hover:border-gray-300 shadow-2xs transition-colors cursor-pointer"
+                                  className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0B3022] bg-white px-2.5 py-0.5 rounded-full border border-[#0B3022]/15 transition-colors cursor-pointer"
                                   title="Copy USSD code"
                                 >
                                   {copiedUssd ? (
                                     <>
-                                      <Check className="w-3 h-3 text-emerald-600" />
-                                      <span className="text-emerald-700">Copied!</span>
+                                      <Check className="w-3 h-3 text-[#0B3022]" />
+                                      <span>Copied!</span>
                                     </>
                                   ) : (
                                     <>
-                                      <Copy className="w-3 h-3 text-gray-500" />
+                                      <Copy className="w-3 h-3 text-[#0B3022]/60" />
                                       <span>Copy Code</span>
                                     </>
                                   )}
                                 </button>
                               </div>
-                              <p className="text-xs text-gray-700 leading-relaxed mb-2 font-medium">
+                              <p className="text-xs text-[#0B3022]/75 leading-relaxed mb-1.5">
                                 Dial{" "}
                                 <a
                                   href="tel:*565*0%23"
                                   onClick={handleCopyUssd}
-                                  className="inline-flex items-center gap-1 font-mono font-black text-xs px-2.5 py-0.5 bg-[#0B402B] text-[#D4AF37] hover:bg-[#072a1c] rounded-md shadow-xs transition-transform active:scale-95"
+                                  className="inline-flex items-center gap-1 font-mono font-bold text-xs px-2.5 py-0.5 bg-[#0B3022] text-[#D4A843] rounded-md"
                                   title="Tap to dial or copy *565*0#"
                                 >
-                                  <Phone className="w-2.5 h-2.5 text-[#D4AF37]" />
+                                  <Phone className="w-2.5 h-2.5 text-[#D4A843]" />
                                   *565*0#
                                 </a>{" "}
                                 on your registered bank phone line to retrieve it instantly.
                               </p>
-                              <div className="flex items-center gap-2 text-[10px] text-gray-500 font-medium">
-                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                              <div className="flex items-center gap-2 text-[10px] text-[#0B3022]/55 font-medium">
+                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#D4A843]" />
                                 <span>Works on MTN, Airtel, Glo &amp; 9mobile</span>
                               </div>
                             </div>
@@ -972,18 +1004,18 @@ export default function SignupPage() {
                       </div>
                     </form>
 
-                    <div className="flex gap-4 pt-4">
-                      <button onClick={handleBack} disabled={isSubmitting} className="px-5 py-4 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
-                        <ArrowLeft className="h-5 w-5" />
+                    <div className="flex gap-3 pt-2">
+                      <button onClick={handleBack} disabled={isSubmitting} className="px-4 py-3.5 border border-[#0B3022]/20 rounded-full bg-[#F3EEE3] text-[#0B3022] hover:bg-[#0B3022]/10 transition-colors cursor-pointer">
+                        <ArrowLeft className="h-4 w-4" />
                       </button>
                       <button 
                         onClick={handleNext}
                         disabled={isSubmitting || formData.bvn.length !== 11}
-                        className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer"
+                        className="flex-1 py-3.5 px-4 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-sm rounded-full transition-colors disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer shadow-md"
                       >
                         {isSubmitting ? (
                           <>
-                            <Loader2 className="w-5 h-5 animate-spin text-[#0B402B]" />
+                            <Loader2 className="w-4 h-4 animate-spin text-[#0B3022]" />
                             <span>Checking BVN with Mono...</span>
                           </>
                         ) : (
@@ -998,11 +1030,11 @@ export default function SignupPage() {
                 {bvnStep === "SELECT_METHOD" && (
                   <div className="space-y-6 animate-in fade-in duration-300">
                     <div className="text-center mb-6">
-                      <div className="w-12 h-12 bg-emerald-50 text-[#0B402B] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-emerald-200">
+                      <div className="w-12 h-12 bg-[#0B3022] text-[#D4A843] rounded-2xl flex items-center justify-center mx-auto mb-3">
                         <ShieldCheck className="w-6 h-6" />
                       </div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Select OTP Delivery Method</h2>
-                      <p className="text-gray-500 text-sm">Where should Mono send your verification code?</p>
+                      <h2 className="text-2xl font-bold text-[#0B3022] mb-1.5 tracking-tight">Select OTP Delivery Method</h2>
+                      <p className="text-[#0B3022]/65 text-sm">Where should Mono send your verification code?</p>
                     </div>
 
                     <div className="space-y-3">
@@ -1012,15 +1044,15 @@ export default function SignupPage() {
                           return (
                             <div 
                               key={idx}
-                              className="p-4 border-2 border-emerald-500/40 bg-emerald-50/50 rounded-xl space-y-3.5 shadow-xs"
+                              className="p-4 border border-[#0B3022]/15 bg-[#F3EEE3]/70 rounded-2xl space-y-3.5"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-[#0B402B] flex items-center justify-center shrink-0">
+                                <div className="w-10 h-10 rounded-xl bg-[#0B3022] text-[#D4A843] flex items-center justify-center shrink-0">
                                   <Phone className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
-                                  <p className="font-bold text-gray-900 text-sm">Send to Alternate Phone Number</p>
-                                  <p className="text-xs text-gray-500">Must be a secondary phone linked to this BVN with your bank</p>
+                                  <p className="font-bold text-[#0B3022] text-sm">Send to Alternate Phone Number</p>
+                                  <p className="text-xs text-[#0B3022]/60">Must be a secondary phone linked to this BVN with your bank</p>
                                 </div>
                               </div>
 
@@ -1030,18 +1062,18 @@ export default function SignupPage() {
                                     type="tel"
                                     value={alternatePhone}
                                     onChange={(e) => setAlternatePhone(e.target.value)}
-                                    placeholder="Enter bank-registered alternate phone (e.g. 08012345678)"
-                                    className="flex-1 px-3.5 py-2.5 text-sm bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B402B]"
+                                    placeholder="Enter bank-registered alternate phone"
+                                    className="flex-1 px-3.5 py-2.5 text-sm bg-white border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843]"
                                   />
                                   <button
                                     type="button"
                                     disabled={isSubmitting || !alternatePhone}
                                     onClick={() => handleRequestOtp("alternate_phone", alternatePhone)}
-                                    className="px-4 py-2.5 bg-[#0B402B] hover:bg-[#072a1c] text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
+                                    className="px-4 py-2.5 bg-[#0B3022] hover:bg-[#124532] text-[#F3EEE3] text-xs font-bold rounded-full transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap flex items-center gap-1.5"
                                   >
                                     {isSubmitting && requestingMethod === "alternate_phone" ? (
                                       <>
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D4A843]" />
                                         <span>Sending...</span>
                                       </>
                                     ) : (
@@ -1049,9 +1081,6 @@ export default function SignupPage() {
                                     )}
                                   </button>
                                 </div>
-                                <p className="text-[11px] text-amber-800 bg-amber-50/80 p-2 rounded-lg border border-amber-200/60 leading-relaxed">
-                                  🔒 <strong>NIBSS Security Rule:</strong> Mono &amp; NIBSS only deliver OTPs to numbers already registered on your BVN at your bank. If no secondary number exists on file, NIBSS returns <em>&quot;Alternate number not available&quot;</em>. In that case, use your <strong>Primary BVN Phone</strong> or <strong>Verify Instantly with BVN Name Match</strong> below.
-                                </p>
                               </div>
                             </div>
                           );
@@ -1063,23 +1092,23 @@ export default function SignupPage() {
                             type="button"
                             disabled={isSubmitting}
                             onClick={() => handleRequestOtp(m.method)}
-                            className="w-full p-4 border border-gray-200 hover:border-[#D4AF37] bg-white hover:bg-emerald-50/40 rounded-xl transition-all text-left flex items-center justify-between group shadow-xs cursor-pointer disabled:opacity-50"
+                            className="w-full p-4 border border-[#0B3022]/15 hover:border-[#D4A843] bg-[#F3EEE3]/50 hover:bg-[#F3EEE3] rounded-2xl transition-all text-left flex items-center justify-between group cursor-pointer disabled:opacity-50"
                           >
                             <div className="flex items-center gap-3.5">
-                              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#0B402B] flex items-center justify-center group-hover:scale-105 transition-transform">
+                              <div className="w-10 h-10 rounded-xl bg-[#0B3022] text-[#D4A843] flex items-center justify-center">
                                 {m.method.includes("email") ? <Mail className="w-5 h-5" /> : <Phone className="w-5 h-5" />}
                               </div>
                               <div>
-                                <p className="font-bold text-gray-900 text-sm capitalize">
+                                <p className="font-bold text-[#0B3022] text-sm capitalize">
                                   {m.method === "phone" ? "SMS to Primary BVN Phone" : m.method === "email" ? "Email Address" : m.method.replace("_", " ")}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-0.5 font-mono">{m.hint}</p>
+                                <p className="text-xs text-[#0B3022]/60 mt-0.5 font-mono">{m.hint}</p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-[#0B402B] bg-[#D4AF37]/20 px-3 py-1.5 rounded-lg group-hover:bg-[#D4AF37] transition-colors flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-[#0B3022] bg-[#D4A843] px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
                               {isSubmitting && requestingMethod === m.method ? (
                                 <>
-                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0B402B]" />
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0B3022]" />
                                   <span>Sending...</span>
                                 </>
                               ) : (
@@ -1092,23 +1121,23 @@ export default function SignupPage() {
                     </div>
 
                     {/* Fallback Option */}
-                    <div className="mt-4 p-4 rounded-xl bg-amber-50/80 border border-amber-200/80 text-left">
+                    <div className="mt-4 p-4 rounded-2xl bg-[#0B3022] text-[#F3EEE3] text-left">
                       <div className="flex items-start gap-2.5">
-                        <span className="text-base leading-none">💡</span>
+                        <ShieldCheck className="w-5 h-5 text-[#D4A843] shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-xs font-bold text-amber-950 mb-1">SMS Delayed or Network Issues?</p>
-                          <p className="text-xs text-amber-900 leading-relaxed mb-3">
+                          <p className="text-xs font-bold text-[#F3EEE3] mb-1">SMS Delayed or Network Issues?</p>
+                          <p className="text-xs text-[#F3EEE3]/75 leading-relaxed mb-3">
                             Nigerian telcos often delay financial SMS due to network congestion or active Do-Not-Disturb (DND). You can verify instantly with your BVN name record without waiting for an OTP.
                           </p>
                           <button
                             type="button"
                             disabled={isSubmitting}
                             onClick={handleDirectNameMatchVerify}
-                            className="w-full py-2.5 px-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+                            className="w-full py-2.5 px-3 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] text-xs font-bold rounded-full transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                           >
                             {isSubmitting && requestingMethod === "name_match" ? (
                               <>
-                                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                                <Loader2 className="w-4 h-4 animate-spin text-[#0B3022]" />
                                 <span>Verifying BVN Bank Records...</span>
                               </>
                             ) : (
@@ -1127,7 +1156,7 @@ export default function SignupPage() {
                         type="button"
                         onClick={() => setBvnStep("INITIATE")}
                         disabled={isSubmitting}
-                        className="w-full py-3 text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="w-full py-3 text-xs font-bold text-[#0B3022]/65 hover:text-[#0B3022] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <ArrowLeft className="w-4 h-4" /> Change BVN or Password
                       </button>
@@ -1139,18 +1168,18 @@ export default function SignupPage() {
                 {bvnStep === "VERIFY_OTP" && (
                   <div className="space-y-6 animate-in fade-in duration-300">
                     <div className="text-center mb-6">
-                      <div className="w-12 h-12 bg-emerald-50 text-[#0B402B] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-emerald-200">
+                      <div className="w-12 h-12 bg-[#0B3022] text-[#D4A843] rounded-2xl flex items-center justify-center mx-auto mb-3">
                         <Lock className="w-6 h-6" />
                       </div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Enter Verification Code</h2>
-                      <p className="text-gray-500 text-sm">
-                        Enter the OTP sent via <strong className="text-gray-800">{selectedMethod === "phone" ? "SMS" : selectedMethod.replace("_", " ")}</strong>.
+                      <h2 className="text-2xl font-bold text-[#0B3022] mb-1.5 tracking-tight">Enter Verification Code</h2>
+                      <p className="text-[#0B3022]/65 text-sm">
+                        Enter the OTP sent via <strong className="text-[#0B3022]">{selectedMethod === "phone" ? "SMS" : selectedMethod.replace("_", " ")}</strong>.
                       </p>
                     </div>
 
                     <form onSubmit={handleVerifyOtpAndRegister} className="space-y-5">
                       <div>
-                        <label className="block text-sm font-bold text-gray-700 text-center mb-2">6-Digit One-Time Password</label>
+                        <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 text-center mb-2">6-Digit One-Time Password</label>
                         <input 
                           type="text"
                           required
@@ -1158,27 +1187,27 @@ export default function SignupPage() {
                           placeholder="••••••"
                           value={otp}
                           onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                          className="w-full py-3.5 px-4 text-center text-3xl tracking-[0.4em] font-mono font-bold bg-gray-50 border border-gray-300 focus:border-[#0B402B] focus:ring-1 focus:ring-[#0B402B] rounded-xl text-[#0B402B] focus:outline-none transition-colors"
+                          className="w-full py-3.5 px-4 text-center text-3xl tracking-[0.4em] font-mono font-bold bg-[#F3EEE3]/60 border border-[#0B3022]/20 focus:border-[#D4A843] focus:ring-2 focus:ring-[#D4A843] rounded-xl text-[#0B3022] focus:outline-none transition-colors"
                         />
                       </div>
 
-                      <div className="flex gap-4 pt-2">
+                      <div className="flex gap-3 pt-2">
                         <button
                           type="button"
                           onClick={() => setBvnStep("SELECT_METHOD")}
                           disabled={isSubmitting}
-                          className="px-5 py-4 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                          className="px-4 py-3.5 border border-[#0B3022]/20 rounded-full bg-[#F3EEE3] text-[#0B3022] hover:bg-[#0B3022]/10 transition-colors cursor-pointer"
                         >
-                          <ArrowLeft className="h-5 w-5" />
+                          <ArrowLeft className="h-4 w-4" />
                         </button>
                         <button 
                           type="submit"
                           disabled={isSubmitting || otp.length < 4}
-                          className="flex-1 py-4 px-4 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer shadow-sm"
+                          className="flex-1 py-3.5 px-4 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-sm rounded-full transition-colors disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer shadow-md"
                         >
                           {isSubmitting && requestingMethod !== "name_match" ? (
                             <>
-                              <Loader2 className="w-5 h-5 animate-spin text-[#0B402B]" />
+                              <Loader2 className="w-4 h-4 animate-spin text-[#0B3022]" />
                               <span>Verifying &amp; Registering...</span>
                             </>
                           ) : (
@@ -1189,13 +1218,13 @@ export default function SignupPage() {
 
                       <div className="flex items-center justify-between pt-2 text-xs">
                         {countdown > 0 ? (
-                          <span className="text-gray-400 font-medium">Resend Code in {countdown}s</span>
+                          <span className="text-[#0B3022]/50 font-mono">Resend Code in {countdown}s</span>
                         ) : (
                           <button
                             type="button"
                             onClick={() => handleRequestOtp(selectedMethod)}
                             disabled={isSubmitting}
-                            className="text-[#0B402B] font-bold hover:underline cursor-pointer"
+                            className="text-[#0B3022] font-bold underline decoration-[#D4A843] cursor-pointer"
                           >
                             Resend Code
                           </button>
@@ -1204,28 +1233,28 @@ export default function SignupPage() {
                           type="button"
                           onClick={() => setBvnStep("SELECT_METHOD")}
                           disabled={isSubmitting}
-                          className="text-gray-500 hover:text-gray-900 cursor-pointer"
+                          className="text-[#0B3022]/65 hover:text-[#0B3022] cursor-pointer"
                         >
                           Choose different method
                         </button>
                       </div>
 
                       {/* Fallback button directly on VERIFY_OTP */}
-                      <div className="pt-2 border-t border-gray-100">
+                      <div className="pt-2 border-t border-[#0B3022]/10">
                         <button
                           type="button"
                           disabled={isSubmitting}
                           onClick={handleDirectNameMatchVerify}
-                          className="w-full py-2.5 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                          className="w-full py-2.5 px-3 bg-[#F3EEE3] hover:bg-[#D4A843]/25 text-[#0B3022] border border-[#0B3022]/15 text-xs font-bold rounded-full transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                         >
                           {isSubmitting && requestingMethod === "name_match" ? (
                             <>
-                              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-700" />
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0B3022]" />
                               <span>Verifying Bank Name Match...</span>
                             </>
                           ) : (
                             <>
-                              <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+                              <ShieldCheck className="w-3.5 h-3.5 text-[#D4A843]" />
                               <span>OTP not arriving? Verify instantly with Bank Name Match</span>
                             </>
                           )}
@@ -1235,21 +1264,24 @@ export default function SignupPage() {
                   </div>
                 )}
                 
-                <p className="mt-4 text-center text-xs text-gray-500">
-                  By signing up, you agree to our <Link href="/terms" className="underline hover:text-gray-800">Terms of Service</Link>.
+                <p className="mt-4 text-center text-xs text-[#0B3022]/55">
+                  By signing up, you agree to our <Link href="/terms" className="underline decoration-[#D4A843] font-semibold text-[#0B3022]">Terms of Service</Link>.
                 </p>
               </div>
             )}
 
             {step === 3 && (
               <div className="space-y-6 text-center animate-in zoom-in-95 duration-500 py-8">
-                <div className="mx-auto w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6">
-                  <CheckCircle2 className="h-12 w-12 text-[#0B402B]" />
+                <div className="mx-auto w-20 h-20 bg-[#0B3022] rounded-full flex items-center justify-center mb-6">
+                  <CheckCircle2 className="h-10 w-10 text-[#D4A843]" />
                 </div>
                 
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Check your email!</h2>
-                <p className="text-gray-500 mb-8 max-w-sm mx-auto">
-                  We've sent a verification link to <span className="font-medium text-gray-900">{formData.email}</span>. Please verify to access your dashboard.
+                <h2 className="text-3xl font-bold text-[#0B3022] tracking-tight mb-2">
+                  Check your{" "}
+                  <span className="font-editorial italic font-normal">email.</span>
+                </h2>
+                <p className="text-[#0B3022]/70 text-sm mb-8 max-w-sm mx-auto">
+                  We&apos;ve sent a verification link to <span className="font-bold text-[#0B3022]">{formData.email}</span>. Please verify to access your dashboard.
                 </p>
 
                 <button 
@@ -1264,11 +1296,11 @@ export default function SignupPage() {
                       router.push("/login");
                     }
                   }}
-                  className="w-full max-w-sm mx-auto py-4 px-4 bg-[#0B402B] hover:bg-[#072a1c] disabled:opacity-75 text-white font-bold text-lg rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full max-w-sm mx-auto py-3.5 px-4 bg-[#0B3022] hover:bg-[#124532] disabled:opacity-75 text-[#F3EEE3] font-bold text-sm rounded-full transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isNavigatingLogin ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin text-[#C5A059]" />
+                      <Loader2 className="w-4 h-4 animate-spin text-[#D4A843]" />
                       <span>Opening Login...</span>
                     </>
                   ) : (

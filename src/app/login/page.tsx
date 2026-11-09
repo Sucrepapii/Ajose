@@ -11,9 +11,9 @@ import {
   EyeOff, 
   ArrowLeft, 
   KeyRound, 
-  Lock, 
   CheckCircle2,
-  Loader2
+  Loader2,
+  ShieldCheck
 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
@@ -58,9 +58,7 @@ export default function LoginPage() {
         throw new Error("Please enter your email and password.");
       }
 
-
-
-      // 2. Standard Member Authentication via Supabase
+      // Standard Member Authentication via Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password: cleanPassword,
@@ -89,7 +87,7 @@ export default function LoginPage() {
         throw new Error("Your account has been suspended by compliance administration. Please contact support@ajose.ng for review.");
       }
 
-      // 3. Check if user has is_super_admin flag in their Supabase profile
+      // Check if user has is_super_admin flag in their Supabase profile
       const { data: profile } = await supabase
         .from("users")
         .select("*")
@@ -112,7 +110,6 @@ export default function LoginPage() {
 
       toast.success("Logged in successfully!");
 
-      // 4. Role-based automatic switching: Admins go to /admin, Members go to /dashboard
       if (isSuper || nextUrl === "/admin") {
         router.push("/admin");
       } else if (nextUrl && nextUrl.startsWith("/")) {
@@ -233,23 +230,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white font-sans">
+    <div className="min-h-screen flex bg-[#F3EEE3] text-[#0B3022] font-sans">
       
-      {/* Left Pane - Image & Branding */}
-      <div className="hidden lg:flex w-1/2 relative bg-[#1A362D] items-center justify-center overflow-hidden">
-        {/* Abstract Gold Lines Pattern */}
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 100 L500 600 L1000 100 M-100 300 L400 800 L1100 300" stroke="#D4AF37" strokeWidth="2" fill="none" />
-            <path d="M200 -100 L700 400 L1200 -100" stroke="#D4AF37" strokeWidth="1" fill="none" />
-          </svg>
-        </div>
-
-        <Image src="/custom-login-bg.jpg" alt="Login Background" fill className="object-cover opacity-60 mix-blend-overlay" priority />
-        <div className="absolute inset-0 bg-[#122b22]/40" />
+      {/* Left Pane - Editorial Brand Showcase */}
+      <div className="hidden lg:flex w-1/2 relative bg-[#0B3022] items-center justify-center overflow-hidden border-r border-[#F3EEE3]/10">
+        {/* Subtle Architectural Grid */}
+        <div
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        <Image src="/custom-login-bg.jpg" alt="Login Background" fill className="object-cover opacity-35 mix-blend-luminosity" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B3022] via-[#0B3022]/80 to-[#0B3022]/65" />
 
         <div className="relative z-10 max-w-lg px-12">
-          <Link href="/" className="inline-flex items-center gap-4 mb-16 group hover:opacity-90 transition-opacity">
+          <Link href="/" className="inline-flex items-center gap-4 mb-14 group hover:opacity-90 transition-opacity">
             <Image 
               src="/ajose-brand-pot.png" 
               alt="Àjọṣe Logo" 
@@ -257,17 +255,30 @@ export default function LoginPage() {
               height={64} 
               className="object-contain w-auto h-16 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             />
-            <span className="text-white font-bold text-3xl font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
+            <span className="text-[#F3EEE3] font-bold text-3xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4A843]">ṣe</span>
+            </span>
           </Link>
+
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 text-[#F3EEE3] text-[11px] font-mono uppercase tracking-[0.16em] mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+            Turn by turn, no wahala
+          </div>
           
-          <h1 className="text-5xl font-bold text-white leading-[1.1] tracking-tight">
-            Secure your financial future, together.
+          <h1 className="text-5xl font-bold text-[#F3EEE3] leading-[1.08] tracking-[-0.03em] mb-5">
+            Secure your financial future,{" "}
+            <span className="font-editorial italic font-normal text-[#D4A843]">
+              together.
+            </span>
           </h1>
+          <p className="text-[#F3EEE3]/70 text-base leading-relaxed max-w-md">
+            Log in to track your rotational circles, automated direct debits, and upcoming turn payouts in real time.
+          </p>
         </div>
       </div>
 
-      {/* Right Pane - Dynamic Form with Auto Role-Switching */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-16 md:px-24 xl:px-32 py-10 lg:py-0 relative min-h-screen">
+      {/* Right Pane - Dynamic Form */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-14 md:px-20 xl:px-28 py-10 lg:py-0 relative min-h-screen">
         
         {/* Mobile Top Navigation Header */}
         <div className="lg:hidden flex items-center justify-between w-full mb-8 pt-2">
@@ -279,10 +290,12 @@ export default function LoginPage() {
               height={32} 
               className="object-contain w-auto h-8 drop-shadow-sm"
             />
-            <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">Àjọ<span className="text-[#C5A059]">ṣe</span></span>
+            <span className="text-[#0B3022] font-bold text-xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4A843]">ṣe</span>
+            </span>
           </Link>
 
-          <Link href="/" className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-[#0B3022] bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-xs transition-colors">
+          <Link href="/" className="flex items-center gap-1.5 text-xs font-bold text-[#0B3022] bg-white px-3.5 py-1.5 rounded-full border border-[#0B3022]/15 shadow-xs transition-colors">
             <ArrowLeft className="w-3.5 h-3.5" />
             Home
           </Link>
@@ -290,31 +303,31 @@ export default function LoginPage() {
 
         {/* Desktop Back button */}
         <div className="hidden lg:flex absolute top-8 left-8 items-center gap-4 z-10">
-          <Link href="/" className="flex items-center gap-2 text-[#1F2937]/60 hover:text-[#0B3022] transition-colors font-medium text-sm bg-white/80 hover:bg-white px-3.5 py-1.5 rounded-full border border-gray-200 shadow-xs">
-            <ArrowLeft className="w-4 h-4" />
+          <Link href="/" className="flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs">
+            <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home
           </Link>
         </div>
 
-        <div className="w-full max-w-[420px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="w-full max-w-[440px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white p-7 sm:p-9 rounded-3xl border border-[#0B3022]/10 shadow-[0_12px_32px_rgba(11,48,34,0.05)]">
           
           {/* STEP 2: MANDATORY ADMIN FIRST-TIME PASSWORD CHANGE */}
           {isPasswordChangeRequired && pendingAdminInfo ? (
             <div className="space-y-5 animate-in fade-in zoom-in-95 duration-200">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold font-mono mb-2">
-                  <KeyRound className="w-3.5 h-3.5 text-amber-600" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4A843]/20 border border-[#D4A843]/40 text-[#0B3022] text-[11px] font-bold font-mono mb-2">
+                  <KeyRound className="w-3.5 h-3.5 text-[#0B3022]" />
                   ADMIN SECURITY STEP
                 </div>
-                <h2 className="text-2xl font-bold text-[#111827]">Set Permanent Password</h2>
-                <p className="text-gray-500 text-xs mt-1">
+                <h2 className="text-2xl font-bold text-[#0B3022]">Set Permanent Password</h2>
+                <p className="text-[#0B3022]/65 text-xs mt-1">
                   Welcome, <strong>{pendingAdminInfo.fullName}</strong>. You are logging in as <strong>{pendingAdminInfo.role}</strong>. Because you used a temporary password, you must create a permanent password to access the Command Center.
                 </p>
               </div>
 
               <form onSubmit={handleSetPermanentPassword} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">New Permanent Password</label>
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">New Permanent Password</label>
                   <div className="relative">
                     <input 
                       type={showNewPassword ? "text" : "password"}
@@ -323,12 +336,12 @@ export default function LoginPage() {
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
                       minLength={8}
-                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-colors pr-10 text-sm"
+                      className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors pr-10 text-sm"
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#0B3022]/45 hover:text-[#0B3022]"
                     >
                       {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -336,7 +349,7 @@ export default function LoginPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Permanent Password</label>
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Confirm Permanent Password</label>
                   <input 
                     type={showNewPassword ? "text" : "password"}
                     placeholder="Repeat new permanent password"
@@ -344,7 +357,7 @@ export default function LoginPage() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     minLength={8}
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-colors text-sm"
+                    className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors text-sm"
                   />
                 </div>
 
@@ -352,14 +365,14 @@ export default function LoginPage() {
                   <button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3.5 px-4 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0B3022] disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer shadow-md text-sm"
+                    className="w-full py-3.5 px-4 bg-[#0B3022] hover:bg-[#124532] text-[#F3EEE3] font-bold rounded-full transition-colors disabled:opacity-70 flex justify-center items-center gap-2 cursor-pointer shadow-md text-sm"
                   >
                     {isSubmitting ? (
-                      <div className="w-5 h-5 border-2 border-[#C5A059] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-[#D4A843] border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <>
-                        <CheckCircle2 className="w-4 h-4" />
-                        Save Password & Enter Admin Portal
+                        <CheckCircle2 className="w-4 h-4 text-[#D4A843]" />
+                        Save Password &amp; Enter Admin Portal
                       </>
                     )}
                   </button>
@@ -372,27 +385,34 @@ export default function LoginPage() {
                       setNewPassword("");
                       setConfirmPassword("");
                     }}
-                    className="w-full py-2 text-center text-xs text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                    className="w-full py-2 text-center text-xs text-[#0B3022]/60 hover:text-[#0B3022] transition-colors cursor-pointer"
                   >
-                    Cancel & Return to Standard Login
+                    Cancel &amp; Return to Standard Login
                   </button>
                 </div>
               </form>
             </div>
           ) : (
-            /* STEP 1: UNIFIED LOGIN FORM WITH AUTOMATIC SWITCHING */
+            /* STEP 1: UNIFIED LOGIN FORM */
             <>
-              <h2 className="text-3xl font-bold text-[#111827] mb-2">Welcome Back</h2>
-              <p className="text-gray-500 mb-8">Please enter your details to sign in.</p>
+              <div className="mb-7">
+                <h2 className="text-3xl sm:text-4xl font-bold text-[#0B3022] tracking-tight mb-1.5">
+                  Welcome{" "}
+                  <span className="font-editorial italic font-normal text-[#0B3022] underline decoration-[#D4A843] decoration-2 underline-offset-4">
+                    back.
+                  </span>
+                </h2>
+                <p className="text-sm text-[#0B3022]/65">Please enter your details to sign in to your circle.</p>
+              </div>
 
               <button 
                 type="button"
                 disabled={isGoogleLoading || isAppleLoading || isSubmitting}
                 onClick={handleGoogleLogin}
-                className="w-full mb-3 py-3.5 px-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer disabled:opacity-70"
+                className="w-full mb-3 py-3.5 px-4 bg-[#F3EEE3]/60 border border-[#0B3022]/15 hover:border-[#D4A843] text-[#0B3022] font-semibold text-sm rounded-full transition-colors flex justify-center items-center gap-3 cursor-pointer disabled:opacity-70"
               >
                 {isGoogleLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
+                  <Loader2 className="w-5 h-5 animate-spin text-[#0B3022]" />
                 ) : (
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -408,10 +428,10 @@ export default function LoginPage() {
                 type="button"
                 disabled={isGoogleLoading || isAppleLoading || isSubmitting}
                 onClick={handleAppleLogin}
-                className="w-full mb-6 py-3.5 px-4 bg-black hover:bg-gray-900 text-white font-medium rounded-lg transition-colors flex justify-center items-center gap-3 shadow-sm cursor-pointer disabled:opacity-70"
+                className="w-full mb-6 py-3.5 px-4 bg-[#0B3022] hover:bg-[#124532] text-[#F3EEE3] font-semibold text-sm rounded-full transition-colors flex justify-center items-center gap-3 cursor-pointer disabled:opacity-70"
               >
                 {isAppleLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-white" />
+                  <Loader2 className="w-5 h-5 animate-spin text-[#F3EEE3]" />
                 ) : (
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M17.05 20.28c-.98.95-2.05 1.8-3.08 1.8-.95 0-1.25-.57-2.66-.57-1.4 0-1.76.55-2.66.57-1.07.03-2.28-.95-3.3-1.96-2.05-2.07-3.72-5.91-3.72-9.61 0-4.04 2.6-6.15 5.25-6.15 1.33 0 2.53.86 3.37.86.81 0 2.22-1 3.73-1 1.5 0 2.82.64 3.65 1.7-3.39 2.03-2.82 6.55.6 7.82-.77 2.07-1.93 4.32-3.18 6.54zm-2.92-15.69c.56-1.12.87-2.45.67-3.71-1.12.18-2.66.96-3.47 2.02-.7.91-1.12 2.31-.91 3.63 1.25.1 2.76-.75 3.71-1.94z"/>
@@ -421,29 +441,29 @@ export default function LoginPage() {
               </button>
 
               <div className="flex items-center gap-4 mb-6">
-                <div className="h-px bg-gray-200 flex-1"></div>
-                <span className="text-sm text-gray-400 font-medium uppercase tracking-wider">Or</span>
-                <div className="h-px bg-gray-200 flex-1"></div>
+                <div className="h-px bg-[#0B3022]/10 flex-1" />
+                <span className="text-[11px] font-mono text-[#0B3022]/45 font-bold uppercase tracking-widest">Or email</span>
+                <div className="h-px bg-[#0B3022]/10 flex-1" />
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-5">
+              <form onSubmit={handleLogin} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Email Address</label>
                   <input 
                     name="email" 
                     value={formData.email} 
                     onChange={handleChange} 
                     type="email" 
                     placeholder="Enter your email" 
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-colors"
+                    className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors text-sm"
                     required
                   />
                 </div>
                 
                 <div>
                   <div className="flex justify-between items-center mb-1.5">
-                    <label className="block text-sm font-medium text-gray-700">Password</label>
-                    <Link href="/forgot-password" className="text-sm font-medium text-[#D4AF37] hover:text-[#b8952b]">Forgot Password?</Link>
+                    <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75">Password</label>
+                    <Link href="/forgot-password" className="text-xs font-bold text-[#0B3022] hover:text-[#D4A843] underline decoration-[#D4A843]">Forgot Password?</Link>
                   </div>
                   <div className="relative">
                     <input 
@@ -452,15 +472,15 @@ export default function LoginPage() {
                       onChange={handleChange} 
                       type={showPassword ? "text" : "password"} 
                       placeholder="••••••••" 
-                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-colors pr-10"
+                      className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors pr-10 text-sm"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#0B3022]/45 hover:text-[#0B3022] cursor-pointer"
                     >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
@@ -468,18 +488,21 @@ export default function LoginPage() {
                 <button 
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full mt-2 py-3.5 px-4 bg-[#1A362D] hover:bg-[#12261f] text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1A362D] disabled:opacity-70 flex justify-center items-center cursor-pointer shadow-sm"
+                  className="w-full mt-2 py-3.5 px-4 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-sm rounded-full transition-all disabled:opacity-70 flex justify-center items-center cursor-pointer shadow-[0_10px_24px_rgba(212,168,67,0.22)]"
                 >
                   {isSubmitting ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-[#0B3022] border-t-transparent rounded-full animate-spin" />
                   ) : (
                     "Log In"
                   )}
                 </button>
               </form>
 
-              <div className="mt-8 text-center text-sm text-gray-500">
-                New to Àjọṣe? <Link href="/signup" className="text-[#1A362D] font-medium hover:underline">Create an account.</Link>
+              <div className="mt-7 pt-5 border-t border-[#0B3022]/10 text-center text-sm text-[#0B3022]/65">
+                New to Àjọṣe?{" "}
+                <Link href="/signup" className="text-[#0B3022] font-bold underline decoration-[#D4A843] hover:text-[#D4A843]">
+                  Create a free account
+                </Link>
               </div>
             </>
           )}

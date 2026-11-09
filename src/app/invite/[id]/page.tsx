@@ -354,22 +354,22 @@ export default function InvitePage(props: {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-zinc-400 mt-4">Loading invitation...</p>
+      <div className="min-h-screen bg-[#0B3022] flex flex-col items-center justify-center p-4">
+        <div className="w-8 h-8 border-4 border-[#D4A843] border-t-transparent rounded-full animate-spin" />
+        <p className="text-[#F3EEE3]/70 mt-4 text-sm font-mono">Loading invitation...</p>
       </div>
     );
   }
 
   if (errorMsg) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4 text-center">
-        <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-6 mx-auto">
-          <AlertTriangle className="h-8 w-8 text-red-500" />
+      <div className="min-h-screen bg-[#0B3022] flex flex-col items-center justify-center p-4 text-center">
+        <div className="w-16 h-16 bg-[#D4A843]/15 rounded-full flex items-center justify-center mb-6 mx-auto">
+          <AlertTriangle className="h-8 w-8 text-[#D4A843]" />
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Invalid Invite</h1>
-        <p className="text-zinc-400 mb-8 max-w-md mx-auto">{errorMsg}</p>
-        <Link href="/" className="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-lg text-white font-medium hover:bg-zinc-800 transition-colors">
+        <h1 className="text-2xl font-bold text-[#F3EEE3] mb-2">Invalid Invite</h1>
+        <p className="text-[#F3EEE3]/70 mb-8 max-w-md mx-auto">{errorMsg}</p>
+        <Link href="/" className="px-6 py-3 bg-[#D4A843] rounded-full text-[#0B3022] font-bold hover:bg-[#dfba59] transition-colors">
           Return Home
         </Link>
       </div>
@@ -380,7 +380,6 @@ export default function InvitePage(props: {
   const minScoreRequired = group?.min_credit_score || 0;
   const isScoreTooLow = effectiveCreditScore < minScoreRequired;
 
-  // Dynamically compute duration and frequency labels matching the ajo type (daily, weekly, monthly)
   const rawFreq = (group?.frequency || urlFreq || "monthly").toLowerCase();
   const totalRounds = group?.max_members || 6;
 
@@ -431,42 +430,53 @@ export default function InvitePage(props: {
   const cycleDurationSummary = getCycleDurationSummary(totalRounds, rawFreq);
 
   return (
-    <div className="min-h-screen flex bg-[#FAFAFA] font-sans">
+    <div className="min-h-screen flex bg-[#F3EEE3] text-[#0B3022] font-sans">
       
-      {/* Left Pane - Branding & Visuals */}
-      <div className="hidden lg:flex w-[45%] relative bg-[#0B402B] items-center justify-center overflow-hidden">
-        <Image src="/custom-signup-bg.jpg" alt="Invite Background" fill className="object-cover opacity-70 mix-blend-overlay" priority />
-        <div className="absolute inset-0 bg-[#0B402B]/40"></div>
+      {/* Left Pane - Editorial Branding & Visuals */}
+      <div className="hidden lg:flex w-[45%] relative bg-[#0B3022] items-center justify-center overflow-hidden border-r border-[#F3EEE3]/10">
+        <div
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #F3EEE3 1px, transparent 1px), linear-gradient(to bottom, #F3EEE3 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        <Image src="/custom-signup-bg.jpg" alt="Invite Background" fill className="object-cover opacity-35 mix-blend-luminosity" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B3022] via-[#0B3022]/80 to-[#0B3022]/65" />
 
-        <div className="relative z-10 p-12 text-center flex flex-col items-center max-w-lg">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#C5A059]/20 border border-[#C5A059]/40 mb-6 backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-[#C5A059] animate-pulse" />
-            <span className="text-xs font-semibold text-[#C5A059]">Turn by turn, no wahala.</span>
+        <div className="relative z-10 p-12 text-left flex flex-col max-w-lg">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 mb-6 w-max">
+            <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
+            <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[#F3EEE3]">Turn by turn, no wahala</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-4">
-            You've been invited<br/>to save together.
+          <h1 className="text-4xl md:text-5xl font-bold text-[#F3EEE3] leading-[1.08] tracking-[-0.03em] mb-4">
+            You&apos;ve been invited to{" "}
+            <span className="font-editorial italic font-normal text-[#D4A843]">
+              save together.
+            </span>
           </h1>
 
-          <p className="text-gray-200 text-base leading-relaxed mb-8">
-            Join <strong>{group?.name || urlGroupName || "Ajose Circle"}</strong> — Nigeria's trusted digital platform for rotational contributions.
+          <p className="text-[#F3EEE3]/75 text-base leading-relaxed mb-8">
+            Join <strong className="text-[#F3EEE3]">{group?.name || urlGroupName || "Ajose Circle"}</strong> — Nigeria&apos;s trusted digital platform for rotational contributions.
           </p>
 
-          <div className="w-full bg-[#072B1D]/80 border border-[#C5A059]/30 rounded-2xl p-6 backdrop-blur-md text-left space-y-3.5 shadow-xl">
-            <div className="flex items-center gap-3 text-sm text-gray-200">
-              <div className="w-8 h-8 rounded-full bg-[#C5A059]/20 flex items-center justify-center text-[#C5A059] shrink-0">
+          <div className="w-full bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/10 rounded-2xl p-6 backdrop-blur-md text-left space-y-3.5">
+            <div className="flex items-center gap-3 text-sm text-[#F3EEE3]/90">
+              <div className="w-8 h-8 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <span>Institutional-grade tracking &amp; accountability</span>
             </div>
-            <div className="flex items-center gap-3 text-sm text-gray-200">
-              <div className="w-8 h-8 rounded-full bg-[#C5A059]/20 flex items-center justify-center text-[#C5A059] shrink-0">
+            <div className="flex items-center gap-3 text-sm text-[#F3EEE3]/90">
+              <div className="w-8 h-8 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
                 <Sparkles className="w-4 h-4" />
               </div>
               <span>Fair turn-by-turn payout rotation</span>
             </div>
-            <div className="flex items-center gap-3 text-sm text-gray-200">
-              <div className="w-8 h-8 rounded-full bg-[#C5A059]/20 flex items-center justify-center text-[#C5A059] shrink-0">
+            <div className="flex items-center gap-3 text-sm text-[#F3EEE3]/90">
+              <div className="w-8 h-8 rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843] shrink-0">
                 <Lock className="w-4 h-4" />
               </div>
               <span>Verified open-banking identity via Mono</span>
@@ -480,8 +490,8 @@ export default function InvitePage(props: {
         
         {/* Header & Logo */}
         <div className="flex items-center justify-between mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#0B402B] transition-colors font-medium text-sm">
-            <ArrowLeft className="w-4 h-4" />
+          <Link href="/" className="inline-flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white px-4 py-2 rounded-full border border-[#0B3022]/15">
+            <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home
           </Link>
 
@@ -493,65 +503,67 @@ export default function InvitePage(props: {
               height={40} 
               className="object-contain w-auto h-10 drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
             />
-            <span className="text-[#0B402B] font-bold text-2xl font-serif tracking-tight">Àjọ<span className="text-[#D4AF37]">ṣe</span></span>
+            <span className="text-[#0B3022] font-bold text-2xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4A843]">ṣe</span>
+            </span>
           </Link>
         </div>
 
         <div className="w-full max-w-xl mx-auto">
           
-          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-gray-100 relative overflow-hidden">
+          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_12px_32px_rgba(11,48,34,0.05)] border border-[#0B3022]/10 relative overflow-hidden">
             
             {/* Header Badge */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0B402B]/10 text-[#0B402B] font-bold text-xs uppercase tracking-wider mb-3">
-                <Users className="w-4 h-4 text-[#D4AF37]" />
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F3EEE3] border border-[#0B3022]/15 text-[#0B3022] font-mono font-bold text-[11px] uppercase tracking-wider mb-3">
+                <Users className="w-3.5 h-3.5 text-[#D4A843]" />
                 Group Invitation
               </div>
-              <h2 className="text-3xl font-extrabold text-gray-900 mb-2 leading-tight">
+              <h2 className="text-3xl font-bold text-[#0B3022] mb-2 leading-tight tracking-tight">
                 {group?.name || urlGroupName || "Rotational Contribution Circle"}
               </h2>
-              <p className="text-gray-500 text-sm">
-                You have been invited to join this contribution circle on Ajose.
+              <p className="text-[#0B3022]/65 text-sm">
+                You have been invited to join this contribution circle on Àjọṣe.
               </p>
             </div>
 
             {/* Group Financial Details Grid */}
-            <div className="bg-[#F8F6F0] rounded-2xl p-5 mb-8 space-y-3.5 border border-gray-200/80">
+            <div className="bg-[#F3EEE3]/70 rounded-2xl p-5 mb-8 space-y-3.5 border border-[#0B3022]/10">
               <div className="flex items-center justify-between py-1">
-                <div className="flex items-center gap-2.5 text-gray-600 text-sm">
-                  <Wallet className="h-4 w-4 text-[#0B402B]" />
+                <div className="flex items-center gap-2.5 text-[#0B3022]/70 text-sm">
+                  <Wallet className="h-4 w-4 text-[#0B3022]" />
                   <span className="font-medium">Contribution Amount</span>
                 </div>
-                <span className="font-extrabold text-lg text-[#0B402B]">₦{group?.contribution_amount?.toLocaleString() || '50,000'}</span>
+                <span className="font-mono font-bold text-lg text-[#0B3022]">₦{group?.contribution_amount?.toLocaleString() || '50,000'}</span>
               </div>
-              <div className="flex items-center justify-between py-1 border-t border-gray-200/60 pt-3">
-                <div className="flex items-center gap-2.5 text-gray-600 text-sm">
-                  <CalendarDays className="h-4 w-4 text-[#0B402B]" />
+              <div className="flex items-center justify-between py-1 border-t border-[#0B3022]/10 pt-3">
+                <div className="flex items-center gap-2.5 text-[#0B3022]/70 text-sm">
+                  <CalendarDays className="h-4 w-4 text-[#0B3022]" />
                   <span className="font-medium">Contribution Frequency</span>
                 </div>
-                <span className="font-bold text-gray-900 capitalize">{frequencyLabel}</span>
+                <span className="font-bold text-[#0B3022] capitalize">{frequencyLabel}</span>
               </div>
-              <div className="flex items-center justify-between py-1 border-t border-gray-200/60 pt-3">
-                <div className="flex items-center gap-2.5 text-gray-600 text-sm">
-                  <Users className="h-4 w-4 text-[#0B402B]" />
+              <div className="flex items-center justify-between py-1 border-t border-[#0B3022]/10 pt-3">
+                <div className="flex items-center gap-2.5 text-[#0B3022]/70 text-sm">
+                  <Users className="h-4 w-4 text-[#0B3022]" />
                   <span className="font-medium">Cycle Duration</span>
                 </div>
-                <span className="font-bold text-gray-900">{cycleDurationSummary}</span>
+                <span className="font-bold text-[#0B3022]">{cycleDurationSummary}</span>
               </div>
-              <div className="flex items-center justify-between py-1 border-t border-gray-200/60 pt-3">
-                <div className="flex items-center gap-2.5 text-gray-600 text-sm">
-                  <ShieldAlert className="h-4 w-4 text-[#0B402B]" />
+              <div className="flex items-center justify-between py-1 border-t border-[#0B3022]/10 pt-3">
+                <div className="flex items-center gap-2.5 text-[#0B3022]/70 text-sm">
+                  <ShieldAlert className="h-4 w-4 text-[#0B3022]" />
                   <span className="font-medium">Min. Score Required</span>
                 </div>
-                <span className="font-bold text-emerald-700">{minScoreRequired} Points</span>
+                <span className="font-mono font-bold text-[#0B3022]">{minScoreRequired} Points</span>
               </div>
             </div>
 
             {/* Action Buttons */}
             {alreadyMember ? (
               <div className="space-y-4 text-center">
-                <div className="inline-flex items-center gap-2 text-emerald-700 font-bold bg-emerald-50 px-4 py-2 rounded-full border border-emerald-200 text-sm">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                <div className="inline-flex items-center gap-2 text-[#0B3022] font-bold bg-[#D4A843]/20 px-4 py-2 rounded-full border border-[#D4A843]/40 text-xs">
+                  <CheckCircle2 className="h-4 w-4 text-[#0B3022]" />
                   You are already an active member of this group
                 </div>
                 <button 
@@ -560,11 +572,11 @@ export default function InvitePage(props: {
                     setIsNavigatingDashboard(true);
                     router.push(`/dashboard/groups/${groupId}`);
                   }}
-                  className="w-full bg-[#0B402B] hover:bg-[#072B1D] disabled:opacity-75 text-white font-bold py-4 px-6 rounded-xl transition-colors shadow-md text-center text-base flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full bg-[#0B3022] hover:bg-[#124532] disabled:opacity-75 text-[#F3EEE3] font-bold py-4 px-6 rounded-full transition-colors shadow-md text-center text-sm flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isNavigatingDashboard ? (
                     <>
-                      <Loader2 className="h-5 w-5 animate-spin text-[#C5A059]" />
+                      <Loader2 className="h-4 w-4 animate-spin text-[#D4A843]" />
                       <span>Opening Dashboard...</span>
                     </>
                   ) : (
@@ -591,47 +603,47 @@ export default function InvitePage(props: {
                   </div>
                 ) : (
                   <>
-                    <div className="bg-[#0B402B]/5 border border-[#0B402B]/15 rounded-2xl p-4 flex items-center justify-between">
+                    <div className="bg-[#F3EEE3] border border-[#0B3022]/10 rounded-2xl p-4 flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#0B402B] flex items-center justify-center text-[#D4AF37] shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-[#0B3022] flex items-center justify-center text-[#D4A843] shrink-0">
                           <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-[#0B402B]">Open-Banking Mandate Ready</p>
-                          <p className="text-[11px] text-gray-500">Automated direct debit rotational sweep via Mono</p>
+                          <p className="text-xs font-bold text-[#0B3022]">Open-Banking Mandate Ready</p>
+                          <p className="text-[11px] text-[#0B3022]/60">Automated direct debit rotational sweep via Mono</p>
                         </div>
                       </div>
-                      <span className="text-[11px] font-extrabold text-[#0B402B] bg-[#D4AF37]/20 px-2.5 py-1 rounded-full border border-[#D4AF37]/30">
+                      <span className="text-[10px] font-mono font-bold text-[#0B3022] bg-[#D4A843] px-2.5 py-1 rounded-full">
                         READY
                       </span>
                     </div>
 
                     <button 
                       onClick={handleStartJoinModal}
-                      className="w-full py-4 px-6 bg-[#D4AF37] hover:bg-[#c39f2f] text-[#0B402B] font-bold text-lg rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-4 px-6 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold text-sm rounded-full shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       Accept Invite &amp; Join Group
-                      <ArrowRight className="h-5 w-5" />
+                      <ArrowRight className="h-4 w-4" />
                     </button>
                   </>
                 )}
 
-                <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between text-xs text-[#0B3022]/60 pt-2 border-t border-[#0B3022]/10">
                   <span className="flex items-center gap-1.5 font-medium">
-                    <Lock className="h-3.5 w-3.5 text-[#0B402B]" />
+                    <Lock className="h-3.5 w-3.5 text-[#0B3022]" />
                     Standing Direct Debit Mandate
                   </span>
                   <button 
                     type="button"
                     onClick={() => setShowTermsModal(true)}
-                    className="text-[#0B402B] font-bold hover:underline"
+                    className="text-[#0B3022] font-bold underline decoration-[#D4A843] cursor-pointer"
                   >
                     Review terms &rarr;
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 <button 
                   disabled={isNavigatingSignup || isNavigatingLogin}
                   onClick={() => {
@@ -640,17 +652,17 @@ export default function InvitePage(props: {
                     const inviteRedirectPath = `/invite/${groupId}${currentQuery}`;
                     router.push(`/signup?next=${encodeURIComponent(inviteRedirectPath)}`);
                   }}
-                  className="w-full py-4 px-6 bg-[#D4AF37] hover:bg-[#c39f2f] disabled:opacity-75 text-[#0B402B] font-bold text-lg rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-4 px-6 bg-[#D4A843] hover:bg-[#dfba59] disabled:opacity-75 text-[#0B3022] font-bold text-sm rounded-full shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isNavigatingSignup ? (
                     <>
-                      <Loader2 className="h-5 w-5 animate-spin text-[#0B402B]" />
+                      <Loader2 className="h-4 w-4 animate-spin text-[#0B3022]" />
                       <span>Redirecting to Sign Up...</span>
                     </>
                   ) : (
                     <>
                       <span>Accept Invite &amp; Sign Up</span>
-                      <ArrowRight className="h-5 w-5" />
+                      <ArrowRight className="h-4 w-4" />
                     </>
                   )}
                 </button>
@@ -662,19 +674,19 @@ export default function InvitePage(props: {
                     const inviteRedirectPath = `/invite/${groupId}${currentQuery}`;
                     router.push(`/login?next=${encodeURIComponent(inviteRedirectPath)}`);
                   }}
-                  className="w-full py-3.5 px-6 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-75 text-gray-700 font-bold rounded-xl transition-colors cursor-pointer text-base flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 bg-[#F3EEE3] border border-[#0B3022]/15 hover:border-[#D4A843] disabled:opacity-75 text-[#0B3022] font-bold rounded-full transition-colors cursor-pointer text-sm flex items-center justify-center gap-2"
                 >
                   {isNavigatingLogin ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin text-gray-600" />
+                      <Loader2 className="h-4 w-4 animate-spin text-[#0B3022]" />
                       <span>Redirecting to Log In...</span>
                     </>
                   ) : (
                     <span>Log In to Join</span>
                   )}
                 </button>
-                <p className="text-xs text-gray-500 text-center mt-4 leading-relaxed">
-                  🔒 Note: Group membership includes statement verification powered by Mono Open-Banking.
+                <p className="text-xs text-[#0B3022]/60 text-center mt-4 leading-relaxed">
+                  🔒 Group membership includes statement verification powered by Mono Open-Banking.
                 </p>
               </div>
             )}
@@ -685,54 +697,53 @@ export default function InvitePage(props: {
 
       {/* COMPREHENSIVE UNDERWRITING & MANDATE JOIN MODAL */}
       {showUnderwritingModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-[#0B3022] border border-[#F3EEE3]/15 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
             
             {/* Modal Header */}
-            <div className="p-6 border-b border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
+            <div className="p-6 border-b border-[#F3EEE3]/10 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold uppercase text-emerald-400 tracking-wider">Step {modalStep} of 2</span>
-                  <span className="text-zinc-600">•</span>
-                  <span className="text-xs text-zinc-400">
+                  <span className="text-[11px] font-mono font-bold uppercase text-[#D4A843] tracking-wider">Step {modalStep} of 2</span>
+                  <span className="text-[#F3EEE3]/30">•</span>
+                  <span className="text-xs text-[#F3EEE3]/70">
                     {modalStep === 1 ? "Circle Anonymity & Privacy" : `${cycleDurationLabel} Standing Mandate`}
                   </span>
                 </div>
-                <h2 className="text-xl font-bold text-white mt-1">
+                <h2 className="text-xl font-bold text-[#F3EEE3] mt-1">
                   {modalStep === 1 && "Privacy & Anonymity Preferences"}
                   {modalStep === 2 && `${cycleDurationLabel} Standing Direct Debit Mandate`}
                 </h2>
               </div>
               <button 
                 onClick={() => setShowUnderwritingModal(false)}
-                className="text-zinc-500 hover:text-white transition-colors p-2 rounded-lg hover:bg-zinc-900 cursor-pointer"
+                className="text-[#F3EEE3]/60 hover:text-[#F3EEE3] transition-colors p-2 rounded-lg hover:bg-[#F3EEE3]/10 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Modal Content Body */}
-            <div className="p-6 overflow-y-auto space-y-6 text-sm text-zinc-300">
+            <div className="p-6 overflow-y-auto space-y-6 text-sm text-[#F3EEE3]/85">
 
               {/* STEP 1: ANONYMITY & CIRCLE PRIVACY */}
               {modalStep === 1 && (
                 <div className="space-y-6">
-                  {/* Phase 1 Notice */}
-                  <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-2xl p-4 text-xs text-emerald-300/90 leading-relaxed flex items-start gap-2.5">
-                    <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="bg-[#D4A843]/15 border border-[#D4A843]/35 rounded-2xl p-4 text-xs text-[#F3EEE3]/90 leading-relaxed flex items-start gap-2.5">
+                    <ShieldCheck className="h-4 w-4 text-[#D4A843] shrink-0 mt-0.5" />
                     <div>
-                      <strong className="text-white">Streamlined Membership Activation:</strong> Your BVN identity is verified. In-depth 6-month bank statement cashflow underwriting is deferred to Phase 2 (reserved for emergency loans and advance liquidity).
+                      <strong className="text-[#F3EEE3]">Streamlined Membership Activation:</strong> Your BVN identity is verified. In-depth 6-month bank statement cashflow underwriting is deferred to Phase 2 (reserved for emergency loans and advance liquidity).
                     </div>
                   </div>
 
-                  <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-5 space-y-4">
+                  <div className="bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/10 rounded-2xl p-5 space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2 font-bold text-white text-base">
-                          <EyeOff className="h-5 w-5 text-emerald-400" />
+                        <div className="flex items-center gap-2 font-bold text-[#F3EEE3] text-base">
+                          <EyeOff className="h-5 w-5 text-[#D4A843]" />
                           Join Group Anonymously
                         </div>
-                        <p className="text-xs text-zinc-400 leading-relaxed">
+                        <p className="text-xs text-[#F3EEE3]/65 leading-relaxed">
                           Protect your financial privacy. When enabled, other circle members will only see your custom alias in the turn ledger and contribution history.
                         </p>
                       </div>
@@ -740,34 +751,34 @@ export default function InvitePage(props: {
                       <button
                         type="button"
                         onClick={() => setIsAnonymous(!isAnonymous)}
-                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${isAnonymous ? 'bg-emerald-500' : 'bg-zinc-800'}`}
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${isAnonymous ? 'bg-[#D4A843]' : 'bg-[#F3EEE3]/20'}`}
                       >
-                        <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`} />
+                        <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[#0B3022] shadow ring-0 transition duration-200 ease-in-out ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`} />
                       </button>
                     </div>
 
                     {isAnonymous && (
-                      <div className="pt-4 border-t border-zinc-800 space-y-3 animate-in fade-in duration-200">
-                        <label className="block text-xs font-bold text-white">Your Public Circle Alias</label>
+                      <div className="pt-4 border-t border-[#F3EEE3]/10 space-y-3 animate-in fade-in duration-200">
+                        <label className="block text-xs font-bold text-[#F3EEE3]">Your Public Circle Alias</label>
                         <div className="relative">
                           <input 
                             type="text"
                             value={customAlias}
                             onChange={(e) => setCustomAlias(e.target.value)}
                             placeholder="e.g. Saver #4 or GoldenSaver"
-                            className="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-medium"
+                            className="w-full bg-[#0B3022] border border-[#F3EEE3]/20 rounded-xl px-4 py-2.5 text-sm text-[#F3EEE3] focus:outline-none focus:border-[#D4A843] font-medium"
                           />
                         </div>
-                        <p className="text-[11px] text-zinc-500">
-                          Other members will see: <strong className="text-emerald-400">{customAlias || "Anonymous Member"}</strong>
+                        <p className="text-[11px] text-[#F3EEE3]/60">
+                          Other members will see: <strong className="text-[#D4A843]">{customAlias || "Anonymous Member"}</strong>
                         </p>
                       </div>
                     )}
                   </div>
 
-                  <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 text-xs text-zinc-400 space-y-2">
-                    <p className="font-bold text-white flex items-center gap-1.5">
-                      <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                  <div className="bg-[#F3EEE3]/[0.04] border border-[#F3EEE3]/10 rounded-2xl p-4 text-xs text-[#F3EEE3]/70 space-y-2">
+                    <p className="font-bold text-[#F3EEE3] flex items-center gap-1.5">
+                      <ShieldCheck className="h-4 w-4 text-[#D4A843]" />
                       Compliance Notice on Anonymity:
                     </p>
                     <p>
@@ -780,34 +791,34 @@ export default function InvitePage(props: {
               {/* STEP 2: STANDING DIRECT DEBIT MANDATE */}
               {modalStep === 2 && (
                 <div className="space-y-5">
-                  <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-5 space-y-3">
-                    <div className="flex items-center gap-2 font-bold text-white text-base">
-                      <Lock className="h-5 w-5 text-emerald-400" />
+                  <div className="bg-[#D4A843]/15 border border-[#D4A843]/35 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center gap-2 font-bold text-[#F3EEE3] text-base">
+                      <Lock className="h-5 w-5 text-[#D4A843]" />
                       Standing Direct Debit Mandate Agreement
                     </div>
-                    <p className="text-xs text-zinc-300 leading-relaxed">
+                    <p className="text-xs text-[#F3EEE3]/80 leading-relaxed">
                       To protect this rotational contribution circle and ensure every member receives their payout on time, all members authorize an automated standing direct debit mandate.
                     </p>
                   </div>
 
                   {/* Mandate Terms List */}
-                  <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 space-y-3 text-xs leading-relaxed text-zinc-300">
+                  <div className="bg-[#F3EEE3]/[0.05] border border-[#F3EEE3]/10 rounded-2xl p-4 space-y-3 text-xs leading-relaxed text-[#F3EEE3]/85">
                     <div className="flex items-start gap-2">
-                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">1</div>
+                      <div className="w-5 h-5 rounded-full bg-[#D4A843] text-[#0B3022] flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">1</div>
                       <p>
                         <strong>{cycleDurationLabel} Standing Direct Debit Mandate:</strong> You authorize continuous automated direct debits of <strong>₦{group?.contribution_amount?.toLocaleString()}</strong> on each scheduled {frequencyLabel} cycle turn.
                       </p>
                     </div>
 
                     <div className="flex items-start gap-2">
-                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">2</div>
+                      <div className="w-5 h-5 rounded-full bg-[#D4A843] text-[#0B3022] flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">2</div>
                       <p>
                         <strong>Admin Management &amp; Know Your Admin:</strong> This circle is managed entirely by the Ajo Admin. You confirm that you know and trust the Admin. Àjọṣe provides management software only and is not responsible for unpaid contributions.
                       </p>
                     </div>
 
                     <div className="flex items-start gap-2">
-                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">3</div>
+                      <div className="w-5 h-5 rounded-full bg-[#D4A843] text-[#0B3022] flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">3</div>
                       <p>
                         <strong>Credit Reputation &amp; Bureau Preservation:</strong> Consistent on-time contributions positively build your rotational contribution track record and uphold your credit bureau standing.
                       </p>
@@ -821,10 +832,10 @@ export default function InvitePage(props: {
                         type="checkbox"
                         checked={mandateAgreed}
                         onChange={(e) => setMandateAgreed(e.target.checked)}
-                        className="mt-1 h-4 w-4 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-900 cursor-pointer"
+                        className="mt-1 h-4 w-4 rounded border-[#F3EEE3]/30 accent-[#D4A843] cursor-pointer"
                       />
-                      <span className="text-xs text-zinc-300 leading-normal">
-                        I confirm that I know and trust the Ajo Admin, accept the <button type="button" onClick={() => setShowTermsModal(true)} className="text-emerald-400 underline font-semibold hover:text-emerald-300">Terms of Service</button>, and authorize the <strong>{cycleDurationLabel.toLowerCase()} standing direct debit mandate</strong> for my scheduled contributions in {group?.name}.
+                      <span className="text-xs text-[#F3EEE3]/85 leading-normal">
+                        I confirm that I know and trust the Ajo Admin, accept the <button type="button" onClick={() => setShowTermsModal(true)} className="text-[#D4A843] underline font-semibold">Terms of Service</button>, and authorize the <strong>{cycleDurationLabel.toLowerCase()} standing direct debit mandate</strong> for my scheduled contributions in {group?.name}.
                       </span>
                     </label>
                   </div>
@@ -834,12 +845,12 @@ export default function InvitePage(props: {
             </div>
 
             {/* Modal Footer Controls */}
-            <div className="p-6 border-t border-zinc-800 bg-zinc-900/50 flex items-center justify-between gap-4">
+            <div className="p-6 border-t border-[#F3EEE3]/10 flex items-center justify-between gap-4">
               {modalStep > 1 ? (
                 <button
                   type="button"
                   onClick={() => setModalStep(1)}
-                  className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2.5 bg-[#F3EEE3]/10 hover:bg-[#F3EEE3]/20 text-[#F3EEE3] font-bold rounded-full text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Back
@@ -848,7 +859,7 @@ export default function InvitePage(props: {
                 <button
                   type="button"
                   onClick={() => setShowUnderwritingModal(false)}
-                  className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white font-medium rounded-xl text-xs transition-colors cursor-pointer"
+                  className="px-4 py-2.5 bg-[#F3EEE3]/10 hover:bg-[#F3EEE3]/20 text-[#F3EEE3]/70 hover:text-[#F3EEE3] font-medium rounded-full text-xs transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -858,7 +869,7 @@ export default function InvitePage(props: {
                 <button
                   type="button"
                   onClick={() => setModalStep(2)}
-                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer ml-auto"
+                  className="px-6 py-2.5 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold rounded-full text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer ml-auto"
                 >
                   Next: Mandate &amp; Consent
                   <ArrowRight className="h-4 w-4" />
@@ -870,11 +881,11 @@ export default function InvitePage(props: {
                   type="button"
                   disabled={!mandateAgreed || isJoining}
                   onClick={handleJoin}
-                  className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-zinc-950 font-bold rounded-xl text-xs transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-2 cursor-pointer ml-auto"
+                  className="px-6 py-2.5 bg-[#D4A843] hover:bg-[#dfba59] disabled:opacity-50 text-[#0B3022] font-bold rounded-full text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer ml-auto"
                 >
                   {isJoining ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-zinc-950" />
+                      <Loader2 className="w-4 h-4 animate-spin text-[#0B3022]" />
                       <span>Activating Mandate &amp; Joining...</span>
                     </>
                   ) : (
@@ -894,29 +905,29 @@ export default function InvitePage(props: {
       {/* Terms Review Modal */}
       {showTermsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
+          <div className="bg-[#0B3022] border border-[#F3EEE3]/15 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
             
-            <div className="flex items-center justify-between p-6 border-b border-zinc-800 bg-zinc-900/50">
+            <div className="flex items-center justify-between p-6 border-b border-[#F3EEE3]/10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-emerald-400" />
+                <div className="w-10 h-10 rounded-xl bg-[#D4A843]/15 border border-[#D4A843]/35 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-[#D4A843]" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Terms of Service & Mandate</h2>
-                  <p className="text-xs text-zinc-400">Rotational Contribution Agreement</p>
+                  <h2 className="text-lg font-bold text-[#F3EEE3]">Terms of Service &amp; Mandate</h2>
+                  <p className="text-xs text-[#F3EEE3]/60">Rotational Contribution Agreement</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowTermsModal(false)}
-                className="text-zinc-500 hover:text-white transition-colors p-2 rounded-lg hover:bg-zinc-900"
+                className="text-[#F3EEE3]/60 hover:text-[#F3EEE3] transition-colors p-2 rounded-lg hover:bg-[#F3EEE3]/10"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-5 text-xs text-zinc-300 leading-relaxed divide-y divide-zinc-900">
+            <div className="p-6 overflow-y-auto space-y-5 text-xs text-[#F3EEE3]/80 leading-relaxed divide-y divide-[#F3EEE3]/10">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                <div className="flex items-center gap-2 text-[#D4A843] font-bold text-sm">
                   <Users className="h-4 w-4" />
                   1. Ajo Admin Responsibility &amp; Platform Role
                 </div>
@@ -926,7 +937,7 @@ export default function InvitePage(props: {
               </div>
 
               <div className="space-y-2 pt-4">
-                <div className="flex items-center gap-2 text-[#C5A059] font-bold text-sm">
+                <div className="flex items-center gap-2 text-[#D4A843] font-bold text-sm">
                   <ShieldAlert className="h-4 w-4" />
                   2. Member Due Diligence: Know Your Admin
                 </div>
@@ -936,7 +947,7 @@ export default function InvitePage(props: {
               </div>
 
               <div className="space-y-2 pt-4">
-                <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
+                <div className="flex items-center gap-2 text-[#D4A843] font-bold text-sm">
                   <AlertTriangle className="h-4 w-4" />
                   3. Non-Liability for Late or Unpaid Contributions
                 </div>
@@ -946,8 +957,8 @@ export default function InvitePage(props: {
               </div>
 
               <div className="space-y-2 pt-4">
-                <div className="flex items-center gap-2 text-white font-bold text-sm">
-                  <Wallet className="h-4 w-4 text-emerald-400" />
+                <div className="flex items-center gap-2 text-[#D4A843] font-bold text-sm">
+                  <Wallet className="h-4 w-4" />
                   4. Continuous Direct Debit Mandate
                 </div>
                 <p>
@@ -956,17 +967,17 @@ export default function InvitePage(props: {
               </div>
             </div>
 
-            <div className="p-4 border-t border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
+            <div className="p-4 border-t border-[#F3EEE3]/10 flex items-center justify-between">
               <Link 
                 href="/terms" 
                 target="_blank"
-                className="text-xs text-zinc-400 hover:text-emerald-400 inline-flex items-center gap-1 transition-colors"
+                className="text-xs text-[#F3EEE3]/70 hover:text-[#D4A843] inline-flex items-center gap-1 transition-colors"
               >
                 Open Full Legal Terms <ExternalLink className="h-3 w-3" />
               </Link>
               <button 
                 onClick={() => setShowTermsModal(false)}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-lg text-xs transition-colors cursor-pointer"
+                className="px-4 py-2 bg-[#D4A843] hover:bg-[#dfba59] text-[#0B3022] font-bold rounded-full text-xs transition-colors cursor-pointer"
               >
                 Close
               </button>
