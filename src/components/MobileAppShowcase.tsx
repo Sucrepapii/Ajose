@@ -95,23 +95,48 @@ export function MobileAppShowcase() {
               ))}
             </motion.div>
 
-            {/* Coming Soon Pill Card */}
+            {/* App Store Download & Launch Actions */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="pt-1"
+              className="pt-2 flex flex-wrap items-center gap-4"
             >
-              <div className="inline-flex items-center gap-4 px-5 py-3.5 rounded-full bg-[#F3EEE3] text-[#111613] shadow-lg">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]">
-                  <span className="w-2 h-2 rounded-full bg-[#0B3022] animate-pulse" />
-                  <span>iOS &amp; Android</span>
+              {/* Google Play Store Live Button */}
+              <a
+                href="https://play.google.com/store/apps/details?id=ng.ajose.app&pcampaignid=web_share"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3.5 px-6 py-3.5 rounded-2xl bg-white hover:bg-[#F3EEE3] text-[#0B3022] shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition-all hover:scale-[1.02] active:scale-95 group"
+                aria-label="Get Àjọṣe on Google Play Store"
+              >
+                <svg className="w-7 h-7 text-[#0B3022] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3.609 1.814L13.793 12 3.61 22.186a1.986 1.986 0 0 1-.22-.914V2.728c0-.334.08-.65.22-.914zm11.233 11.234l2.124 2.124-11.83 6.702 9.706-8.826zm2.846-1.776l3.356 1.903a1.493 1.493 0 0 1 0 2.585l-3.356 1.903-2.383-2.383 2.383-2.408zm-2.846-1.777L5.137 2.13l11.83 6.702-2.124 2.124z" />
+                </svg>
+                <div className="text-left leading-tight">
+                  <span className="block text-[10px] font-mono uppercase font-bold tracking-wider text-[#0B3022]/70">
+                    GET IT ON
+                  </span>
+                  <span className="block text-base font-bold text-[#0B3022] tracking-tight">
+                    Google Play
+                  </span>
                 </div>
-                <span className="h-4 w-px bg-[#111613]/15" />
-                <span className="text-xs font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#D4A843] text-[#0B3022]">
-                  Coming Soon
-                </span>
+              </a>
+
+              {/* iOS App Store Badge (Coming Soon) */}
+              <div className="inline-flex items-center gap-3.5 px-5 py-3 rounded-2xl bg-white/[0.06] border border-white/15 text-[#F3EEE3]/80 backdrop-blur-sm">
+                <svg className="w-6 h-6 text-[#F3EEE3]/80 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.98.6-2.61 1.34-.56.64-.99 1.71-.86 2.73 1.01.08 2.02-.51 2.55-1.22z"/>
+                </svg>
+                <div className="text-left leading-tight">
+                  <span className="block text-[10px] font-mono uppercase font-bold tracking-wider text-[#D4A843]">
+                    APPLE APP STORE
+                  </span>
+                  <span className="block text-sm font-semibold text-[#F3EEE3]">
+                    Coming Soon
+                  </span>
+                </div>
               </div>
             </motion.div>
           </div>

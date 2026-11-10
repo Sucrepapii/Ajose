@@ -64,7 +64,7 @@ const FAQS: FAQItem[] = [
   { 
     category: "Mobile Access",
     q: "Is there a native mobile app available?", 
-    a: "Native iOS and Android mobile apps are currently coming soon (TestFlight and Google Play Beta rollouts are underway). In the meantime, Àjọṣe is fully mobile-optimized as an ultra-fast web app accessible from any smartphone browser, and you can easily add it to your home screen." 
+    a: "Yes! Our official native Android app is now live on the Google Play Store (search 'Àjọṣe' or download directly from our site). The iOS app is currently in TestFlight and coming soon to the Apple App Store. Àjọṣe is also fully mobile-optimized as an ultra-fast web app accessible from any smartphone browser." 
   },
   { 
     category: "Data Privacy",

@@ -87,10 +87,15 @@ export function MarketingFooter() {
             <ul className="space-y-4">
               <li><Link href="/#features" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">Features</Link></li>
               <li>
-                <Link href="/#mobile-app" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors flex items-center gap-1.5">
-                  <span>Mobile App</span>
-                  <span className="text-[10px] bg-[#D4A843]/15 text-[#D4A843] border border-[#D4A843]/30 px-1.5 py-0.5 rounded-full font-bold">Soon</span>
-                </Link>
+                <a 
+                  href="https://play.google.com/store/apps/details?id=ng.ajose.app&pcampaignid=web_share"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#F3EEE3]/75 hover:text-[#D4A843] transition-colors flex items-center gap-1.5"
+                >
+                  <span>Android App</span>
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 rounded-full font-bold uppercase">Live</span>
+                </a>
               </li>
               <li><Link href="/#how-it-works" className="text-[#F3EEE3]/65 hover:text-[#D4A843] transition-colors">How it Works</Link></li>
               <li>
