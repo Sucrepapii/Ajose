@@ -2,7 +2,6 @@ import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { redirect } from "next/navigation";
 import { MonoConnectWidget } from "@/components/MonoConnectWidget";
-import { CompleteProfileForm } from "@/components/CompleteProfileForm";
 
 export default async function VerifyPage() {
   const supabase = await createClient();
@@ -33,7 +32,7 @@ export default async function VerifyPage() {
   } else {
     const { data: profile, error } = await supabase
       .from('users')
-      .select('phone, bvn, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
+      .select('phone, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -124,19 +123,11 @@ export default async function VerifyPage() {
         </p>
       </div>
 
-      {(!currentProfile?.bvn_verified || !currentProfile?.phone) ? (
-        <CompleteProfileForm 
-          userId={currentUserId || ""} 
-          initialPhone={currentProfile?.phone || ""}
-          initialBvn={currentProfile?.bvn || ""}
-        />
-      ) : (
-        <MonoConnectWidget 
-          userId={currentUserId || "demo-user"} 
-          isVerified={isVerified}
-          profile={currentProfile}
-        />
-      )}
+      <MonoConnectWidget 
+        userId={currentUserId || "demo-user"} 
+        isVerified={isVerified}
+        profile={currentProfile}
+      />
     </div>
   );
 }
