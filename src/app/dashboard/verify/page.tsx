@@ -33,7 +33,7 @@ export default async function VerifyPage() {
   } else {
     const { data: profile, error } = await supabase
       .from('users')
-      .select('phone, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
+      .select('phone, bvn, bvn_verified, nin_verified, bank_name, account_number, account_name, first_name, last_name, auto_sweep_enabled')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -83,8 +83,19 @@ export default async function VerifyPage() {
       } catch (_) {}
     }
 
+    const resolvedName = (
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() ||
+      profile?.account_name ||
+      user.email?.split("@")[0] ||
+      "Ajose Member"
+    );
+
     currentProfile = {
       ...profile,
+      email: user.email || "",
+      name: resolvedName,
       has_pin: Boolean(user.user_metadata?.has_pin || user.user_metadata?.pin_hash),
       mono_mandate_id: mandateId,
       mono_mandate_status: mandateStatus,

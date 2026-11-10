@@ -18,10 +18,24 @@ export function VerifyIdentityClient({
   const router = useRouter();
   const supabase = createClient();
   const [verified, setVerified] = useState(initialIsVerified);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     setVerified(initialIsVerified);
   }, [initialIsVerified]);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        if (user.email) setUserEmail(user.email);
+        const name = user.user_metadata?.full_name || 
+                     user.user_metadata?.name || 
+                     `${user.user_metadata?.first_name || ""} ${user.user_metadata?.last_name || ""}`.trim();
+        if (name) setUserName(name);
+      }
+    }).catch(() => {});
+  }, [supabase]);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMonoConnecting, setIsMonoConnecting] = useState(false);
@@ -52,9 +66,35 @@ export function VerifyIdentityClient({
         observer.observe(document.body, { childList: true, subtree: true });
       }
 
+      const customerName = (
+        userName ||
+        userEmail?.split("@")[0] ||
+        "Ajose Member"
+      ).trim();
+
+      const customerEmail = (
+        userEmail ||
+        "member@ajose.ng"
+      ).trim();
+
+      const customerPayload: any = {
+        name: customerName,
+        email: customerEmail,
+      };
+
+      if (bvn && bvn.length === 11) {
+        customerPayload.identity = {
+          type: "bvn",
+          number: bvn,
+        };
+      }
+
       const monoInstance = new Connect({
         key: monoPublicKey,
         scope: "auth",
+        data: {
+          customer: customerPayload
+        },
         onSuccess: async ({ code }: { code: string }) => {
           (window as any)._isMonoActive = false;
           setIsMonoConnecting(true);

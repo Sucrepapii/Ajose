@@ -51,6 +51,20 @@ export function MonoConnectWidget({
   
   const [profile, setProfile] = useState(initialProfile);
   const [isVerified, setIsVerified] = useState(initialIsVerified);
+  const [userEmail, setUserEmail] = useState<string>((initialProfile as any)?.email || "");
+  const [userName, setUserName] = useState<string>((initialProfile as any)?.name || "");
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        if (user.email) setUserEmail(user.email);
+        const name = user.user_metadata?.full_name || 
+                     user.user_metadata?.name || 
+                     `${user.user_metadata?.first_name || ""} ${user.user_metadata?.last_name || ""}`.trim();
+        if (name) setUserName(name);
+      }
+    }).catch(() => {});
+  }, [supabase]);
 
   const [mandateStatus, setMandateStatus] = useState<string>(
     initialProfile?.mono_mandate_status || "not_initiated"
@@ -288,14 +302,40 @@ export function MonoConnectWidget({
         observer.observe(document.body, { childList: true, subtree: true });
       }
 
+      const customerName = (
+        userName ||
+        (profile as any)?.name ||
+        profile?.account_name ||
+        `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() ||
+        userEmail?.split("@")[0] ||
+        (profile as any)?.email?.split("@")[0] ||
+        "Ajose Member"
+      ).trim();
+
+      const customerEmail = (
+        (profile as any)?.email ||
+        userEmail ||
+        "member@ajose.ng"
+      ).trim();
+
+      const customerPayload: any = {
+        name: customerName,
+        email: customerEmail,
+      };
+
+      const bvnNum = (profile as any)?.bvn;
+      if (bvnNum && String(bvnNum).length === 11) {
+        customerPayload.identity = {
+          type: "bvn",
+          number: String(bvnNum),
+        };
+      }
+
       const monoInstance = new Connect({
         key: monoPublicKey,
         scope: "auth",
         data: {
-          customer: {
-            name: profile?.account_name || `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() || undefined,
-            email: (profile as any)?.email || undefined
-          }
+          customer: customerPayload
         },
         onSuccess: async ({ code }: { code: string }) => {
           (window as any)._isMonoActive = false;
