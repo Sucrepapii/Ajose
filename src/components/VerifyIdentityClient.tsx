@@ -37,6 +37,7 @@ export function VerifyIdentityClient({
       try {
         const monoInstance = new (window as any).Connect({
           key: monoPublicKey,
+          scope: "auth",
           onSuccess: async ({ code }: { code: string }) => {
             (window as any)._isMonoActive = false;
             setIsMonoConnecting(true);
@@ -88,7 +89,7 @@ export function VerifyIdentityClient({
       } else {
         toast.loading("Loading secure banking partner...", { id: "mono-loading" });
         const script = document.createElement("script");
-        script.src = "https://connect.mono.co/v2/connect.js";
+        script.src = "https://connect.withmono.com/connect.js";
         script.onload = () => {
           toast.dismiss("mono-loading");
           initMono();
