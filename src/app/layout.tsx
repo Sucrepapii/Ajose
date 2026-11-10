@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   title: {
-    default: "Ajose (Àjọṣe) — Turn by Turn, No Wahala | Automated Ajo & Savings",
+    default: "Ajose: Automated Ajo & Esusu | Turn by Turn, No Wahala",
     template: "%s | Ajose",
   },
-  description: "Ajose (Àjọṣe) is Nigeria's premier automated rotational savings (Ajo, Esusu, Adashe) platform. Turn by Turn, No Wahala. Automated bank debits collect contributions on schedule with transparent tracking.",
+  description: "Stop chasing members for Ajo contributions. Automated bank debits, real-time turn tracking, and instant payouts for your group savings. Free to start.",
   keywords: [
     "Ajose",
     "Ajose Nigeria",
@@ -52,6 +52,8 @@ export const metadata: Metadata = {
     "Esusu",
     "Adashe",
     "Osusu",
+    "how to run ajo online",
+    "ajo app nigeria",
     "Rotational Contribution",
     "Rotational Savings",
     "Nigeria Fintech",
@@ -66,8 +68,8 @@ export const metadata: Metadata = {
     title: "Ajose",
   },
   openGraph: {
-    title: "Ajose (Àjọṣe) — Turn by Turn, No Wahala | Automated Ajo & Savings",
-    description: "Ajose (Àjọṣe) is Nigeria's automated digital Ajo and rotational savings platform. Turn by Turn, No Wahala. Automated bank debits collect contributions on schedule with transparent tracking.",
+    title: "Ajose: Run Your Ajo & Esusu Online — Turn by Turn, No Wahala",
+    description: "Automated bank debits, transparent turn tracking, and instant payouts. Zero WhatsApp chasing, zero notebook wahala. Free to start.",
     url: "https://ajose.ng",
     siteName: "Ajose",
     locale: "en_NG",
@@ -85,8 +87,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ajose (Àjọṣe) — Turn by Turn, No Wahala",
-    description: "Nigeria's automated digital Ajo and rotational savings platform. Turn by Turn, No Wahala.",
+    title: "Ajose: Automated Ajo & Esusu — Turn by Turn, No Wahala",
+    description: "Stop chasing members for Ajo contributions. Automated bank debits, real-time turn tracking, and instant payouts. Free to start.",
     images: ["/og-image.png"],
   },
   robots: {

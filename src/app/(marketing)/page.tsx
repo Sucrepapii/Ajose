@@ -26,6 +26,7 @@ import {
 import { CountryFlag } from "@/components/CountryFlag";
 import { InteractiveRevenueCalculator } from "@/components/InteractiveRevenueCalculator";
 import { MobileAppShowcase } from "@/components/MobileAppShowcase";
+import { FAQSection } from "@/components/FAQSection";
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -120,14 +121,14 @@ export default function Home() {
                   href="/signup"
                   className="inline-flex h-14 items-center justify-center rounded-full bg-[#D4A843] px-8 text-base font-bold text-[#0B3022] shadow-[0_8px_30px_rgba(212,168,67,0.3)] hover:bg-[#e0b654] hover:scale-[1.02] active:scale-95 transition-all gap-2.5"
                 >
-                  <span>Start an Ajo Circle</span>
+                  <span>Start an Ajo Circle — It&rsquo;s Free</span>
                   <ArrowRight className="w-4 h-4 text-[#0B3022]" />
                 </Link>
                 <Link
                   href="/login"
                   className="inline-flex h-14 items-center justify-center rounded-full border border-[#F3EEE3]/20 bg-white/[0.04] hover:bg-white/[0.09] px-7 text-sm font-semibold text-[#F3EEE3] transition-all gap-2 backdrop-blur-sm"
                 >
-                  <span>Have an invite code? Join circle &rarr;</span>
+                  <span>Have an invite code? Join Circle &rarr;</span>
                 </Link>
               </motion.div>
 
@@ -613,7 +614,7 @@ export default function Home() {
                             </div>
 
                             <div className="pt-4 border-t border-[#111613]/10 flex items-center justify-between text-xs font-mono text-[#111613]/60">
-                              <span>Turn by turn, no wahala.</span>
+                              <span>Verified turn roster. Zero guesswork.</span>
                               <span className="font-bold text-[#0B3022]">
                                 Automated Direct Debit
                               </span>
@@ -1206,7 +1207,7 @@ export default function Home() {
 
                 <div className="mt-8 pt-5 border-t border-[#111613]/10 flex items-center justify-between">
                   <span className="text-xs font-mono text-[#111613]/55">
-                    Turn by turn, no wahala.
+                    Open Banking tokenization. NDPA compliant.
                   </span>
                   <Link
                     href="/pricing"
@@ -1438,6 +1439,9 @@ export default function Home() {
 
       {/* Mobile App Showcase Section */}
       <MobileAppShowcase />
+
+      {/* Frequently Asked Questions */}
+      <FAQSection />
 
       {/* Section 8: Final CTA Banner — Deep Forest (#0B3022) + Burnished Gold Pill */}
       <section className="w-full py-24 md:py-28 bg-[#0B3022] relative z-10 overflow-hidden">
