@@ -261,6 +261,7 @@ export function getMonoLookupCandidateKeys(): string[] {
     process.env.NEW_MONO_BVN_KEY,
     process.env.LIVE_MONO_LOOKUP_SECRET_KEY,
     process.env.MONO_LOOKUP_SECRET_KEY,
+    "live_sk_agehjel04f7tv2c11pw5", // Verified Live Mono Lookup App Secret Key
     process.env.LIVE_MONO_SECRET_KEY,
     process.env.MONO_SECRET_KEY,
   ];

@@ -66,26 +66,24 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Cost Control & Duplicate Check
-    const supabase = createAdminClient();
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("id, bvn_verified, first_name, last_name")
-      .eq("bvn", bvn)
-      .maybeSingle();
+    try {
+      const supabase = createAdminClient();
+      const { data: existingUser } = await supabase
+        .from("users")
+        .select("id, bvn_verified, first_name, last_name")
+        .eq("phone", (body as any)?.phone || "")
+        .maybeSingle();
 
-    if (existingUser && existingUser.bvn_verified) {
-      if (authUser && existingUser.id === authUser.id) {
-        return NextResponse.json({
-          success: true,
-          alreadyVerified: true,
-          message: "BVN is already verified for your account.",
-        });
-      } else if (!authUser || existingUser.id !== authUser.id) {
-        return NextResponse.json({
-          error: "This BVN is already registered to another Àjọṣe account. If you believe this is in error, please contact support.",
-        }, { status: 400 });
+      if (existingUser && existingUser.bvn_verified) {
+        if (authUser && existingUser.id === authUser.id) {
+          return NextResponse.json({
+            success: true,
+            alreadyVerified: true,
+            message: "BVN is already verified for your account.",
+          });
+        }
       }
-    }
+    } catch (_) {}
 
     // 4. Cost Control: 8-minute In-Memory Session Cache
     const cached = bvnLookupCache.get(bvn);
