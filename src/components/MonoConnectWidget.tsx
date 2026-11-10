@@ -282,7 +282,9 @@ export function MonoConnectWidget({
   }, [userId, isVerified, supabase, router]);
 
   const launchMono = () => {
-    const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_t1zbb1s1lakxunvxd82e";
+    const rawKey = (process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "").trim();
+    const monoPublicKey = rawKey.startsWith("live_pk_") ? rawKey : "live_pk_t1zbb1s1lakxunvxd82e";
+    console.log("[Mono Connect] Initializing with live public key:", monoPublicKey.slice(0, 12) + "...");
 
     try {
       // Automatically ensure any injected Mono iframe has camera & media permissions
