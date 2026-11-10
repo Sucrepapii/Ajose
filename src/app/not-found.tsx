@@ -1,10 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Compass, Home, LayoutDashboard, HelpCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Compass,
+  Home,
+  LayoutDashboard,
+  HelpCircle,
+} from "lucide-react";
 
 export const metadata = {
   title: "404 - Page Not Found | Àjọṣe",
-  description: "The page or circle you are looking for does not exist or has been moved.",
+  description:
+    "The page or circle you are looking for does not exist or has been moved.",
 };
 
 export default function NotFound() {
@@ -27,7 +34,10 @@ export default function NotFound() {
 
       {/* Top Header */}
       <header className="relative z-10 max-w-7xl mx-auto w-full flex items-center justify-between">
-        <Link href="/" className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity"
+        >
           <Image
             src="/ajose-brand-pot.png"
             alt="Àjọṣe Logo"
@@ -66,7 +76,8 @@ export default function NotFound() {
         </h1>
 
         <p className="text-[#F3EEE3]/75 text-base sm:text-lg leading-relaxed max-w-lg mx-auto mb-10">
-          The circle, member link, or page you were looking for doesn&apos;t exist, has been moved, or the invite has expired.
+          The circle, member link, or page you were looking for doesn&apos;t
+          exist, has been moved, or the invite has expired.
         </p>
 
         {/* Action Buttons */}
@@ -100,9 +111,11 @@ export default function NotFound() {
       </main>
 
       {/* Bottom Footer Strip */}
-      <footer className="relative z-10 max-w-7xl mx-auto w-full pt-6 border-t border-[#F3EEE3]/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#F3EEE3]/50">
-        <span>&copy; {new Date().getFullYear()} Àjọṣe Technologies Ltd &bull; Nigeria&apos;s Trusted Ajo Platform</span>
-        <span>256-Bit Bank-Grade Security &bull; NDPR Compliant</span>
+      <footer className="relative z-10 max-w-7xl mx-auto w-full pt-6 border-t border-[#F3EEE3]/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#F3EEE3]/60">
+        <span>
+          &copy; {new Date().getFullYear()} Àjọṣe Technologies &bull; Nigeria&apos;s Trusted Ajo Platform
+        </span>
+        <span>NDPR Compliant &bull; Automated Rotational Engine</span>
       </footer>
     </div>
   );

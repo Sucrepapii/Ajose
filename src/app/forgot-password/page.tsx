@@ -6,7 +6,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Mail, KeyRound, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  KeyRound,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+} from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -32,16 +39,21 @@ export default function ForgotPasswordPage() {
 
     try {
       const redirectUrl = `${window.location.origin}/reset-password`;
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: redirectUrl,
-      });
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        email.trim(),
+        {
+          redirectTo: redirectUrl,
+        },
+      );
 
       if (error) throw error;
 
       setStep(2);
       toast.success("Password recovery email sent!");
     } catch (err: any) {
-      toast.error(err.message || "Failed to send reset code. Please check your email.");
+      toast.error(
+        err.message || "Failed to send reset code. Please check your email.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -77,7 +89,7 @@ export default function ForgotPasswordPage() {
       const { error: otpError } = await supabase.auth.verifyOtp({
         email: email.trim(),
         token: cleanOtp,
-        type: 'recovery',
+        type: "recovery",
       });
 
       if (otpError) throw otpError;
@@ -93,9 +105,11 @@ export default function ForgotPasswordPage() {
       setTimeout(() => {
         router.push("/login");
       }, 3000);
-
     } catch (err: any) {
-      toast.error(err.message || "Failed to reset password. Please check your 6-digit code.");
+      toast.error(
+        err.message ||
+          "Failed to reset password. Please check your 6-digit code.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -105,23 +119,26 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex bg-[#F3EEE3] text-[#0B3022] font-sans">
       {/* Left Pane - Editorial Branding */}
       <div className="hidden lg:flex w-[45%] relative bg-[#0B3022] flex-col justify-between p-12 xl:p-16 overflow-hidden border-r border-[#F3EEE3]/10">
-        <Image 
-          src="/custom-login-bg.jpg" 
-          alt="Àjọṣe Account Recovery" 
-          fill 
-          className="object-cover opacity-35 mix-blend-luminosity" 
-          priority 
+        <Image
+          src="/custom-login-bg.jpg"
+          alt="Àjọṣe Account Recovery"
+          fill
+          className="object-cover opacity-35 mix-blend-luminosity"
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B3022] via-[#0B3022]/80 to-[#0B3022]/65" />
 
         {/* Top: Brand Logo */}
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity">
-            <Image 
-              src="/ajose-brand-pot.png" 
-              alt="Àjọṣe Logo" 
-              width={52} 
-              height={52} 
+          <Link
+            href="/"
+            className="inline-flex items-center gap-3.5 group hover:opacity-90 transition-opacity"
+          >
+            <Image
+              src="/ajose-brand-pot.png"
+              alt="Àjọṣe Logo"
+              width={52}
+              height={52}
               className="object-contain w-auto h-13 drop-shadow-md group-hover:scale-105 transition-transform duration-300"
             />
             <span className="text-[#F3EEE3] font-bold text-3xl font-serif tracking-tight">
@@ -143,7 +160,8 @@ export default function ForgotPasswordPage() {
             </span>
           </h1>
           <p className="text-[#F3EEE3]/70 mt-4 text-base leading-relaxed">
-            Verify your email with a 6-digit OTP code to update your password securely.
+            Verify your email with a 6-digit OTP code to update your password
+            securely.
           </p>
         </div>
 
@@ -162,7 +180,6 @@ export default function ForgotPasswordPage() {
 
       {/* Right Pane - Form */}
       <div className="w-full lg:w-[55%] flex flex-col justify-between pt-8 sm:pt-10 pb-12 px-6 sm:px-12 md:px-16 xl:px-20 overflow-y-auto min-h-screen relative overflow-hidden">
-        
         {/* Subtle Brand Watermark */}
         <div className="absolute -right-24 -bottom-24 w-[480px] h-[480px] lg:w-[560px] lg:h-[560px] pointer-events-none opacity-[0.045] select-none">
           <Image
@@ -176,30 +193,29 @@ export default function ForgotPasswordPage() {
 
         {/* Top Navigation & Header */}
         <div className="flex items-center justify-between w-full mb-8 relative z-10 pt-1">
-          <Link href="/login" className="flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs">
+          <Link
+            href="/login"
+            className="flex items-center gap-2 text-[#0B3022]/70 hover:text-[#0B3022] transition-colors font-semibold text-xs bg-white hover:bg-white/90 px-4 py-2 rounded-full border border-[#0B3022]/15 shadow-xs"
+          >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Login
           </Link>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-[#0B3022]/10 text-[11px] font-mono text-[#0B3022]/70 tracking-wider">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#0B3022]" />
-              <span>Encrypted Session</span>
-            </div>
-
-            <Link href="/" className="inline-flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
-              <Image 
-                src="/ajose-brand-pot.png" 
-                alt="Àjọṣe Logo" 
-                width={36} 
-                height={36} 
-                className="object-contain w-auto h-9 drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
-              />
-              <span className="text-[#0B3022] font-bold text-2xl font-serif tracking-tight">
-                Àjọ<span className="text-[#D4A843]">ṣe</span>
-              </span>
-            </Link>
-          </div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
+          >
+            <Image
+              src="/ajose-brand-pot.png"
+              alt="Àjọṣe Logo"
+              width={36}
+              height={36}
+              className="object-contain w-auto h-9 drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+            />
+            <span className="text-[#0B3022] font-bold text-2xl font-serif tracking-tight">
+              Àjọ<span className="text-[#D4A843]">ṣe</span>
+            </span>
+          </Link>
         </div>
 
         <div className="w-full max-w-[490px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 my-auto relative z-10 bg-white p-8 sm:p-10 rounded-3xl border border-[#0B3022]/10 shadow-[0_16px_40px_rgba(11,48,34,0.06)]">
@@ -212,21 +228,26 @@ export default function ForgotPasswordPage() {
                 </div>
                 <h2 className="text-3xl font-bold text-[#0B3022] tracking-tight mb-2">
                   Forgot{" "}
-                  <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">password?</span>
+                  <span className="font-editorial italic font-normal underline decoration-[#D4A843] decoration-2 underline-offset-4">
+                    password?
+                  </span>
                 </h2>
                 <p className="text-[#0B3022]/65 text-sm">
-                  Enter your registered email address to receive a 6-digit OTP verification code.
+                  Enter your registered email address to receive a 6-digit OTP
+                  verification code.
                 </p>
               </div>
 
               <form onSubmit={handleSendOtp} className="space-y-6">
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Email Address</label>
-                  <input 
-                    type="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    placeholder="name@example.com" 
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@example.com"
                     className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors text-sm"
                     required
                   />
@@ -250,7 +271,10 @@ export default function ForgotPasswordPage() {
 
               <p className="mt-8 text-center text-sm text-[#0B3022]/65">
                 Remember your password?{" "}
-                <Link href="/login" className="font-bold text-[#0B3022] underline decoration-[#D4A843]">
+                <Link
+                  href="/login"
+                  className="font-bold text-[#0B3022] underline decoration-[#D4A843]"
+                >
                   Sign in
                 </Link>
               </p>
@@ -265,34 +289,45 @@ export default function ForgotPasswordPage() {
               </div>
               <h2 className="text-3xl font-bold text-[#0B3022] tracking-tight mb-2">
                 Enter OTP &amp;{" "}
-                <span className="font-editorial italic font-normal">reset.</span>
+                <span className="font-editorial italic font-normal">
+                  reset.
+                </span>
               </h2>
               <p className="text-[#0B3022]/65 mb-6 text-sm">
-                We sent a verification code to <strong className="text-[#0B3022]">{email}</strong>. Enter the code and your new password below.
+                We sent a verification code to{" "}
+                <strong className="text-[#0B3022]">{email}</strong>. Enter the
+                code and your new password below.
               </p>
 
-              <form onSubmit={handleVerifyOtpAndResetPassword} className="space-y-5">
+              <form
+                onSubmit={handleVerifyOtpAndResetPassword}
+                className="space-y-5"
+              >
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Verification Code (OTP)</label>
-                  <input 
-                    type="text" 
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">
+                    Verification Code (OTP)
+                  </label>
+                  <input
+                    type="text"
                     maxLength={10}
-                    value={otp} 
-                    onChange={(e) => setOtp(e.target.value)} 
-                    placeholder="e.g. 471930" 
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="e.g. 471930"
                     className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/35 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors font-mono tracking-widest text-center text-xl font-bold"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">New Password</label>
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">
+                    New Password
+                  </label>
                   <div className="relative">
-                    <input 
-                      type={showPassword ? "text" : "password"} 
-                      value={password} 
-                      onChange={(e) => setPassword(e.target.value)} 
-                      placeholder="••••••••" 
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
                       className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors pr-10 text-sm"
                       required
                       minLength={8}
@@ -302,29 +337,41 @@ export default function ForgotPasswordPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#0B3022]/45 hover:text-[#0B3022]"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">Confirm New Password</label>
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022]/75 mb-1.5">
+                    Confirm New Password
+                  </label>
                   <div className="relative">
-                    <input 
-                      type={showConfirmPassword ? "text" : "password"} 
-                      value={confirmPassword} 
-                      onChange={(e) => setConfirmPassword(e.target.value)} 
-                      placeholder="••••••••" 
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
                       className="w-full px-4 py-3 bg-[#F3EEE3]/60 border border-[#0B3022]/15 rounded-xl text-[#0B3022] placeholder-[#0B3022]/40 focus:outline-none focus:ring-2 focus:ring-[#D4A843] transition-colors pr-10 text-sm"
                       required
                       minLength={8}
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#0B3022]/45 hover:text-[#0B3022]"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -374,10 +421,13 @@ export default function ForgotPasswordPage() {
               </div>
               <h2 className="text-3xl font-bold text-[#0B3022] tracking-tight">
                 Password reset{" "}
-                <span className="font-editorial italic font-normal">complete.</span>
+                <span className="font-editorial italic font-normal">
+                  complete.
+                </span>
               </h2>
               <p className="text-[#0B3022]/70 text-sm leading-relaxed">
-                Your OTP code was verified and your password has been successfully updated. Redirecting you to sign in...
+                Your OTP code was verified and your password has been
+                successfully updated. Redirecting you to sign in...
               </p>
               <div className="pt-2">
                 <Link
@@ -392,8 +442,10 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Footer Note */}
-        <div className="relative z-10 mt-8 text-center text-xs font-mono text-[#0B3022]/50 tracking-wide">
-          <span>© 2026 Àjọṣe Technologies Ltd · NDPR Compliant · Encrypted Recovery</span>
+        <div className="relative z-10 mt-8 text-center text-xs font-mono text-[#0B3022]/60 tracking-wide">
+          <span>
+            &copy; {new Date().getFullYear()} Àjọṣe Technologies &bull; NDPR Compliant &bull; Automated Ajo Platform
+          </span>
         </div>
       </div>
     </div>

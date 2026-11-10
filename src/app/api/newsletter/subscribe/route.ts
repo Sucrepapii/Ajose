@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
                 </div>
               </div>
               <div style="background: #FAF8F5; padding: 18px 24px; text-align: center; border-top: 1px solid #E5E7EB; font-size: 12px; color: #9CA3AF;">
-                <p style="margin: 0 0 6px 0;">© ${new Date().getFullYear()} Àjọṣe Technologies Ltd. All rights reserved.</p>
+                <p style="margin: 0 0 6px 0;">© ${new Date().getFullYear()} Àjọṣe Technologies. All rights reserved.</p>
                 <p style="margin: 0;">You received this because you subscribed at <a href="https://ajose.ng" style="color: #0B3022; text-decoration: underline;">ajose.ng</a>. You can unsubscribe at any time.</p>
               </div>
             </div>

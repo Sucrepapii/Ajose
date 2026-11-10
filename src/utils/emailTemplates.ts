@@ -36,7 +36,7 @@ const getEmailHeader = (title: string) => `
 const getEmailFooter = () => `
     </div>
     <div class="footer">
-      <p style="margin: 0 0 4px 0; font-weight: 600; color: #52525b;">&copy; ${new Date().getFullYear()} Àjọṣe Technologies Ltd. The Guaranteed Ajo Platform.</p>
+      <p style="margin: 0 0 4px 0; font-weight: 600; color: #52525b;">&copy; ${new Date().getFullYear()} Àjọṣe Technologies. The Guaranteed Ajo Platform.</p>
       <p style="margin: 0 0 12px 0; color: #a1a1aa;">Institutional-grade rotational contribution management. Turn by turn, no wahala.</p>
       <div style="padding-top: 8px; border-top: 1px solid #e4e4e7;">
         <a href="https://www.instagram.com/ajoseapp?utm_source=qr" target="_blank" style="color: #0B402B; text-decoration: none; font-weight: 600; margin: 0 8px; font-size: 11px;">Instagram</a>
