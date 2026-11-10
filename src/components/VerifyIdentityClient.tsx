@@ -89,7 +89,7 @@ export function VerifyIdentityClient({
       } else {
         toast.loading("Loading secure banking partner...", { id: "mono-loading" });
         const script = document.createElement("script");
-        script.src = "https://connect.withmono.com/connect.js";
+        script.src = "https://connect.mono.co/connect.js";
         script.onload = () => {
           toast.dismiss("mono-loading");
           initMono();
