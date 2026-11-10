@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Script from "next/script";
+import Connect from "@mono.co/connect.js";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -269,105 +270,86 @@ export function MonoConnectWidget({
   const launchMono = () => {
     const monoPublicKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "live_pk_t1zbb1s1lakxunvxd82e";
 
-    const initMono = () => {
-      try {
-        // Automatically ensure any injected Mono iframe has camera & media permissions
-        if (typeof document !== "undefined") {
-          const observer = new MutationObserver(() => {
-            const iframes = document.querySelectorAll('iframe[src*="mono.co"], iframe[src*="withmono.com"]');
-            iframes.forEach((iframe) => {
-              const currentAllow = iframe.getAttribute("allow") || "";
-              if (!currentAllow.includes("camera")) {
-                iframe.setAttribute(
-                  "allow",
-                  "camera *; microphone *; autoplay *; clipboard-read; clipboard-write; fullscreen"
-                );
-              }
-            });
+    try {
+      // Automatically ensure any injected Mono iframe has camera & media permissions
+      if (typeof document !== "undefined") {
+        const observer = new MutationObserver(() => {
+          const iframes = document.querySelectorAll('iframe[src*="mono.co"], iframe[src*="withmono.com"]');
+          iframes.forEach((iframe) => {
+            const currentAllow = iframe.getAttribute("allow") || "";
+            if (!currentAllow.includes("camera")) {
+              iframe.setAttribute(
+                "allow",
+                "camera *; microphone *; autoplay *; clipboard-read; clipboard-write; fullscreen"
+              );
+            }
           });
-          observer.observe(document.body, { childList: true, subtree: true });
-        }
-        const monoInstance = new (window as any).Connect({
-          key: monoPublicKey,
-          scope: "auth",
-          data: {
-            customer: {
-              name: profile?.account_name || `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() || undefined,
-              email: (profile as any)?.email || undefined
-            }
-          },
-          onSuccess: async ({ code }: { code: string }) => {
-            (window as any)._isMonoActive = false;
-            toast.loading("Updating verified settlement account...", { id: "mono-linking" });
-            try {
-              const res = await fetch("/api/mono/exchange-token", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code })
-              });
-              const data = await res.json();
-              if (res.ok) {
-                setProfile(prev => ({
-                  ...prev,
-                  bank_name: data.bankName,
-                  account_number: data.accountNumber,
-                  account_name: data.accountName,
-                  bvn_verified: true,
-                  mono_mandate_id: undefined,
-                  mono_mandate_status: "not_initiated",
-                  mono_mandate_url: undefined
-                }));
-                setMandateId("");
-                setMandateStatus("not_initiated");
-                setMandateUrl("");
-                setIsVerified(true);
-                toast.success(`Connected ${data.bankName || "Bank"} (${data.accountNumber})! Please authorize your new direct debit mandate.`, { id: "mono-linking", duration: 6000 });
-                router.refresh();
-              } else {
-                throw new Error(data.error || "Failed to link account");
-              }
-            } catch (err: any) {
-              toast.error(err.message || "Failed to link bank account.", { id: "mono-linking" });
-            }
-          },
-          onClose: () => {
-            (window as any)._isMonoActive = false;
-            console.log("Mono widget closed");
-          },
-          onEvent: (eventName: string, data: any) => {
-            console.log("[Mono Event]", eventName, data);
-            if (eventName === "OPENED") (window as any)._isMonoActive = true;
-            if (eventName === "EXIT") (window as any)._isMonoActive = false;
-            
-            if (eventName === "ERROR" || eventName === "INSTITUTION_FAILED") {
-              toast.error("Bank connection error. Check console for details.");
-            }
-          }
         });
-        monoInstance.setup();
-        monoInstance.open();
-      } catch (err) {
-        console.warn("Mono Connect initiation fallback:", err);
+        observer.observe(document.body, { childList: true, subtree: true });
       }
-    };
 
-    if (typeof window !== "undefined") {
-      if ((window as any).Connect) {
-        initMono();
-      } else {
-        toast.loading("Loading secure banking partner...", { id: "mono-loading" });
-        const script = document.createElement("script");
-        script.src = "https://connect.mono.co/connect.js";
-        script.onload = () => {
-          toast.dismiss("mono-loading");
-          initMono();
-        };
-        script.onerror = () => {
-          toast.dismiss("mono-loading");
-          toast.error("Failed to load banking module. Please check your internet connection.");
-        };
-        document.body.appendChild(script);
-      }
+      const monoInstance = new Connect({
+        key: monoPublicKey,
+        scope: "auth",
+        data: {
+          customer: {
+            name: profile?.account_name || `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() || undefined,
+            email: (profile as any)?.email || undefined
+          }
+        },
+        onSuccess: async ({ code }: { code: string }) => {
+          (window as any)._isMonoActive = false;
+          toast.loading("Updating verified settlement account...", { id: "mono-linking" });
+          try {
+            const res = await fetch("/api/mono/exchange-token", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ code })
+            });
+            const data = await res.json();
+            if (res.ok) {
+              setProfile(prev => ({
+                ...prev,
+                bank_name: data.bankName,
+                account_number: data.accountNumber,
+                account_name: data.accountName,
+                bvn_verified: true,
+                mono_mandate_id: undefined,
+                mono_mandate_status: "not_initiated",
+                mono_mandate_url: undefined
+              }));
+              setMandateId("");
+              setMandateStatus("not_initiated");
+              setMandateUrl("");
+              setIsVerified(true);
+              toast.success(`Connected ${data.bankName || "Bank"} (${data.accountNumber})! Please authorize your new direct debit mandate.`, { id: "mono-linking", duration: 6000 });
+              router.refresh();
+            } else {
+              throw new Error(data.error || "Failed to link account");
+            }
+          } catch (err: any) {
+            toast.error(err.message || "Failed to link bank account.", { id: "mono-linking" });
+          }
+        },
+        onClose: () => {
+          (window as any)._isMonoActive = false;
+          console.log("Mono widget closed");
+        },
+        onEvent: (eventName: string, data: any) => {
+          console.log("[Mono Event]", eventName, data);
+          if (eventName === "OPENED") (window as any)._isMonoActive = true;
+          if (eventName === "EXIT") (window as any)._isMonoActive = false;
+          
+          if (eventName === "ERROR" || eventName === "INSTITUTION_FAILED") {
+            toast.error("Bank connection error. Check console for details.");
+          }
+        }
+      });
+      monoInstance.setup();
+      monoInstance.open();
+    } catch (err) {
+      console.warn("Mono Connect initiation error:", err);
+      toast.error("Failed to initialize banking partner. Please try again.");
     }
   };
 
