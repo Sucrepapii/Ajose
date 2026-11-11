@@ -35,8 +35,15 @@ export default async function DashboardOverview() {
     redirect("/dashboard/verify");
   }
 
-  const dbScore = profile?.credit_score;
-  const creditScore = (dbScore === null || dbScore === undefined || dbScore === 0) ? 85 : dbScore;
+  const creditScore = profile?.credit_score ?? (profile?.bvn_verified ? 30 : 0);
+
+  const getTrustTier = (score: number) => {
+    if (score >= 80) return { label: 'Excellent', status: 'Eligible for all Pro circles' };
+    if (score >= 60) return { label: 'Good Standing', status: 'Direct debit mandate active' };
+    if (score >= 30) return { label: 'Identity Verified', status: 'Authorize mandate to reach 60' };
+    return { label: 'Unverified', status: 'Link bank & BVN to start' };
+  };
+  const trustTier = getTrustTier(creditScore);
 
   // Fetch the user's active memberships with the related group data
   const { data: memberships } = await supabase
@@ -192,13 +199,13 @@ export default async function DashboardOverview() {
             <span className="text-4xl font-bold font-mono text-[#0B3022]">{creditScore}</span>
             <span className="text-[#0B3022]/45 font-mono text-sm mb-1">/ 100</span>
             <span className="text-xs font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#D4A843]/20 text-[#0B3022] font-bold mb-1.5 ml-1">
-              {creditScore >= 80 ? 'Excellent' : creditScore >= 60 ? 'Good' : 'Fair'}
+              {trustTier.label}
             </span>
           </div>
           <div className="mt-4 pt-4 border-t border-[#0B3022]/10 relative z-10">
             <p className="text-xs text-[#0B3022]/70 flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="h-4 w-4 text-[#D4A843]" />
-              Eligible for all Pro circles
+              {trustTier.status}
             </p>
           </div>
         </div>

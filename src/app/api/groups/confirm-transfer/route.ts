@@ -84,7 +84,7 @@ export async function POST(req: Request) {
         if (profile) {
           await supabaseAdmin
             .from("users")
-            .update({ credit_score: (profile.credit_score ?? 50) + 10 })
+            .update({ credit_score: Math.min(100, (profile.credit_score ?? 60) + 10) })
             .eq("id", memberUserId);
         }
 

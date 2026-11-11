@@ -484,6 +484,25 @@ async function handleSweep(req: NextRequest) {
                 cycle_turn: currentTurn
               });
 
+              // Boost member's Trust Score for successful automated debit (+5 points, max 100)
+              try {
+                const { data: memberUser } = await supabase
+                  .from("users")
+                  .select("credit_score")
+                  .eq("id", member.user_id)
+                  .maybeSingle();
+
+                const currentScore = memberUser?.credit_score ?? 60;
+                const newScore = Math.min(100, currentScore + 5);
+
+                await supabase
+                  .from("users")
+                  .update({ credit_score: newScore })
+                  .eq("id", member.user_id);
+              } catch (scoreErr) {
+                console.warn(`Could not boost trust score for ${member.user_id}:`, scoreErr);
+              }
+
               // Send in-app notification
               await supabase.from("notifications").insert({
                 user_id: member.user_id,

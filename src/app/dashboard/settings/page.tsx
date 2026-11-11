@@ -154,8 +154,8 @@ export default async function SettingsPage() {
             
             {(() => {
               const rawScore = currentProfile?.credit_score;
-              const creditScore = (rawScore === null || rawScore === undefined || rawScore === 0) ? 85 : rawScore;
-              const rating = creditScore >= 80 ? 'Excellent' : creditScore >= 60 ? 'Good' : 'Fair';
+              const creditScore = rawScore ?? (currentProfile?.bvn_verified ? 30 : 0);
+              const rating = creditScore >= 80 ? 'Excellent' : creditScore >= 60 ? 'Good Standing' : creditScore >= 30 ? 'Identity Verified' : 'Unverified';
 
               return (
                 <>

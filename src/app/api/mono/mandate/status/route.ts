@@ -65,6 +65,25 @@ export async function GET(req: NextRequest) {
           mono_mandate_approved_at: new Date().toISOString()
         }
       });
+
+      // Award +30 Trust Score points for activating Direct Debit Mandate (reaching at least 60)
+      try {
+        const { data: userProfile } = await adminClient
+          .from("users")
+          .select("credit_score")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        const currentScore = userProfile?.credit_score ?? 0;
+        const newScore = Math.min(100, Math.max(60, currentScore + 30));
+
+        await adminClient
+          .from("users")
+          .update({ credit_score: newScore })
+          .eq("id", user.id);
+      } catch (scoreErr) {
+        console.warn("Could not boost trust score on mandate approval:", scoreErr);
+      }
     }
 
     return NextResponse.json({

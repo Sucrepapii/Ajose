@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
 
     // 3. Calculate Comprehensive Àjọṣe Credit & Risk Score
     const normalizedBureau = Math.round((bureauReport.bureauScore / 850) * 100);
-    const baseTrackScore = profile?.credit_score || 85;
+    const baseTrackScore = profile?.credit_score ?? (profile?.bvn_verified ? 30 : 0);
 
     let computedAjoScore = Math.round((normalizedBureau * 0.55) + (statementScore * 0.2) + (baseTrackScore * 0.25));
 

@@ -56,9 +56,18 @@ export async function POST(req: Request) {
       const { data: { user } } = await supabaseServer.auth.getUser();
 
       if (user) {
+        const { data: existingUser } = await adminClient
+          .from("users")
+          .select("credit_score")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        const currentScore = existingUser?.credit_score ?? 0;
+        const newScore = Math.max(30, currentScore === 0 ? 30 : currentScore);
+
         const updateData: any = {
           bvn_verified: true,
-          credit_score: 85,
+          credit_score: newScore,
         };
         if (bvnRecord?.first_name || bvnRecord?.firstName) {
           updateData.first_name = bvnRecord?.first_name || bvnRecord?.firstName;

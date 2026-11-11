@@ -269,6 +269,25 @@ export async function POST(req: NextRequest) {
             }
           });
 
+          // Award +30 Trust Score points for activating Direct Debit Mandate
+          try {
+            const { data: userProfile } = await supabase
+              .from("users")
+              .select("credit_score")
+              .eq("id", matchedUser.id)
+              .maybeSingle();
+
+            const currentScore = userProfile?.credit_score ?? 0;
+            const newScore = Math.min(100, Math.max(60, currentScore + 30));
+
+            await supabase
+              .from("users")
+              .update({ credit_score: newScore })
+              .eq("id", matchedUser.id);
+          } catch (scoreErr) {
+            console.warn("Could not boost trust score on webhook mandate approval:", scoreErr);
+          }
+
           // Send in-app notification to member
           await supabase.from("notifications").insert({
             user_id: matchedUser.id,

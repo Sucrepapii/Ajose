@@ -425,7 +425,7 @@ export default function InvitePage(props: {
   }
 
   const effectiveCreditScore =
-    underwritingData?.ajoScore || user?.profile?.credit_score || 85;
+    underwritingData?.ajoScore ?? user?.profile?.credit_score ?? (user?.profile?.bvn_verified ? 30 : 0);
   const minScoreRequired = group?.min_credit_score || 0;
   const isScoreTooLow = effectiveCreditScore < minScoreRequired;
 

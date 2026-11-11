@@ -106,7 +106,26 @@ export async function POST(req: Request) {
       throw primaryErr;
     }
 
-    // 6. Send in-app notification to member (fail-safe)
+    // 6. Award +10 Trust Score points for actively committing to an Ajo circle
+    try {
+      const { data: userProfile } = await adminClient
+        .from("users")
+        .select("credit_score")
+        .eq("id", userId)
+        .maybeSingle();
+
+      const currentScore = userProfile?.credit_score ?? 0;
+      const newScore = Math.min(100, Math.max(70, currentScore + 10));
+
+      await adminClient
+        .from("users")
+        .update({ credit_score: newScore })
+        .eq("id", userId);
+    } catch (scoreErr) {
+      console.warn("Could not boost trust score on circle join:", scoreErr);
+    }
+
+    // 7. Send in-app notification to member (fail-safe)
     try {
       await adminClient.from("notifications").insert({
         user_id: userId,

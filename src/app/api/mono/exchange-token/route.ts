@@ -136,11 +136,21 @@ export async function POST(req: NextRequest) {
       throw new Error("Failed to retrieve valid account details from your bank: " + e.message);
     }
 
-    // 3. Update Supabase user record in database
+    // 3. Update Supabase user record in database with verified bank details and +30 Trust Score
+    const { data: userProfile } = await supabase
+      .from("users")
+      .select("credit_score")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const currentScore = userProfile?.credit_score ?? 0;
+    const newScore = Math.max(30, currentScore === 0 ? 30 : currentScore);
+
     await supabase
       .from("users")
       .update({
         bvn_verified: true,
+        credit_score: newScore,
         bank_name: bankName,
         account_number: accountNumber,
         account_name: accountName

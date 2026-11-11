@@ -568,7 +568,7 @@ export default function SignupPage() {
         phone: formData.phone,
         bvn_verified: true,
         nin_verified: true,
-        credit_score: 85,
+        credit_score: 30, // Starts at 0, +30 points awarded for completing verified BVN check
         auto_sweep_enabled: true,
       };
 

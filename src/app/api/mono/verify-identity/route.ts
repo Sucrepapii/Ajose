@@ -63,9 +63,18 @@ export async function POST(req: Request) {
     }
 
     if (user) {
+      const { data: existingUser } = await supabaseServer
+        .from('users')
+        .select('credit_score')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const currentScore = existingUser?.credit_score ?? 0;
+      const newScore = Math.max(30, currentScore === 0 ? 30 : currentScore);
+
       const updateData: Record<string, any> = {
         bvn_verified: true,
-        credit_score: 85,
+        credit_score: newScore,
       };
 
       if (phone) updateData.phone = phone;
