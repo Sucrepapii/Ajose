@@ -21,7 +21,7 @@ export default async function SettingsPage() {
         last_name: 'Adeyemi',
         nickname: 'GoldenSaver',
         phone: '+2348012345678',
-        credit_score: 85,
+        credit_score: 30,
         bvn_verified: true,
         bank_name: 'Access Bank',
         account_number: '0123456789',
@@ -201,10 +201,14 @@ export default async function SettingsPage() {
               );
             })()}
             
-            <div className="mt-8 p-4 bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/12 rounded-2xl">
-              <p className="text-xs text-[#F3EEE3]/75 leading-relaxed">
-                Your score determines the trust level Admins see when you request to join a circle. It increases by completing circle turns successfully and making on-time contributions.
-              </p>
+            <div className="mt-8 p-4 bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/12 rounded-2xl space-y-2">
+              <p className="text-xs font-semibold text-[#D4A843]">How to Earn Trust Points:</p>
+              <ul className="text-[11px] text-[#F3EEE3]/75 space-y-1">
+                <li>• <strong className="text-white">+30 pts</strong>: Verify BVN & link bank account</li>
+                <li>• <strong className="text-white">+30 pts</strong>: Authorize Direct Debit Mandate</li>
+                <li>• <strong className="text-white">+10 pts</strong>: Join an active Ajo circle</li>
+                <li>• <strong className="text-white">+5 pts</strong>: Each successful auto-debit sweep (up to 100)</li>
+              </ul>
             </div>
           </div>
         </div>

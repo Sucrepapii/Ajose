@@ -211,7 +211,7 @@ export default function InvitePage(props: {
             profile: {
               first_name: "Adewale",
               last_name: "Adeyemi",
-              credit_score: 85,
+              credit_score: 30,
               bvn_verified: true,
               nin_verified: true,
             },
