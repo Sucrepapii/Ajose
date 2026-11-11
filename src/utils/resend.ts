@@ -57,7 +57,6 @@ export async function sendEmail({
     const now = Date.now();
 
     if (existing && now - existing.timestamp < 60_000) {
-      console.log(`[Resend Cost Control] Duplicate email suppressed for ${cleanRecipient} (${subject})`);
       return { success: true, deduped: true };
     }
 
@@ -247,7 +246,6 @@ export async function addNewsletterSubscriberToAudience({
       return { success: false, error: result.error };
     }
 
-    console.log(`[Resend Audience] Contact ${cleanEmail} added successfully to audience ${audienceId}`);
     return { success: true, data: result.data };
   } catch (err: any) {
     console.error("[Resend Audience] Exception creating contact:", err);

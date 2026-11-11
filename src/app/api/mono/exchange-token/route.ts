@@ -44,7 +44,6 @@ export async function POST(req: NextRequest) {
 
     for (const key of candidateKeys) {
       try {
-        console.log(`[Mono Token Exchange] Attempting exchange with key prefix: ${key.substring(0, 10)}...`);
         const authRes = await fetch("https://api.withmono.com/v2/accounts/auth", {
           method: "POST",
           headers: {
@@ -60,7 +59,6 @@ export async function POST(req: NextRequest) {
         if (authRes.ok && (data?.id || data?.data?.id)) {
           authData = data;
           successfulKey = key;
-          console.log(`[Mono Token Exchange] Authenticated successfully with key prefix: ${key.substring(0, 10)}...`);
           break;
         }
 

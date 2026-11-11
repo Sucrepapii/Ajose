@@ -41,9 +41,7 @@ export async function POST(req: NextRequest) {
         source,
         created_at: new Date().toISOString(),
       });
-    } catch (dbErr) {
-      console.log(`[Mobile App Waitlist Entry] Email: ${cleanEmail}, Platform: ${platform}, Time: ${new Date().toISOString()}`);
-    }
+    } catch (_) {}
 
     // Sync to Resend "General" Audience for newsletters and product updates
     try {

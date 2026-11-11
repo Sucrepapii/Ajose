@@ -37,12 +37,6 @@ export async function POST(req: Request) {
       payload.phone_number = clean;
     }
 
-    console.log("[Mono Verify Request]", {
-      sessionId,
-      method,
-      payload,
-    });
-
     const { response, data } = await fetchMonoLookup(
       "https://api.withmono.com/v2/lookup/bvn/verify",
       {
@@ -53,7 +47,6 @@ export async function POST(req: Request) {
         body: JSON.stringify(payload),
       }
     );
-    console.log("[Mono Verify Response]", { status: response.status, data });
 
     if (!response.ok || data.status !== "successful") {
       let errorMsg = data.message || "Failed to send OTP.";

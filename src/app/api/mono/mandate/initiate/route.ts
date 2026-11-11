@@ -77,7 +77,6 @@ export async function POST(req: NextRequest) {
     ) {
       const timeDiff = Date.now() - new Date(existingUpdatedAt).getTime();
       if (timeDiff < 1_800_000) { // 30 minutes
-        console.log(`[Mono Cost Control] Reusing existing active mandate link for user ${targetUser.id}`);
         return NextResponse.json({
           success: true,
           mandateId: existingMandateId,

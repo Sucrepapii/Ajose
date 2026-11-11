@@ -47,8 +47,6 @@ export async function POST(req: NextRequest) {
     const event = body.event || body.type;
     const data = body.data || body;
 
-    console.log(`Received Mono Webhook [${event}]:`, data?.reference || data?.id);
-
     const supabase = createAdminClient();
 
     // 1. Handle Successful Direct Debit
@@ -115,7 +113,6 @@ export async function POST(req: NextRequest) {
               .maybeSingle();
 
             if (existingPayout) {
-              console.log(`[Webhook] Payout for group ${group_id} turn ${cycle_turn} already recorded (${existingPayout.status}). Skipping duplicate.`);
               return NextResponse.json({ received: true, status: "payout_already_processed" });
             }
 
@@ -252,8 +249,6 @@ export async function POST(req: NextRequest) {
       const mandateId = data.id || data.mandate_id;
       const ref = data.reference;
 
-      console.log(`[Mono Webhook] Mandate approved: ${mandateId}, reference: ${ref}`);
-
       // Search and update user auth metadata
       try {
         const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
@@ -273,7 +268,6 @@ export async function POST(req: NextRequest) {
               mono_mandate_approved_at: new Date().toISOString()
             }
           });
-          console.log(`[Mono Webhook] User ${matchedUser.id} mandate successfully activated!`);
 
           // Send in-app notification to member
           await supabase.from("notifications").insert({

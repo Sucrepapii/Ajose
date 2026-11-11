@@ -5,19 +5,6 @@ export async function POST(req: Request) {
   try {
     const { bvn, nin, phone, firstName: bodyFirst, lastName: bodyLast } = await req.json();
 
-    console.log("[Mono Verify Route Debug]", {
-      hasNewMonoBvnKey: !!process.env.NEW_MONO_BVN_KEY,
-      hasMonoSecret: !!process.env.MONO_SECRET_KEY,
-      hasMonoLookupSecret: !!process.env.MONO_LOOKUP_SECRET_KEY,
-      hasLiveMonoSecret: !!process.env.LIVE_MONO_SECRET_KEY,
-      hasLiveMonoLookupSecret: !!process.env.LIVE_MONO_LOOKUP_SECRET_KEY,
-      nodeEnv: process.env.NODE_ENV,
-      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasServiceRole: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      hasServiceKey: !!process.env.SUPABASE_SERVICE_KEY,
-      serviceRolePrefix: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.substring(0, 15) : null,
-    });
-
     if (!bvn) {
       return NextResponse.json(
         { error: "BVN is required for identity verification." },

@@ -284,7 +284,6 @@ export function MonoConnectWidget({
   const launchMono = () => {
     const rawKey = (process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY || "").trim();
     const monoPublicKey = rawKey.startsWith("live_pk_") ? rawKey : "live_pk_t1zbb1s1lakxunvxd82e";
-    console.log("[Mono Connect] Initializing with live public key:", monoPublicKey.slice(0, 12) + "...");
 
     try {
       // Automatically ensure any injected Mono iframe has camera & media permissions
@@ -375,10 +374,8 @@ export function MonoConnectWidget({
         },
         onClose: () => {
           (window as any)._isMonoActive = false;
-          console.log("Mono widget closed");
         },
         onEvent: (eventName: string, data: any) => {
-          console.log("[Mono Event]", eventName, data);
           if (eventName === "OPENED") (window as any)._isMonoActive = true;
           if (eventName === "EXIT") (window as any)._isMonoActive = false;
           

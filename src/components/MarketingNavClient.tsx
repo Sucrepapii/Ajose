@@ -47,7 +47,6 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
         </Link>
         <Link className="text-sm font-medium hover:text-[#D4A843] transition-colors text-[#F3EEE3] flex items-center gap-1.5" href="/#mobile-app">
           <span>Mobile App</span>
-          <span className="text-[10px] font-mono bg-[#D4A843]/20 text-[#D4A843] border border-[#D4A843]/35 px-1.5 py-0.2 rounded-full font-bold">Soon</span>
         </Link>
         <Link className="text-sm font-medium hover:text-[#D4A843] transition-colors text-[#F3EEE3]" href="/about">
           About
