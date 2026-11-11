@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     const rawKeys = [
+      "live_sk_olea4c36zigmw2bgxdc2", // Verified Live Secret Key for Àjọṣe Connect (pairs with live_pk_t1zbb1s1lakxunvxd82e)
       process.env.MONO_SECRET_KEY,
       process.env.LIVE_MONO_SECRET_KEY,
       process.env.MONO_CONNECT_SECRET_KEY,
@@ -66,8 +67,14 @@ export async function POST(req: NextRequest) {
         lastError = msg;
         console.warn(`[Mono Token Exchange] Key ${key.substring(0, 10)}... failed: ${msg}`);
 
-        // If the error is not about secret key validity (e.g. auth code expired or already used), do not retry other keys
-        if (!msg.toLowerCase().includes("secret key") && !msg.toLowerCase().includes("unauthor")) {
+        // If the error is not about secret key mismatch, do not retry other keys
+        const isKeyMismatch = 
+          msg.toLowerCase().includes("secret key") || 
+          msg.toLowerCase().includes("unauthor") ||
+          msg.toLowerCase().includes("app id mismatch") ||
+          msg.toLowerCase().includes("mismatch");
+
+        if (!isKeyMismatch) {
           break;
         }
       } catch (err: any) {
