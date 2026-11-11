@@ -13,29 +13,38 @@ on:
 jobs:
   run-automated-sweep:
     runs-on: ubuntu-latest
+    env:
+      REPO_CRON_SECRET: ${{ secrets.CRON_SECRET }}
     steps:
       - name: Trigger Automated Contribution Sweep (Daily, Weekly, Monthly)
         run: |
           echo "Initiating automated sweep across all active Daily, Weekly, and Monthly circles..."
-          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "https://ajose.ng/api/cron/sweep" \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET || 'ajose_sec_cron_99f2b810d7a6e4c' }}" \
-            -H "Content-Type: application/json")
+          SECRET="${REPO_CRON_SECRET:-ajose_sec_cron_99f2b810d7a6e4c}"
           
-          HTTP_BODY=$(echo "$RESPONSE" | sed -e '$d')
-          HTTP_STATUS=$(echo "$RESPONSE" | tail -n 1 | cut -d: -f2)
+          HTTP_STATUS=$(curl -s -S -o /tmp/sweep_response.json -w "%{http_code}" -X POST "https://ajose.ng/api/cron/sweep" \
+            -H "Authorization: Bearer ${SECRET}" \
+            -H "Content-Type: application/json" || echo "000")
+          
+          echo "HTTP Status: $HTTP_STATUS"
+          echo "Response Body:"
+          cat /tmp/sweep_response.json 2>/dev/null || echo "No response body"
+          echo ""
 
-          echo "Status: $HTTP_STATUS"
-          echo "Response: $HTTP_BODY"
-
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "::warning ::Sweep endpoint returned HTTP $HTTP_STATUS"
-          else
+          if [ "$HTTP_STATUS" = "200" ]; then
             echo "Automated sweep executed successfully."
+          else
+            echo "::warning ::Sweep endpoint returned HTTP $HTTP_STATUS"
           fi
 
       - name: Trigger 24h Pre-Debit Reminders
         run: |
           echo "Triggering 24-hour pre-debit member funding reminders..."
-          curl -s -X POST "https://ajose.ng/api/cron/reminders" \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET || 'ajose_sec_cron_99f2b810d7a6e4c' }}" \
-            -H "Content-Type: application/json" || true
+          SECRET="${REPO_CRON_SECRET:-ajose_sec_cron_99f2b810d7a6e4c}"
+          
+          HTTP_STATUS=$(curl -s -S -o /tmp/reminders_response.json -w "%{http_code}" -X POST "https://ajose.ng/api/cron/reminders" \
+            -H "Authorization: Bearer ${SECRET}" \
+            -H "Content-Type: application/json" || echo "000")
+          
+          echo "HTTP Status: $HTTP_STATUS"
+          cat /tmp/reminders_response.json 2>/dev/null || echo "No response body"
+          echo ""
