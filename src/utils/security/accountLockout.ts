@@ -17,8 +17,6 @@
  * - Auto-resets counter and multiplier back to 0 upon successful login.
  */
 
-import { createAdminClient } from "@/utils/supabase/admin";
-
 export interface LockoutRecord {
   failedAttempts: number;
   lastAttemptAt: number;
@@ -28,10 +26,10 @@ export interface LockoutRecord {
 
 const MAX_FAILED_ATTEMPTS = 5;
 const BASE_LOCKOUT_MINUTES = 15;
-const MAX_LOCKOUT_MINUTES = 24 * 60; // 24-hour maximum ceiling
-const ATTEMPT_WINDOW_MS = 30 * 60 * 1000; // 30-minute sliding inactivity window
+const MAX_LOCKOUT_MINUTES = 24 * 60; // 24-hour maximum ceiling (1,440 minutes)
+const ATTEMPT_WINDOW_MS = 30 * 60 * 1000; // 30-minute sliding window
 
-// In-memory fast cache for active lockout tracking
+// In-memory fast cache for active lockout tracking (0ms local latency)
 const lockoutStore = new Map<string, LockoutRecord>();
 
 // Periodic in-memory cleanup every 5 minutes
@@ -75,30 +73,6 @@ export async function checkAccountLockout(identifier: string): Promise<{
   const key = normalizeKey(identifier);
   const now = Date.now();
   let record = lockoutStore.get(key);
-
-  // Fallback check against Supabase user metadata for multi-server consistency
-  if (!record) {
-    try {
-      const supabase = createAdminClient();
-      const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
-      const matchedUser = usersList?.users?.find(u => u.email?.toLowerCase() === key);
-      const lockedUntilIso = matchedUser?.user_metadata?.locked_until;
-      const storedCount = Number(matchedUser?.user_metadata?.lockout_count || 0);
-
-      if (lockedUntilIso) {
-        const lockedUntilMs = new Date(lockedUntilIso).getTime();
-        if (lockedUntilMs > now) {
-          record = {
-            failedAttempts: MAX_FAILED_ATTEMPTS,
-            lastAttemptAt: now,
-            lockedUntil: lockedUntilMs,
-            lockoutCount: storedCount > 0 ? storedCount : 1
-          };
-          lockoutStore.set(key, record);
-        }
-      }
-    } catch (_) {}
-  }
 
   if (!record) {
     return {
@@ -195,23 +169,6 @@ export async function recordFailedLoginAttempt(identifier: string): Promise<{
     message = record.lockoutCount === 1
       ? `Account temporarily locked due to ${MAX_FAILED_ATTEMPTS} failed attempts. Please try again in ${timeLabel} or reset your password.`
       : `Account locked again due to repeated failed attempts. Lockout doubled to ${timeLabel}. Please reset your password.`;
-
-    // Persist lockout timestamp and escalated count to Supabase Auth metadata
-    try {
-      const supabase = createAdminClient();
-      const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
-      const matchedUser = usersList?.users?.find(u => u.email?.toLowerCase() === key);
-      if (matchedUser) {
-        await supabase.auth.admin.updateUserById(matchedUser.id, {
-          user_metadata: {
-            ...matchedUser.user_metadata,
-            locked_until: new Date(record.lockedUntil).toISOString(),
-            lockout_count: record.lockoutCount,
-            last_lockout_reason: `Excessive failed attempts (Lockout #${record.lockoutCount}: ${timeLabel})`
-          }
-        });
-      }
-    } catch (_) {}
   } else {
     const remainingAttempts = MAX_FAILED_ATTEMPTS - record.failedAttempts;
     if (remainingAttempts === 1) {
@@ -239,21 +196,4 @@ export async function recordFailedLoginAttempt(identifier: string): Promise<{
 export async function clearFailedLoginAttempts(identifier: string): Promise<void> {
   const key = normalizeKey(identifier);
   lockoutStore.delete(key);
-
-  // Clear locked_until and reset lockout_count in Supabase metadata
-  try {
-    const supabase = createAdminClient();
-    const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
-    const matchedUser = usersList?.users?.find(u => u.email?.toLowerCase() === key);
-    if (matchedUser?.user_metadata?.locked_until || matchedUser?.user_metadata?.lockout_count) {
-      await supabase.auth.admin.updateUserById(matchedUser.id, {
-        user_metadata: {
-          ...matchedUser.user_metadata,
-          locked_until: null,
-          lockout_count: 0,
-          last_lockout_reason: null
-        }
-      });
-    }
-  } catch (_) {}
 }

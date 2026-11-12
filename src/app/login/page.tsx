@@ -59,28 +59,64 @@ export default function LoginPage() {
         throw new Error("Please enter your email and password.");
       }
 
-      // 1. Authenticate via Server Endpoint with Account Lockout & Rate-Limiting Protection
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: cleanEmail, password: cleanPassword }),
-      });
+      // 1. Check Account Lockout & Authenticate with Server Security Guard
+      let lockoutError: string | null = null;
+      let serverFeedbackMsg: string | null = null;
 
-      const resData = await res.json().catch(() => ({}));
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: cleanEmail, password: cleanPassword }),
+        });
 
-      if (!res.ok) {
-        throw new Error(resData.error || "Invalid email or password.");
+        const resData = await res.json().catch(() => ({}));
+
+        if (res.status === 423 || resData.locked) {
+          lockoutError = resData.error || "This account is temporarily locked due to multiple failed login attempts.";
+        } else if (res.status === 401 && resData.error) {
+          serverFeedbackMsg = resData.error;
+        }
+      } catch (err: any) {
+        console.warn("Auth proxy pre-check notice:", err?.message);
       }
 
-      // 2. Synchronize Client-Side Supabase Session
+      if (lockoutError) {
+        throw new Error(lockoutError);
+      }
+
+      // 2. Client-Side Authentication via Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password: cleanPassword,
       });
 
       if (error) {
-        // If server authenticated successfully, fallback to client session sync
-        console.warn("Client session sync:", error.message);
+        if (serverFeedbackMsg) {
+          throw new Error(serverFeedbackMsg);
+        }
+        if (
+          error.message?.includes("Invalid login credentials") ||
+          error.status === 400
+        ) {
+          throw new Error(
+            "Invalid email or password. Please verify your credentials.",
+          );
+        }
+        if (error.message?.includes("Email not confirmed")) {
+          throw new Error(
+            "Your email address has not been confirmed yet. Please check your inbox for the verification link.",
+          );
+        }
+        if (
+          error.message?.toLowerCase().includes("banned") ||
+          error.message?.toLowerCase().includes("suspended")
+        ) {
+          throw new Error(
+            "Your account has been suspended by compliance administration. Please contact support@ajose.ng for assistance.",
+          );
+        }
+        throw error;
       }
 
       // 3. Check if user account is suspended or banned
