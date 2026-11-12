@@ -48,3 +48,16 @@ jobs:
           echo "HTTP Status: $HTTP_STATUS"
           cat /tmp/reminders_response.json 2>/dev/null || echo "No response body"
           echo ""
+
+      - name: Trigger Automated Daily Newsletter (09:00 AM WAT)
+        run: |
+          echo "Dispatching automated daily financial tip & newsletter to active subscribers..."
+          SECRET="${REPO_CRON_SECRET:-ajose_sec_cron_99f2b810d7a6e4c}"
+          
+          HTTP_STATUS=$(curl -s -S -o /tmp/newsletter_response.json -w "%{http_code}" -X POST "https://ajose.ng/api/cron/newsletter" \
+            -H "Authorization: Bearer ${SECRET}" \
+            -H "Content-Type: application/json" || echo "000")
+          
+          echo "Newsletter HTTP Status: $HTTP_STATUS"
+          cat /tmp/newsletter_response.json 2>/dev/null || echo "No response body"
+          echo ""

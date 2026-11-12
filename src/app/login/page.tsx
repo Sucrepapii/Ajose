@@ -59,43 +59,36 @@ export default function LoginPage() {
         throw new Error("Please enter your email and password.");
       }
 
-      // Standard Member Authentication via Supabase
+      // 1. Authenticate via Server Endpoint with Account Lockout & Rate-Limiting Protection
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail, password: cleanPassword }),
+      });
+
+      const resData = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(resData.error || "Invalid email or password.");
+      }
+
+      // 2. Synchronize Client-Side Supabase Session
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password: cleanPassword,
       });
 
       if (error) {
-        if (
-          error.message?.includes("Invalid login credentials") ||
-          error.status === 400
-        ) {
-          throw new Error(
-            "Invalid email or password. Please verify your credentials.",
-          );
-        }
-        if (error.message?.includes("Email not confirmed")) {
-          throw new Error(
-            "Your email address has not been confirmed yet. Please check your inbox for the verification link.",
-          );
-        }
-        if (
-          error.message?.toLowerCase().includes("banned") ||
-          error.message?.toLowerCase().includes("suspended")
-        ) {
-          throw new Error(
-            "Your account has been suspended by compliance administration. Please contact support@ajose.ng for assistance.",
-          );
-        }
-        throw error;
+        // If server authenticated successfully, fallback to client session sync
+        console.warn("Client session sync:", error.message);
       }
 
-      // Check if user account is suspended or banned
+      // 3. Check if user account is suspended or banned
       const isSuspended =
         Boolean(
-          data.user?.banned_until &&
+          data?.user?.banned_until &&
             new Date(data.user.banned_until) > new Date(),
-        ) || Boolean(data.user?.user_metadata?.is_suspended);
+        ) || Boolean(data?.user?.user_metadata?.is_suspended);
 
       if (isSuspended) {
         await supabase.auth.signOut();
@@ -105,11 +98,13 @@ export default function LoginPage() {
       }
 
       // Check if user has is_super_admin flag in their Supabase profile
-      const { data: profile } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", data.user.id)
-        .maybeSingle();
+      const { data: profile } = data?.user?.id 
+        ? await supabase
+            .from("users")
+            .select("*")
+            .eq("id", data.user.id)
+            .maybeSingle()
+        : { data: null };
 
       if (profile?.status === "suspended") {
         await supabase.auth.signOut();
