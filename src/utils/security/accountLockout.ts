@@ -1,5 +1,5 @@
 /**
- * Progressive Account Lockout Security Guard
+ * Progressive Account Lockout Security Guard with Exponential Backoff
  * 
  * Protects member and admin authentication endpoints against:
  * 1. Brute-force password guessing
@@ -7,9 +7,14 @@
  * 3. Distributed dictionary attacks
  * 
  * Rules:
- * - Maximum 5 consecutive failed attempts per account/email.
- * - 15-minute lockout period upon reaching threshold.
- * - Auto-resets on successful authentication or when window expires.
+ * - 5 failed attempts per trial cycle.
+ * - Lockout duration doubles on each subsequent lockout cycle:
+ *   * 1st Lockout: 15 minutes
+ *   * 2nd Lockout: 30 minutes
+ *   * 3rd Lockout: 60 minutes (1 hour)
+ *   * 4th Lockout: 120 minutes (2 hours)
+ *   * Max cap: 24 hours (1,440 minutes)
+ * - Auto-resets counter and multiplier back to 0 upon successful login.
  */
 
 import { createAdminClient } from "@/utils/supabase/admin";
@@ -18,11 +23,13 @@ export interface LockoutRecord {
   failedAttempts: number;
   lastAttemptAt: number;
   lockedUntil: number | null;
+  lockoutCount: number; // Tracks number of times this account has been locked
 }
 
 const MAX_FAILED_ATTEMPTS = 5;
-const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
-const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;   // 15-minute sliding window
+const BASE_LOCKOUT_MINUTES = 15;
+const MAX_LOCKOUT_MINUTES = 24 * 60; // 24-hour maximum ceiling
+const ATTEMPT_WINDOW_MS = 30 * 60 * 1000; // 30-minute sliding inactivity window
 
 // In-memory fast cache for active lockout tracking
 const lockoutStore = new Map<string, LockoutRecord>();
@@ -34,7 +41,7 @@ if (typeof setInterval !== "undefined") {
     for (const [key, record] of lockoutStore.entries()) {
       const isLockExpired = record.lockedUntil ? now > record.lockedUntil : true;
       const isWindowExpired = now - record.lastAttemptAt > ATTEMPT_WINDOW_MS;
-      if (isLockExpired && isWindowExpired) {
+      if (isLockExpired && isWindowExpired && record.lockoutCount === 0) {
         lockoutStore.delete(key);
       }
     }
@@ -46,6 +53,16 @@ function normalizeKey(identifier: string): string {
 }
 
 /**
+ * Calculates exponential lockout duration in minutes:
+ * 1st -> 15m, 2nd -> 30m, 3rd -> 60m, 4th -> 120m...
+ */
+function calculateLockoutMinutes(lockoutCount: number): number {
+  const multiplier = Math.pow(2, Math.max(0, lockoutCount - 1));
+  const calculated = BASE_LOCKOUT_MINUTES * multiplier;
+  return Math.min(MAX_LOCKOUT_MINUTES, calculated);
+}
+
+/**
  * Checks if an account is currently locked out.
  */
 export async function checkAccountLockout(identifier: string): Promise<{
@@ -53,6 +70,7 @@ export async function checkAccountLockout(identifier: string): Promise<{
   remainingMinutes: number;
   remainingAttempts: number;
   failedAttempts: number;
+  lockoutCount: number;
 }> {
   const key = normalizeKey(identifier);
   const now = Date.now();
@@ -65,14 +83,16 @@ export async function checkAccountLockout(identifier: string): Promise<{
       const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
       const matchedUser = usersList?.users?.find(u => u.email?.toLowerCase() === key);
       const lockedUntilIso = matchedUser?.user_metadata?.locked_until;
-      
+      const storedCount = Number(matchedUser?.user_metadata?.lockout_count || 0);
+
       if (lockedUntilIso) {
         const lockedUntilMs = new Date(lockedUntilIso).getTime();
         if (lockedUntilMs > now) {
           record = {
             failedAttempts: MAX_FAILED_ATTEMPTS,
             lastAttemptAt: now,
-            lockedUntil: lockedUntilMs
+            lockedUntil: lockedUntilMs,
+            lockoutCount: storedCount > 0 ? storedCount : 1
           };
           lockoutStore.set(key, record);
         }
@@ -85,11 +105,12 @@ export async function checkAccountLockout(identifier: string): Promise<{
       isLocked: false,
       remainingMinutes: 0,
       remainingAttempts: MAX_FAILED_ATTEMPTS,
-      failedAttempts: 0
+      failedAttempts: 0,
+      lockoutCount: 0
     };
   }
 
-  // Check if lockout has expired
+  // Check if active lockout has expired
   if (record.lockedUntil) {
     if (now < record.lockedUntil) {
       const remainingMs = record.lockedUntil - now;
@@ -98,26 +119,19 @@ export async function checkAccountLockout(identifier: string): Promise<{
         isLocked: true,
         remainingMinutes,
         remainingAttempts: 0,
-        failedAttempts: record.failedAttempts
+        failedAttempts: record.failedAttempts,
+        lockoutCount: record.lockoutCount
       };
     } else {
-      // Lock has expired; clear lock
+      // Lock has expired; reset attempts for next trial cycle, but preserve lockoutCount
       record.lockedUntil = null;
       record.failedAttempts = 0;
-      lockoutStore.delete(key);
     }
   }
 
-  // Check if attempt window has expired
-  if (now - record.lastAttemptAt > ATTEMPT_WINDOW_MS) {
+  // Check if attempt window has expired (user has been idle without failing)
+  if (now - record.lastAttemptAt > ATTEMPT_WINDOW_MS && !record.lockedUntil) {
     record.failedAttempts = 0;
-    lockoutStore.delete(key);
-    return {
-      isLocked: false,
-      remainingMinutes: 0,
-      remainingAttempts: MAX_FAILED_ATTEMPTS,
-      failedAttempts: 0
-    };
   }
 
   const remainingAttempts = Math.max(0, MAX_FAILED_ATTEMPTS - record.failedAttempts);
@@ -126,18 +140,21 @@ export async function checkAccountLockout(identifier: string): Promise<{
     isLocked: false,
     remainingMinutes: 0,
     remainingAttempts,
-    failedAttempts: record.failedAttempts
+    failedAttempts: record.failedAttempts,
+    lockoutCount: record.lockoutCount
   };
 }
 
 /**
- * Records a failed login attempt. Locks the account if threshold is reached.
+ * Records a failed login attempt.
+ * When reaching 5 failed trials, doubles the lockout duration each subsequent cycle.
  */
 export async function recordFailedLoginAttempt(identifier: string): Promise<{
   isLocked: boolean;
   remainingMinutes: number;
   remainingAttempts: number;
   failedAttempts: number;
+  lockoutCount: number;
   message: string;
 }> {
   const key = normalizeKey(identifier);
@@ -145,10 +162,11 @@ export async function recordFailedLoginAttempt(identifier: string): Promise<{
   const record = lockoutStore.get(key) || {
     failedAttempts: 0,
     lastAttemptAt: now,
-    lockedUntil: null
+    lockedUntil: null,
+    lockoutCount: 0
   };
 
-  // If outside window, reset counter
+  // If outside window and not locked, reset attempt counter
   if (now - record.lastAttemptAt > ATTEMPT_WINDOW_MS && !record.lockedUntil) {
     record.failedAttempts = 0;
   }
@@ -161,12 +179,24 @@ export async function recordFailedLoginAttempt(identifier: string): Promise<{
   let message = "";
 
   if (record.failedAttempts >= MAX_FAILED_ATTEMPTS) {
-    record.lockedUntil = now + LOCKOUT_DURATION_MS;
-    isLocked = true;
-    remainingMinutes = 15;
-    message = `Account temporarily locked due to ${MAX_FAILED_ATTEMPTS} failed attempts. Please try again in 15 minutes or reset your password.`;
+    // Escalate lockout count and double duration
+    record.lockoutCount = (record.lockoutCount || 0) + 1;
+    const durationMinutes = calculateLockoutMinutes(record.lockoutCount);
+    const lockoutDurationMs = durationMinutes * 60 * 1000;
 
-    // Persist lockout timestamp to Supabase Auth metadata
+    record.lockedUntil = now + lockoutDurationMs;
+    isLocked = true;
+    remainingMinutes = durationMinutes;
+
+    const timeLabel = durationMinutes >= 60 
+      ? `${Math.round(durationMinutes / 60)} hour(s)`
+      : `${durationMinutes} minutes`;
+
+    message = record.lockoutCount === 1
+      ? `Account temporarily locked due to ${MAX_FAILED_ATTEMPTS} failed attempts. Please try again in ${timeLabel} or reset your password.`
+      : `Account locked again due to repeated failed attempts. Lockout doubled to ${timeLabel}. Please reset your password.`;
+
+    // Persist lockout timestamp and escalated count to Supabase Auth metadata
     try {
       const supabase = createAdminClient();
       const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
@@ -176,7 +206,8 @@ export async function recordFailedLoginAttempt(identifier: string): Promise<{
           user_metadata: {
             ...matchedUser.user_metadata,
             locked_until: new Date(record.lockedUntil).toISOString(),
-            last_lockout_reason: "Excessive failed login attempts"
+            lockout_count: record.lockoutCount,
+            last_lockout_reason: `Excessive failed attempts (Lockout #${record.lockoutCount}: ${timeLabel})`
           }
         });
       }
@@ -197,27 +228,29 @@ export async function recordFailedLoginAttempt(identifier: string): Promise<{
     remainingMinutes,
     remainingAttempts: Math.max(0, MAX_FAILED_ATTEMPTS - record.failedAttempts),
     failedAttempts: record.failedAttempts,
+    lockoutCount: record.lockoutCount,
     message
   };
 }
 
 /**
- * Clears failed attempts upon successful authentication.
+ * Clears failed attempts and resets exponential multiplier upon successful authentication.
  */
 export async function clearFailedLoginAttempts(identifier: string): Promise<void> {
   const key = normalizeKey(identifier);
   lockoutStore.delete(key);
 
-  // Clear locked_until metadata in Supabase if present
+  // Clear locked_until and reset lockout_count in Supabase metadata
   try {
     const supabase = createAdminClient();
     const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
     const matchedUser = usersList?.users?.find(u => u.email?.toLowerCase() === key);
-    if (matchedUser?.user_metadata?.locked_until) {
+    if (matchedUser?.user_metadata?.locked_until || matchedUser?.user_metadata?.lockout_count) {
       await supabase.auth.admin.updateUserById(matchedUser.id, {
         user_metadata: {
           ...matchedUser.user_metadata,
           locked_until: null,
+          lockout_count: 0,
           last_lockout_reason: null
         }
       });
