@@ -72,7 +72,7 @@ export async function checkAccountLockout(identifier: string): Promise<{
 }> {
   const key = normalizeKey(identifier);
   const now = Date.now();
-  let record = lockoutStore.get(key);
+  const record = lockoutStore.get(key);
 
   if (!record) {
     return {
