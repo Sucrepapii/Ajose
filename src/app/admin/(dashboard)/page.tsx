@@ -227,6 +227,7 @@ export default async function AdminCommandCenterPage() {
           <div className="pt-2 flex flex-wrap gap-3">
             <Link
               href="/admin/groups"
+              prefetch={false}
               className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-[#F3EEE3] hover:bg-[#F3EEE3]/80 text-sm font-bold text-[#0B3022] border border-[#0B3022]/15 transition-colors"
             >
               <Users className="h-4 w-4 text-emerald-700" />
@@ -235,6 +236,7 @@ export default async function AdminCommandCenterPage() {
 
             <Link
               href="/admin/transactions"
+              prefetch={false}
               className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-[#F3EEE3] hover:bg-[#F3EEE3]/80 text-sm font-bold text-[#0B3022] border border-[#0B3022]/15 transition-colors"
             >
               <ArrowRightLeft className="h-4 w-4 text-[#D4A843]" />
@@ -243,6 +245,7 @@ export default async function AdminCommandCenterPage() {
 
             <Link
               href="/admin/defaults"
+              prefetch={false}
               className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-[#F3EEE3] hover:bg-[#F3EEE3]/80 text-sm font-bold text-[#0B3022] border border-[#0B3022]/15 transition-colors"
             >
               <ShieldAlert className="h-4 w-4 text-red-600" />
@@ -302,6 +305,7 @@ export default async function AdminCommandCenterPage() {
           </div>
           <Link
             href="/admin/transactions"
+            prefetch={false}
             className="text-xs sm:text-sm text-emerald-700 hover:text-emerald-800 font-bold transition-colors"
           >
             View Full Ledger &rarr;
