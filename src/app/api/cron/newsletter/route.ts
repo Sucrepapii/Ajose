@@ -136,7 +136,7 @@ async function handleDailyNewsletter(req: NextRequest) {
         Àjọṣe <span style="color: #D4A843; font-weight: 400; font-style: italic;">Daily Pulse</span>
       </h1>
       <p style="color: rgba(243, 238, 227, 0.7); font-size: 12px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.1em; margin: 0;">
-        ${formattedDate} • ${tip.category}
+        ${formattedDate} • ${tip.isSpecialEdition ? (tip.specialEventName || tip.category) : tip.category}
       </p>
     </div>
 
@@ -144,8 +144,8 @@ async function handleDailyNewsletter(req: NextRequest) {
     <div style="padding: 32px 28px;">
       
       <!-- Category Badge -->
-      <div style="display: inline-block; background-color: rgba(212, 168, 67, 0.15); border: 1px solid rgba(212, 168, 67, 0.35); color: #8A6417; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 50px; margin-bottom: 16px;">
-        💡 Daily Financial Tip
+      <div style="display: inline-block; background-color: ${tip.isSpecialEdition ? 'rgba(212, 168, 67, 0.25)' : 'rgba(212, 168, 67, 0.15)'}; border: 1px solid rgba(212, 168, 67, ${tip.isSpecialEdition ? '0.5' : '0.35'}); color: #8A6417; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 50px; margin-bottom: 16px;">
+        ${tip.isSpecialEdition ? `👑 ${tip.specialEventName || 'Special Milestone Edition'}` : '💡 Daily Financial Tip'}
       </div>
 
       <!-- Headline -->
@@ -213,9 +213,10 @@ async function handleDailyNewsletter(req: NextRequest) {
         chunk.map(async (email) => {
           try {
             const html = generateHtmlForRecipient(email);
+            const emailSubject = tip.customSubject || `💡 Daily Àjọṣe Tip: ${tip.title}`;
             const res = await sendEmail({
               to: email,
-              subject: `💡 Daily Àjọṣe Tip: ${tip.title}`,
+              subject: emailSubject,
               html,
             });
             if (res.success) {
