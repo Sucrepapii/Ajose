@@ -5,7 +5,7 @@ import {
   recordFailedLoginAttempt, 
   clearFailedLoginAttempts 
 } from "@/utils/security/accountLockout";
-import { getAuthUserByEmail } from "@/utils/authHelpers";
+import { getAuthUserByEmail, syncUserDatabaseProfile } from "@/utils/authHelpers";
 import { evaluateRequestRateLimit, createRateLimitResponse } from "@/utils/rateLimit";
 
 export const dynamic = "force-dynamic";
@@ -102,8 +102,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Successful Login -> Clear any failed attempt counters
+    // 5. Successful Login -> Clear any failed attempt counters & auto-heal database profile
     await clearFailedLoginAttempts(cleanEmail);
+    try {
+      await syncUserDatabaseProfile(data.user);
+    } catch (syncErr) {
+      console.warn("User profile auto-sync notice on login:", syncErr);
+    }
 
     // 6. Check for compliance suspension / bans
     const isSuspended = Boolean(

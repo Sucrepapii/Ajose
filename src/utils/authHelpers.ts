@@ -91,3 +91,113 @@ export async function getAuthUserByEmail(email: string) {
     return null;
   }
 }
+
+export interface ExtractedUserProfile {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  nickname: string;
+}
+
+/**
+ * Robustly extracts the user's name, phone, and email across all auth providers
+ * (Email/Password, Google OAuth, Apple OAuth, etc.).
+ */
+export function extractUserProfileFromAuthUser(user: any): ExtractedUserProfile {
+  const meta = user?.user_metadata || {};
+  
+  const email = (user?.email || meta.email || "").trim().toLowerCase();
+
+  const fullName = (meta.full_name || meta.name || "").trim();
+  const nameParts = fullName ? fullName.split(/\s+/) : [];
+
+  const firstName = (
+    meta.first_name ||
+    meta.firstName ||
+    meta.given_name ||
+    nameParts[0] ||
+    ""
+  ).trim();
+
+  const lastName = (
+    meta.last_name ||
+    meta.lastName ||
+    meta.family_name ||
+    (nameParts.length > 1 ? nameParts.slice(1).join(" ") : "") ||
+    ""
+  ).trim();
+
+  const phone = (
+    meta.phone ||
+    meta.phone_number ||
+    user?.phone ||
+    ""
+  ).trim();
+
+  const nickname = (
+    meta.nickname ||
+    meta.alias ||
+    meta.preferred_username ||
+    (firstName ? firstName : "")
+  ).trim();
+
+  return { firstName, lastName, phone, email, nickname };
+}
+
+/**
+ * Ensures a user record exists in the public.users database table.
+ * If the record is missing or has empty names/phone, it automatically populates
+ * them using Auth metadata via the service-role admin client (bypassing RLS).
+ */
+export async function syncUserDatabaseProfile(user: any, additionalPayload?: Record<string, any>) {
+  if (!user || !user.id) return null;
+
+  try {
+    const supabaseAdmin = createAdminClient();
+    const { firstName, lastName, phone, email, nickname } = extractUserProfileFromAuthUser(user);
+
+    // 1. Fetch existing profile from public.users
+    const { data: existingUser } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const mergedFirstName = additionalPayload?.first_name || existingUser?.first_name || firstName;
+    const mergedLastName = additionalPayload?.last_name || existingUser?.last_name || lastName;
+    const mergedPhone = additionalPayload?.phone || existingUser?.phone || phone;
+    const mergedEmail = additionalPayload?.email || existingUser?.email || email;
+    const mergedNickname = additionalPayload?.nickname || existingUser?.nickname || (mergedFirstName ? mergedFirstName : nickname);
+
+    const payloadToUpsert = {
+      id: user.id,
+      email: mergedEmail,
+      first_name: mergedFirstName,
+      last_name: mergedLastName,
+      phone: mergedPhone,
+      nickname: mergedNickname,
+      bvn_verified: Boolean(additionalPayload?.bvn_verified ?? existingUser?.bvn_verified ?? user.user_metadata?.bvn_verified),
+      nin_verified: Boolean(additionalPayload?.nin_verified ?? existingUser?.nin_verified ?? user.user_metadata?.nin_verified),
+      credit_score: additionalPayload?.credit_score ?? existingUser?.credit_score ?? (additionalPayload?.bvn_verified || existingUser?.bvn_verified ? 30 : 0),
+      auto_sweep_enabled: Boolean(additionalPayload?.auto_sweep_enabled ?? existingUser?.auto_sweep_enabled ?? true),
+      ...(additionalPayload || {})
+    };
+
+    const { data: updatedProfile, error: upsertErr } = await supabaseAdmin
+      .from("users")
+      .upsert(payloadToUpsert)
+      .select("*")
+      .single();
+
+    if (upsertErr) {
+      console.warn("syncUserDatabaseProfile upsert notice:", upsertErr.message);
+      return existingUser || null;
+    }
+
+    return updatedProfile;
+  } catch (err) {
+    console.warn("syncUserDatabaseProfile error:", err);
+    return null;
+  }
+}

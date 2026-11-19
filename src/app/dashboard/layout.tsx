@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { extractUserProfileFromAuthUser } from "@/utils/authHelpers";
 import { LogoutButton } from "@/components/LogoutButton";
 import { SidebarNav } from "@/components/SidebarNav";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -31,16 +32,17 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Get user profile details from public.users table (optional, but good for name/phone)
+  // Get user profile details from public.users table with auth metadata fallbacks
   const { data: profile } = await supabase
     .from('users')
     .select('first_name, last_name')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
-  const email = user.email || "";
-  const firstName = profile?.first_name || "";
-  const lastName = profile?.last_name || "";
+  const authProfile = extractUserProfileFromAuthUser(user);
+  const email = user.email || authProfile.email || "";
+  const firstName = profile?.first_name || authProfile.firstName || "";
+  const lastName = profile?.last_name || authProfile.lastName || "";
   
   const displayName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (email || "Member");
   const initials = (firstName && lastName) 

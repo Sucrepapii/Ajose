@@ -53,6 +53,26 @@ export function ProfileSettingsClient({
   const isDirty = JSON.stringify(formData) !== JSON.stringify(initialData);
 
   useEffect(() => {
+    if (initialProfile) {
+      setFormData(prev => ({
+        ...prev,
+        first_name: prev.first_name || initialProfile.first_name || "",
+        last_name: prev.last_name || initialProfile.last_name || "",
+        nickname: prev.nickname || initialProfile.nickname || "",
+        phone: prev.phone || initialProfile.phone || "",
+        next_of_kin_name: prev.next_of_kin_name || initialProfile.next_of_kin_name || "",
+        next_of_kin_relationship: prev.next_of_kin_relationship || initialProfile.next_of_kin_relationship || "Spouse",
+        next_of_kin_phone: prev.next_of_kin_phone || initialProfile.next_of_kin_phone || "",
+        next_of_kin_email: prev.next_of_kin_email || initialProfile.next_of_kin_email || "",
+        next_of_kin_address: prev.next_of_kin_address || initialProfile.next_of_kin_address || "",
+        guarantor_name: prev.guarantor_name || initialProfile.guarantor_name || "",
+        guarantor_phone: prev.guarantor_phone || initialProfile.guarantor_phone || "",
+        guarantor_relationship: prev.guarantor_relationship || initialProfile.guarantor_relationship || "Brother",
+      }));
+    }
+  }, [initialProfile]);
+
+  useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
         e.preventDefault();

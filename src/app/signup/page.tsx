@@ -572,13 +572,21 @@ export default function SignupPage() {
         auto_sweep_enabled: true,
       };
 
-      const { error: upsertError } = await supabase
-        .from("users")
-        .upsert(profilePayload);
-
-      if (upsertError) {
-        console.warn("User profile update warning:", upsertError.message);
+      // 1. Server-side persistence via service role (bypasses RLS reliably)
+      try {
+        await fetch("/api/auth/register-profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(profilePayload),
+        });
+      } catch (srvErr) {
+        console.warn("Server profile sync notice:", srvErr);
       }
+
+      // 2. Direct client-side upsert fallback
+      try {
+        await supabase.from("users").upsert(profilePayload);
+      } catch (_) {}
 
       // Link referral code if user signed up via referral
       try {

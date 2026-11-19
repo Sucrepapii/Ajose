@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { ProfileSettingsClient } from "@/components/ProfileSettingsClient";
+import { extractUserProfileFromAuthUser, syncUserDatabaseProfile } from "@/utils/authHelpers";
 import { Target, Lock } from "lucide-react";
 
 export default async function SettingsPage() {
@@ -40,24 +41,45 @@ export default async function SettingsPage() {
       redirect("/login");
     }
   } else {
-    const { data: profile } = await supabase
+    // 1. Fetch profile from database
+    let { data: profile } = await supabase
       .from('users')
       .select('*')
       .eq('id', user.id)
       .maybeSingle();
 
+    // 2. Extract profile details with comprehensive fallbacks across all auth providers
+    const { firstName, lastName, phone, email, nickname } = extractUserProfileFromAuthUser(user);
+
+    // 3. Self-heal: If profile in public.users is missing or has empty names/phone, auto-sync it!
+    if (!profile || !profile.first_name || !profile.last_name || !profile.phone) {
+      try {
+        const synced = await syncUserDatabaseProfile(user);
+        if (synced) {
+          profile = synced;
+        }
+      } catch (syncErr) {
+        console.warn("Settings auto-sync notice:", syncErr);
+      }
+    }
+
     const userMeta = user.user_metadata || {};
     const dbProfile = profile || {};
+
+    const resolvedFirst = dbProfile.first_name || firstName || userMeta.first_name || "";
+    const resolvedLast = dbProfile.last_name || lastName || userMeta.last_name || "";
+    const resolvedPhone = dbProfile.phone || phone || userMeta.phone || "";
+    const resolvedNick = dbProfile.nickname || nickname || userMeta.nickname || (resolvedFirst ? resolvedFirst : "");
 
     currentProfile = {
       ...userMeta,
       ...dbProfile,
-      first_name: dbProfile.first_name || userMeta.first_name || "",
-      last_name: dbProfile.last_name || userMeta.last_name || "",
-      nickname: dbProfile.nickname || userMeta.nickname || "",
-      phone: dbProfile.phone || userMeta.phone || "",
+      first_name: resolvedFirst,
+      last_name: resolvedLast,
+      nickname: resolvedNick,
+      phone: resolvedPhone,
       id: user.id,
-      email: user.email,
+      email: user.email || email,
       bank_name: dbProfile.bank_name ?? null,
       account_number: dbProfile.account_number ?? null,
       account_name: dbProfile.account_name ?? null,

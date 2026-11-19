@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { syncUserDatabaseProfile } from "@/utils/authHelpers";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,11 @@ export async function GET(request: Request) {
       const { data: authData, error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (!error && authData.user) {
+        // Auto-heal and sync user database profile from OAuth metadata
+        try {
+          await syncUserDatabaseProfile(authData.user);
+        } catch (_) {}
+
         // Check if user has completed their profile (BVN, phone)
         const { data: profile } = await supabase
           .from("users")

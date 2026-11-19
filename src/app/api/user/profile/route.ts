@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { sanitizeUserProfile } from "@/utils/security/piiSanitizer";
 import { whitelistAndValidate, USER_PROFILE_UPDATE_FIELDS } from "@/utils/security/schemaGuard";
+import { extractUserProfileFromAuthUser, syncUserDatabaseProfile } from "@/utils/authHelpers";
 import crypto from "crypto";
 
 function hashPin(pin: string, userId: string): string {
@@ -22,23 +23,35 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { data: dbUser } = await supabase
+    let { data: dbUser } = await supabase
       .from("users")
       .select("*")
       .eq("id", user.id)
       .maybeSingle();
+
+    const { firstName, lastName, phone, email, nickname } = extractUserProfileFromAuthUser(user);
+
+    // Auto-heal if database record is missing or incomplete
+    if (!dbUser || !dbUser.first_name || !dbUser.last_name || !dbUser.phone) {
+      try {
+        const synced = await syncUserDatabaseProfile(user);
+        if (synced) {
+          dbUser = synced;
+        }
+      } catch (_) {}
+    }
 
     const userMeta = user.user_metadata || {};
     
     const mergedProfile = {
       ...userMeta,
       ...(dbUser || {}),
-      first_name: dbUser?.first_name || userMeta.first_name || "",
-      last_name: dbUser?.last_name || userMeta.last_name || "",
-      nickname: dbUser?.nickname || userMeta.nickname || "",
-      phone: dbUser?.phone || userMeta.phone || "",
+      first_name: dbUser?.first_name || firstName || userMeta.first_name || "",
+      last_name: dbUser?.last_name || lastName || userMeta.last_name || "",
+      nickname: dbUser?.nickname || nickname || userMeta.nickname || (firstName ? firstName : ""),
+      phone: dbUser?.phone || phone || userMeta.phone || "",
       id: user.id,
-      email: user.email,
+      email: user.email || email,
       bank_name: dbUser?.bank_name ?? null,
       account_number: dbUser?.account_number ?? null,
       account_name: dbUser?.account_name ?? null,
