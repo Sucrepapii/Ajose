@@ -7,6 +7,9 @@ import { getDailyNewsletterTip } from "@/data/dailyNewsletterTips";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
+// Fast in-memory daily idempotency guard (0ms latency check)
+let lastDispatchedDate: string | null = null;
+
 /**
  * Automated Daily Àjọṣe Newsletter & Thrift Tip Cron Engine
  * 
@@ -41,8 +44,58 @@ async function handleDailyNewsletter(req: NextRequest) {
     }
 
     const testEmailOnly = req.nextUrl.searchParams.get("testEmail");
+    const forceDispatch = req.nextUrl.searchParams.get("force") === "true";
     const today = new Date();
     const tip = getDailyNewsletterTip(today);
+
+    // Standardized ISO date string in West Africa Time (Africa/Lagos), e.g. "2026-11-19"
+    const lagosDateStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Africa/Lagos",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(today);
+
+    const supabase = createAdminClient();
+
+    // 0. Daily Idempotency Check: Prevent duplicate sends on the same calendar day
+    if (!testEmailOnly && !forceDispatch) {
+      // A. In-memory check
+      if (lastDispatchedDate === lagosDateStr) {
+        return NextResponse.json({
+          success: true,
+          message: `Today's daily newsletter (${lagosDateStr}) has already been dispatched. Duplicate send skipped.`,
+          alreadyDispatched: true,
+          date: lagosDateStr,
+          sentCount: 0
+        });
+      }
+
+      // B. Persistent database check in feedback table
+      try {
+        const { data: existingLog } = await supabase
+          .from("feedback")
+          .select("id, created_at, message")
+          .eq("category", "Newsletter Dispatch Log")
+          .ilike("message", `%[${lagosDateStr}]%`)
+          .limit(1)
+          .maybeSingle();
+
+        if (existingLog) {
+          lastDispatchedDate = lagosDateStr;
+          return NextResponse.json({
+            success: true,
+            message: `Today's daily newsletter (${lagosDateStr}) has already been dispatched. Duplicate send skipped.`,
+            alreadyDispatched: true,
+            dispatchedAt: existingLog.created_at,
+            date: lagosDateStr,
+            sentCount: 0
+          });
+        }
+      } catch (checkErr) {
+        console.warn("Newsletter daily dispatch log check notice:", checkErr);
+      }
+    }
 
     const formattedDate = today.toLocaleDateString("en-NG", {
       timeZone: "Africa/Lagos",
@@ -51,8 +104,6 @@ async function handleDailyNewsletter(req: NextRequest) {
       month: "long",
       day: "numeric"
     });
-
-    const supabase = createAdminClient();
 
     // 1. Gather all active recipients
     const recipientSet = new Set<string>();
@@ -229,6 +280,23 @@ async function handleDailyNewsletter(req: NextRequest) {
           }
         })
       );
+    }
+
+    // 4. Record successful dispatch to prevent duplicate sends on the same day
+    if (sentCount > 0 && !testEmailOnly) {
+      lastDispatchedDate = lagosDateStr;
+      try {
+        await supabase.from("feedback").insert({
+          email: "system@ajose.ng",
+          name: "Daily Newsletter Engine",
+          category: "Newsletter Dispatch Log",
+          message: `[${lagosDateStr}] Daily newsletter "${tip.title}" successfully dispatched to ${sentCount} recipients.`,
+          source_url: "/api/cron/newsletter",
+          rating: 5,
+        });
+      } catch (logErr) {
+        console.warn("Failed recording newsletter dispatch log:", logErr);
+      }
     }
 
     return NextResponse.json({

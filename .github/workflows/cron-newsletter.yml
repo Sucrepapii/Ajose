@@ -1,0 +1,26 @@
+name: Automated Daily Newsletter
+
+on:
+  schedule:
+    # 08:00 UTC = 09:00 AM West Africa Time (WAT) -> Once daily delivery
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  dispatch-daily-newsletter:
+    runs-on: ubuntu-latest
+    env:
+      REPO_CRON_SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
+      - name: Dispatch Automated Daily Financial Tip & Newsletter (Once Daily)
+        run: |
+          echo "Dispatching automated daily financial tip & newsletter to active subscribers..."
+          SECRET="${REPO_CRON_SECRET:-ajose_sec_cron_99f2b810d7a6e4c}"
+          
+          HTTP_STATUS=$(curl -s -S -o /tmp/newsletter_response.json -w "%{http_code}" -X POST "https://ajose.ng/api/cron/newsletter" \
+            -H "Authorization: Bearer ${SECRET}" \
+            -H "Content-Type: application/json" || echo "000")
+          
+          echo "Newsletter HTTP Status: $HTTP_STATUS"
+          cat /tmp/newsletter_response.json 2>/dev/null || echo "No response body"
+          echo ""

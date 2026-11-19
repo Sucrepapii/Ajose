@@ -36,7 +36,8 @@ jobs:
             echo "::warning ::Sweep endpoint returned HTTP $HTTP_STATUS"
           fi
 
-      - name: Trigger 24h Pre-Debit Reminders
+      - name: Trigger 24h Pre-Debit Reminders (09:00 AM WAT)
+        if: github.event.schedule == '0 8 * * *' || github.event_name == 'workflow_dispatch'
         run: |
           echo "Triggering 24-hour pre-debit member funding reminders..."
           SECRET="${REPO_CRON_SECRET:-ajose_sec_cron_99f2b810d7a6e4c}"
@@ -47,17 +48,4 @@ jobs:
           
           echo "HTTP Status: $HTTP_STATUS"
           cat /tmp/reminders_response.json 2>/dev/null || echo "No response body"
-          echo ""
-
-      - name: Trigger Automated Daily Newsletter (09:00 AM WAT)
-        run: |
-          echo "Dispatching automated daily financial tip & newsletter to active subscribers..."
-          SECRET="${REPO_CRON_SECRET:-ajose_sec_cron_99f2b810d7a6e4c}"
-          
-          HTTP_STATUS=$(curl -s -S -o /tmp/newsletter_response.json -w "%{http_code}" -X POST "https://ajose.ng/api/cron/newsletter" \
-            -H "Authorization: Bearer ${SECRET}" \
-            -H "Content-Type: application/json" || echo "000")
-          
-          echo "Newsletter HTTP Status: $HTTP_STATUS"
-          cat /tmp/newsletter_response.json 2>/dev/null || echo "No response body"
           echo ""
