@@ -742,3 +742,93 @@ export async function initiateMonoDirectDebit({
     message: "Mono Direct Debit failed. Check Mono configuration.",
   };
 }
+
+export interface MonoReauthResult {
+  success: boolean;
+  token?: string;
+  monoUrl?: string;
+  reference?: string;
+  error?: string;
+}
+
+/**
+ * Initiates an Account Re-authorisation session with Mono v2.
+ * Used when a Nigerian bank session expires and requires user re-auth
+ * (sync_status === "REAUTHORISATION_REQUIRED").
+ *
+ * Endpoint: POST https://api.withmono.com/v2/accounts/initiate
+ * Scope: "reauth"
+ */
+export async function initiateMonoAccountReauth({
+  accountId,
+  redirectUrl = "https://ajose.ng/dashboard/verify?reauth=success",
+  reference,
+}: {
+  accountId: string;
+  redirectUrl?: string;
+  reference?: string;
+}): Promise<MonoReauthResult> {
+  const ref = reference || `reauth_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
+  const rawKeys = [
+    "live_sk_olea4c36zigmw2bgxdc2",
+    process.env.MONO_SECRET_KEY,
+    process.env.LIVE_MONO_SECRET_KEY,
+    process.env.MONO_CONNECT_SECRET_KEY,
+  ];
+
+  const candidateKeys = Array.from(
+    new Set(
+      rawKeys
+        .filter((k): k is string => Boolean(k && typeof k === "string"))
+        .map((k) => k.trim().replace(/^["']|["']$/g, ""))
+        .filter((k) => k.length > 5)
+    )
+  );
+
+  let lastError = "";
+
+  for (const key of candidateKeys) {
+    try {
+      const response = await fetch("https://api.withmono.com/v2/accounts/initiate", {
+        method: "POST",
+        headers: {
+          "mono-sec-key": key,
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({
+          account: accountId,
+          scope: "reauth",
+          meta: { ref },
+          redirect_url: redirectUrl,
+        }),
+      });
+
+      const resData = await response.json().catch(() => null);
+
+      if (response.ok && (resData?.token || resData?.data?.token || resData?.mono_url || resData?.data?.mono_url)) {
+        const token = resData?.token || resData?.data?.token;
+        const monoUrl = resData?.mono_url || resData?.data?.mono_url || (token ? `https://connect.withmono.com/?token=${token}` : undefined);
+
+        return {
+          success: true,
+          token,
+          monoUrl,
+          reference: ref,
+        };
+      }
+
+      lastError = resData?.message || resData?.error || `HTTP ${response.status}`;
+      console.warn(`[Mono Re-auth] Key ${key.substring(0, 10)}... failed: ${lastError}`);
+    } catch (err: any) {
+      console.error("[Mono Re-auth Network Error]:", err);
+      lastError = err.message;
+    }
+  }
+
+  return {
+    success: false,
+    error: lastError || "Failed to initiate Mono account re-authorisation.",
+  };
+}

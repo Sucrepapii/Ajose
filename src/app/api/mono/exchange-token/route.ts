@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
       })
       .eq("id", user.id);
 
-    // 4. Update Supabase Auth metadata: clear old bank fields and reset mandate
+    // 4. Update Supabase Auth metadata: save mono_account_id, clear old bank fields, and reset mandate
     // Because NIBSS e-mandates are tied to a specific bank account, changing banks
     // automatically invalidates any old mandate so the user can authorize a fresh one seamlessly.
     try {
@@ -165,6 +165,9 @@ export async function POST(req: NextRequest) {
       await adminSupabase.auth.admin.updateUserById(user.id, {
         user_metadata: {
           ...user.user_metadata,
+          mono_account_id: accountId,
+          mono_sync_status: "AVAILABLE",
+          mono_reauth_required: false,
           bank_name: null,
           account_number: null,
           account_name: null,

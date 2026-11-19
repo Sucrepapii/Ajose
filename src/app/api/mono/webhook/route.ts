@@ -303,6 +303,70 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true, status: "mandate_approved" });
     }
 
+    // 4. Handle Account Updated & Re-authorisation Requirements (Mono Dev Best Practice)
+    // Check sync_status vs data_status:
+    // If sync_status === 'REAUTHORISATION_REQUIRED', historical data is still AVAILABLE,
+    // but the Nigerian bank requires a new session before fresh transactions can be fetched.
+    if (
+      event === "account_updated" ||
+      event === "account.updated" ||
+      event === "mono.events.account_updated"
+    ) {
+      const accountId = data.account?.id || data.account?._id || data.account_id || data.id;
+      const accountNumber = data.account?.accountNumber || data.account?.account_number;
+      const syncStatus = (data.meta?.sync_status || data.sync_status || "").toUpperCase();
+      const dataStatus = (data.meta?.data_status || data.data_status || "AVAILABLE").toUpperCase();
+
+      try {
+        const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 100 });
+        const matchedUser = (usersList?.users || []).find((u) => 
+          (accountId && u.user_metadata?.mono_account_id === accountId) ||
+          (accountNumber && u.user_metadata?.mono_mandate_account === accountNumber)
+        );
+
+        if (matchedUser) {
+          const isReauthRequired = syncStatus === "REAUTHORISATION_REQUIRED";
+
+          await supabase.auth.admin.updateUserById(matchedUser.id, {
+            user_metadata: {
+              ...matchedUser.user_metadata,
+              mono_account_id: accountId || matchedUser.user_metadata?.mono_account_id,
+              mono_sync_status: syncStatus,
+              mono_data_status: dataStatus,
+              mono_reauth_required: isReauthRequired,
+              ...(isReauthRequired ? { mono_reauth_required_at: new Date().toISOString() } : { mono_reauth_cleared_at: new Date().toISOString() })
+            }
+          });
+
+          if (isReauthRequired) {
+            // Notify member that their bank requires a quick session renewal
+            await supabase.from("notifications").insert({
+              user_id: matchedUser.id,
+              title: "⚠️ Bank Re-authorization Required",
+              message: "Your bank requires a quick session re-authorization to fetch latest transactions and maintain contribution tracking. Historical data remains available.",
+              type: "warning"
+            });
+          } else if (syncStatus === "AVAILABLE" || syncStatus === "SYNCED") {
+            await supabase.from("notifications").insert({
+              user_id: matchedUser.id,
+              title: "✓ Bank Connection Synced",
+              message: "Your bank session is active and transaction sync has completed automatically.",
+              type: "success"
+            });
+          }
+        }
+      } catch (accErr) {
+        console.error("[Mono Webhook] Error updating account sync status:", accErr);
+      }
+
+      return NextResponse.json({ 
+        received: true, 
+        status: "account_updated_processed",
+        syncStatus,
+        dataStatus 
+      });
+    }
+
     // Default response for other events (e.g. mandate status changes)
     return NextResponse.json({ received: true, event });
 

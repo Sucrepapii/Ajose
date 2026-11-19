@@ -53,6 +53,8 @@ export function MonoConnectWidget({
   const [isVerified, setIsVerified] = useState(initialIsVerified);
   const [userEmail, setUserEmail] = useState<string>((initialProfile as any)?.email || "");
   const [userName, setUserName] = useState<string>((initialProfile as any)?.name || "");
+  const [reauthRequired, setReauthRequired] = useState(false);
+  const [isReauthorizing, setIsReauthorizing] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -62,6 +64,9 @@ export function MonoConnectWidget({
                      user.user_metadata?.name || 
                      `${user.user_metadata?.first_name || ""} ${user.user_metadata?.last_name || ""}`.trim();
         if (name) setUserName(name);
+        if (user.user_metadata?.mono_reauth_required) {
+          setReauthRequired(true);
+        }
       }
     }).catch(() => {});
   }, [supabase]);
@@ -117,6 +122,30 @@ export function MonoConnectWidget({
       toast.error(err.message || "Failed to initiate mandate", { id: toastId });
     } finally {
       setIsInitiatingMandate(false);
+    }
+  };
+
+  const handleReauthorizeAccount = async () => {
+    setIsReauthorizing(true);
+    const toastId = toast.loading("Initiating bank session renewal...");
+    try {
+      const res = await fetch("/api/mono/reauth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to initiate session renewal");
+
+      if (data.monoUrl) {
+        toast.success("Opening bank re-authorization screen...", { id: toastId });
+        window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
+      } else {
+        toast.success("Session initiated! Please complete prompt.", { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start bank re-authorization", { id: toastId });
+    } finally {
+      setIsReauthorizing(false);
     }
   };
 
@@ -523,6 +552,34 @@ export function MonoConnectWidget({
               )}
             </div>
           </div>
+
+          {/* Bank Session Re-authorization Banner (Mono Dev Best Practice) */}
+          {reauthRequired && (
+            <div className="bg-gradient-to-r from-blue-500/10 via-amber-500/10 to-transparent border border-blue-400/60 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
+              <div className="space-y-1 max-w-lg">
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 text-blue-600 animate-spin" />
+                  <h4 className="text-sm font-bold text-[#0B3022]">
+                    Bank Session Renewal Required
+                  </h4>
+                </div>
+                <p className="text-xs text-[#1F2937]/80 leading-relaxed font-medium">
+                  Your bank requires a quick session re-authorization to fetch real-time transactions. Your historical bank records and mandate remain active.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <button
+                  onClick={handleReauthorizeAccount}
+                  disabled={isReauthorizing}
+                  className="px-4 py-2.5 bg-[#0B3022] hover:bg-[#0B3022]/90 text-[#C5A059] font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${isReauthorizing ? "animate-spin" : ""}`} />
+                  <span>{isReauthorizing ? "Opening Session..." : "Renew Bank Session"}</span>
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Mandate Authorization Banner */}
           {mandateStatus !== "approved" && (
