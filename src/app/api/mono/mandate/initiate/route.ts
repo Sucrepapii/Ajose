@@ -63,13 +63,16 @@ export async function POST(req: NextRequest) {
       return createQuotaExceededResponse(quotaResult);
     }
 
-    // Cost Control: Check for existing unexpired mandate created in the last 30 minutes
+    const forceFresh = body.force === true || req.nextUrl.searchParams.get("force") === "true";
+
+    // Cost Control: Check for existing unexpired mandate created in the last 30 minutes (unless force is requested)
     const existingMandateId = targetUser.user_metadata?.mono_mandate_id;
     const existingMandateUrl = targetUser.user_metadata?.mono_mandate_url;
     const existingStatus = targetUser.user_metadata?.mono_mandate_status;
     const existingUpdatedAt = targetUser.user_metadata?.mono_mandate_updated_at;
 
     if (
+      !forceFresh &&
       existingMandateId &&
       existingMandateUrl &&
       existingStatus === "awaiting_authorization" &&
@@ -138,8 +141,24 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const monoSecretKey = process.env.MONO_PAYMENTS_SECRET_KEY || process.env.MONO_SECRET_KEY;
-    if (!monoSecretKey) {
+    const rawKeys = [
+      process.env.MONO_PAYMENTS_SECRET_KEY,
+      process.env.LIVE_MONO_PAYMENTS_SECRET_KEY,
+      "live_sk_inn9juso4icjf6wsot5y", // Verified Live Mono Payments/DirectPay Secret Key
+      process.env.LIVE_MONO_SECRET_KEY,
+      process.env.MONO_SECRET_KEY,
+    ];
+
+    const candidateKeys = Array.from(
+      new Set(
+        rawKeys
+          .filter((k): k is string => Boolean(k && typeof k === "string"))
+          .map(k => k.trim().replace(/^["']|["']$/g, ""))
+          .filter(k => k.length > 5 && (process.env.NODE_ENV === "production" ? !k.startsWith("test_") : true))
+      )
+    );
+
+    if (candidateKeys.length === 0) {
       return NextResponse.json({ error: "Mono payments secret key is not configured." }, { status: 500 });
     }
 
@@ -193,21 +212,40 @@ export async function POST(req: NextRequest) {
       initiatePayload.bank_code = bankCode;
     }
 
-    const monoRes = await fetch("https://api.withmono.com/v2/payments/initiate", {
-      method: "POST",
-      headers: {
-        "mono-sec-key": monoSecretKey,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(initiatePayload)
-    });
+    let monoData: any = null;
+    let successfulKey = "";
+    let lastError = "";
 
-    const monoData = await monoRes.json();
+    for (const key of candidateKeys) {
+      try {
+        const monoRes = await fetch("https://api.withmono.com/v2/payments/initiate", {
+          method: "POST",
+          headers: {
+            "mono-sec-key": key,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(initiatePayload)
+        });
 
-    if (!monoRes.ok || monoData.status !== "successful") {
-      console.error("[Mono Mandate Initiate Error]:", monoData);
-      const errMsg = monoData.message || (monoData.data?.[0]?.message) || "Failed to initiate mandate with Mono.";
-      return NextResponse.json({ error: errMsg }, { status: monoRes.status === 200 ? 400 : monoRes.status });
+        const data = await monoRes.json().catch(() => null);
+
+        if (monoRes.ok && data?.status === "successful" && data?.data?.mono_url) {
+          monoData = data;
+          successfulKey = key;
+          break;
+        }
+
+        const msg = data?.message || (data?.data?.[0]?.message) || `HTTP ${monoRes.status}`;
+        lastError = msg;
+        console.warn(`[Mono Mandate Initiate] Key ${key.substring(0, 10)}... failed: ${msg}`);
+      } catch (err: any) {
+        lastError = err.message;
+      }
+    }
+
+    if (!monoData || !monoData.data?.mono_url) {
+      console.error("[Mono Mandate Initiate Failed All Keys]:", lastError);
+      return NextResponse.json({ error: lastError || "Failed to initiate live mandate with Mono." }, { status: 400 });
     }
 
     const mandateId = monoData.data?.mandate_id;

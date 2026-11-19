@@ -104,7 +104,7 @@ export function MonoConnectWidget({
       const res = await fetch("/api/mono/mandate/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({})
+        body: JSON.stringify({ force: true })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to initiate mandate");

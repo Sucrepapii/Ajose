@@ -82,7 +82,7 @@ async function handleSweep(req: NextRequest) {
     }
 
     const supabase = createAdminClient();
-    const monoSecretKey = process.env.MONO_PAYMENTS_SECRET_KEY || process.env.MONO_SECRET_KEY || "test_sk_m965s64o22p1sovu3koh";
+    const monoSecretKey: string = process.env.MONO_PAYMENTS_SECRET_KEY || "live_sk_inn9juso4icjf6wsot5y";
     const isSandbox = !monoSecretKey || monoSecretKey.startsWith("test_");
 
     // 2. Fetch active groups
