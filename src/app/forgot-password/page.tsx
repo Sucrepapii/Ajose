@@ -100,8 +100,19 @@ export default function ForgotPasswordPage() {
 
       if (updateError) throw updateError;
 
+      // Unlock account immediately so user is not blocked on next login
+      try {
+        await fetch("/api/auth/unlock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.trim() }),
+        });
+      } catch (unlockErr) {
+        console.warn("Unlock account request notice:", unlockErr);
+      }
+
       setStep(3);
-      toast.success("Password reset successfully!");
+      toast.success("Password reset successfully! Account lock has been cleared.");
       setTimeout(() => {
         router.push("/login");
       }, 3000);

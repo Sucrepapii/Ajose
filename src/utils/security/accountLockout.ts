@@ -69,6 +69,7 @@ export async function checkAccountLockout(identifier: string): Promise<{
   remainingAttempts: number;
   failedAttempts: number;
   lockoutCount: number;
+  lastAttemptAt: number | null;
 }> {
   const key = normalizeKey(identifier);
   const now = Date.now();
@@ -80,7 +81,8 @@ export async function checkAccountLockout(identifier: string): Promise<{
       remainingMinutes: 0,
       remainingAttempts: MAX_FAILED_ATTEMPTS,
       failedAttempts: 0,
-      lockoutCount: 0
+      lockoutCount: 0,
+      lastAttemptAt: null
     };
   }
 
@@ -94,7 +96,8 @@ export async function checkAccountLockout(identifier: string): Promise<{
         remainingMinutes,
         remainingAttempts: 0,
         failedAttempts: record.failedAttempts,
-        lockoutCount: record.lockoutCount
+        lockoutCount: record.lockoutCount,
+        lastAttemptAt: record.lastAttemptAt
       };
     } else {
       // Lock has expired; reset attempts for next trial cycle, but preserve lockoutCount
@@ -115,7 +118,8 @@ export async function checkAccountLockout(identifier: string): Promise<{
     remainingMinutes: 0,
     remainingAttempts,
     failedAttempts: record.failedAttempts,
-    lockoutCount: record.lockoutCount
+    lockoutCount: record.lockoutCount,
+    lastAttemptAt: record.lastAttemptAt
   };
 }
 

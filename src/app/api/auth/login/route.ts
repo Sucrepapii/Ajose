@@ -5,6 +5,7 @@ import {
   recordFailedLoginAttempt, 
   clearFailedLoginAttempts 
 } from "@/utils/security/accountLockout";
+import { getAuthUserByEmail } from "@/utils/authHelpers";
 import { evaluateRequestRateLimit, createRateLimitResponse } from "@/utils/rateLimit";
 
 export const dynamic = "force-dynamic";
@@ -41,14 +42,33 @@ export async function POST(req: NextRequest) {
     // 2. Account Lockout Pre-flight Check
     const lockoutStatus = await checkAccountLockout(cleanEmail);
     if (lockoutStatus.isLocked) {
-      return NextResponse.json(
-        {
-          error: `This account is temporarily locked due to multiple failed login attempts. Please try again in ${lockoutStatus.remainingMinutes} minutes or use Forgot Password to reset your credentials.`,
-          locked: true,
-          remainingMinutes: lockoutStatus.remainingMinutes
-        },
-        { status: 423 } // HTTP 423 Locked
-      );
+      // Check if user has reset their password after the lockout occurred
+      let isUnlockedByPasswordReset = false;
+      try {
+        const authUser = await getAuthUserByEmail(cleanEmail);
+        if (authUser?.updated_at && lockoutStatus.lastAttemptAt) {
+          const userUpdatedAtMs = new Date(authUser.updated_at).getTime();
+          // If the password/user was updated after the failed attempt occurred,
+          // automatically clear the lockout and let them proceed to authenticate
+          if (userUpdatedAtMs > lockoutStatus.lastAttemptAt) {
+            await clearFailedLoginAttempts(cleanEmail);
+            isUnlockedByPasswordReset = true;
+          }
+        }
+      } catch (checkErr) {
+        console.warn("Failed checking password update timestamp during lockout check:", checkErr);
+      }
+
+      if (!isUnlockedByPasswordReset) {
+        return NextResponse.json(
+          {
+            error: `This account is temporarily locked due to multiple failed login attempts. Please try again in ${lockoutStatus.remainingMinutes} minutes or use Forgot Password to reset your credentials.`,
+            locked: true,
+            remainingMinutes: lockoutStatus.remainingMinutes
+          },
+          { status: 423 } // HTTP 423 Locked
+        );
+      }
     }
 
     // 3. Attempt authentication via Supabase Server Client

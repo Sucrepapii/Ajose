@@ -54,3 +54,40 @@ export async function requireStaff() {
 
   return session;
 }
+
+/**
+ * Look up a Supabase Auth user record by email using the service role admin client.
+ * Returns the Auth user object (including `updated_at`, `id`, `email`) if found.
+ */
+export async function getAuthUserByEmail(email: string) {
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    const supabaseAdmin = createAdminClient();
+
+    // 1. Try public.users table lookup (fastest indexed query)
+    const { data: dbUser } = await supabaseAdmin
+      .from("users")
+      .select("id")
+      .ilike("email", cleanEmail)
+      .maybeSingle();
+
+    if (dbUser?.id) {
+      const { data: authData } = await supabaseAdmin.auth.admin.getUserById(dbUser.id);
+      if (authData?.user) {
+        return authData.user;
+      }
+    }
+
+    // 2. Fallback: listUsers scan if not present in public.users
+    const { data: usersData } = await supabaseAdmin.auth.admin.listUsers({
+      perPage: 50,
+    });
+    const matched = usersData?.users?.find(
+      (u) => u.email?.toLowerCase() === cleanEmail
+    );
+    return matched || null;
+  } catch (err) {
+    console.warn("getAuthUserByEmail lookup notice:", err);
+    return null;
+  }
+}

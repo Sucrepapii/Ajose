@@ -6,6 +6,7 @@ import {
   recordFailedLoginAttempt, 
   clearFailedLoginAttempts 
 } from "@/utils/security/accountLockout";
+import { getAuthUserByEmail } from "@/utils/authHelpers";
 
 export async function POST(req: Request) {
   try {
@@ -23,15 +24,31 @@ export async function POST(req: Request) {
     // 1. Account Lockout Pre-flight Check
     const lockoutStatus = await checkAccountLockout(cleanEmail);
     if (lockoutStatus.isLocked) {
-      return NextResponse.json(
-        {
-          success: false,
-          locked: true,
-          remainingMinutes: lockoutStatus.remainingMinutes,
-          message: `Account is temporarily locked due to multiple failed login attempts. Please try again in ${lockoutStatus.remainingMinutes} minutes.`
-        },
-        { status: 423 } // HTTP 423 Locked
-      );
+      let isUnlockedByPasswordReset = false;
+      try {
+        const authUser = await getAuthUserByEmail(cleanEmail);
+        if (authUser?.updated_at && lockoutStatus.lastAttemptAt) {
+          const userUpdatedAtMs = new Date(authUser.updated_at).getTime();
+          if (userUpdatedAtMs > lockoutStatus.lastAttemptAt) {
+            await clearFailedLoginAttempts(cleanEmail);
+            isUnlockedByPasswordReset = true;
+          }
+        }
+      } catch (checkErr) {
+        console.warn("Admin lockout timestamp check notice:", checkErr);
+      }
+
+      if (!isUnlockedByPasswordReset) {
+        return NextResponse.json(
+          {
+            success: false,
+            locked: true,
+            remainingMinutes: lockoutStatus.remainingMinutes,
+            message: `Account is temporarily locked due to multiple failed login attempts. Please try again in ${lockoutStatus.remainingMinutes} minutes.`
+          },
+          { status: 423 } // HTTP 423 Locked
+        );
+      }
     }
 
     const supabase = await createClient();

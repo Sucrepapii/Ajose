@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { getSuperAdminSession } from "@/utils/adminAuth";
+import { clearFailedLoginAttempts } from "@/utils/security/accountLockout";
 
 export async function POST(req: Request) {
   try {
@@ -54,6 +55,9 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    // Clear any active lockout counters for this admin
+    await clearFailedLoginAttempts(session.user.email);
 
     return NextResponse.json({
       success: true,

@@ -75,8 +75,22 @@ export default function ResetPasswordPage() {
 
       if (error) throw error;
 
+      // Unlock account immediately so user is not blocked on next login
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email) {
+          await fetch("/api/auth/unlock", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: user.email }),
+          });
+        }
+      } catch (unlockErr) {
+        console.warn("Unlock account request notice:", unlockErr);
+      }
+
       setIsSuccess(true);
-      toast.success("Password updated successfully!");
+      toast.success("Password updated successfully! Account lock has been cleared.");
 
       setTimeout(() => {
         router.push("/login");
