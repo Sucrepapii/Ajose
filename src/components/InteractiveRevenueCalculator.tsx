@@ -146,7 +146,7 @@ export function InteractiveRevenueCalculator({
             </div>
 
             <div className="grid grid-cols-5 gap-2 mb-2">
-              {[2, 3.5, 5, 7.5, 10].map((pct) => (
+              {[0, 2.5, 5, 7.5, 10].map((pct) => (
                 <button
                   key={pct}
                   type="button"
@@ -162,7 +162,7 @@ export function InteractiveRevenueCalculator({
               ))}
             </div>
             <p className="text-[11px] text-[#F3EEE3]/60">
-              You choose your rate (0% to 15%) upon circle creation. Deducted automatically upon payout.
+              You choose your rate (0% to 10%) upon circle creation. Deducted automatically upon payout.
             </p>
           </div>
 
@@ -217,7 +217,7 @@ export function InteractiveRevenueCalculator({
               </div>
               <div className="flex justify-between text-[#111613]/75">
                 <span>Collections:</span>
-                <strong className="text-[#0B3022]">100% Automated Debit</strong>
+                <strong className="text-[#0B3022]">Automated Direct Debit</strong>
               </div>
             </div>
           </div>

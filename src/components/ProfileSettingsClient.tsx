@@ -346,7 +346,7 @@ export function ProfileSettingsClient({
                 value={formData.nickname}
                 onChange={handleChange}
                 className="block w-full px-3 py-3 border border-zinc-800 rounded-xl bg-zinc-950 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
-                placeholder="e.g. GoldenSaver"
+                placeholder="e.g. TurnLeader"
               />
             </div>
 
@@ -490,7 +490,7 @@ export function ProfileSettingsClient({
               <ShieldCheck className="h-4 w-4 text-emerald-400" /> Why Next of Kin is required in Àjọṣe:
             </p>
             <p>
-              In rotational savings circles where early payout recipients collect funds before full cycle maturity, 
+              In rotational contribution circles where early payout recipients collect funds before full cycle maturity, 
               verified Next of Kin details provide emergency recovery contacts and ensure transparency across peer circles.
             </p>
           </div>
@@ -666,7 +666,7 @@ export function ProfileSettingsClient({
               <p className="text-xs text-zinc-400 max-w-xl">
                 {hasPin 
                   ? "Your 4-digit PIN is active. It is prompted whenever you initiate a payout withdrawal sweep or re-link your verified settlement bank account."
-                  : "We strongly recommend setting a 4-digit numeric PIN now. It prevents unauthorized parties from redirecting your lump-sum savings."
+                  : "We strongly recommend setting a 4-digit numeric PIN now. It prevents unauthorized parties from redirecting your lump-sum payout."
                 }
               </p>
             </div>
@@ -817,7 +817,7 @@ export function ProfileSettingsClient({
             <div className="space-y-2">
               <h3 className="text-base font-bold text-white">Security PIN Recommended</h3>
               <p className="text-xs text-zinc-400">
-                To protect your lump-sum savings from unauthorized diversion, we recommend configuring a 4-digit PIN before switching your verified payout bank account.
+                To protect your lump-sum payout from unauthorized diversion, we recommend configuring a 4-digit PIN before switching your verified payout bank account.
               </p>
             </div>
 

@@ -31,7 +31,7 @@ export function MarketingFooter() {
               &ldquo;Turn by turn, no wahala.&rdquo;
             </p>
             <p className="text-[#F3EEE3]/65 leading-relaxed max-w-sm mb-6">
-              Àjọṣe is a digital Ajo platform that automates contributions, turns and payouts for savings groups. Turn by turn, no wahala.
+              Àjọṣe is a digital Ajo platform that automates contributions, turns and payouts for rotational groups. Turn by turn, no wahala.
             </p>
 
             {/* Official Social Channels */}

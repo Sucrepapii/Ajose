@@ -209,13 +209,13 @@ export const SPECIAL_CALENDAR_EDITIONS: SpecialEventDate[] = [
 export const DAILY_TIPS: DailyTip[] = [
   {
     id: 1,
-    title: "Why Early Payout Slots Are Loans, and Late Slots Are Savings",
+    title: "Why Early Payout Slots Are Loans, and Late Slots Are Capital Accumulation",
     category: "Ajo Strategy",
-    summary: "Rotational savings (Ajo/Esusu) creates two distinct financial instruments depending on your slot position. Knowing your purpose determines which slot you should claim.",
+    summary: "Rotational pooling (Ajo/Esusu) creates two distinct financial instruments depending on your slot position. Knowing your purpose determines which slot you should claim.",
     bulletPoints: [
       "Turns 1 & 2 act as zero-interest capital financing for inventory or immediate debts.",
       "Middle turns act as disciplined budget smoothers for predictable quarterly expenses.",
-      "Final turns act as enforced high-yield forced savings targets with zero temptation to liquidate prematurely."
+      "Final turns act as enforced capital accumulation targets with zero temptation to liquidate prematurely."
     ],
     actionPrompt: "Review your current circle slot position and ensure it aligns with your 90-day goal."
   },
@@ -284,7 +284,7 @@ export const DAILY_TIPS: DailyTip[] = [
     id: 7,
     title: "The Psychological Power of Turn Position Commitments",
     category: "Cashflow",
-    summary: "Behavioral economists confirm that people save 300% more effectively when accountable to an external peer group than when saving alone in private accounts.",
+    summary: "Behavioral economists confirm that people pool and accumulate funds 300% more effectively when accountable to an external peer group than when building wealth alone in private accounts.",
     bulletPoints: [
       "Social contracts prevent impulsive withdrawals for temporary lifestyle desires.",
       "Knowing your turn is approaching motivates aggressive budget optimization.",

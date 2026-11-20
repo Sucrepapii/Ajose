@@ -157,7 +157,7 @@ export function MobileAppShowcase() {
               <div className="relative rounded-3xl overflow-hidden border border-white/15 bg-[#0B3022] shadow-[0_25px_70px_rgba(0,0,0,0.65)]">
                 <Image
                   src="/mobile-app-showcase.jpg"
-                  alt="Àjọṣe Rotational Savings Mobile App Mockup"
+                  alt="Àjọṣe Rotational Contributions Mobile App Mockup"
                   width={1200}
                   height={675}
                   priority

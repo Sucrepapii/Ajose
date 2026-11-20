@@ -124,7 +124,7 @@ export function MemberFeeCalculator() {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-[#F3EEE3]/70">
-                Circle Size (Total Savers)
+                Circle Size (Total Members)
               </label>
               <span className="font-mono text-xl sm:text-2xl font-bold text-[#F3EEE3]">
                 {members} <span className="text-sm font-normal text-[#F3EEE3]/50">members</span>
@@ -152,7 +152,7 @@ export function MemberFeeCalculator() {
                       : "bg-[#F3EEE3]/[0.05] border-[#F3EEE3]/10 text-[#F3EEE3]/70 hover:bg-[#F3EEE3]/10"
                   }`}
                 >
-                  {m} savers
+                  {m} members
                 </button>
               ))}
             </div>
@@ -177,7 +177,7 @@ export function MemberFeeCalculator() {
                 Total Member Debit (Base + Fee)
               </span>
               <span className="font-mono text-base font-bold text-[#0B3022]">
-                ₦{memberTotalDebit.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} /saver
+                ₦{memberTotalDebit.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} /member
               </span>
             </div>
 
@@ -207,7 +207,7 @@ export function MemberFeeCalculator() {
                 ₦{netPayout.toLocaleString()}
               </div>
               <p className="text-[11px] text-[#0B3022]/65 mt-1.5">
-                The full target savings pot disbursed directly to the recipient&apos;s verified bank account.
+                The full rotational pool disbursed directly to the recipient&apos;s verified bank account.
               </p>
             </div>
           </div>

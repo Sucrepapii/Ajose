@@ -359,7 +359,7 @@ export default function CreateGroupPage() {
                       <ShieldCheck className="h-4 w-4 text-[#0B3022] shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold block text-[#0B3022]">Monthly Circle Pricing Rule:</span>
-                        A <strong>2% platform fee</strong> (or admin custom rate) is included at auto-debit. <strong>0% payout fee</strong> so turn collectors receive 100% of the guaranteed savings pot!
+                        A <strong>2% platform fee</strong> (or admin custom rate) is included at auto-debit. <strong>0% payout fee</strong> so turn collectors receive 100% of the guaranteed rotational pot!
                       </div>
                     </div>
                   )}

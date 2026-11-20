@@ -205,7 +205,7 @@ export function OrganizerEarningsCalculator({
                   </span>
                 </div>
                 <div className="flex gap-2 mb-2">
-                  {[2, 3.5, 5, 7.5, 10].map((pct) => (
+                  {[0, 2.5, 5, 7.5, 10].map((pct) => (
                     <button
                       key={pct}
                       type="button"

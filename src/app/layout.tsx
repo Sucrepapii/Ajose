@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     default: "Ajose: Automated Ajo & Esusu | Turn by Turn, No Wahala",
     template: "%s | Ajose",
   },
-  description: "Stop chasing members for Ajo contributions. Automated bank debits, real-time turn tracking, and instant payouts for your group savings. Free to start.",
+  description: "Stop chasing members for Ajo contributions. Automated bank debits, real-time turn tracking, and instant payouts for your group contributions. Free to start.",
   keywords: [
     "Ajose",
     "Ajose Nigeria",
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         type: "image/png",
-        alt: "Ajose — Automated Rotational Savings & Thrift Platform",
+        alt: "Ajose — Automated Rotational Contributions & Thrift Platform",
       },
     ],
   },
@@ -139,7 +139,7 @@ export default function RootLayout({
                   "url": "https://ajose.ng",
                   "logo": "https://ajose.ng/logo.png",
                   "slogan": "Turn by Turn, No Wahala",
-                  "description": "Ajose (Àjọṣe) is Nigeria's automated digital Ajo and rotational savings platform.",
+                  "description": "Ajose (Àjọṣe) is Nigeria's automated digital Ajo and rotational contribution platform.",
                   "foundingLocation": {
                     "@type": "Place",
                     "name": "Nigeria"
@@ -162,9 +162,9 @@ export default function RootLayout({
                 {
                   "@type": "FinancialProduct",
                   "@id": "https://ajose.ng/#financialProduct",
-                  "name": "Ajose Automated Rotational Savings",
+                  "name": "Ajose Automated Rotational Contributions",
                   "alternateName": ["Àjọṣe Ajo", "Digital Ajo", "Automated Esusu"],
-                  "description": "Automated rotational thrift and savings circles with direct-debit sweeps and transparent ledger tracking.",
+                  "description": "Automated rotational thrift and contribution circles with direct-debit sweeps and transparent ledger tracking.",
                   "provider": { "@id": "https://ajose.ng/#organization" },
                   "feesAndCommissionsSpecification": "https://ajose.ng/pricing"
                 }

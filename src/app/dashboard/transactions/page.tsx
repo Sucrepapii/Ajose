@@ -105,7 +105,7 @@ export default async function TransactionsPage() {
           : `Turn ${tx.cycle_turn} Auto-Debit Contribution failed for ${memberName}`;
       } else {
         displayDesc = isSelf 
-          ? `Turn ${tx.cycle_turn} Rotational Savings Contribution`
+          ? `Turn ${tx.cycle_turn} Rotational Contribution`
           : `Turn ${tx.cycle_turn} Contribution from ${memberName}`;
       }
     } else {

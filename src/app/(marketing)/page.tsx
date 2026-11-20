@@ -360,8 +360,8 @@ export default function Home() {
                 sub: "From micro-thrift to major capital pools",
               },
               {
-                metric: "100%",
-                label: "Automated Enforcement",
+                metric: "Automated",
+                label: "Mandate Enforcement",
                 sub: "Scheduled direct-debit bank sweeps",
               },
               {
@@ -372,7 +372,7 @@ export default function Home() {
               {
                 metric: "Home & Diaspora",
                 label: "Cross-Border Ready",
-                sub: "Save together across states & borders",
+                sub: "Pool funds across states & borders",
               },
             ].map((item, idx) => (
               <div
@@ -559,7 +559,7 @@ export default function Home() {
                           title: "Audited Records",
                           tagline: "Total visibility for every circle member.",
                           points: [
-                            "Cryptographically verified contribution logging",
+                            "Bank-verified contribution logging",
                             "Real-time Open-Banking payment verification",
                             "Exportable, tamper-evident ledger history",
                           ],
@@ -695,7 +695,7 @@ export default function Home() {
                           <div className="flex justify-between items-center pb-3 border-b border-[#111613]/10">
                             <div>
                               <h4 className="font-bold text-base text-[#111613]">
-                                Tech Savers Circle
+                                Tech Contributors Circle
                               </h4>
                               <p className="text-xs font-mono text-[#111613]/70 font-medium">
                                 October Round 4 of 10
@@ -711,7 +711,7 @@ export default function Home() {
                                 TOTAL MEMBERS
                               </p>
                               <p className="text-xl font-black font-mono text-[#111613]">
-                                12 Savers
+                                12 Members
                               </p>
                             </div>
                             <div className="bg-[#0B3022] p-3.5 rounded-xl text-[#F3EEE3]">
@@ -866,7 +866,7 @@ export default function Home() {
                 </span>
               </h2>
               <p className="text-[#111613]/70 text-base md:text-lg max-w-2xl mx-auto">
-                Why Nigeria&rsquo;s smartest circles choose automated enforcement over manual WhatsApp reminders or solo-saving apps.
+                Why Nigeria&rsquo;s smartest circles choose automated enforcement over manual WhatsApp reminders or solo finance apps.
               </p>
             </motion.div>
 
@@ -912,7 +912,7 @@ export default function Home() {
                         },
                         fintech: {
                           text: "No (Solo Only)",
-                          sub: "Save alone with zero leverage",
+                          sub: "Solo accumulation with zero leverage",
                         },
                         ajose: {
                           text: "Mono Auto-Disburse (T+1)",
@@ -979,7 +979,7 @@ export default function Home() {
                           sub: "Platform keeps all yield & spread",
                         },
                         ajose: {
-                          text: "0–15% Automated Cut",
+                          text: "0–10% Automated Cut",
                           sub: "Verified earnings paid directly to Admin",
                         },
                       },
@@ -1358,11 +1358,11 @@ export default function Home() {
             <h2 className="text-3xl md:text-5xl font-bold tracking-[-0.025em] text-[#111613] mb-4 leading-[1.1]">
               Designed for how{" "}
               <span className="font-editorial italic font-normal text-[#0B3022]">
-                communities save.
+                communities pool funds.
               </span>
             </h2>
             <p className="text-[#111613]/70 max-w-2xl mx-auto text-base sm:text-lg">
-              From family circles and diaspora savings to alumni funds and workplace thrift pools, Àjọṣe removes manual tracking and awkward follow-ups.
+              From family circles and diaspora contributions to alumni funds and workplace thrift pools, Àjọṣe removes manual tracking and awkward follow-ups.
             </p>
           </motion.div>
 
@@ -1372,7 +1372,7 @@ export default function Home() {
                 icon: HeartHandshake,
                 category: "Family & Diaspora",
                 title: "Cross-Border Family Circles",
-                desc: "Keep family savings coordinated across London, Atlanta, Toronto, and Lagos. Members contribute via secure Open Banking while turn recipients collect directly in Naira.",
+                desc: "Keep family contributions coordinated across London, Atlanta, Toronto, and Lagos. Members contribute via secure Open Banking while turn recipients collect directly in Naira.",
                 highlight: "Zero Remittance Hassle",
               },
               {

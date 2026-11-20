@@ -81,7 +81,7 @@ export default function ReferralsMarketingPage() {
     {
       number: "03",
       title: "Joins Circle & First Debit",
-      desc: "A friend counts as active once they join a savings circle and successfully complete their first scheduled contribution debit."
+      desc: "A friend counts as active once they join a contribution circle and successfully complete their first scheduled contribution debit."
     },
     {
       number: "04",
@@ -97,7 +97,7 @@ export default function ReferralsMarketingPage() {
     },
     {
       q: "What qualifies a friend as an 'Active' referral?",
-      a: "To ensure real savings circles without spam or fake accounts, a friend counts as an active referral only after three milestones: (1) completing BVN verification, (2) joining a savings circle, and (3) completing their first scheduled contribution debit."
+      a: "To ensure real contribution circles without spam or fake accounts, a friend counts as an active referral only after three milestones: (1) completing BVN verification, (2) joining a contribution circle, and (3) completing their first scheduled contribution debit."
     },
     {
       q: "Can circle organizers use their referral code for members?",
@@ -126,7 +126,7 @@ export default function ReferralsMarketingPage() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-[#0B3022]/75 leading-relaxed mb-8">
-            Turn by turn, no wahala. Bring friends, family, and colleagues to automated Ajo savings. 
+            Turn by turn, no wahala. Bring friends, family, and colleagues to automated Ajo circles. 
             Reduce your monthly contribution fee from <strong className="text-[#0B3022]">2.0%</strong> down to <strong className="text-[#0B3022]">as low as 0.5%</strong> (up to 75% off).
           </p>
 
@@ -212,7 +212,7 @@ export default function ReferralsMarketingPage() {
           </div>
         </div>
 
-        {/* Real Savings Comparison Box */}
+        {/* Fee Reduction Comparison Box */}
         <div className="bg-[#0B3022] text-[#F3EEE3] rounded-3xl p-8 md:p-12 border border-[#F3EEE3]/10 shadow-2xl mb-20 relative overflow-hidden">
           <div className="absolute right-0 top-0 w-80 h-80 bg-[#D4A843]/15 rounded-full blur-3xl pointer-events-none" />
 
@@ -220,7 +220,7 @@ export default function ReferralsMarketingPage() {
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-[#D4A843]/15 text-[#D4A843] border border-[#D4A843]/35 uppercase tracking-[0.14em] mb-4">
                 <Coins className="w-3.5 h-3.5" />
-                <span>Tangible Debit Savings</span>
+                <span>Tangible Fee Reductions</span>
               </div>
               <h3 className="text-2xl md:text-4xl font-bold mb-4 leading-tight tracking-tight">
                 How much more money stays in your{" "}
@@ -234,7 +234,7 @@ export default function ReferralsMarketingPage() {
                   <Check className="w-4 h-4 text-[#D4A843]" /> Automated calculations
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-[#D4A843]" /> Never expires while friends save
+                  <Check className="w-4 h-4 text-[#D4A843]" /> Never expires while circles run
                 </span>
               </div>
             </div>
@@ -250,8 +250,8 @@ export default function ReferralsMarketingPage() {
                   <span className="font-mono font-bold text-[#F3EEE3] text-lg">₦1,000 / debit</span>
                 </div>
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-[#F3EEE3] font-bold">Your Direct Savings</span>
-                  <span className="font-mono font-bold text-[#D4A843] text-xl">₦3,000 saved / debit</span>
+                  <span className="text-[#F3EEE3] font-bold">Your Fee Reduction</span>
+                  <span className="font-mono font-bold text-[#D4A843] text-xl">₦3,000 reduction / debit</span>
                 </div>
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function ReferralsMarketingPage() {
               <span className="font-editorial italic font-normal">works.</span>
             </h2>
             <p className="text-sm text-[#0B3022]/65 font-medium">
-              4 straightforward steps to verified savings and lower fees.
+              4 straightforward steps to fee discounts and lower rates.
             </p>
           </div>
 
@@ -296,7 +296,7 @@ export default function ReferralsMarketingPage() {
                 Built on Trust: Why We Enforce Real Circle Activity
               </h3>
               <p className="text-sm text-[#0B3022]/75 leading-relaxed mb-4">
-                Unlike platforms with fake bots or phantom referral codes, Àjọṣe only counts referrals who verify their bank BVN and participate in savings circles. This ensures that every member in our community is real, verified, and committed to turn-by-turn financial discipline.
+                Unlike platforms with fake bots or phantom referral codes, Àjọṣe only counts referrals who verify their bank BVN and participate in contribution circles. This ensures that every member in our community is real, verified, and committed to turn-by-turn financial discipline.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold text-[#0B3022]">
                 <div className="flex items-center gap-2">

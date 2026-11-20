@@ -91,7 +91,7 @@ export default function TermsOfServicePage() {
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">1. Definitions and Interpretation</h2>
           <ul className="list-disc pl-6 space-y-2">
-            <li><strong>&quot;Ajo Admin&quot;</strong> or <strong>&quot;Circle Organizer&quot;</strong> means the individual User who creates, initiates, configures, and manages a rotational savings group on the Platform.</li>
+            <li><strong>&quot;Ajo Admin&quot;</strong> or <strong>&quot;Circle Organizer&quot;</strong> means the individual User who creates, initiates, configures, and manages a rotational contribution circle on the Platform.</li>
             <li><strong>&quot;Member&quot;</strong> or <strong>&quot;Contributor&quot;</strong> means any individual User who accepts an invitation to join an Ajo group and commits to making rotational contributions.</li>
             <li><strong>&quot;Ajo Pot&quot;</strong> means the collective rotational funds contributed by Members of a group for disbursement to the turn collector.</li>
             <li><strong>&quot;Platform&quot;</strong> means the software, website, mobile application, APIs, and automated management services provided by Àjọṣe Technologies.</li>
@@ -101,7 +101,7 @@ export default function TermsOfServicePage() {
 
           <h2 className="text-2xl font-bold text-[#0B3022] mt-10 mb-4">2. Nature of the Platform &amp; Limited Technological Role</h2>
           <p>
-            2.1. <strong>Software Management Platform Only:</strong> Àjọṣe is a digital management platform that provides technological tools—such as open-banking direct debit scheduling, rotational turn tracking, automated reminder messaging, and transaction bookkeeping—to make traditional Ajo / Esusu / Adashe rotational savings easier to administer.
+            2.1. <strong>Software Management Platform Only:</strong> Àjọṣe is a digital management platform that provides technological tools—such as open-banking direct debit scheduling, rotational turn tracking, automated reminder messaging, and transaction bookkeeping—to make traditional Ajo / Esusu / Adashe rotational contributions easier to administer.
           </p>
           <p>
             2.2. <strong>No Banking or Fiduciary Capacity:</strong> Àjọṣe Technologies is <strong>not</strong> a bank, finance house, mortgage institution, credit bureau, money lender, or deposit-taking institution. We do not solicit public deposits, provide interest on pooled funds, grant loans, or provide financial advisory services.

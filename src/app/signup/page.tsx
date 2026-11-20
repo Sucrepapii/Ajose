@@ -816,7 +816,7 @@ export default function SignupPage() {
         <div className="relative z-10 max-w-md my-auto flex flex-col items-start">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EEE3]/[0.06] border border-[#F3EEE3]/15 text-[#F3EEE3] text-[11px] font-mono uppercase tracking-[0.16em] mb-6">
             <span className="w-2 h-2 rounded-full bg-[#D4A843]" />
-            Verified Savings Circles
+            Verified Contribution Circles
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-[#F3EEE3] leading-[1.08] tracking-[-0.03em] mb-4">
             Join a trusted Ajo{" "}

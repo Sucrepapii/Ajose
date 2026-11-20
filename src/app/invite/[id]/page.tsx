@@ -1117,7 +1117,7 @@ export default function InvitePage(props: {
                   The Ajo Admin who created this circle takes full
                   responsibility for managing it, vetting members, tracking
                   collections, and overseeing group turns. Àjọṣe provides
-                  software automation to make rotational savings easier and does
+                  software automation to make rotational group contributions easier and does
                   not manage or guarantee group funds.
                 </p>
               </div>

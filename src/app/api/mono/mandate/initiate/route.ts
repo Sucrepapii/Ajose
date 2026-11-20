@@ -190,7 +190,7 @@ export async function POST(req: NextRequest) {
       method: "mandate",
       mandate_type: "emandate",
       debit_type: "variable",
-      description: "Àjọṣe Savings Mandate: Automated Contributions",
+      description: "Àjọṣe Mandate: Automated Contributions",
       reference,
       redirect_url: redirectUrl,
       customer: {

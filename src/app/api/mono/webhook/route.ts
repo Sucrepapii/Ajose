@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
             }
 
             // Additive Fee Model: Members pay the platform fee on top of their debit.
-            // So we pay out exactly 100% of the guaranteed savings pot!
+            // So we pay out exactly 100% of the guaranteed rotational pot!
             const platformFeePct = group.admin_commission_pct || 0;
             const targetBasePool = group.contribution_amount * contributingMembers.length;
             const platformFeeAmount = (targetBasePool * platformFeePct) / 100;

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About Us | Àjọṣe",
-  description: "Saving together should never cost you your money. Àjọṣe brings accountability and simple software to the oldest way people save together: the circle.",
+  description: "Contributing together should never cost you your money. Àjọṣe brings accountability and simple software to the oldest way people pool funds together: the circle.",
   alternates: {
     canonical: "/about",
   },
@@ -27,10 +27,10 @@ export default function AboutPage() {
             </span>
           </h1>
           <p className="text-2xl md:text-3xl font-bold text-[#0B3022] max-w-3xl mx-auto leading-snug mb-4 tracking-tight">
-            Saving together should never cost you your money.
+            Contributing together should never cost you your money.
           </p>
           <p className="text-lg md:text-xl text-[#0B3022]/75 leading-relaxed max-w-2xl mx-auto">
-            Àjọṣe brings accountability and simple software to the oldest way people save together: the circle.
+            Àjọṣe brings accountability and simple software to the oldest way people pool funds together: the circle.
           </p>
         </div>
 
@@ -142,9 +142,9 @@ export default function AboutPage() {
               <div className="w-14 h-14 rounded-2xl bg-[#0B3022] flex items-center justify-center mb-6">
                 <Target className="w-7 h-7 text-[#D4A843]" />
               </div>
-              <h3 className="text-xl font-bold text-[#0B3022] mb-3">Saving that reaches real goals.</h3>
+              <h3 className="text-xl font-bold text-[#0B3022] mb-3">Pooling that reaches real goals.</h3>
               <p className="text-[#0B3022]/75 leading-relaxed text-sm">
-                School fees, rent, a trip, stock for the shop. We want disciplined group saving to be safe and simple for everyone, including people the banks overlook.
+                School fees, rent, a trip, stock for the shop. We want disciplined group pooling to be safe and simple for everyone, including people the banks overlook.
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ export default function AboutPage() {
               </p>
               
               <p>
-                Ajo also cost me money. A friend and I joined a circle to save for a trip, and the admin ran away with the pot. Years later, it still comes up in our group chat.
+                Ajo also cost me money. A friend and I joined a circle to fund a trip, and the admin ran away with the pot. Years later, it still comes up in our group chat.
               </p>
               
               <p>
@@ -189,7 +189,7 @@ export default function AboutPage() {
               </p>
 
               <p>
-                It’s for families saving together, salary earners, students, traders, church groups, alumni circles and cooperatives. Anyone who saves together deserves a circle that doesn’t break.
+                It’s for families pooling together, salary earners, students, traders, church groups, alumni circles and cooperatives. Anyone who contributes together deserves a circle that doesn’t break.
               </p>
 
               {/* Motto callout */}

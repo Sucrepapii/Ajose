@@ -36,7 +36,7 @@ export function OnboardingTour() {
       target: "body",
       placement: "center",
       title: "Welcome to Àjọṣe! 🎉",
-      content: "Let's take a quick tour to show you how to set up your account, verify your identity, and start saving with your circle.",
+      content: "Let's take a quick tour to show you how to set up your account, verify your identity, and start contributing with your circle.",
       skipBeacon: true,
     },
     {
@@ -56,7 +56,7 @@ export function OnboardingTour() {
     {
       target: `${targetPrefix}create-group`,
       title: "Create or Join a Group",
-      content: "Ready to start? Create your own savings circle and invite friends, or join an existing one using an invite link.",
+      content: "Ready to start? Create your own Ajo circle and invite friends, or join an existing one using an invite link.",
       placement: "bottom",
       skipBeacon: true,
     },

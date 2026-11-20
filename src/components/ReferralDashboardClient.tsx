@@ -59,7 +59,7 @@ export function ReferralDashboardClient({ initialSummary }: ReferralDashboardCli
 
   const shareOnWhatsApp = () => {
     if (!summary?.referralLink) return;
-    const msg = `Hey! I'm running my savings circles on Àjọṣe — automated debits, scheduled turns, and instant bank payouts without chasing anyone. Join with my link: ${summary.referralLink}`;
+    const msg = `Hey! I'm running my Ajo circles on Àjọṣe — automated debits, scheduled turns, and instant bank payouts without chasing anyone. Join with my link: ${summary.referralLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
   };
 

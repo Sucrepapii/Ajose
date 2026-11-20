@@ -24,7 +24,7 @@ const FAQS: FAQItem[] = [
   { 
     category: "Identity & Trust",
     q: "Why is BVN identity verification required?", 
-    a: "To eliminate fraud, identity theft, and bad actors across circles, every participant must verify their Bank Verification Number (BVN). This authenticates your legal identity, enforces that linked bank accounts match your verified name, and ensures high accountability so all circle members can save with complete peace of mind." 
+    a: "To eliminate fraud, identity theft, and bad actors across circles, every participant must verify their Bank Verification Number (BVN). This authenticates your legal identity, enforces that linked bank accounts match your verified name, and ensures high accountability so all circle members can contribute with complete peace of mind." 
   },
   { 
     category: "Default Protection",
@@ -44,7 +44,7 @@ const FAQS: FAQItem[] = [
   { 
     category: "Fees & Pricing",
     q: "What are the fees on Àjọṣe?", 
-    a: "Transparent, capped pricing with ₦0 monthly subscriptions: Monthly Circles: Standard 2.0% platform fee on monthly contribution debits (subject to lower custom rates configured in Admin for partners, or as low as 0.5% with referrals, strictly capped at ₦10,000 max per debit), with 0% deducted at payout so the turn recipient receives their savings pot complete; Weekly Circles: 0% payout fee with a flat ₦300 automated sweep processing fee per transaction; Daily Thrift: 0% payout fee with a flat ₦100 automated sweep processing fee per transaction. Circle organizers may also set an optional management commission, clearly displayed before you accept an invite." 
+    a: "Transparent, capped pricing with ₦0 monthly subscriptions: Monthly Circles: Standard 2.0% platform fee on monthly contribution debits (subject to lower custom rates configured in Admin for partners, or as low as 0.5% with referrals, strictly capped at ₦10,000 max per debit), with 0% deducted at payout so the turn recipient receives their rotational pot complete; Weekly Circles: 0% payout fee with a flat ₦300 automated sweep processing fee per transaction; Daily Thrift: 0% payout fee with a flat ₦100 automated sweep processing fee per transaction. Circle organizers may also set an optional management commission, clearly displayed before you accept an invite." 
   },
   { 
     category: "Diaspora",

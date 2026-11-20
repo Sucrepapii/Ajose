@@ -14,7 +14,7 @@ export default function SupportPage() {
     },
     {
       q: "Why is BVN verification mandatory?",
-      a: "BVN verification ensures identity authenticity, prevents fraud, and guarantees that members only connect bank accounts matching their legal name. It maintains full transparency and trust across all savings circles."
+      a: "BVN verification ensures identity authenticity, prevents fraud, and guarantees that members only connect bank accounts matching their legal name. It maintains full transparency and trust across all contribution circles."
     },
     {
       q: "What happens if a member misses their turn or defaults?",
@@ -30,7 +30,7 @@ export default function SupportPage() {
     },
     {
       q: "What are the commercial platform fees?",
-      a: "Monthly Circles: Standard 2.0% platform fee on monthly contribution debits (capped strictly at ₦10,000 max per debit, scaling down to 0.5% with referrals or custom admin rates; 0% deducted on payout so the turn recipient receives 100% of their savings pot). Weekly Circles: 0% payout fee, flat ₦300 processing fee per sweep. Daily Thrift: 0% payout fee, flat ₦100 processing fee per sweep."
+      a: "Monthly Circles: Standard 2.0% platform fee on monthly contribution debits (capped strictly at ₦10,000 max per debit, scaling down to 0.5% with referrals or custom admin rates; 0% deducted on payout so the turn recipient receives 100% of their rotational pot). Weekly Circles: 0% payout fee, flat ₦300 processing fee per sweep. Daily Thrift: 0% payout fee, flat ₦100 processing fee per sweep."
     },
     {
       q: "Can I leave an active circle before rotation finishes?",

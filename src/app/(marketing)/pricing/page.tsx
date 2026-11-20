@@ -59,7 +59,7 @@ export default function PricingPage() {
             </div>
 
             <p className="text-sm text-[#0B3022]/70 mb-6 flex-1 leading-relaxed">
-              Engineered for high-frequency thrift, business micro-collections, and daily rotating savings circles.
+              Engineered for high-frequency thrift, business micro-collections, and daily rotating contribution circles.
             </p>
 
             <ul className="space-y-3.5 mb-8 text-xs font-medium text-[#0B3022]/85">

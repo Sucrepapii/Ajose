@@ -70,7 +70,7 @@ export function ReferralTierWidget() {
 
   const shareOnWhatsApp = () => {
     if (!data?.referralLink) return;
-    const msg = `Hey! I'm running my savings circles on Àjọṣe — automated debits, scheduled turns, and instant bank payouts without chasing anyone. Join with my link: ${data.referralLink}`;
+    const msg = `Hey! I'm running my Ajo circles on Àjọṣe — automated debits, scheduled turns, and instant bank payouts without chasing anyone. Join with my link: ${data.referralLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
@@ -190,7 +190,7 @@ export function ReferralTierWidget() {
             </li>
             <li className="flex items-center gap-2">
               <Check className="w-3.5 h-3.5 text-[#D4A843] shrink-0" />
-              <span>Joins their first savings circle</span>
+              <span>Joins their first Ajo circle</span>
             </li>
             <li className="flex items-center gap-2">
               <Check className="w-3.5 h-3.5 text-[#D4A843] shrink-0" />

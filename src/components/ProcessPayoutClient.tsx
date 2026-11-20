@@ -109,7 +109,7 @@ export function ProcessPayoutClient({
 
   // Platform fee is ₦0 across all frequencies at payout time because platform charges 
   // are collected incrementally during auto-debit (Daily: ₦100, Weekly: ₦300, Monthly: 2% / custom rate),
-  // ensuring the turn collector receives 100% of their savings pot complete!
+  // ensuring the turn collector receives 100% of their rotational pot complete!
   const platformFee = 0;
   const payoutAmount = Math.max(0, totalPool - adminFee);
 

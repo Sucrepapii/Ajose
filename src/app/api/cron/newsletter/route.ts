@@ -238,7 +238,7 @@ async function handleDailyNewsletter(req: NextRequest) {
     <!-- Footer -->
     <div style="background-color: #FAF7F0; padding: 24px 28px; text-align: center; border-top: 1px solid rgba(11, 48, 34, 0.08); font-size: 11px; color: rgba(11, 48, 34, 0.6); line-height: 1.6;">
       <p style="margin: 0 0 8px 0;">
-        You received this because you are an active member or newsletter subscriber of <strong>Àjọṣe</strong> — modern rotational savings and group finance.
+        You received this because you are an active member or newsletter subscriber of <strong>Àjọṣe</strong> — modern rotational contributions and group finance.
       </p>
       <p style="margin: 0;">
         <a href="${unsubUrl}" style="color: rgba(11, 48, 34, 0.7); text-decoration: underline;">One-Click Unsubscribe</a> • 
