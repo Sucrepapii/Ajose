@@ -14,7 +14,8 @@ import {
   PartyPopper,
   Mail,
   Phone,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
 import { isOwambeExpired, isOwambeDeadlinePassed } from "@/utils/owambeConfig";
@@ -183,7 +184,25 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8">
+    <div className="w-full max-w-4xl mx-auto space-y-6">
+      {/* Top Back Navigation Bar */}
+      <div className="flex items-center justify-between">
+        <Link
+          href="/owambe"
+          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022]/70 hover:text-[#0B3022] bg-white border border-[#0B3022]/15 px-4 py-2 rounded-full shadow-xs hover:shadow-sm transition-all"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
+          <span>Back to Table Funds</span>
+        </Link>
+
+        <Link
+          href="/"
+          className="text-xs font-mono text-[#0B3022]/60 hover:text-[#0B3022] transition-colors"
+        >
+          Return to Home
+        </Link>
+      </div>
+
       {/* Expiration Notice if after 21 Dec 2026 */}
       {expired && (
         <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm flex items-center gap-3">

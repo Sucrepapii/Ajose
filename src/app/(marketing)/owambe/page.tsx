@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Sparkles, ShieldCheck, Users, Calendar, MapPin, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Sparkles, ShieldCheck, Users, Calendar, MapPin, ArrowRight, ArrowLeft } from "lucide-react";
 import { TableFundCreator } from "@/components/TableFundCreator";
 import { isOwambeExpired } from "@/utils/owambeConfig";
 
@@ -22,6 +23,17 @@ export default function OwambeTableFundPage() {
 
       <div className="container mx-auto px-6 lg:px-12 max-w-5xl relative z-10 text-center">
         
+        {/* Back to Home Button */}
+        <div className="w-full flex justify-start mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022]/70 hover:text-[#0B3022] bg-white border border-[#0B3022]/15 px-4 py-2 rounded-full shadow-xs hover:shadow-sm transition-all"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
+
         {/* Co-Branded Header Pill */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0B3022]/[0.06] border border-[#0B3022]/15 text-[#0B3022] text-xs font-mono font-bold uppercase tracking-wider mb-6">
           <span>Àjọṣe</span>

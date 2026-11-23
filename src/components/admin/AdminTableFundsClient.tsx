@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { 
   PartyPopper, 
   Download, 
@@ -16,7 +17,8 @@ import {
   Filter,
   Mail,
   Phone,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft
 } from "lucide-react";
 
 interface MemberSlot {
@@ -369,6 +371,17 @@ export function AdminTableFundsClient() {
 
   return (
     <div className="space-y-6">
+      {/* Back Navigation */}
+      <div className="flex items-center justify-between">
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022]/70 hover:text-[#0B3022] bg-white border border-[#0B3022]/15 px-3.5 py-1.5 rounded-full shadow-xs hover:shadow-sm transition-all"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
+          <span>Back to Operations Dashboard</span>
+        </Link>
+      </div>
+
       {/* Top Banner & Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#0B3022]/15">
         <div>
