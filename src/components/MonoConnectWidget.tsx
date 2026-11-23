@@ -655,6 +655,19 @@ export function MonoConnectWidget({
             </div>
           )}
 
+          {/* PalmPay / OPay Device Login Reassurance Note */}
+          {(profile?.bank_name?.toLowerCase().includes("palm") || profile?.bank_name?.toLowerCase().includes("opay")) && (
+            <div className="bg-blue-50/90 border border-blue-200/90 rounded-2xl p-4 flex items-start gap-3 text-left">
+              <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <div className="text-xs text-blue-900 leading-relaxed">
+                <span className="font-bold block text-blue-950 mb-0.5">
+                  Notice regarding PalmPay / OPay Security Alerts:
+                </span>
+                When linking your account or authorizing direct debits, Mono Open-Banking connects via a secure, encrypted server instance (which PalmPay reports as a device login, e.g. <em>samsung SM-A057F</em>). If PalmPay sends a "New Device Login" notification, this is completely normal, expected, and safe.
+              </div>
+            </div>
+          )}
+
           {/* Actions & Re-verification */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
             <div className="space-y-0.5 max-w-md">
