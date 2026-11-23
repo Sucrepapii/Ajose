@@ -209,6 +209,45 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
     router.push("/owambe");
   };
 
+  const handleRemoveMember = (slotNumber: number) => {
+    if (!fund) return;
+    const slot = fund.contributions.find((c) => c.slot === slotNumber);
+    if (!slot) return;
+
+    let confirmed = false;
+    if (slot.paid) {
+      confirmed = window.confirm(
+        `Slot #${slotNumber} (${slot.name}) has already paid ₦${slot.amount.toLocaleString()}.\n\nDo you want to release this seat so another friend can take it, and process an escrow refund?`
+      );
+    } else {
+      confirmed = window.confirm(`Reset Slot #${slotNumber} to empty?`);
+    }
+
+    if (!confirmed) return;
+
+    const updatedContributions = fund.contributions.map((c) => {
+      if (c.slot === slotNumber) {
+        return {
+          slot: slotNumber,
+          name: `Squad Member #${slotNumber}`,
+          paid: false,
+          amount: fund.perMemberTotal,
+        };
+      }
+      return c;
+    });
+
+    const updatedFund = {
+      ...fund,
+      contributions: updatedContributions,
+    };
+
+    setFund(updatedFund);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`table_fund_${fund.id}`, JSON.stringify(updatedFund));
+    }
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       {/* Top Back Navigation Bar */}
@@ -390,12 +429,22 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                 </div>
               </div>
 
-              <div className="shrink-0 ml-3">
+              <div className="shrink-0 ml-3 flex items-center gap-1.5">
                 {member.paid ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Paid</span>
-                  </span>
+                  <>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Paid</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveMember(member.slot)}
+                      className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors cursor-pointer"
+                      title="Release / Remove this member slot"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </>
                 ) : (
                   <button
                     onClick={() => setPayingSlot(member.slot)}

@@ -399,6 +399,54 @@ export function AdminTableFundsClient() {
     }
   };
 
+  const handleRemoveMember = (fundId: string, slotNumber: number) => {
+    const fund = funds.find((f) => f.id === fundId);
+    if (!fund) return;
+    const slot = fund.contributions.find((c) => c.slot === slotNumber);
+    if (!slot) return;
+
+    let confirmed = false;
+    if (slot.paid) {
+      confirmed = window.confirm(
+        `Slot #${slotNumber} (${slot.name}) has already paid ₦${slot.amount.toLocaleString()} into Paylode escrow.\n\nDo you want to process a refund and reset this slot back to an open/unpaid seat for another guest?`
+      );
+    } else {
+      confirmed = window.confirm(
+        `Remove "${slot.name}" from Slot #${slotNumber} and reset it to an open seat?`
+      );
+    }
+
+    if (!confirmed) return;
+
+    const updatedContributions = fund.contributions.map((c) => {
+      if (c.slot === slotNumber) {
+        return {
+          slot: slotNumber,
+          name: `Squad Member #${slotNumber}`,
+          paid: false,
+          amount: fund.perMemberTotal,
+        };
+      }
+      return c;
+    });
+
+    const paidCount = updatedContributions.filter((c) => c.paid).length;
+    const updatedFund: TableFundItem = {
+      ...fund,
+      status: paidCount === 8 ? "fully_funded" : "collecting",
+      contributions: updatedContributions,
+    };
+
+    setFunds((prev) => prev.map((f) => (f.id === fundId ? updatedFund : f)));
+    if (selectedFund && selectedFund.id === fundId) {
+      setSelectedFund(updatedFund);
+    }
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`table_fund_${fundId}`, JSON.stringify(updatedFund));
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Back Navigation */}
@@ -687,11 +735,21 @@ export function AdminTableFundsClient() {
                         </div>
                       </div>
 
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0 ${
-                        slot.paid ? "bg-emerald-100 text-emerald-800" : "bg-gray-200 text-gray-600"
-                      }`}>
-                        {slot.paid ? "Paid" : "Unpaid"}
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          slot.paid ? "bg-emerald-100 text-emerald-800" : "bg-gray-200 text-gray-600"
+                        }`}>
+                          {slot.paid ? "Paid" : "Unpaid"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMember(selectedFund.id, slot.slot)}
+                          className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors cursor-pointer"
+                          title={slot.paid ? "Refund member & reset slot to empty" : "Reset slot to empty"}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
