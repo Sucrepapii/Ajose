@@ -307,16 +307,25 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
       {/* 8 Squad Slots Grid */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#0B3022]/15 shadow-md text-left">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100">
           <div>
             <h3 className="text-xl font-bold font-serif text-[#0B3022]">Squad Member Slots (8 Total)</h3>
             <p className="text-xs text-[#0B3022]/60 mt-0.5">
               Click &quot;Pay Share&quot; next to any empty slot to pay your ₦{fund.perMemberTotal.toLocaleString()} portion.
             </p>
           </div>
-          <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#0B3022]/[0.06] text-[#0B3022]">
-            {paidCount}/8 Confirmed
-          </span>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/owambe"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#0B3022] text-xs font-mono font-bold transition-colors shadow-2xs"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
+              <span>Back</span>
+            </Link>
+            <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-[#0B3022]/[0.06] text-[#0B3022]">
+              {paidCount}/8 Confirmed
+            </span>
+          </div>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-3.5">
@@ -463,13 +472,23 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                 <span>Escrow secured by Paylode (CBN-Licensed). 100% refund if incomplete.</span>
               </div>
 
-              <button
-                onClick={() => handlePayShare(payingSlot)}
-                disabled={isProcessing || !payingName.trim() || !payingEmail.trim()}
-                className="w-full py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2"
-              >
-                {isProcessing ? "Connecting Bank Payment..." : `Authorize ₦${fund.perMemberTotal.toLocaleString()}`}
-              </button>
+              <div className="flex items-center gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setPayingSlot(null)}
+                  className="py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
+                <button
+                  onClick={() => handlePayShare(payingSlot)}
+                  disabled={isProcessing || !payingName.trim() || !payingEmail.trim()}
+                  className="flex-1 py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isProcessing ? "Connecting Bank Payment..." : `Authorize ₦${fund.perMemberTotal.toLocaleString()}`}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -484,6 +503,23 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
             Funds are held by <strong>Paylode</strong>, a CBN-licensed payment solution service provider, until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all 8 shares by <strong>10 December 2026</strong>, every contributor receives an automatic full refund.
           </p>
         </div>
+      </div>
+
+      {/* Bottom Back Navigation Button */}
+      <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-[#0B3022]/10">
+        <Link
+          href="/owambe"
+          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022] hover:text-[#D4A843] bg-white border border-[#0B3022]/15 px-5 py-2.5 rounded-full shadow-xs hover:shadow-sm transition-all self-start"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
+          <span>Back to Table Funds</span>
+        </Link>
+        <Link
+          href="/"
+          className="text-xs font-mono text-[#0B3022]/65 hover:text-[#0B3022] transition-colors"
+        >
+          Return to Home
+        </Link>
       </div>
     </div>
   );

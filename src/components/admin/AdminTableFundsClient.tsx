@@ -587,16 +587,27 @@ export function AdminTableFundsClient() {
         <div className="bg-white rounded-3xl p-6 border border-[#0B3022]/15 shadow-md self-start sticky top-20">
           {selectedFund ? (
             <div className="space-y-5">
-              <div className="pb-4 border-b border-gray-100">
-                <span className="text-[10px] font-mono uppercase bg-[#0B3022]/[0.06] text-[#0B3022] font-bold px-2 py-0.5 rounded-full">
-                  Squad Inspector
-                </span>
-                <h2 className="text-xl font-bold font-serif text-[#0B3022] mt-1.5">
-                  {selectedFund.squadName}
-                </h2>
-                <p className="text-xs text-[#0B3022]/60 mt-0.5">
-                  {selectedFund.tableName} &bull; Target: ₦{selectedFund.totalTargetWithFees.toLocaleString()}
-                </p>
+              <div className="pb-4 border-b border-gray-100 flex items-start justify-between">
+                <div>
+                  <span className="text-[10px] font-mono uppercase bg-[#0B3022]/[0.06] text-[#0B3022] font-bold px-2 py-0.5 rounded-full">
+                    Squad Inspector
+                  </span>
+                  <h2 className="text-xl font-bold font-serif text-[#0B3022] mt-1.5">
+                    {selectedFund.squadName}
+                  </h2>
+                  <p className="text-xs text-[#0B3022]/60 mt-0.5">
+                    {selectedFund.tableName} &bull; Target: ₦{selectedFund.totalTargetWithFees.toLocaleString()}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedFund(null)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#0B3022] text-xs font-mono font-bold transition-colors cursor-pointer shrink-0"
+                  title="Close and return to full table list"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
               </div>
 
               {/* Leader & Contact Details */}
