@@ -18,7 +18,8 @@ import {
   ArrowRight,
   ArrowLeft,
   X,
-  Trash2
+  Trash2,
+  Lock
 } from "lucide-react";
 import Link from "next/link";
 import { isOwambeExpired, isOwambeDeadlinePassed } from "@/utils/owambeConfig";
@@ -62,6 +63,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
   const [payingName, setPayingName] = useState("");
   const [payingEmail, setPayingEmail] = useState("");
   const [payingPhone, setPayingPhone] = useState("");
+  const [doubleOptInAgreed, setDoubleOptInAgreed] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const expired = isOwambeExpired();
@@ -480,9 +482,23 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
             <h3 className="text-xl font-bold text-[#0B3022] mb-1">
               Pay Your Share for {fund.tableName}
             </h3>
-            <p className="text-xs text-[#0B3022]/70 mb-5">
+            <p className="text-xs text-[#0B3022]/70 mb-4">
               You are paying for <strong>{fund.squadName}</strong>. Total due: <strong>₦{fund.perMemberTotal.toLocaleString()}</strong>.
             </p>
+
+            {/* In-App Account Redirection Banner */}
+            <div className="p-3 rounded-xl bg-[#0B3022]/[0.05] border border-[#0B3022]/15 flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-[#D4A843]" />
+                <span className="text-xs font-semibold text-[#0B3022]">Have an Àjọṣe account?</span>
+              </div>
+              <Link
+                href={`/login?next=/dashboard/table-funds`}
+                className="text-xs font-bold text-[#D4A843] hover:underline"
+              >
+                Authorize in App &rarr;
+              </Link>
+            </div>
 
             <div className="space-y-3.5">
               <div>
@@ -549,6 +565,24 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                 <span>Escrow secured by Paylode (CBN-Licensed). 100% refund if incomplete.</span>
               </div>
 
+              {/* Double Opt-In Mandate Checkbox */}
+              <div className="pt-1">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none group bg-[#0B3022]/[0.03] hover:bg-[#0B3022]/[0.06] p-3 rounded-xl border border-[#0B3022]/15 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={doubleOptInAgreed}
+                    onChange={(e) => setDoubleOptInAgreed(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#0B3022] focus:ring-[#D4A843] cursor-pointer shrink-0"
+                  />
+                  <div className="text-[11px] text-[#1F2937] leading-relaxed">
+                    <span className="font-bold block text-[#0B3022] mb-0.5">
+                      Double Opt-In Authorization
+                    </span>
+                    I confirm and mandate my contribution of ₦{fund.perMemberTotal.toLocaleString()} for this table seat. I understand funds are held in CBN-licensed escrow and 100% refunded if the table is not completed by 10 Dec 2026.
+                  </div>
+                </label>
+              </div>
+
               <div className="flex items-center gap-3 mt-4">
                 <button
                   type="button"
@@ -560,10 +594,10 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                 </button>
                 <button
                   onClick={() => handlePayShare(payingSlot)}
-                  disabled={isProcessing || !payingName.trim() || !payingEmail.trim()}
-                  className="flex-1 py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  disabled={isProcessing || !payingName.trim() || !payingEmail.trim() || !doubleOptInAgreed}
+                  className="flex-1 py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isProcessing ? "Connecting Bank Payment..." : `Authorize ₦${fund.perMemberTotal.toLocaleString()}`}
+                  {isProcessing ? "Connecting Bank Payment..." : `Authorize ₦${fund.perMemberTotal.toLocaleString()} (Double Opt-In)`}
                 </button>
               </div>
             </div>

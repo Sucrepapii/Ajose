@@ -10,8 +10,10 @@ import {
   ShieldCheck,
   HelpCircle,
   MessageSquare,
-  Gift
+  Gift,
+  PartyPopper
 } from "lucide-react";
+import { isOwambeExpired } from "@/utils/owambeConfig";
 
 export function SidebarNav() {
   const pathname = usePathname();
@@ -19,6 +21,7 @@ export function SidebarNav() {
   const links = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { href: "/dashboard/groups", label: "My Groups", icon: Users, tourClass: "tour-desktop-create-group" },
+    ...(!isOwambeExpired() ? [{ href: "/dashboard/table-funds", label: "Table Funds", icon: PartyPopper }] : []),
     { href: "/dashboard/transactions", label: "Transactions", icon: ArrowRightLeft, tourClass: "tour-desktop-transactions" },
     { href: "/dashboard/referrals", label: "Refer & Earn", icon: Gift },
     { href: "/dashboard/verify", label: "Verify Identity", icon: ShieldCheck, tourClass: "tour-desktop-verify" },

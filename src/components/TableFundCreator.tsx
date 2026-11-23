@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink, Trash2 } from "lucide-react";
+import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink, Trash2, Lock } from "lucide-react";
 import Link from "next/link";
 import { isOwambeExpired, OWAMBE_CONFIG } from "@/utils/owambeConfig";
 
@@ -58,6 +58,7 @@ export function TableFundCreator() {
   const [leaderName, setLeaderName] = useState("");
   const [leaderEmail, setLeaderEmail] = useState("");
   const [leaderPhone, setLeaderPhone] = useState("");
+  const [doubleOptInAgreed, setDoubleOptInAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Quick Finder state
@@ -159,7 +160,7 @@ export function TableFundCreator() {
 
   const handleCreateFund = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!squadName.trim() || !leaderName.trim() || !leaderEmail.trim()) return;
+    if (!squadName.trim() || !leaderName.trim() || !leaderEmail.trim() || !doubleOptInAgreed) return;
 
     setIsSubmitting(true);
 
@@ -348,7 +349,7 @@ export function TableFundCreator() {
       {/* 3. Squad Creation Form Card */}
       <div className="bg-white rounded-3xl p-8 sm:p-10 border border-[#0B3022]/15 shadow-xl text-left">
         <div className="max-w-xl mx-auto">
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4A843] bg-[#0B3022] px-3 py-1 rounded-full inline-block mb-2">
               Instant Squad Setup
             </span>
@@ -356,8 +357,22 @@ export function TableFundCreator() {
               Start Your {activeTier.name} Fund
             </h2>
             <p className="text-xs text-[#0B3022]/70 mt-1">
-              No account creation or password required. Enter your squad details to get your instant tracking and payment link.
+              Complete your squad details below or manage seamlessly inside your authenticated Àjọṣe account.
             </p>
+          </div>
+
+          {/* In-App Direct Access Banner */}
+          <div className="p-3 rounded-2xl bg-[#0B3022]/[0.04] border border-[#0B3022]/15 flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-[#D4A843]" />
+              <span className="text-xs font-semibold text-[#0B3022]">Existing Àjọṣe Account?</span>
+            </div>
+            <Link
+              href="/login?next=/dashboard/table-funds"
+              className="text-xs font-bold text-[#D4A843] hover:underline"
+            >
+              Open inside App &rarr;
+            </Link>
           </div>
 
           <form onSubmit={handleCreateFund} className="space-y-4">
@@ -436,10 +451,28 @@ export function TableFundCreator() {
               </div>
             </div>
 
+            {/* Double Opt-In Mandate Checkbox */}
+            <div className="pt-2">
+              <label className="flex items-start gap-2.5 cursor-pointer select-none group bg-[#0B3022]/[0.03] hover:bg-[#0B3022]/[0.06] p-3 rounded-xl border border-[#0B3022]/15 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={doubleOptInAgreed}
+                  onChange={(e) => setDoubleOptInAgreed(e.target.checked)}
+                  className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#0B3022] focus:ring-[#D4A843] cursor-pointer shrink-0"
+                />
+                <div className="text-[11px] text-[#1F2937] leading-relaxed">
+                  <span className="font-bold block text-[#0B3022] mb-0.5">
+                    Double Opt-In Authorization
+                  </span>
+                  I confirm that I am initiating this {activeTier.name} Fund on behalf of my squad and authorize Paylode Escrow to manage collections until 100% table funding.
+                </div>
+              </label>
+            </div>
+
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full py-4 px-6 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] font-bold text-sm sm:text-base rounded-full transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer mt-6"
+              disabled={isSubmitting || !doubleOptInAgreed}
+              className="w-full py-4 px-6 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] font-bold text-sm sm:text-base rounded-full transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-4"
             >
               <span>{isSubmitting ? "Creating Squad Link..." : `Open ${activeTier.name} Fund & Get Invite Link`}</span>
               <ArrowRight className="w-4 h-4 text-[#D4A843]" />
