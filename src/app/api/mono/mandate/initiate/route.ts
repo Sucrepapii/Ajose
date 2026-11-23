@@ -177,7 +177,9 @@ export async function POST(req: NextRequest) {
     }
 
     const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "https://ajose.ng";
-    const redirectUrl = `${origin}/dashboard/groups/${groupId || ""}?mandate=success&ref=${reference}`;
+    const redirectUrl = groupId 
+      ? `${origin}/dashboard/groups/${groupId}?mandate=success&ref=${reference}`
+      : `${origin}/dashboard/account?mandate=success&ref=${reference}`;
 
     const startDate = new Date().toISOString().split("T")[0];
     const endDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];

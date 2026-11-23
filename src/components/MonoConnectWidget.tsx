@@ -113,9 +113,19 @@ export function MonoConnectWidget({
       setMandateUrl(data.monoUrl);
       setMandateStatus("awaiting_authorization");
 
-      toast.success("Opening Mono hosted authorization window...", { id: toastId });
+      toast.success("Opening Mono authorization window...", { id: toastId });
 
-      window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
+      // On mobile devices (iOS Safari / Android), popups opened after async fetch are blocked by default.
+      // Redirect directly to the Mono hosted authorization screen or open fallback.
+      const isMobile = typeof window !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.href = data.monoUrl;
+      } else {
+        const popup = window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
+        if (!popup || popup.closed || typeof popup.closed === "undefined") {
+          window.location.href = data.monoUrl;
+        }
+      }
 
       subscribeToMandateEvents(data.mandateId);
     } catch (err: any) {

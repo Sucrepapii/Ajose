@@ -80,8 +80,16 @@ export function AuthorizeGroupMandateClient({
 
       toast.success("Opening Mono bank authorization window...", { id: toastId });
 
-      // Open Mono authorization window
-      window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
+      // Open Mono authorization window (on mobile redirect directly to prevent Safari popup suppression)
+      const isMobile = typeof window !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.href = data.monoUrl;
+      } else {
+        const popup = window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
+        if (!popup || popup.closed || typeof popup.closed === "undefined") {
+          window.location.href = data.monoUrl;
+        }
+      }
 
       // Subscribe to mandate events as they happen (no polling)
       subscribeToMandateEvents(data.mandateId);
