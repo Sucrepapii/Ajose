@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink, Trash2 } from "lucide-react";
+import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink, Trash2, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { isOwambeExpired, OWAMBE_CONFIG } from "@/utils/owambeConfig";
+import { isOwambeExpired, OWAMBE_CONFIG, searchTableFunds } from "@/utils/owambeConfig";
 
 interface TableTier {
   id: "silver" | "gold";
@@ -117,47 +117,19 @@ export function TableFundCreator() {
     e.preventDefault();
     setSearchError("");
 
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return;
-
-    // Check if directly a table slug
-    if (q.startsWith("owambe-")) {
-      router.push(`/table/${q}`);
+    const q = searchQuery.trim();
+    if (!q) {
+      setSearchError("Please enter your phone number, squad name, or table link.");
       return;
     }
 
-    // Search localStorage
-    if (typeof window !== "undefined") {
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith("table_fund_")) {
-          try {
-            const raw = localStorage.getItem(key);
-            if (raw) {
-              const data = JSON.parse(raw);
-              const match = 
-                data.id?.toLowerCase().includes(q) ||
-                data.squadName?.toLowerCase().includes(q) ||
-                data.leaderPhone?.replace(/\D/g, "").includes(q.replace(/\D/g, "")) ||
-                data.leaderEmail?.toLowerCase().includes(q);
-
-              if (match) {
-                router.push(`/table/${data.id}`);
-                return;
-              }
-            }
-          } catch (_) {}
-        }
-      }
-    }
-
-    // Default fallback to direct slug search
-    if (q.length > 3) {
-      router.push(`/table/${q.startsWith("owambe-") ? q : `owambe-${q}`}`);
+    const found = searchTableFunds(q);
+    if (found) {
+      router.push(`/table/${found.id}`);
       return;
     }
 
-    setSearchError("No active squad table found matching that query. Please double-check your phone number or table link.");
+    setSearchError(`No squad table found registered with "${q}". Please verify the phone number, squad name, or ask your squad leader for your squad link.`);
   };
 
   const activeTier = TIERS.find((t) => t.id === selectedTier)!;
@@ -518,7 +490,12 @@ export function TableFundCreator() {
           </form>
         </div>
         {searchError && (
-          <p className="text-xs text-rose-600 font-medium mt-2">{searchError}</p>
+          <div className="mt-3.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="leading-relaxed font-medium">
+              {searchError}
+            </div>
+          </div>
         )}
       </div>
     </div>

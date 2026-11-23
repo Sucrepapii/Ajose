@@ -22,7 +22,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import Link from "next/link";
-import { isOwambeExpired, isOwambeDeadlinePassed } from "@/utils/owambeConfig";
+import { isOwambeExpired, isOwambeDeadlinePassed, STANDARD_DEMO_TABLES } from "@/utils/owambeConfig";
 
 interface MemberSlot {
   slot: number;
@@ -58,6 +58,7 @@ interface TableFundState {
 export function TableFundTrackerClient({ fundId }: { fundId: string }) {
   const router = useRouter();
   const [fund, setFund] = useState<TableFundState | null>(null);
+  const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [payingSlot, setPayingSlot] = useState<number | null>(null);
   const [payingName, setPayingName] = useState("");
@@ -73,54 +74,82 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
   const deadlinePassed = isOwambeDeadlinePassed();
 
   useEffect(() => {
-    // Load from localStorage or initialize mock data
+    // 1. Check localStorage for user-created or user-modified tables
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem(`table_fund_${fundId}`);
       if (stored) {
         try {
-          setFund(JSON.parse(stored));
-          return;
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.id) {
+            setFund(parsed);
+            return;
+          }
         } catch (_) {}
       }
     }
 
-    // Default fallback fund
-    const isGold = fundId.includes("gold");
-    const perMember = isGold ? 128750 : 64375;
-    const share = isGold ? 125000 : 62500;
-    const fee = isGold ? 3750 : 1875;
-    const price = isGold ? 1000000 : 500000;
+    // 2. Check standard registered tables
+    const demoFound = STANDARD_DEMO_TABLES.find(
+      (t) => t.id.toLowerCase() === fundId.toLowerCase()
+    );
+    if (demoFound) {
+      setFund(demoFound as TableFundState);
+      return;
+    }
 
-    setFund({
-      id: fundId,
-      event: "The Owambe Party (Wazobia Extravaganza)",
-      venue: "Amore Gardens, Lekki",
-      eventDate: "20 December 2026",
-      deadline: "10 December 2026",
-      tier: isGold ? "gold" : "silver",
-      tableName: isGold ? "Gold Table" : "Silver Table",
-      tablePrice: price,
-      totalTargetWithFees: perMember * 8,
-      memberCount: 8,
-      perMemberTotal: perMember,
-      perMemberShare: share,
-      perMemberFee: fee,
-      squadName: "Owambe VIP Squad",
-      leaderName: "Squad Leader",
-      leaderEmail: "squadleader@gmail.com",
-      leaderPhone: "08012345678",
-      contributions: [
-        { slot: 1, name: "Tunde Adeyemi (Squad Leader)", email: "tunde@gmail.com", phone: "08012345678", paid: true, amount: perMember, paidAt: "Just now" },
-        { slot: 2, name: "Squad Member #2", paid: false, amount: perMember },
-        { slot: 3, name: "Squad Member #3", paid: false, amount: perMember },
-        { slot: 4, name: "Squad Member #4", paid: false, amount: perMember },
-        { slot: 5, name: "Squad Member #5", paid: false, amount: perMember },
-        { slot: 6, name: "Squad Member #6", paid: false, amount: perMember },
-        { slot: 7, name: "Squad Member #7", paid: false, amount: perMember },
-        { slot: 8, name: "Squad Member #8", paid: false, amount: perMember },
-      ],
-    });
+    // 3. Table is not found. Do NOT fall back to dummy mock table.
+    setNotFound(true);
   }, [fundId]);
+
+  if (notFound) {
+    return (
+      <div className="w-full max-w-xl mx-auto py-12 px-4 text-center">
+        <div className="bg-white border border-[#0B3022]/15 rounded-3xl p-8 sm:p-10 shadow-lg text-center space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto">
+            <AlertCircle className="w-8 h-8" />
+          </div>
+
+          <div>
+            <span className="inline-block px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
+              Table Not Registered
+            </span>
+            <h2 className="text-2xl font-bold font-serif text-[#0B3022]">Squad Table Not Found</h2>
+            <p className="text-xs text-[#0B3022]/70 mt-2 leading-relaxed">
+              No active Squad Table was found registered with ID or query:
+            </p>
+            <div className="mt-2 inline-block px-3 py-1.5 rounded-lg bg-gray-100 border border-gray-200 font-mono text-xs font-bold text-[#0B3022] break-all">
+              {fundId}
+            </div>
+          </div>
+
+          <div className="bg-[#FAF7F0] border border-[#0B3022]/10 rounded-2xl p-4 text-left text-xs text-[#0B3022]/80 space-y-2">
+            <p className="font-bold text-[#0B3022]">Why am I seeing this?</p>
+            <ul className="list-disc pl-4 space-y-1 text-[#0B3022]/70">
+              <li>The squad leader has not registered this table yet.</li>
+              <li>The phone number or table link was mistyped.</li>
+              <li>The table may have been canceled or deleted by the squad leader.</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Link
+              href="/owambe"
+              className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#D4A843] via-[#E5B84B] to-[#C29532] text-[#0B3022] font-bold text-xs uppercase tracking-wider text-center shadow-sm hover:brightness-105 transition-all flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Return to Table Search</span>
+            </Link>
+            <Link
+              href="/"
+              className="py-3 px-4 rounded-xl bg-white border border-[#0B3022]/20 text-[#0B3022] font-semibold text-xs hover:bg-gray-50 transition-colors text-center"
+            >
+              Ajose Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!fund) {
     return (
