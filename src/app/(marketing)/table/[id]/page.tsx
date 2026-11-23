@@ -4,6 +4,27 @@ import { TableFundTrackerClient } from "@/components/TableFundTrackerClient";
 export const metadata: Metadata = {
   title: "Squad Table Fund Tracker | Àjọṣe × The Owambe Party",
   description: "Track your squad table fund contributions for The Owambe Party Wazobia Extravaganza. Safe, automated, zero WhatsApp chasing.",
+  openGraph: {
+    title: "Squad Table Fund Tracker | The Owambe Party (Wazobia Extravaganza)",
+    description: "Track your squad table fund contributions. Safe, automated, zero WhatsApp chasing. Powered by Àjọṣe.",
+    siteName: "Àjọṣe",
+    images: [
+      {
+        url: "/owambe-poster.jpg",
+        width: 1080,
+        height: 1350,
+        alt: "The Owambe Party (Wazobia Extravaganza) Official Poster",
+      },
+    ],
+    locale: "en_NG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Squad Table Fund Tracker | The Owambe Party",
+    description: "Track your squad table fund contributions for The Owambe Party Wazobia Extravaganza.",
+    images: ["/owambe-poster.jpg"],
+  },
 };
 
 interface TableFundPageProps {

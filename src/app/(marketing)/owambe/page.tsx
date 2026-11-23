@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Sparkles, ShieldCheck, Users, Calendar, MapPin, ArrowRight, ArrowLeft } from "lucide-react";
 import { TableFundCreator } from "@/components/TableFundCreator";
 import { isOwambeExpired } from "@/utils/owambeConfig";
@@ -9,6 +10,28 @@ export const metadata: Metadata = {
   description: "Split a Silver (₦500k) or Gold (₦1M) table for The Owambe Party: Wazobia Extravaganza with 8 friends. Safe, automated, zero WhatsApp chasing. Powered by Àjọṣe.",
   alternates: {
     canonical: "/owambe",
+  },
+  openGraph: {
+    title: "The Owambe Party Table Fund | Split VIP Tables with Friends — Àjọṣe",
+    description: "Split a Silver (₦500k) or Gold (₦1M) table for The Owambe Party: Wazobia Extravaganza with 8 friends. Safe, automated, zero WhatsApp chasing.",
+    url: "https://ajose.ng/owambe",
+    siteName: "Àjọṣe",
+    images: [
+      {
+        url: "/owambe-poster.jpg",
+        width: 1080,
+        height: 1350,
+        alt: "The Owambe Party (Wazobia Extravaganza) Official Poster",
+      },
+    ],
+    locale: "en_NG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Owambe Party Table Fund | Split VIP Tables with Friends — Àjọṣe",
+    description: "Split a Silver (₦500k) or Gold (₦1M) table for The Owambe Party: Wazobia Extravaganza with 8 friends. Powered by Àjọṣe.",
+    images: ["/owambe-poster.jpg"],
   },
 };
 
@@ -64,19 +87,48 @@ export default function OwambeTableFundPage() {
           Headed to the <strong>Wazobia Extravaganza</strong> on 20 December? Don&apos;t get stuck chasing 7 friends on WhatsApp for table money. Split a Silver or Gold Table through a verified <strong>Table Fund</strong>.
         </p>
 
-        {/* Event Quick Meta Bar */}
-        <div className="flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-medium text-[#0B3022]/80 bg-white border border-[#0B3022]/10 py-3.5 px-6 rounded-2xl max-w-2xl mx-auto shadow-xs mb-12">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-[#D4A843]" />
-            <span>Event: <strong>20 Dec 2026</strong></span>
+        {/* Featured Official Event Showcase Card */}
+        <div className="max-w-3xl mx-auto mb-10 bg-white border border-[#D4A843]/30 rounded-3xl p-5 sm:p-6 shadow-md text-left flex flex-col sm:flex-row items-center gap-6">
+          <div className="relative w-44 sm:w-48 aspect-[3/4] shrink-0 rounded-2xl overflow-hidden shadow-lg border-2 border-[#D4A843]/40 bg-[#0B3022]">
+            <Image
+              src="/owambe-poster.jpg"
+              alt="The Owambe Party (Wazobia Extravaganza) Official Poster"
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#D4A843]" />
-            <span>Amore Gardens, Lekki</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#D4A843]" />
-            <span>Deadline: <strong>10 Dec 2026</strong></span>
+          <div className="flex-1 space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4A843]/15 border border-[#D4A843]/30 text-[#0B3022] text-[11px] font-mono font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-[#D4A843]" />
+              <span>Official Event Financing Rail</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold font-serif text-[#0B3022]">
+              The Owambe Party: Wazobia Extravaganza
+            </h2>
+            <p className="text-xs sm:text-sm text-[#0B3022]/70 leading-relaxed">
+              Brought to you by <strong>Spotlight by Mmakamba</strong> and supported by <strong>23/25 Entertainment</strong>. Live performances, cultural fashion, premium hospitality, and VIP squad tables.
+            </p>
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100 text-xs">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#0B3022]/60 block font-semibold">Date &amp; Time</span>
+                <span className="font-bold text-[#0B3022] flex items-center gap-1.5 mt-0.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#D4A843]" />
+                  <span>Sunday, 20 Dec 2026 &bull; 5 PM</span>
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#0B3022]/60 block font-semibold">Venue</span>
+                <span className="font-bold text-[#0B3022] flex items-center gap-1.5 mt-0.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#D4A843]" />
+                  <span>Amore Gardens, Lekki</span>
+                </span>
+              </div>
+            </div>
+            <div className="pt-2 text-[11px] font-mono text-[#0B3022]/70 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#D4A843]" />
+              <span>100% Escrow Protection &bull; Payment Deadline: <strong>10 Dec 2026</strong></span>
+            </div>
           </div>
         </div>
 

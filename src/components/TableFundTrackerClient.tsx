@@ -22,6 +22,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { isOwambeExpired, isOwambeDeadlinePassed, STANDARD_DEMO_TABLES } from "@/utils/owambeConfig";
 
 interface MemberSlot {
@@ -310,25 +311,47 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       )}
 
       {/* Header Banner */}
-      <div className="bg-[#0B3022] text-[#F3EEE3] rounded-3xl p-8 sm:p-10 border border-[#D4A843]/30 shadow-2xl relative overflow-hidden text-left">
+      <div className="bg-[#0B3022] text-[#F3EEE3] rounded-3xl p-6 sm:p-9 border border-[#D4A843]/30 shadow-2xl relative overflow-hidden text-left">
         <div className="absolute top-0 right-0 w-80 h-80 bg-[#D4A843]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4A843]/20 border border-[#D4A843]/40 text-[#D4A843] text-xs font-mono font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" /> Table Fund Live
-            </span>
-            <span className="text-xs font-mono text-[#F3EEE3]/70 flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-[#D4A843]" /> Deadline: {fund.deadline}
-            </span>
-          </div>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-3 mb-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4A843]/20 border border-[#D4A843]/40 text-[#D4A843] text-xs font-mono font-bold uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5" /> Table Fund Live
+                </span>
+                <span className="text-xs font-mono text-[#F3EEE3]/70 flex items-center gap-1.5">
+                  <Clock className="w-4 h-4 text-[#D4A843]" /> Deadline: {fund.deadline}
+                </span>
+              </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold font-serif mb-2 text-white">
-            {fund.squadName}
-          </h1>
-          <p className="text-sm text-[#F3EEE3]/80 mb-6">
-            Splitting a <strong>{fund.tableName}</strong> for <strong>{fund.event}</strong> on <strong>{fund.eventDate}</strong> at {fund.venue}.
-          </p>
+              <h1 className="text-2xl sm:text-4xl font-bold font-serif mb-2 text-white">
+                {fund.squadName}
+              </h1>
+              <p className="text-xs sm:text-sm text-[#F3EEE3]/80 leading-relaxed">
+                Splitting a <strong>{fund.tableName}</strong> for <strong>{fund.event}</strong> on <strong>{fund.eventDate}</strong> at {fund.venue}.
+              </p>
+            </div>
+
+            {/* Official Event Poster Badge */}
+            <div className="flex items-center gap-3 bg-white/5 border border-[#D4A843]/30 rounded-2xl p-2.5 sm:p-3 shrink-0">
+              <div className="relative w-16 sm:w-20 aspect-[3/4] rounded-xl overflow-hidden shadow-md border border-[#D4A843]/40 bg-[#0B3022]">
+                <Image
+                  src="/owambe-poster.jpg"
+                  alt="The Owambe Party Event Poster"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="text-left text-xs max-w-[130px]">
+                <span className="text-[10px] font-mono uppercase text-[#D4A843] font-bold block">Official Event</span>
+                <span className="font-bold text-white text-[11px] block leading-snug">The Owambe Party</span>
+                <span className="text-[10px] text-[#F3EEE3]/70 block mt-0.5">20 Dec 2026 &bull; Lekki</span>
+              </div>
+            </div>
+          </div>
 
           {/* Progress Card */}
           <div className="bg-[#FAF7F0] text-[#0B3022] rounded-2xl p-6 shadow-md border border-[#D4A843]/30">

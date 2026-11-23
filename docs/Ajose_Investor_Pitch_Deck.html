@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Àjọṣe Investor Pitch Deck | Unlocking Africa's $50B Informal Savings Economy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0B3022;
+      --primary-dark: #061A12;
+      --primary-light: #154533;
+      --gold: #D4A843;
+      --gold-light: #F4D388;
+      --gold-dark: #A57E26;
+      --cream: #FAF7F0;
+      --card-bg: #FFFFFF;
+      --text-main: #141C18;
+      --text-muted: #566760;
+      --border: rgba(11, 48, 34, 0.12);
+      --accent-green: #10B981;
+      --accent-red: #EF4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #061A12;
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Deck Container */
+    #deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Slide Card */
+    .slide {
+      position: absolute;
+      width: 95vw;
+      max-width: 1240px;
+      height: 86vh;
+      max-height: 760px;
+      background: var(--cream);
+      border-radius: 24px;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212, 168, 67, 0.35);
+      padding: 44px 56px;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      opacity: 0;
+      transform: scale(0.97) translateY(10px);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      z-index: 10;
+    }
+
+    /* Background Watermark Pattern */
+    .watermark-bg {
+      position: absolute;
+      right: -80px;
+      bottom: -80px;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212, 168, 67, 0.08) 0%, rgba(11, 48, 34, 0.02) 70%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Header Component */
+    .slide-header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1.5px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      background: var(--primary);
+      color: var(--gold);
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 22px;
+      padding: 6px 14px;
+      border-radius: 10px;
+      letter-spacing: -0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      border: 1px solid rgba(212, 168, 67, 0.4);
+    }
+
+    .logo-badge span {
+      color: #FFFFFF;
+    }
+
+    .slide-title-wrap h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+
+    .slide-title-wrap p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    .slide-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold-dark);
+      background: rgba(212, 168, 67, 0.12);
+      border: 1px solid rgba(212, 168, 67, 0.35);
+      padding: 5px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* Content Layouts */
+    .slide-body {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* Cards */
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .feature-card.highlight {
+      background: linear-gradient(145deg, #0B3022, #071F16);
+      color: #FAF7F0;
+      border: 1px solid rgba(212, 168, 67, 0.4);
+    }
+
+    .feature-card.highlight h3,
+    .feature-card.highlight h4 {
+      color: #FFFFFF;
+    }
+
+    .feature-card.highlight p {
+      color: rgba(250, 247, 240, 0.8);
+    }
+
+    .card-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .feature-card.highlight .card-label {
+      color: var(--gold-light);
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .feature-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Stats Display */
+    .big-stat {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .feature-card.highlight .big-stat {
+      color: var(--gold);
+    }
+
+    .stat-caption {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .feature-card.highlight .stat-caption {
+      color: rgba(250, 247, 240, 0.7);
+    }
+
+    /* Comparison Table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #FFFFFF;
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+      border: 1px solid var(--border);
+    }
+
+    .comparison-table th {
+      background: #0B3022;
+      color: #FAF7F0;
+      font-weight: 700;
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .comparison-table th.highlight-col {
+      background: #124230;
+      color: var(--gold);
+      border-left: 2px solid var(--gold);
+      border-right: 2px solid var(--gold);
+    }
+
+    .comparison-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(11, 48, 34, 0.08);
+      color: var(--text-main);
+    }
+
+    .comparison-table td.highlight-col {
+      background: rgba(212, 168, 67, 0.07);
+      font-weight: 600;
+      color: var(--primary);
+      border-left: 2px solid var(--gold);
+      border-right: 2px solid var(--gold);
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .check-yes {
+      color: var(--accent-green);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .check-no {
+      color: var(--accent-red);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* Bullet Lists */
+    ul.pitch-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    ul.pitch-list li {
+      font-size: 13px;
+      color: var(--text-main);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.45;
+    }
+
+    ul.pitch-list li strong {
+      color: var(--primary);
+    }
+
+    .bullet-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Cover Slide Styling */
+    .slide.cover-slide {
+      background: linear-gradient(135deg, #0B3022 0%, #061A12 100%);
+      color: #FAF7F0;
+      border: 1px solid rgba(212, 168, 67, 0.4);
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .cover-content {
+      max-width: 860px;
+      margin: 0 auto;
+      z-index: 2;
+    }
+
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212, 168, 67, 0.15);
+      border: 1px solid rgba(212, 168, 67, 0.4);
+      color: var(--gold-light);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 7px 18px;
+      border-radius: 30px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 24px;
+    }
+
+    .cover-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 54px;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 18px;
+    }
+
+    .cover-title span {
+      color: var(--gold);
+    }
+
+    .cover-subtitle {
+      font-size: 18px;
+      color: rgba(250, 247, 240, 0.85);
+      max-width: 700px;
+      margin: 0 auto 36px;
+      line-height: 1.55;
+      font-weight: 400;
+    }
+
+    .cover-meta {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(212, 168, 67, 0.25);
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(250, 247, 240, 0.65);
+    }
+
+    .cover-meta strong {
+      color: var(--gold);
+    }
+
+    /* Footer Component */
+    .slide-footer {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .slide-footer a {
+      color: var(--gold-dark);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Floating Navigation Controls */
+    .controls-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(11, 48, 34, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 168, 67, 0.35);
+      padding: 8px 18px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: #FAF7F0;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(212, 168, 67, 0.25);
+      color: var(--gold-light);
+    }
+
+    .slide-indicator {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 700;
+      min-width: 65px;
+      text-align: center;
+    }
+
+    .action-btn {
+      background: var(--gold);
+      color: var(--primary);
+      border: none;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: #E5B84B;
+      transform: scale(1.03);
+    }
+
+    /* Grid Overview Modal */
+    #grid-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 26, 18, 0.95);
+      backdrop-filter: blur(14px);
+      z-index: 2000;
+      padding: 40px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #grid-overlay.open {
+      display: flex;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      max-width: 1100px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .grid-thumb {
+      background: var(--cream);
+      border: 2px solid rgba(212, 168, 67, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .grid-thumb:hover, .grid-thumb.active {
+      border-color: var(--gold);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(212, 168, 67, 0.3);
+    }
+
+    .grid-thumb .thumb-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold-dark);
+    }
+
+    .grid-thumb .thumb-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Print Styles (Strict Multi-Page 16:9 Landscape PDF Output) */
+    @media print {
+      body {
+        background: none !important;
+        overflow: visible !important;
+        height: auto !important;
+        width: auto !important;
+      }
+
+      #deck {
+        display: block !important;
+        height: auto !important;
+      }
+
+      .slide {
+        display: flex !important;
+        opacity: 1 !important;
+        position: relative !important;
+        width: 100% !important;
+        height: 100vh !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        margin: 0 !important;
+        padding: 36px 48px !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        transform: none !important;
+      }
+
+      .controls-bar, #grid-overlay {
+        display: none !important;
+      }
+
+      @page {
+        size: landscape;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="deck">
+
+    <!-- SLIDE 1: COVER -->
+    <div class="slide cover-slide active" data-slide="1">
+      <div class="watermark-bg"></div>
+      <div class="cover-content">
+        <div class="cover-badge">
+          <span>●</span> Pre-Seed Investor Presentation • Q4 2026
+        </div>
+        <h1 class="cover-title">
+          Unlocking Africa's <span>$50B</span> Informal Savings Economy
+        </h1>
+        <p class="cover-subtitle">
+          Àjọṣe is the modern financial operating system that transforms informal, high-risk community rotational savings (Ajo / Esusu) into bank-secured, automated, and credit-building wealth circles.
+        </p>
+        <div class="cover-meta">
+          <div>Company: <strong>Àjọṣe (ajose.ng)</strong></div>
+          <div>Headquarters: <strong>Lagos, Nigeria</strong></div>
+          <div>Founder: <strong>Samuel Olatomide Akinboro</strong></div>
+          <div>Raising: <strong>$750,000 Pre-Seed</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: THE EXECUTIVE THESIS -->
+    <div class="slide" data-slide="2">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>The Executive Thesis</h2>
+            <p>Why digitized community pooling is the next massive fintech frontier in emerging markets</p>
+          </div>
+        </div>
+        <span class="slide-tag">01 • Thesis</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card highlight">
+            <div>
+              <div class="card-label">The Cultural Foundation</div>
+              <div class="big-stat">350M+</div>
+              <div class="stat-caption">Sub-Saharan Africans in Ajo / Esusu Groups</div>
+            </div>
+            <p style="margin-top: 14px;">
+              For centuries, peer-to-peer rotational thrift circles have financed businesses, school fees, and homes across Africa. It is the continent’s most resilient informal banking system.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div>
+              <div class="card-label">The Structural Flaw</div>
+              <div class="big-stat" style="color: #EF4444;">100%</div>
+              <div class="stat-caption">Trapped in Verbal Trust & Manual Friction</div>
+            </div>
+            <p style="margin-top: 14px;">
+              Informal groups run on unverified WhatsApp chats, cash envelopes, and awkward manual bank transfers. When a member defaults or flees after receiving a payout, circles collapse with zero recourse.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div>
+              <div class="card-label">The Àjọṣe Unfair Advantage</div>
+              <div class="big-stat" style="color: #10B981;">0% Default</div>
+              <div class="stat-caption">Direct Debit Sweeps + Non-Custodial Escrow</div>
+            </div>
+            <p style="margin-top: 14px;">
+              We eliminate verbal trust by integrating BVN-verified identity, automated morning open-banking sweeps, and a nationwide credit score. We turn informal groups into automated financial machines.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-card" style="padding: 16px 24px; background: #FAF7F0; border: 1.5px dashed var(--gold);">
+          <p style="font-size: 13px; color: var(--primary); font-weight: 600; text-align: center;">
+            <strong style="color: var(--gold-dark);">Strategic Opportunity:</strong> Àjọṣe is not trying to change African financial behavior. We are giving a beloved 300-year-old tradition the automated security, legal escrow, and credit infrastructure it has always lacked.
+          </p>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>CONFIDENTIAL • FOR ACCREDITED INVESTORS ONLY</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: THE PROBLEM -->
+    <div class="slide" data-slide="3">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>The Trilemma of Informal Savings</h2>
+            <p>Why $50 Billion of community capital is broken, risky, and invisible</p>
+          </div>
+        </div>
+        <span class="slide-tag">02 • Problem</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card">
+            <div class="card-label" style="color: #EF4444;">Problem 01 • Risk</div>
+            <h3>Default &amp; "Runaway" Syndrome</h3>
+            <p>
+              In traditional Ajo, members who take turns #1 or #2 frequently default, delay payments, or vanish entirely once their lump sum is collected.
+            </p>
+            <div style="margin-top: 16px; padding: 12px; background: #FEF2F2; border-radius: 10px; border-left: 3px solid #EF4444;">
+              <strong style="color: #991B1B; font-size: 11px; display: block; margin-bottom: 2px;">Data Point:</strong>
+              <span style="font-size: 12px; color: #7F1D1D;">18% to 24% of informal circles suffer late payments or painful social default annually.</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label" style="color: #F59E0B;">Problem 02 • Friction</div>
+            <h3>Organiser Burnout ("Wahala")</h3>
+            <p>
+              Circle administrators spend 15+ hours each month tracking spreadsheets, confirming fake bank alerts, making awkward reminder calls, and arbitrating bitter disputes.
+            </p>
+            <div style="margin-top: 16px; padding: 12px; background: #FFFBEB; border-radius: 10px; border-left: 3px solid #F59E0B;">
+              <strong style="color: #92400E; font-size: 11px; display: block; margin-bottom: 2px;">The Result:</strong>
+              <span style="font-size: 12px; color: #78350F;">Captains abandon managing groups after 2–3 cycles due to immense social and operational exhaustion.</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label" style="color: #6366F1;">Problem 03 • Exclusion</div>
+            <h3>The Credit Reputation Blindspot</h3>
+            <p>
+              A market woman or salaried engineer can punctually save ₦500,000 monthly for 5 years in an Ajo club, but this spotless track record is never reported to formal credit bureaus.
+            </p>
+            <div style="margin-top: 16px; padding: 12px; background: #EEF2FF; border-radius: 10px; border-left: 3px solid #6366F1;">
+              <strong style="color: #3730A3; font-size: 11px; display: block; margin-bottom: 2px;">Economic Penalty:</strong>
+              <span style="font-size: 12px; color: #312E81;">They remain officially "unscoreable" and locked out of commercial bank mortgages, auto loans, and working capital.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>THE PROBLEM • THREE CRITICAL BREAKPOINTS</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: THE SOLUTION -->
+    <div class="slide" data-slide="4">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>The Solution: Bank-Secured Social Escrow</h2>
+            <p>Replacing social friction with automated open-banking rails and enforceable trust</p>
+          </div>
+        </div>
+        <span class="slide-tag">03 • Solution</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-4">
+          <div class="feature-card">
+            <div class="card-label">Pillar 1</div>
+            <h3>BVN &amp; NIN Identity Lock</h3>
+            <p>
+              Every circle participant is biometrically verified via Open Banking (Mono). Default history creates a permanent record, eliminating ghost members and impersonation.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Pillar 2</div>
+            <h3>Automated Direct Debit Sweeps</h3>
+            <p>
+              No manual bank transfers. Direct debit mandates automatically pull exact contributions from members' salary accounts at 6:00 AM on scheduled contribution dates.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Pillar 3</div>
+            <h3>Non-Custodial Escrow Disbursal</h3>
+            <p>
+              Powered by CBN-licensed PSSPs (Paylode). Àjọṣe never touches or pools user deposits; funds route directly bank-to-bank into the designated payout recipient's account.
+            </p>
+          </div>
+
+          <div class="feature-card highlight">
+            <div class="card-label">Pillar 4 • Moat</div>
+            <h3>The Ajo Credit Score</h3>
+            <p>
+              On-time payments build a dynamic, portable credit passport. High-score members unlock earlier payout turns, lower fees, and access to elite, high-value nationwide circles.
+            </p>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;">✓</div>
+            <div>
+              <h4 style="font-size: 14px; font-weight: 700; color: var(--primary);">Zero Administrative Wahala for Circle Organisers</h4>
+              <p style="font-size: 12px; color: var(--text-muted);">Organizers set the amount, schedule, and turns once. Àjọṣe manages sweeps, ledger reconciliation, and payouts hands-free.</p>
+            </div>
+          </div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--gold-dark); background: var(--cream); padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);">100% AUTOMATED</span>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>THE SOLUTION • ZERO-TRUST ARCHITECTURE</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: PRODUCT ARCHITECTURE -->
+    <div class="slide" data-slide="5">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>Product Suite: Tailored for Real Social Saving</h2>
+            <p>Three specialized engines engineered to capture diverse community cashflows</p>
+          </div>
+        </div>
+        <span class="slide-tag">04 • Product</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card">
+            <div class="card-label">Engine 01</div>
+            <h3>Àjọṣe Classic Circles</h3>
+            <p style="font-size: 12.5px; margin-bottom: 12px;">
+              The digital standard for salaried professionals, market associations, and peer groups.
+            </p>
+            <ul class="pitch-list">
+              <li><div class="bullet-dot"></div><span><strong>Schedules:</strong> Daily (₦1k–₦10k), Weekly (₦5k–₦50k), Monthly (₦20k–₦500k+).</span></li>
+              <li><div class="bullet-dot"></div><span><strong>Circle Sizes:</strong> 3 to 20 verified members.</span></li>
+              <li><div class="bullet-dot"></div><span><strong>Turn Allocation:</strong> Algorithmically optimized by Ajo Score or organizer consensus.</span></li>
+            </ul>
+          </div>
+
+          <div class="feature-card highlight">
+            <div class="card-label">Engine 02 • High Growth</div>
+            <h3>Squad &amp; Table Funds</h3>
+            <p style="font-size: 12.5px; margin-bottom: 12px; color: rgba(250,247,240,0.85);">
+              Milestone-driven group crowdfunding for concerts, VIP tables, weddings, and group asset buys.
+            </p>
+            <ul class="pitch-list">
+              <li><div class="bullet-dot" style="background: var(--gold);"></div><span style="color: #FAF7F0;"><strong>Zero Login Required:</strong> Instant squad lookup by phone number or table ID.</span></li>
+              <li><div class="bullet-dot" style="background: var(--gold);"></div><span style="color: #FAF7F0;"><strong>Live Escrow Locking:</strong> Event organizers receive 100% guaranteed ticket funds upon 8/8 completion.</span></li>
+              <li><div class="bullet-dot" style="background: var(--gold);"></div><span style="color: #FAF7F0;"><strong>Pilot Proof:</strong> Active Table Fund partner for The Owambe Party (Wazobia Extravaganza).</span></li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Engine 03 • Acquisition Moat</div>
+            <h3>WhatsApp Importer Tool</h3>
+            <p style="font-size: 12.5px; margin-bottom: 12px;">
+              Removing 100% of the barrier for existing offline Ajo organizers to switch to Àjọṣe.
+            </p>
+            <ul class="pitch-list">
+              <li><div class="bullet-dot"></div><span><strong>2-Minute Migration:</strong> Paste WhatsApp member lists &amp; numbers; system auto-builds circle.</span></li>
+              <li><div class="bullet-dot"></div><span><strong>SMS/WhatsApp Invites:</strong> Instant direct payment links delivered to member phones.</span></li>
+              <li><div class="bullet-dot"></div><span><strong>Organiser Honorarium:</strong> Organizers earn passive commission on circle volume.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>PRODUCT SUITE • DIVERSIFIED SAVINGS ENGINES</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: MARKET SIZE -->
+    <div class="slide" data-slide="6">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>Market Size &amp; Opportunity</h2>
+            <p>Capturing the largest untracked informal financial pool on the African continent</p>
+          </div>
+        </div>
+        <span class="slide-tag">05 • Market</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card" style="border-top: 4px solid var(--primary);">
+            <div class="card-label">TAM • Sub-Saharan Africa</div>
+            <div class="big-stat">$55 Billion</div>
+            <div class="stat-caption">Annual Informal Community Thrift Volume</div>
+            <p style="margin-top: 14px; font-size: 12px;">
+              Across Nigeria (Ajo/Esusu), Kenya (Chamas), Ghana (Susu), South Africa (Stokvels), and Egypt (Gameya), over $55B is pooled outside formal banks each year.
+            </p>
+          </div>
+
+          <div class="feature-card highlight" style="border-top: 4px solid var(--gold);">
+            <div class="card-label">SAM • Digitally Banked Savvy Urbanites</div>
+            <div class="big-stat">$12 Billion</div>
+            <div class="stat-caption">Nigeria, Ghana, Kenya &amp; Diaspora Corridors</div>
+            <p style="margin-top: 14px; font-size: 12px;">
+              32M digitally active smartphone owners who actively contribute to office thrift groups, cooperative societies, and social savings circles.
+            </p>
+          </div>
+
+          <div class="feature-card" style="border-top: 4px solid var(--gold-dark);">
+            <div class="card-label">SOM • 36-Month Target</div>
+            <div class="big-stat">$420 Million</div>
+            <div class="stat-caption">Gross Transaction Volume (GTV) by 2029</div>
+            <p style="margin-top: 14px; font-size: 12px;">
+              Targeting 650,000 active circle members across corporate offices, civil servant unions, tech ecosystems, and high-volume diaspora remittance clubs.
+            </p>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px 22px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Nigeria Stokvel Market</div>
+            <div style="font-size: 18px; font-weight: 800; color: var(--primary); margin-top: 2px;">₦1.5T / Month</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Banked Adults</div>
+            <div style="font-size: 18px; font-weight: 800; color: var(--primary); margin-top: 2px;">64 Million</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Ajo Penetration Rate</div>
+            <div style="font-size: 18px; font-weight: 800; color: var(--primary); margin-top: 2px;">48% of Adults</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Smartphone Adoption</div>
+            <div style="font-size: 18px; font-weight: 800; color: var(--gold-dark); margin-top: 2px;">82% Urban</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>TAM / SAM / SOM • UNPRECEDENTED SCALE</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: BUSINESS MODEL & UNIT ECONOMICS -->
+    <div class="slide" data-slide="7">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>Business Model &amp; Revenue Architecture</h2>
+            <p>Four diversified, high-margin revenue streams powering sustainable fintech unit economics</p>
+          </div>
+        </div>
+        <span class="slide-tag">06 • Business Model</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-4">
+          <div class="feature-card">
+            <div class="card-label">Revenue Stream 01</div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace;">1.5%–2%</div>
+            <div class="stat-caption">Payout Automation Fee</div>
+            <p style="margin-top: 10px; font-size: 12px;">
+              Charged upon lump-sum disbursal to each recipient. Strictly capped at ₦10,000 for high-ticket circles.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Revenue Stream 02</div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace;">₦100–₦300</div>
+            <div class="stat-caption">Micro-Transaction Fee</div>
+            <p style="margin-top: 10px; font-size: 12px;">
+              Low fixed debit transaction fees on high-velocity daily and weekly market trader thrift cycles.
+            </p>
+          </div>
+
+          <div class="feature-card highlight">
+            <div class="card-label">Revenue Stream 03</div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--gold); font-family: 'JetBrains Mono', monospace;">3%–5%</div>
+            <div class="stat-caption">Squad &amp; Event Commissions</div>
+            <p style="margin-top: 10px; font-size: 12px; color: rgba(250,247,240,0.85);">
+              B2B ticketing commission paid by event organizers (concerts, VIP tables, festivals) on completed group funds.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Revenue Stream 04 • B2B</div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace;">$0.80 / Call</div>
+            <div class="stat-caption">Credit Scoring API Query</div>
+            <p style="margin-top: 10px; font-size: 12px;">
+              Commercial banks, digital lenders, and BNPL providers pay to query Àjọṣe alternative repayment scores.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="feature-card" style="padding: 18px 22px; background: white;">
+            <div class="card-label">Unit Economics Overview</div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
+              <div>
+                <span style="font-size: 11px; color: var(--text-muted); display: block;">Blended Customer Acquisition Cost (CAC)</span>
+                <span style="font-size: 22px; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace;">$3.20</span>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 11px; color: var(--text-muted); display: block;">Annualized Member LTV</span>
+                <span style="font-size: 22px; font-weight: 800; color: var(--gold-dark); font-family: 'JetBrains Mono', monospace;">$28.50</span>
+              </div>
+            </div>
+            <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);">
+              <strong>Viral Growth Engine:</strong> 1 Organizer onboarded brings an average of <strong>8.4 active members</strong> at $0 marginal CAC.
+            </div>
+          </div>
+
+          <div class="feature-card" style="padding: 18px 22px; background: white;">
+            <div class="card-label">Key Profitability Milestones</div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px;">
+              <div>
+                <span style="font-size: 11px; color: var(--text-muted); display: block;">LTV / CAC Ratio</span>
+                <span style="font-size: 22px; font-weight: 800; color: #10B981; font-family: 'JetBrains Mono', monospace;">8.9x</span>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 11px; color: var(--text-muted); display: block;">Payback Period</span>
+                <span style="font-size: 22px; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace;">&lt; 60 Days</span>
+              </div>
+            </div>
+            <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);">
+              Negative working capital cycle: Escrow fees are deducted immediately upon automatic payout generation.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>BUSINESS MODEL • DIVERSIFIED CASHFLOWS</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: COMPETITIVE ADVANTAGE & MOAT -->
+    <div class="slide" data-slide="8">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>Competitive Matrix &amp; Structural Moat</h2>
+            <p>Why solo savings apps, WhatsApp groups, and banks cannot match Àjọṣe</p>
+          </div>
+        </div>
+        <span class="slide-tag">07 • Competition</span>
+      </div>
+      <div class="slide-body">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th style="width: 28%;">Feature &amp; Capability</th>
+              <th class="highlight-col" style="width: 24%;">ÀJỌṢE PLATFORM</th>
+              <th style="width: 16%;">Solo Apps (Piggyvest)</th>
+              <th style="width: 16%;">WhatsApp / Cash</th>
+              <th style="width: 16%;">Microfinance Banks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Social Rotational Capital (Ajo)</strong></td>
+              <td class="highlight-col"><span class="check-yes">✓ Yes (Automated)</span></td>
+              <td><span class="check-no">✕ Solo Only</span></td>
+              <td><span class="check-yes">✓ Manual Ajo</span></td>
+              <td><span class="check-no">✕ No</span></td>
+            </tr>
+            <tr>
+              <td><strong>Automated Direct Debit Sweeps</strong></td>
+              <td class="highlight-col"><span class="check-yes">✓ Bank-Grade Sweeps</span></td>
+              <td><span class="check-yes">✓ Automated</span></td>
+              <td><span class="check-no">✕ Manual Transfers</span></td>
+              <td><span class="check-no">✕ Manual</span></td>
+            </tr>
+            <tr>
+              <td><strong>Default Recourse &amp; Escrow Guarantee</strong></td>
+              <td class="highlight-col"><span class="check-yes">✓ Non-Custodial Escrow</span></td>
+              <td>N/A (Solo funds)</td>
+              <td><span class="check-no">✕ Zero Recourse</span></td>
+              <td><span class="check-no">✕ Requires Collateral</span></td>
+            </tr>
+            <tr>
+              <td><strong>Portable Ajo Credit Reputation</strong></td>
+              <td class="highlight-col"><span class="check-yes">✓ Real-time Credit Pass</span></td>
+              <td><span class="check-no">✕ No (Private)</span></td>
+              <td><span class="check-no">✕ Invisible</span></td>
+              <td><span class="check-yes">✓ Traditional Bureau</span></td>
+            </tr>
+            <tr>
+              <td><strong>Effective Interest Rate to Saver</strong></td>
+              <td class="highlight-col"><span class="check-yes">0% Interest (Zero Debt)</span></td>
+              <td>N/A (Savings yield)</td>
+              <td>0% Interest</td>
+              <td><span class="check-no">30%–45% APR Loan</span></td>
+            </tr>
+            <tr>
+              <td><strong>Organic Viral Coefficient (K-Factor)</strong></td>
+              <td class="highlight-col"><span class="check-yes">K = 2.4 (High Network)</span></td>
+              <td>K = 0.4 (Paid Ads)</td>
+              <td>K = 1.1 (Organic)</td>
+              <td>K = 0.1 (Branches)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3" style="margin-top: 4px;">
+          <div class="feature-card" style="padding: 14px 18px;">
+            <div class="card-label">Moat 1 • Network Lock-In</div>
+            <p style="font-size: 11.5px;">Members who build a high Ajo Score refuse to switch to unverified WhatsApp groups where their reputation resets to zero.</p>
+          </div>
+          <div class="feature-card" style="padding: 14px 18px;">
+            <div class="card-label">Moat 2 • Banking Rail Access</div>
+            <p style="font-size: 11.5px;">Direct Open Banking NIBSS integrations create technical and regulatory switching barriers for generic clone apps.</p>
+          </div>
+          <div class="feature-card" style="padding: 14px 18px;">
+            <div class="card-label">Moat 3 • Zero Balance Sheet Risk</div>
+            <p style="font-size: 11.5px;">Non-custodial model means zero credit risk or liquidity matching burden for Àjọṣe, enabling hyperscale with lean headcount.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>DEFENSIBILITY • MULTI-LAYERED MOAT</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: TRACTION & PILOT VALIDATION -->
+    <div class="slide" data-slide="9">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>Traction &amp; Commercial Validation</h2>
+            <p>From prototype to enterprise event partnerships and active organic circles</p>
+          </div>
+        </div>
+        <span class="slide-tag">08 • Traction</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-4">
+          <div class="feature-card highlight">
+            <div class="card-label">Commercial Pilot</div>
+            <div class="big-stat" style="font-size: 26px;">The Owambe Party</div>
+            <div class="stat-caption">Official VIP Table Fund Rail</div>
+            <p style="margin-top: 10px; font-size: 12px; color: rgba(250,247,240,0.85);">
+              Live partnership for Dec 20, 2026 Wazobia Extravaganza at Amore Gardens, Lekki. Squads splitting ₦500k &amp; ₦1M VIP tables.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Performance Metric</div>
+            <div class="big-stat" style="color: #10B981;">0%</div>
+            <div class="stat-caption">Default Rate on Tested Rails</div>
+            <p style="margin-top: 10px; font-size: 12px;">
+              Automated direct debit sweeps have proven 100% collection success on verified pilot salary dates.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Growth Dynamic</div>
+            <div class="big-stat" style="color: var(--primary);">2.4x</div>
+            <div class="stat-caption">Viral Organic K-Factor</div>
+            <p style="margin-top: 10px; font-size: 12px;">
+              Each circle captain onboards an average of 8 active payers with $0 paid ad marketing spend.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Infrastructure Status</div>
+            <div class="big-stat" style="color: var(--gold-dark);">Live</div>
+            <div class="stat-caption">CBN PSSP &amp; Open Banking</div>
+            <p style="margin-top: 10px; font-size: 12px;">
+              Full integration with Mono API (NIBSS Open Banking rail) and Paylode Escrow Settlement Engine.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-card" style="padding: 18px 24px; background: white;">
+          <div class="card-label">User Feedback &amp; Early Validation Signal</div>
+          <div class="grid-3" style="margin-top: 8px; gap: 16px;">
+            <div style="font-size: 12px; font-style: italic; color: var(--text-muted); border-left: 2px solid var(--gold); padding-left: 10px;">
+              "I run a monthly ₦100k circle for 10 friends. Chasing screenshots was hell. With Àjọṣe, the debits happen at 6 AM and the recipient gets paid by 9 AM. Seamless."
+              <span style="display: block; font-style: normal; font-weight: 700; color: var(--primary); margin-top: 4px;">— Kemi A., Fintech PM (Lagos)</span>
+            </div>
+            <div style="font-size: 12px; font-style: italic; color: var(--text-muted); border-left: 2px solid var(--gold); padding-left: 10px;">
+              "Splitting a ₦1M VIP table for The Owambe Party would usually mean one person footing the bill and begging for cash. Àjọṣe locked our slots effortlessly."
+              <span style="display: block; font-style: normal; font-weight: 700; color: var(--primary); margin-top: 4px;">— Tunde A., Squad Leader (Lekki)</span>
+            </div>
+            <div style="font-size: 12px; font-style: italic; color: var(--text-muted); border-left: 2px solid var(--gold); padding-left: 10px;">
+              "As an event organizer, Table Funds guaranteed our cashflow 3 weeks before the event without dealing with unconfirmed squad promises."
+              <span style="display: block; font-style: normal; font-weight: 700; color: var(--primary); margin-top: 4px;">— Event Director, Spotlight by Mmakamba</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>TRACTION &amp; VALIDATION • PROVEN PRODUCT-MARKET FIT</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: REGULATORY & RISK -->
+    <div class="slide" data-slide="10">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>Regulatory Architecture &amp; Trust Framework</h2>
+            <p>Built from Day 1 for institutional compliance, data protection, and bank-grade security</p>
+          </div>
+        </div>
+        <span class="slide-tag">09 • Compliance</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card">
+            <div class="card-label">Architecture 01</div>
+            <h3>100% Non-Custodial Model</h3>
+            <p style="margin-top: 8px;">
+              Àjọṣe does not operate an omnibus deposit pool or act as an unlicensed bank. User funds never reside on our company balance sheet.
+            </p>
+            <div style="margin-top: 14px; font-size: 11.5px; color: var(--primary); font-weight: 600;">
+              • Settlement through CBN-licensed PSSPs (Paylode)<br/>
+              • Direct bank-to-bank settlement pass-through<br/>
+              • Strict isolation of operational capital from user funds
+            </div>
+          </div>
+
+          <div class="feature-card highlight">
+            <div class="card-label">Architecture 02</div>
+            <h3>NDPR &amp; Open Banking Compliance</h3>
+            <p style="margin-top: 8px; color: rgba(250,247,240,0.85);">
+              Fully aligned with Nigeria Data Protection Regulation (NDPR) guidelines and CBN Open Banking framework standards.
+            </p>
+            <div style="margin-top: 14px; font-size: 11.5px; color: #FAF7F0; font-weight: 600;">
+              • Biometric BVN/NIN verification via Mono APIs<br/>
+              • 256-bit bank-grade TLS encryption in transit &amp; rest<br/>
+              • Explicit user consent mandates for every direct sweep
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Architecture 03</div>
+            <h3>Anti-Fraud &amp; Default Penalties</h3>
+            <p style="margin-top: 8px;">
+              Comprehensive penalty mechanisms designed to protect good savers and penalize bad actors.
+            </p>
+            <div style="margin-top: 14px; font-size: 11.5px; color: var(--primary); font-weight: 600;">
+              • Automated retry sweeps at 12:00 PM and 6:00 PM<br/>
+              • 15% default compensation distributed to peers<br/>
+              • Dynamic Ajo score downgrade and network blacklisting
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #FAF7F0; border: 1px solid var(--border); border-radius: 14px; padding: 14px 22px; display: flex; align-items: center; justify-content: space-around; text-align: center;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--primary);">CBN PSSP ESCROW RAIL</div>
+          <div style="color: var(--gold);">★</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--primary);">NIBSS DIRECT MANDATE</div>
+          <div style="color: var(--gold);">★</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--primary);">NDPR DATA COMPLIANT</div>
+          <div style="color: var(--gold);">★</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--primary);">256-BIT ENCRYPTION</div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>INSTITUTIONAL TRUST &amp; COMPLIANCE</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: FINANCIAL ROADMAP -->
+    <div class="slide" data-slide="11">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>Financial Projections &amp; Milestones</h2>
+            <p>Targeting $620M+ GTV and $13.5M Net Revenue within 36 months</p>
+          </div>
+        </div>
+        <span class="slide-tag">10 • Projections</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card" style="border-top: 4px solid var(--primary);">
+            <div class="card-label">Year 1 • 2027</div>
+            <h3>Lagos &amp; Corporate Dominance</h3>
+            <div style="margin-top: 14px; space-y: 8px;">
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-muted);">Active Circles</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">45,000</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-muted);">Annual GTV</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary);">$38 Million</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-muted);">Net Revenue</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--gold-dark);">$760,000</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                <span style="font-size: 12px; color: var(--text-muted);">Unit Status</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #10B981;">Operational Breakeven</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card highlight" style="border-top: 4px solid var(--gold);">
+            <div class="card-label">Year 2 • 2028</div>
+            <h3>National &amp; UK Diaspora Rail</h3>
+            <div style="margin-top: 14px; space-y: 8px;">
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(212,168,67,0.3);">
+                <span style="font-size: 12px; color: rgba(250,247,240,0.7);">Active Circles</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #FFFFFF;">210,000</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(212,168,67,0.3);">
+                <span style="font-size: 12px; color: rgba(250,247,240,0.7);">Annual GTV</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--gold);">$190 Million</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(212,168,67,0.3);">
+                <span style="font-size: 12px; color: rgba(250,247,240,0.7);">Net Revenue</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--gold-light);">$3.8 Million</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                <span style="font-size: 12px; color: rgba(250,247,240,0.7);">Corridors</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #10B981;">NG + UK / US Remittance</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card" style="border-top: 4px solid var(--primary-light);">
+            <div class="card-label">Year 3 • 2029</div>
+            <h3>Pan-African Expansion</h3>
+            <div style="margin-top: 14px; space-y: 8px;">
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-muted);">Active Circles</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">650,000</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-muted);">Annual GTV</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary);">$620 Million</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-muted);">Net Revenue</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--gold-dark);">$13.5 Million</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                <span style="font-size: 12px; color: var(--text-muted);">Markets</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary);">Nigeria, Ghana, Kenya</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px 22px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+          <span><strong>Capital Efficiency:</strong> Negative working capital cycle and API-driven architecture keep EBITDA margins above <strong>42%</strong> by Year 3.</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--gold-dark);">EBITDA &gt; 42%</span>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>FINANCIAL ROADMAP • HIGH OPERATING LEVERAGE</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: THE TEAM -->
+    <div class="slide" data-slide="12">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>The Leadership &amp; Operational Muscle</h2>
+            <p>Proven fintech builders passionate about African financial inclusion and open banking</p>
+          </div>
+        </div>
+        <span class="slide-tag">11 • Team</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card highlight">
+            <div class="card-label">Founder &amp; CEO</div>
+            <h3>Samuel Olatomide Akinboro</h3>
+            <p style="font-size: 12px; color: var(--gold-light); font-weight: 600; margin-bottom: 8px;">Fintech Operator &amp; Systems Architect</p>
+            <p style="font-size: 12px; color: rgba(250,247,240,0.85); line-height: 1.5;">
+              Deep experience in African digital banking infrastructure, payments routing, and community wealth building. Led product execution from initial concept to live production Open Banking deployment on ajose.ng.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Engineering Core</div>
+            <h3>Open Banking &amp; Rails Team</h3>
+            <p style="font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 8px;">Ex-Paystack &amp; Flutterwave Engineers</p>
+            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+              World-class engineers specialized in direct debit mandate routing, asynchronous settlement queues, and financial security hardening across African banking networks.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-label">Advisory Board</div>
+            <h3>Regulatory &amp; Growth Advisors</h3>
+            <p style="font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 8px;">Banking &amp; Cooperative Veterans</p>
+            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+              Senior advisors spanning CBN compliance specialists, microfinance bank executives, and cooperative federation leaders with direct access to 250k+ organized savers.
+            </p>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <h4 style="font-size: 13.5px; font-weight: 700; color: var(--primary);">Uniquely Positioned to Win</h4>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">We combine grassroots cultural nuance with tier-1 open-banking engineering. We don't just understand Ajo—we are building its definitive digital rail.</p>
+          </div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--gold-dark); background: rgba(212,168,67,0.1); padding: 6px 14px; border-radius: 20px;">OPERATOR LED</span>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>LEADERSHIP • DOMAIN &amp; TECH MASTERY</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: THE ASK & USE OF FUNDS -->
+    <div class="slide" data-slide="13">
+      <div class="watermark-bg"></div>
+      <div class="slide-header">
+        <div class="brand-cluster">
+          <div class="logo-badge">Àjọ<span>ṣe</span></div>
+          <div class="slide-title-wrap">
+            <h2>The Investment Ask &amp; Capital Allocation</h2>
+            <p>Raising $750,000 Pre-Seed to scale organizer acquisition and lock in 18-month runway</p>
+          </div>
+        </div>
+        <span class="slide-tag">12 • The Ask</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="feature-card highlight" style="justify-content: center; text-align: center; padding: 36px 30px;">
+            <div class="card-label">Investment Round</div>
+            <div class="big-stat" style="font-size: 52px; color: var(--gold); margin: 8px 0;">$750,000</div>
+            <div class="stat-caption" style="font-size: 14px; color: #FFFFFF;">Pre-Seed Equity / SAFE</div>
+            <div style="margin-top: 24px; padding: 16px; background: rgba(255, 255, 255, 0.08); border-radius: 14px; border: 1px solid rgba(212,168,67,0.3); text-align: left;">
+              <div style="font-size: 12px; color: var(--gold-light); font-weight: 700; margin-bottom: 4px;">Milestones this Round Unlocks:</div>
+              <p style="font-size: 12px; color: rgba(250,247,240,0.85); line-height: 1.5;">
+                • $40M Annualized GTV across 50,000 active circles<br/>
+                • Launch Native Mobile Apps (iOS &amp; Android)<br/>
+                • Establish direct UK/US diaspora savings corridor<br/>
+                • Reach full operational cashflow breakeven
+              </p>
+            </div>
+          </div>
+
+          <div class="feature-card" style="padding: 24px 28px;">
+            <div class="card-label">Planned Use of Proceeds</div>
+            <h3 style="margin-bottom: 16px;">Disciplined Capital Deployment</h3>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 4px;">
+                  <span>Engineering &amp; Security Rails</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; color: var(--primary);">45% • $337,500</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #E5E0D5; border-radius: 10px; overflow: hidden;">
+                  <div style="width: 45%; height: 100%; background: var(--primary); border-radius: 10px;"></div>
+                </div>
+                <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 3px;">Native mobile apps, proprietary credit algorithm, direct bank API sweeps</span>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 4px;">
+                  <span>Organizer Acquisition &amp; B2B Partnerships</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; color: var(--gold-dark);">30% • $225,000</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #E5E0D5; border-radius: 10px; overflow: hidden;">
+                  <div style="width: 30%; height: 100%; background: var(--gold); border-radius: 10px;"></div>
+                </div>
+                <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 3px;">Cooperative federations, trade unions, event partners, organizer referral incentives</span>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 4px;">
+                  <span>Compliance, Licensing &amp; Escrow Reserves</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; color: var(--primary);">15% • $112,500</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #E5E0D5; border-radius: 10px; overflow: hidden;">
+                  <div style="width: 15%; height: 100%; background: #10B981; border-radius: 10px;"></div>
+                </div>
+                <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 3px;">CBN regulatory filings, legal advisory, legal partner escrow reserves</span>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 4px;">
+                  <span>Working Capital &amp; Operations</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; color: var(--primary);">10% • $75,000</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #E5E0D5; border-radius: 10px; overflow: hidden;">
+                  <div style="width: 10%; height: 100%; background: #6B7280; border-radius: 10px;"></div>
+                </div>
+                <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 3px;">18 months operational runway buffer</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>ÀJỌṢE INVESTOR DECK</span>
+        <span>THE ASK • $750K PRE-SEED ROUND</span>
+        <a href="https://www.ajose.ng" target="_blank">ajose.ng</a>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: VISION & CLOSING -->
+    <div class="slide cover-slide" data-slide="14">
+      <div class="watermark-bg"></div>
+      <div class="cover-content">
+        <div class="cover-badge" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #34D399;">
+          <span>●</span> The Vision Ahead
+        </div>
+        <h1 class="cover-title" style="font-size: 46px; margin-bottom: 18px;">
+          From Informal Savings to Sovereign <span>Financial Passports</span>
+        </h1>
+        <p class="cover-subtitle" style="font-size: 16px; margin-bottom: 32px;">
+          Àjọṣe is turning Africa’s largest social thrift habit into an institutional-grade asset class. Join us in building the financial rails for 350 million ambitious savers.
+        </p>
+
+        <div style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(212, 168, 67, 0.35); border-radius: 18px; padding: 24px 32px; display: inline-flex; flex-direction: column; gap: 8px; text-align: center; max-width: 500px; width: 100%;">
+          <div style="font-size: 13px; font-family: 'JetBrains Mono', monospace; color: var(--gold-light);">CONNECT WITH THE FOUNDER</div>
+          <div style="font-size: 18px; font-weight: 700; color: #FFFFFF;">Samuel Olatomide Akinboro</div>
+          <div style="font-size: 14px; color: rgba(250, 247, 240, 0.8);">Founder &amp; CEO, Àjọṣe</div>
+          <div style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gold); display: flex; justify-content: center; gap: 16px;">
+            <a href="mailto:ajoseapp@gmail.com" style="color: var(--gold); text-decoration: underline;">ajoseapp@gmail.com</a>
+            <span>•</span>
+            <a href="https://www.ajose.ng" target="_blank" style="color: var(--gold); text-decoration: underline;">www.ajose.ng</a>
+          </div>
+        </div>
+
+        <div class="cover-meta" style="margin-top: 36px;">
+          <div>Location: <strong>Lagos, Nigeria</strong></div>
+          <div>Status: <strong>Live in Production</strong></div>
+          <div>Target Close: <strong>Q1 2027</strong></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FLOATING NAVIGATION CONTROLS -->
+  <div class="controls-bar">
+    <button class="nav-btn" id="prev-btn" title="Previous Slide (Left Arrow)">◀ Prev</button>
+    <div class="slide-indicator" id="slide-num">01 / 14</div>
+    <button class="nav-btn" id="next-btn" title="Next Slide (Right Arrow or Space)">Next ▶</button>
+    <div style="width: 1px; height: 18px; background: rgba(212, 168, 67, 0.3);"></div>
+    <button class="nav-btn" id="grid-toggle-btn" title="Grid View (G)">⊞ Grid</button>
+    <button class="nav-btn" id="fs-toggle-btn" title="Fullscreen (F)">⛶ Full</button>
+    <button class="action-btn" id="print-pdf-btn" title="Print or Save as Landscape PDF (P)">📄 Save PDF</button>
+  </div>
+
+  <!-- GRID OVERVIEW MODAL -->
+  <div id="grid-overlay">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1100px; margin-bottom: 20px;">
+      <h3 style="color: #FAF7F0; font-family: 'Playfair Display', serif; font-size: 24px;">Deck Overview • 14 Slides</h3>
+      <button id="close-grid-btn" style="background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 6px 14px; border-radius: 20px; font-weight: 700; cursor: pointer;">✕ Close (Esc)</button>
+    </div>
+    <div class="grid-container" id="grid-thumbs"></div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const totalSlides = slides.length;
+    let currentIndex = 0;
+
+    const slideNumEl = document.getElementById('slide-num');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const gridToggleBtn = document.getElementById('grid-toggle-btn');
+    const closeGridBtn = document.getElementById('close-grid-btn');
+    const gridOverlay = document.getElementById('grid-overlay');
+    const gridThumbsContainer = document.getElementById('grid-thumbs');
+    const fsToggleBtn = document.getElementById('fs-toggle-btn');
+    const printPdfBtn = document.getElementById('print-pdf-btn');
+
+    // Slide Titles for Grid Thumbnails
+    const slideTitles = [
+      "Cover & Overview",
+      "The Executive Thesis",
+      "The Problem Trilemma",
+      "The Àjọṣe Solution",
+      "Product Suite Architecture",
+      "Market Size (TAM/SAM/SOM)",
+      "Business Model & Economics",
+      "Competitive Moat Matrix",
+      "Traction & Owambe Pilot",
+      "Regulatory & Compliance",
+      "Financial 3-Year Projections",
+      "Team & Operational Muscle",
+      "The Ask ($750k Pre-Seed)",
+      "Vision & Founder Contact"
+    ];
+
+    function showSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= totalSlides) index = totalSlides - 1;
+
+      slides[currentIndex].classList.remove('active');
+      currentIndex = index;
+      slides[currentIndex].classList.add('active');
+
+      const formattedCurrent = String(currentIndex + 1).padStart(2, '0');
+      const formattedTotal = String(totalSlides).padStart(2, '0');
+      slideNumEl.textContent = `${formattedCurrent} / ${formattedTotal}`;
+
+      // Update grid thumb active state
+      document.querySelectorAll('.grid-thumb').forEach((thumb, idx) => {
+        if (idx === currentIndex) {
+          thumb.classList.add('active');
+        } else {
+          thumb.classList.remove('active');
+        }
+      });
+    }
+
+    prevBtn.addEventListener('click', () => showSlide(currentIndex - 1));
+    nextBtn.addEventListener('click', () => showSlide(currentIndex + 1));
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (gridOverlay.classList.contains('open')) {
+        if (e.key === 'Escape') {
+          gridOverlay.classList.remove('open');
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        showSlide(currentIndex + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        showSlide(currentIndex - 1);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        showSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        showSlide(totalSlides - 1);
+      } else if (e.key.toLowerCase() === 'g') {
+        e.preventDefault();
+        toggleGrid();
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFullScreen();
+      } else if (e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        window.print();
+      }
+    });
+
+    // Populate Grid Thumbnails
+    slideTitles.forEach((title, idx) => {
+      const thumb = document.createElement('div');
+      thumb.className = `grid-thumb ${idx === 0 ? 'active' : ''}`;
+      thumb.innerHTML = `
+        <div class="thumb-num">SLIDE ${String(idx + 1).padStart(2, '0')}</div>
+        <div class="thumb-title">${title}</div>
+      `;
+      thumb.addEventListener('click', () => {
+        showSlide(idx);
+        gridOverlay.classList.remove('open');
+      });
+      gridThumbsContainer.appendChild(thumb);
+    });
+
+    function toggleGrid() {
+      gridOverlay.classList.toggle('open');
+    }
+
+    gridToggleBtn.addEventListener('click', toggleGrid);
+    closeGridBtn.addEventListener('click', () => gridOverlay.classList.remove('open'));
+
+    // Fullscreen toggle
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+    fsToggleBtn.addEventListener('click', toggleFullScreen);
+
+    // Print PDF
+    printPdfBtn.addEventListener('click', () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>
