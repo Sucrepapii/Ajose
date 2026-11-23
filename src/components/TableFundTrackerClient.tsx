@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { 
   Users, 
   CheckCircle2, 
@@ -16,7 +17,8 @@ import {
   Phone,
   ArrowRight,
   ArrowLeft,
-  X
+  X,
+  Trash2
 } from "lucide-react";
 import Link from "next/link";
 import { isOwambeExpired, isOwambeDeadlinePassed } from "@/utils/owambeConfig";
@@ -53,6 +55,7 @@ interface TableFundState {
 }
 
 export function TableFundTrackerClient({ fundId }: { fundId: string }) {
+  const router = useRouter();
   const [fund, setFund] = useState<TableFundState | null>(null);
   const [copied, setCopied] = useState(false);
   const [payingSlot, setPayingSlot] = useState<number | null>(null);
@@ -182,6 +185,28 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       setPayingEmail("");
       setPayingPhone("");
     }, 1200);
+  };
+
+  const handleDeleteTable = () => {
+    if (!fund) return;
+    const paidCount = fund.contributions.filter((c) => c.paid).length;
+
+    if (paidCount > 1) {
+      alert(
+        "Notice: Squad members have already paid into this table fund. To cancel this reservation and process automatic Paylode escrow refunds, please contact Support or your Table Coordinator."
+      );
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to cancel and delete "${fund.squadName}"? All data for this table will be removed.`
+    );
+    if (!confirmed) return;
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(`table_fund_${fund.id}`);
+    }
+    router.push("/owambe");
   };
 
   return (
@@ -508,15 +533,27 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         </div>
       </div>
 
-      {/* Bottom Back Navigation Button */}
+      {/* Bottom Back Navigation & Delete Actions */}
       <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-[#0B3022]/10">
-        <Link
-          href="/owambe"
-          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022] hover:text-[#D4A843] bg-white border border-[#0B3022]/15 px-5 py-2.5 rounded-full shadow-xs hover:shadow-sm transition-all self-start"
-        >
-          <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
-          <span>Back to Table Funds</span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/owambe"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022] hover:text-[#D4A843] bg-white border border-[#0B3022]/15 px-5 py-2.5 rounded-full shadow-xs hover:shadow-sm transition-all"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
+            <span>Back to Table Funds</span>
+          </Link>
+          <button
+            type="button"
+            onClick={handleDeleteTable}
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-3.5 py-2 rounded-full transition-colors cursor-pointer"
+            title="Cancel and delete this squad table"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete Table</span>
+          </button>
+        </div>
+
         <Link
           href="/"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow-md cursor-pointer self-start sm:self-auto"

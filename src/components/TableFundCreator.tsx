@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink } from "lucide-react";
+import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { isOwambeExpired, OWAMBE_CONFIG } from "@/utils/owambeConfig";
 
@@ -96,6 +96,17 @@ export function TableFundCreator() {
       setMyTables(detected);
     } catch (_) {}
   }, []);
+
+  const handleDiscardSavedTable = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const confirmed = window.confirm("Are you sure you want to remove this squad table from your device?");
+    if (!confirmed) return;
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(`table_fund_${id}`);
+    }
+    setMyTables((prev) => prev.filter((t) => t.id !== id));
+  };
 
   const handleLookupTable = (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,13 +255,23 @@ export function TableFundCreator() {
                 {myTables[0].tableName} &bull; <strong>{myTables[0].paidCount} of {myTables[0].totalSlots} slots paid</strong>. No login needed — your progress is ready.
               </p>
             </div>
-            <Link
-              href={`/table/${myTables[0].id}`}
-              className="py-3 px-6 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 shrink-0 shadow-sm"
-            >
-              <span>View Table & Copy Link</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href={`/table/${myTables[0].id}`}
+                className="py-3 px-6 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 shadow-sm"
+              >
+                <span>View Table & Copy Link</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+              <button
+                type="button"
+                onClick={(e) => handleDiscardSavedTable(myTables[0].id, e)}
+                className="p-3 text-[#F3EEE3]/60 hover:text-rose-300 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                title="Discard this table"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}

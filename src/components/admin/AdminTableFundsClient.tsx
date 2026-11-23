@@ -18,7 +18,8 @@ import {
   Mail,
   Phone,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
+  Trash2
 } from "lucide-react";
 
 interface MemberSlot {
@@ -369,6 +370,35 @@ export function AdminTableFundsClient() {
     }
   };
 
+  const handleDeleteTable = (id: string) => {
+    const target = funds.find((f) => f.id === id);
+    if (!target) return;
+
+    const paidCount = target.contributions.filter((c) => c.paid).length;
+    let confirmed = false;
+
+    if (paidCount > 0) {
+      confirmed = window.confirm(
+        `Warning: "${target.squadName}" has ${paidCount} paid contribution(s) amounting to ₦${(paidCount * target.perMemberTotal).toLocaleString()} held in Paylode escrow.\n\nAre you sure you want to permanently delete/archive this squad table?`
+      );
+    } else {
+      confirmed = window.confirm(
+        `Are you sure you want to permanently delete squad table "${target.squadName}"? This action cannot be undone.`
+      );
+    }
+
+    if (!confirmed) return;
+
+    setFunds((prev) => prev.filter((f) => f.id !== id));
+    if (selectedFund && selectedFund.id === id) {
+      setSelectedFund(null);
+    }
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(`table_fund_${id}`);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Back Navigation */}
@@ -688,6 +718,15 @@ export function AdminTableFundsClient() {
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Preview Live Squad Link</span>
                 </a>
+
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTable(selectedFund.id)}
+                  className="w-full py-2.5 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl transition-all border border-rose-200 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete / Discard Squad Table</span>
+                </button>
               </div>
             </div>
           ) : (
