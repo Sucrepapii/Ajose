@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowRight, Home, HelpCircle, Sparkles, Shield, User, Globe, Smartphone } from "lucide-react";
+import { Menu, X, ArrowRight, Home, HelpCircle, Sparkles, Shield, User, Globe, Smartphone, PartyPopper } from "lucide-react";
 
 
 interface MarketingNavClientProps {
@@ -50,6 +50,13 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
         </Link>
         <Link className="text-sm font-medium hover:text-[#D4A843] transition-colors text-[#F3EEE3]" href="/about">
           About
+        </Link>
+        <Link 
+          className="text-xs font-bold text-[#D4A843] hover:text-[#f4d388] transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] border border-[#D4A843]/40 hover:bg-white/[0.12] shadow-xs" 
+          href="/owambe"
+        >
+          <PartyPopper className="h-3.5 w-3.5 text-[#D4A843]" />
+          <span>Owambe Table Fund</span>
         </Link>
         {/* DIASPORA PORTAL (Commented out until international payment rail is connected)
         <Link className="text-sm font-medium hover:text-[#C5A059] transition-colors text-white" href="/diaspora">
@@ -180,6 +187,17 @@ export function MarketingNavClient({ isLoggedIn }: MarketingNavClientProps) {
               >
                 <Shield className="h-5 w-5 text-[#C5A059]" />
                 <span>About Àjọṣe</span>
+              </Link>
+              <Link
+                href="/owambe"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.08] border border-[#D4A843]/40 text-[#D4A843] font-bold transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <PartyPopper className="h-5 w-5 text-[#D4A843]" />
+                  <span>Owambe Table Fund</span>
+                </div>
+                <span className="text-[10px] bg-[#D4A843]/20 text-[#D4A843] px-2 py-0.5 rounded-full font-mono uppercase">Dec 20</span>
               </Link>
               {/* DIASPORA PORTAL (Commented out until international payment rail is connected)
               <Link

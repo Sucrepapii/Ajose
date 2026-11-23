@@ -15,12 +15,14 @@ import {
   ShieldCheck, 
   Zap, 
   Activity,
-  HeartHandshake 
+  HeartHandshake,
+  PartyPopper
 } from "lucide-react";
 import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton";
 
 const adminNavItems = [
   { href: "/admin", label: "Command Center", icon: LayoutDashboard, exact: true },
+  { href: "/admin/table-funds", label: "Table Funds & Events", icon: PartyPopper },
   { href: "/admin/groups", label: "Circles Monitor", icon: Users },
   { href: "/admin/transactions", label: "Mono Transactions", icon: ArrowRightLeft },
   { href: "/admin/defaults", label: "Risk & 15% Fines", icon: ShieldAlert },
