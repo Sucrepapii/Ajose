@@ -45,12 +45,21 @@ export function AdminSidebarNav({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const isEventPartner = 
+    adminRole === "Event Partner" || 
+    adminEmail.toLowerCase().includes("nbc") || 
+    adminEmail.toLowerCase().includes("owambe");
+
+  const visibleNavItems = isEventPartner
+    ? adminNavItems.filter((item) => item.href === "/admin/table-funds")
+    : adminNavItems;
+
   const renderNavLinks = () => (
     <div className="space-y-1">
       <div className="px-3 pb-2 text-xs font-mono uppercase tracking-widest text-[#D4A843] font-bold">
-        Operations Navigation
+        {isEventPartner ? "Partner Event Desk" : "Operations Navigation"}
       </div>
-      {adminNavItems.map((item) => {
+      {visibleNavItems.map((item) => {
         const isActive = item.exact 
           ? pathname === item.href 
           : pathname.startsWith(item.href);
@@ -160,7 +169,9 @@ export function AdminSidebarNav({
                   OPS
                 </span>
               </div>
-              <p className="text-xs text-[#F3EEE3]/70 font-mono">Platform Admin Desk</p>
+              <p className="text-xs text-[#F3EEE3]/70 font-mono">
+                {isEventPartner ? "NBC / Event Partner Desk" : "Platform Admin Desk"}
+              </p>
             </div>
           </div>
 

@@ -1,6 +1,7 @@
 import { getSuperAdminSession } from "@/utils/adminAuth";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminTeamClient } from "@/components/admin/AdminTeamClient";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Admin Team & Access Management | Àjọṣe Operations",
@@ -9,6 +10,9 @@ export const metadata = {
 
 export default async function AdminTeamPage() {
   const session = await getSuperAdminSession();
+  if (session.role === "Event Partner") {
+    redirect("/admin/table-funds");
+  }
   
   const supabase = createAdminClient();
   const { data: adminUsers } = await supabase

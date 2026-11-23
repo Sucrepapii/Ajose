@@ -1,6 +1,8 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminQuickActions } from "@/components/admin/AdminQuickActions";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSuperAdminSession } from "@/utils/adminAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,11 @@ import {
 } from "lucide-react";
 
 export default async function AdminCommandCenterPage() {
+  const session = await getSuperAdminSession();
+  if (session.role === "Event Partner") {
+    redirect("/admin/table-funds");
+  }
+
   const supabase = createAdminClient();
 
   // 1. Fetch all groups

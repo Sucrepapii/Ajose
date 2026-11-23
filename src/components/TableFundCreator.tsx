@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock } from "lucide-react";
+import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { isOwambeExpired, OWAMBE_CONFIG } from "@/utils/owambeConfig";
 
 interface TableTier {
   id: "silver" | "gold";
@@ -38,19 +39,113 @@ const TIERS: TableTier[] = [
   },
 ];
 
+interface SavedTableSummary {
+  id: string;
+  squadName: string;
+  tableName: string;
+  paidCount: number;
+  totalSlots: number;
+  leaderName: string;
+}
+
 export function TableFundCreator() {
   const router = useRouter();
   const [selectedTier, setSelectedTier] = useState<"silver" | "gold">("silver");
   const [squadName, setSquadName] = useState("");
   const [leaderName, setLeaderName] = useState("");
+  const [leaderEmail, setLeaderEmail] = useState("");
   const [leaderPhone, setLeaderPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Quick Finder state
+  const [myTables, setMyTables] = useState<SavedTableSummary[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchError, setSearchError] = useState("");
+
+  const expired = isOwambeExpired();
+
+  // Load any previously created/visited tables on this device
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      const detected: SavedTableSummary[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith("table_fund_")) {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const data = JSON.parse(raw);
+            if (data && data.id) {
+              const paid = data.contributions?.filter((c: any) => c.paid)?.length || 0;
+              detected.push({
+                id: data.id,
+                squadName: data.squadName || "Owambe Squad Table",
+                tableName: data.tableName || "VIP Table",
+                paidCount: paid,
+                totalSlots: data.memberCount || 8,
+                leaderName: data.leaderName || "Squad Leader",
+              });
+            }
+          }
+        }
+      }
+      setMyTables(detected);
+    } catch (_) {}
+  }, []);
+
+  const handleLookupTable = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchError("");
+
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return;
+
+    // Check if directly a table slug
+    if (q.startsWith("owambe-")) {
+      router.push(`/table/${q}`);
+      return;
+    }
+
+    // Search localStorage
+    if (typeof window !== "undefined") {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith("table_fund_")) {
+          try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              const data = JSON.parse(raw);
+              const match = 
+                data.id?.toLowerCase().includes(q) ||
+                data.squadName?.toLowerCase().includes(q) ||
+                data.leaderPhone?.replace(/\D/g, "").includes(q.replace(/\D/g, "")) ||
+                data.leaderEmail?.toLowerCase().includes(q);
+
+              if (match) {
+                router.push(`/table/${data.id}`);
+                return;
+              }
+            }
+          } catch (_) {}
+        }
+      }
+    }
+
+    // Default fallback to direct slug search
+    if (q.length > 3) {
+      router.push(`/table/${q.startsWith("owambe-") ? q : `owambe-${q}`}`);
+      return;
+    }
+
+    setSearchError("No active squad table found matching that query. Please double-check your phone number or table link.");
+  };
 
   const activeTier = TIERS.find((t) => t.id === selectedTier)!;
 
   const handleCreateFund = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!squadName.trim() || !leaderName.trim()) return;
+    if (!squadName.trim() || !leaderName.trim() || !leaderEmail.trim()) return;
 
     setIsSubmitting(true);
 
@@ -74,11 +169,14 @@ export function TableFundCreator() {
       perMemberFee: activeTier.serviceFeePerMember,
       squadName: squadName.trim(),
       leaderName: leaderName.trim(),
+      leaderEmail: leaderEmail.trim(),
       leaderPhone: leaderPhone.trim(),
       createdAt: new Date().toISOString(),
       contributions: [
         {
           name: leaderName.trim() + " (Squad Leader)",
+          email: leaderEmail.trim(),
+          phone: leaderPhone.trim(),
           paid: false,
           amount: activeTier.totalPerMember,
           slot: 1,
@@ -101,10 +199,61 @@ export function TableFundCreator() {
     router.push(`/table/${fundId}`);
   };
 
+  // If after December 21, 2026: The event has concluded
+  if (expired) {
+    return (
+      <div className="w-full max-w-2xl mx-auto bg-white rounded-3xl p-10 border border-[#0B3022]/15 text-center shadow-lg">
+        <div className="w-16 h-16 rounded-2xl bg-[#D4A843]/15 border border-[#D4A843]/40 flex items-center justify-center mx-auto mb-5 text-[#0B3022]">
+          <PartyPopper className="w-8 h-8 text-[#D4A843]" />
+        </div>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0B3022]/[0.06] text-[#0B3022] font-mono text-xs font-bold uppercase tracking-wider mb-3">
+          Event Concluded
+        </div>
+        <h2 className="text-3xl font-bold font-serif text-[#0B3022] mb-3">The Owambe Party Has Ended</h2>
+        <p className="text-sm text-[#0B3022]/75 leading-relaxed max-w-md mx-auto mb-8">
+          The <strong>Wazobia Extravaganza</strong> took place on <strong>20 December 2026</strong> at Amore Gardens, Lekki. Table funding registrations are officially closed.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] font-bold text-xs uppercase tracking-wider transition-all"
+        >
+          <span>Explore Regular Ajo Circles</span>
+          <ArrowRight className="w-4 h-4 text-[#D4A843]" />
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      {/* Tier Selection Cards */}
-      <div className="grid md:grid-cols-2 gap-6 mb-10">
+    <div className="w-full max-w-4xl mx-auto space-y-8">
+      {/* 1. Resume Active Table Banner (if user previously started/opened one on this device) */}
+      {myTables.length > 0 && (
+        <div className="bg-gradient-to-r from-[#0B3022] to-[#124230] text-[#F3EEE3] rounded-3xl p-6 border border-[#D4A843]/40 shadow-md text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D4A843]/20 text-[#D4A843] text-[10px] font-mono font-bold uppercase tracking-wider mb-1.5">
+                Saved On This Browser
+              </div>
+              <h3 className="text-lg font-bold text-white font-serif">
+                👋 Resume Your Squad Table: {myTables[0].squadName}
+              </h3>
+              <p className="text-xs text-[#F3EEE3]/80 mt-1">
+                {myTables[0].tableName} &bull; <strong>{myTables[0].paidCount} of {myTables[0].totalSlots} slots paid</strong>. No login needed — your progress is ready.
+              </p>
+            </div>
+            <Link
+              href={`/table/${myTables[0].id}`}
+              className="py-3 px-6 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 shrink-0 shadow-sm"
+            >
+              <span>View Table & Copy Link</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Tier Selection Cards */}
+      <div className="grid md:grid-cols-2 gap-6">
         {TIERS.map((tier) => {
           const isSelected = selectedTier === tier.id;
           return (
@@ -138,52 +287,52 @@ export function TableFundCreator() {
                   </div>
                 </div>
 
-                <div className="my-4 pb-4 border-b border-current/10">
-                  <span className="text-3xl font-mono font-bold">₦{tier.tablePrice.toLocaleString()}</span>
-                  <span className={`text-xs ml-2 ${isSelected ? "text-[#F3EEE3]/70" : "text-[#111613]/60"}`}>
-                    table price
+                <div className="my-5 pb-5 border-b border-white/10">
+                  <div className="text-3xl font-extrabold tracking-tight">
+                    ₦{(tier.tablePrice / 1000).toLocaleString()}k
+                  </div>
+                  <span className={`text-xs font-mono ${isSelected ? "text-[#D4A843]" : "text-[#0B3022]"}`}>
+                    Total Table Price (Event Rate)
                   </span>
                 </div>
 
-                <div className="space-y-2 text-xs">
+                <div className="space-y-2.5 text-xs">
                   <div className="flex justify-between">
-                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-[#111613]/70"}>Each member&apos;s share:</span>
-                    <strong className="font-mono">₦{tier.sharePerMember.toLocaleString()}</strong>
+                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-gray-500"}>Base Share (÷8 friends):</span>
+                    <span className="font-mono font-bold">₦{tier.sharePerMember.toLocaleString()} each</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-[#111613]/70"}>Service fee (3%):</span>
-                    <strong className="font-mono">+₦{tier.serviceFeePerMember.toLocaleString()}</strong>
+                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-gray-500"}>3% Escrow & Payment Fee:</span>
+                    <span className="font-mono font-bold">₦{tier.serviceFeePerMember.toLocaleString()} each</span>
                   </div>
-                  <div className={`flex justify-between pt-2 border-t ${isSelected ? "border-white/10" : "border-gray-100"}`}>
-                    <span className="font-bold">Total per member:</span>
-                    <strong className="font-mono text-sm text-[#D4A843]">₦{tier.totalPerMember.toLocaleString()}</strong>
+                  <div className={`flex justify-between pt-2 border-t font-bold text-sm ${isSelected ? "border-white/15 text-[#D4A843]" : "border-gray-200 text-[#0B3022]"}`}>
+                    <span>Total per friend:</span>
+                    <span className="font-mono">₦{tier.totalPerMember.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-current/10 flex items-center justify-between text-[11px] font-mono">
-                <span className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-[#D4A843]" /> Deadline: Dec 10
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#D4A843]" /> Paylode Escrow
-                </span>
+              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-2 text-xs">
+                <Users className={`w-4 h-4 ${isSelected ? "text-[#D4A843]" : "text-[#0B3022]"}`} />
+                <span>Exact 8-person split &bull; Zero WhatsApp chasing</span>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Squad Creation Form */}
-      <div className="bg-white rounded-3xl p-8 sm:p-10 border border-[#0B3022]/10 shadow-xl text-left">
+      {/* 3. Squad Creation Form Card */}
+      <div className="bg-white rounded-3xl p-8 sm:p-10 border border-[#0B3022]/15 shadow-xl text-left">
         <div className="max-w-xl mx-auto">
-          <div className="text-center mb-6">
-            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4A843] bg-[#0B3022] px-3 py-1 rounded-full inline-block mb-3">
-              Step 1 of 2
+          <div className="text-center mb-8">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4A843] bg-[#0B3022] px-3 py-1 rounded-full inline-block mb-2">
+              Instant Squad Setup
             </span>
-            <h3 className="text-2xl font-bold text-[#0B3022]">Start Your {activeTier.name} Fund</h3>
+            <h2 className="text-2xl font-bold font-serif text-[#0B3022]">
+              Start Your {activeTier.name} Fund
+            </h2>
             <p className="text-xs text-[#0B3022]/70 mt-1">
-              Create your squad link in 30 seconds, then share it on WhatsApp so your 7 friends can pay their ₦{activeTier.totalPerMember.toLocaleString()} share before 10 December.
+              No account creation or password required. Enter your squad details to get your instant tracking and payment link.
             </p>
           </div>
 
@@ -195,7 +344,7 @@ export function TableFundCreator() {
               <input
                 type="text"
                 required
-                placeholder="e.g. Lekki Babes Table, Tech Bros VIP"
+                placeholder="e.g. Lekki Babes Table, Tech Bros VIP, Island Squad"
                 value={squadName}
                 onChange={(e) => setSquadName(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3022] bg-[#FDFBF7]"
@@ -216,6 +365,7 @@ export function TableFundCreator() {
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3022] bg-[#FDFBF7]"
                 />
               </div>
+
               <div>
                 <label className="block text-xs font-bold text-[#0B3022] mb-1.5 uppercase tracking-wider font-mono">
                   WhatsApp Phone Number *
@@ -229,6 +379,26 @@ export function TableFundCreator() {
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3022] bg-[#FDFBF7]"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#0B3022] mb-1.5 uppercase tracking-wider font-mono">
+                Squad Leader Email Address *
+              </label>
+              <div className="relative">
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. tunde@gmail.com"
+                  value={leaderEmail}
+                  onChange={(e) => setLeaderEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3022] bg-[#FDFBF7]"
+                />
+                <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
+              </div>
+              <p className="text-[11px] text-[#0B3022]/60 mt-1">
+                Your permanent squad link, official Paylode receipt, and table booking confirmation will be emailed here.
+              </p>
             </div>
 
             {/* Escrow Disclaimer Box */}
@@ -252,6 +422,40 @@ export function TableFundCreator() {
             </button>
           </form>
         </div>
+      </div>
+
+      {/* 4. Find Your Existing Table Tool (No login required) */}
+      <div className="bg-[#FAF7F0] border border-[#0B3022]/15 rounded-3xl p-6 sm:p-7 text-left shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="max-w-md">
+            <h4 className="font-bold text-sm text-[#0B3022] flex items-center gap-2">
+              <Search className="w-4 h-4 text-[#D4A843]" />
+              <span>Already have an active Table Fund?</span>
+            </h4>
+            <p className="text-xs text-[#0B3022]/70 mt-0.5">
+              Enter your WhatsApp number, Squad Name, or Table ID to view your live table:
+            </p>
+          </div>
+
+          <form onSubmit={handleLookupTable} className="flex items-center gap-2 sm:w-auto w-full">
+            <input
+              type="text"
+              placeholder="e.g. 08012345678 or owambe-xxxx"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-3.5 py-2.5 rounded-xl border border-gray-300 text-xs focus:outline-none focus:ring-2 focus:ring-[#0B3022] bg-white sm:w-64 w-full"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2.5 rounded-xl bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] font-bold text-xs uppercase tracking-wider shrink-0 transition-colors"
+            >
+              Find Table
+            </button>
+          </form>
+        </div>
+        {searchError && (
+          <p className="text-xs text-rose-600 font-medium mt-2">{searchError}</p>
+        )}
       </div>
     </div>
   );

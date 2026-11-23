@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Sparkles, ShieldCheck, Users, Calendar, MapPin, ArrowRight } from "lucide-react";
 import { TableFundCreator } from "@/components/TableFundCreator";
+import { isOwambeExpired } from "@/utils/owambeConfig";
 
 export const metadata: Metadata = {
   title: "The Owambe Party Table Fund | Split VIP Tables with Friends — Àjọṣe",
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function OwambeTableFundPage() {
+  const expired = isOwambeExpired();
+
   return (
     <main className="flex-1 flex flex-col items-center relative overflow-hidden bg-[#FAF7F0] py-16 md:py-24">
       {/* Background Decorative Accents */}
@@ -57,50 +60,52 @@ export default function OwambeTableFundPage() {
         {/* Interactive Creator Component */}
         <TableFundCreator />
 
-        {/* 3 Step How It Works Box */}
-        <div className="mt-20 pt-16 border-t border-[#0B3022]/10 text-left">
-          <div className="text-center mb-12">
-            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4A843] bg-[#0B3022] px-3 py-1 rounded-full inline-block mb-3">
-              Simple 3-Step Flow
-            </span>
-            <h2 className="text-3xl font-bold font-serif text-[#0B3022]">How the Table Fund Works</h2>
-            <p className="text-sm text-[#0B3022]/70 mt-1 max-w-lg mx-auto">
-              Nobody gets stuck paying for everyone, and no table is booked until the money is complete.
-            </p>
+        {/* 3 Step How It Works Box (Only shown if active) */}
+        {!expired && (
+          <div className="mt-20 pt-16 border-t border-[#0B3022]/10 text-left">
+            <div className="text-center mb-12">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4A843] bg-[#0B3022] px-3 py-1 rounded-full inline-block mb-3">
+                Simple 3-Step Flow
+              </span>
+              <h2 className="text-3xl font-bold font-serif text-[#0B3022]">How the Table Fund Works</h2>
+              <p className="text-sm text-[#0B3022]/70 mt-1 max-w-lg mx-auto">
+                Nobody gets stuck paying for everyone, and no table is booked until the money is complete.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-white p-7 rounded-3xl border border-[#0B3022]/10 shadow-xs">
+                <div className="w-10 h-10 rounded-2xl bg-[#0B3022] text-[#D4A843] font-mono font-bold flex items-center justify-center mb-4 text-base">
+                  1
+                </div>
+                <h3 className="font-bold text-base text-[#0B3022] mb-2">Open Squad Table Fund</h3>
+                <p className="text-xs text-[#0B3022]/70 leading-relaxed">
+                  The squad leader picks a Silver Table (₦500k) or Gold Table (₦1M) and enters their squad name to get an instant invite link.
+                </p>
+              </div>
+
+              <div className="bg-white p-7 rounded-3xl border border-[#0B3022]/10 shadow-xs">
+                <div className="w-10 h-10 rounded-2xl bg-[#0B3022] text-[#D4A843] font-mono font-bold flex items-center justify-center mb-4 text-base">
+                  2
+                </div>
+                <h3 className="font-bold text-base text-[#0B3022] mb-2">8 Friends Pay Equal Share</h3>
+                <p className="text-xs text-[#0B3022]/70 leading-relaxed">
+                  Each member clicks the WhatsApp link and pays their exact share (₦64,375 for Silver, ₦128,750 for Gold) before 10 December.
+                </p>
+              </div>
+
+              <div className="bg-white p-7 rounded-3xl border border-[#0B3022]/10 shadow-xs">
+                <div className="w-10 h-10 rounded-2xl bg-[#0B3022] text-[#D4A843] font-mono font-bold flex items-center justify-center mb-4 text-base">
+                  3
+                </div>
+                <h3 className="font-bold text-base text-[#0B3022] mb-2">Funds Released & Table Booked</h3>
+                <p className="text-xs text-[#0B3022]/70 leading-relaxed">
+                  Once 100% funded, funds release directly to The Owambe Party in one payment. If not funded by Dec 10, everyone gets an automatic refund.
+                </p>
+              </div>
+            </div>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white p-7 rounded-3xl border border-[#0B3022]/10 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-[#0B3022] text-[#D4A843] font-mono font-bold flex items-center justify-center mb-4 text-base">
-                1
-              </div>
-              <h3 className="font-bold text-base text-[#0B3022] mb-2">Open Squad Table Fund</h3>
-              <p className="text-xs text-[#0B3022]/70 leading-relaxed">
-                The squad leader picks a Silver Table (₦500k) or Gold Table (₦1M) and enters their squad name to get an instant invite link.
-              </p>
-            </div>
-
-            <div className="bg-white p-7 rounded-3xl border border-[#0B3022]/10 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-[#0B3022] text-[#D4A843] font-mono font-bold flex items-center justify-center mb-4 text-base">
-                2
-              </div>
-              <h3 className="font-bold text-base text-[#0B3022] mb-2">8 Friends Pay Equal Share</h3>
-              <p className="text-xs text-[#0B3022]/70 leading-relaxed">
-                Each member clicks the WhatsApp link and pays their exact share (₦64,375 for Silver, ₦128,750 for Gold) before 10 December.
-              </p>
-            </div>
-
-            <div className="bg-white p-7 rounded-3xl border border-[#0B3022]/10 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-[#0B3022] text-[#D4A843] font-mono font-bold flex items-center justify-center mb-4 text-base">
-                3
-              </div>
-              <h3 className="font-bold text-base text-[#0B3022] mb-2">Funds Released & Table Booked</h3>
-              <p className="text-xs text-[#0B3022]/70 leading-relaxed">
-                Once 100% funded, funds release directly to The Owambe Party in one payment. If not funded by Dec 10, everyone gets an automatic refund.
-              </p>
-            </div>
-          </div>
-        </div>
+        )}
 
       </div>
     </main>

@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { getSuperAdminSession } from "@/utils/adminAuth";
 import { AdminUsersClient } from "@/components/admin/AdminUsersClient";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,9 @@ export const metadata = {
 
 export default async function AdminUsersPage() {
   const session = await getSuperAdminSession();
+  if (session.role === "Event Partner") {
+    redirect("/admin/table-funds");
+  }
   const supabase = createAdminClient();
 
   // 1. Query Supabase users table

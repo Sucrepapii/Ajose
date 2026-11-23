@@ -1,5 +1,7 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminFeedbackManager, FeedbackItem } from "@/components/admin/AdminFeedbackManager";
+import { redirect } from "next/navigation";
+import { getSuperAdminSession } from "@/utils/adminAuth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -10,6 +12,10 @@ export const metadata = {
 };
 
 export default async function AdminFeedbackPage() {
+  const session = await getSuperAdminSession();
+  if (session.role === "Event Partner") {
+    redirect("/admin/table-funds");
+  }
   const supabase = createAdminClient();
   const { data: dbItems, error } = await supabase
     .from("feedback")

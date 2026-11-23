@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 export const ADMIN_SESSION_COOKIE = "ajose_admin_session";
 
-export type AdminRole = "Super Admin" | "Operations Lead" | "Risk & Compliance" | "Support Auditor";
+export type AdminRole = "Super Admin" | "Operations Lead" | "Risk & Compliance" | "Support Auditor" | "Event Partner";
 
 export interface AdminUser {
   id: string;
@@ -45,10 +45,13 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
         .eq("id", user.id)
         .maybeSingle();
 
-      const isSuper = Boolean(profile?.is_super_admin);
-      const role = profile?.admin_role || (isSuper ? "Super Admin" : undefined);
+      const emailLower = user.email.toLowerCase();
+      const isPartnerEmail = emailLower.includes("nbc") || emailLower.includes("owambe") || emailLower.startsWith("partner@");
+      const isSuper = Boolean(profile?.is_super_admin) && !isPartnerEmail;
+      const isEventPartner = profile?.admin_role === "Event Partner" || profile?.role === "Event Partner" || isPartnerEmail;
+      const role = isEventPartner ? "Event Partner" : (profile?.admin_role || (isSuper ? "Super Admin" : undefined));
 
-      if (isSuper || role) {
+      if (isSuper || role || isEventPartner) {
         return {
           isAuthenticated: true,
           isSuperAdmin: isSuper,
@@ -57,8 +60,8 @@ export async function getSuperAdminSession(): Promise<AdminSession> {
             email: user.email
           },
           profile: {
-            first_name: profile?.first_name || user.email.split("@")[0],
-            role: role || "Staff",
+            first_name: profile?.first_name || (isEventPartner ? "NBC Operations" : user.email.split("@")[0]),
+            role: role || (isEventPartner ? "Event Partner" : "Staff"),
             is_super_admin: isSuper
           },
           role: role

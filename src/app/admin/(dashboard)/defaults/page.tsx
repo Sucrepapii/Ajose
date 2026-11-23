@@ -1,5 +1,7 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminDefaultsClient } from "@/components/admin/AdminDefaultsClient";
+import { redirect } from "next/navigation";
+import { getSuperAdminSession } from "@/utils/adminAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +11,10 @@ export const metadata = {
 };
 
 export default async function AdminDefaultsPage() {
+  const session = await getSuperAdminSession();
+  if (session.role === "Event Partner") {
+    redirect("/admin/table-funds");
+  }
   const supabase = createAdminClient();
 
   // 1. Query real penalty transactions from the database (transaction_type enum has 'penalty')

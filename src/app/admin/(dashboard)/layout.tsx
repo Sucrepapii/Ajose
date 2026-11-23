@@ -68,12 +68,14 @@ export default async function AdminDashboardLayout({
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
             <span className="text-xs sm:text-sm font-mono font-medium text-[#0B3022]/90">
-              Live Operations Environment &bull; Mono Open-Banking Engine Active
+              {displayRole === "Event Partner" 
+                ? "NBC & The Owambe Party Backoffice • Event Desk Active" 
+                : "Live Operations Environment • Mono Open-Banking Engine Active"}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono text-[#0B3022] bg-[#D4A843]/20 border border-[#D4A843]/40 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-              {displayRole}
+              {displayRole === "Event Partner" ? "Event Partner (NBC Desk)" : displayRole}
             </span>
           </div>
         </div>

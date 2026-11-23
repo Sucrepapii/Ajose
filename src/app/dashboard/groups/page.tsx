@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Users, Plus, ArrowRight, PartyPopper } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
+import { isOwambeExpired } from "@/utils/owambeConfig";
 
 export default async function GroupsPage() {
   const supabase = await createClient();
@@ -49,29 +50,31 @@ export default async function GroupsPage() {
       </div>
 
       {/* Owambe Table Fund Live Banner */}
-      <div className="bg-gradient-to-r from-[#0B3022] to-[#124230] text-[#F3EEE3] rounded-3xl p-5 sm:p-6 border border-[#D4A843]/40 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-2xl bg-[#D4A843]/20 border border-[#D4A843]/40 flex items-center justify-center shrink-0 text-[#D4A843]">
-            <PartyPopper className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D4A843]/20 text-[#D4A843] text-[10px] font-mono font-bold uppercase tracking-wider mb-1">
-              Live Event Partnership
+      {!isOwambeExpired() && (
+        <div className="bg-gradient-to-r from-[#0B3022] to-[#124230] text-[#F3EEE3] rounded-3xl p-5 sm:p-6 border border-[#D4A843]/40 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-[#D4A843]/20 border border-[#D4A843]/40 flex items-center justify-center shrink-0 text-[#D4A843]">
+              <PartyPopper className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-white font-serif">The Owambe Party: Wazobia Extravaganza Table Fund</h3>
-            <p className="text-xs text-[#F3EEE3]/75 mt-0.5 max-w-xl">
-              Splitting a Silver or Gold table on 20 Dec? Open an 8-member Table Fund with Paylode escrow protection and zero WhatsApp chasing.
-            </p>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D4A843]/20 text-[#D4A843] text-[10px] font-mono font-bold uppercase tracking-wider mb-1">
+                Live Event Partnership
+              </div>
+              <h3 className="text-base font-bold text-white font-serif">The Owambe Party: Wazobia Extravaganza Table Fund</h3>
+              <p className="text-xs text-[#F3EEE3]/75 mt-0.5 max-w-xl">
+                Splitting a Silver or Gold table on 20 Dec? Open an 8-member Table Fund with Paylode escrow protection and zero WhatsApp chasing.
+              </p>
+            </div>
           </div>
+          <Link
+            href="/owambe"
+            className="py-2.5 px-5 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-xs"
+          >
+            <span>Open Table Fund</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
-        <Link
-          href="/owambe"
-          className="py-2.5 px-5 bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-xs"
-        >
-          <span>Open Table Fund</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         

@@ -2,6 +2,7 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { getSuperAdminSession } from "@/utils/adminAuth";
 import { AdminGroupsClient } from "@/components/admin/AdminGroupsClient";
 import { Users } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,9 @@ export const metadata = {
 
 export default async function AdminGroupsPage() {
   const session = await getSuperAdminSession();
+  if (session.role === "Event Partner") {
+    redirect("/admin/table-funds");
+  }
   const supabase = createAdminClient();
 
   const { data: groups } = await supabase

@@ -1,6 +1,8 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { AdminTransactionsClient } from "@/components/admin/AdminTransactionsClient";
 import { ArrowRightLeft } from "lucide-react";
+import { redirect } from "next/navigation";
+import { getSuperAdminSession } from "@/utils/adminAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +12,10 @@ export const metadata = {
 };
 
 export default async function AdminTransactionsPage() {
+  const session = await getSuperAdminSession();
+  if (session.role === "Event Partner") {
+    redirect("/admin/table-funds");
+  }
   const supabase = createAdminClient();
 
   const { data: rawTransactions, error } = await supabase

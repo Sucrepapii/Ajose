@@ -11,13 +11,19 @@ import {
   Check, 
   Sparkles, 
   AlertCircle,
-  PartyPopper
+  PartyPopper,
+  Mail,
+  Phone,
+  ArrowRight
 } from "lucide-react";
 import Link from "next/link";
+import { isOwambeExpired, isOwambeDeadlinePassed } from "@/utils/owambeConfig";
 
 interface MemberSlot {
   slot: number;
   name: string;
+  email?: string;
+  phone?: string;
   paid: boolean;
   amount: number;
   paidAt?: string;
@@ -39,6 +45,7 @@ interface TableFundState {
   perMemberFee: number;
   squadName: string;
   leaderName: string;
+  leaderEmail?: string;
   leaderPhone: string;
   contributions: MemberSlot[];
 }
@@ -48,7 +55,12 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
   const [copied, setCopied] = useState(false);
   const [payingSlot, setPayingSlot] = useState<number | null>(null);
   const [payingName, setPayingName] = useState("");
+  const [payingEmail, setPayingEmail] = useState("");
+  const [payingPhone, setPayingPhone] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const expired = isOwambeExpired();
+  const deadlinePassed = isOwambeDeadlinePassed();
 
   useEffect(() => {
     // Load from localStorage or initialize mock data
@@ -85,9 +97,10 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       perMemberFee: fee,
       squadName: "Owambe VIP Squad",
       leaderName: "Squad Leader",
+      leaderEmail: "squadleader@gmail.com",
       leaderPhone: "08012345678",
       contributions: [
-        { slot: 1, name: "Tunde Adeyemi (Squad Leader)", paid: true, amount: perMember, paidAt: "Just now" },
+        { slot: 1, name: "Tunde Adeyemi (Squad Leader)", email: "tunde@gmail.com", phone: "08012345678", paid: true, amount: perMember, paidAt: "Just now" },
         { slot: 2, name: "Squad Member #2", paid: false, amount: perMember },
         { slot: 3, name: "Squad Member #3", paid: false, amount: perMember },
         { slot: 4, name: "Squad Member #4", paid: false, amount: perMember },
@@ -131,18 +144,22 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
   };
 
   const handlePayShare = (slotNumber: number) => {
-    if (!payingName.trim()) return;
+    if (!payingName.trim() || !payingEmail.trim()) return;
     setIsProcessing(true);
 
     setTimeout(() => {
       if (!fund) return;
+      const formattedTimestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
+
       const updatedContributions = fund.contributions.map((c) => {
         if (c.slot === slotNumber) {
           return {
             ...c,
             name: payingName.trim(),
+            email: payingEmail.trim(),
+            phone: payingPhone.trim() || "N/A",
             paid: true,
-            paidAt: "Just now",
+            paidAt: formattedTimestamp,
           };
         }
         return c;
@@ -160,11 +177,33 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       setIsProcessing(false);
       setPayingSlot(null);
       setPayingName("");
+      setPayingEmail("");
+      setPayingPhone("");
     }, 1200);
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
+      {/* Expiration Notice if after 21 Dec 2026 */}
+      {expired && (
+        <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-sm flex items-center gap-3">
+          <Clock className="w-5 h-5 text-amber-600 shrink-0" />
+          <span>
+            <strong>Event Concluded:</strong> The Owambe Party took place on 20 December 2026. Table funding and new contributions are permanently closed.
+          </span>
+        </div>
+      )}
+
+      {/* Deadline Notice if past 10 Dec 2026 */}
+      {!expired && deadlinePassed && !isComplete && (
+        <div className="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+          <span>
+            <strong>Funding Deadline Passed (10 Dec 2026):</strong> This table fund did not reach 100% funding by the deadline. As guaranteed by Paylode Escrow, automatic refunds will be processed for any paid members.
+          </span>
+        </div>
+      )}
+
       {/* Header Banner */}
       <div className="bg-[#0B3022] text-[#F3EEE3] rounded-3xl p-8 sm:p-10 border border-[#D4A843]/30 shadow-2xl relative overflow-hidden text-left">
         <div className="absolute top-0 right-0 w-80 h-80 bg-[#D4A843]/10 rounded-full blur-3xl pointer-events-none" />
@@ -220,48 +259,44 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                 <span>100% FUNDED! Table funds have been released to The Owambe Party. Your table is booked!</span>
               </div>
             ) : (
-              <p className="text-[11px] text-[#0B3022]/65 mt-2.5">
-                {8 - paidCount} shares remaining (₦{fund.perMemberTotal.toLocaleString()} each). If not complete by {fund.deadline}, everyone is refunded.
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-3 mt-4 text-xs text-[#0B3022]/70 font-mono">
+                <span>₦{fund.perMemberTotal.toLocaleString()} per member share</span>
+                <span>{8 - paidCount} slots remaining</span>
+              </div>
             )}
+          </div>
+
+          {/* Share Buttons */}
+          <div className="flex flex-wrap items-center gap-3 mt-6">
+            <button
+              onClick={shareOnWhatsApp}
+              className="py-3 px-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>Share to Squad WhatsApp Group</span>
+            </button>
+            <button
+              onClick={copyLink}
+              className="py-3 px-5 bg-white/10 hover:bg-white/15 text-[#F3EEE3] rounded-xl text-xs font-bold transition-all border border-white/20 flex items-center gap-2 cursor-pointer"
+            >
+              {copied ? <Check className="w-4 h-4 text-[#D4A843]" /> : <Copy className="w-4 h-4" />}
+              <span>{copied ? "Link Copied to Clipboard!" : "Copy Table Link"}</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Share Box */}
-      <div className="bg-white rounded-2xl p-6 border border-[#0B3022]/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <h4 className="font-bold text-sm text-[#0B3022]">Invite Your 7 Squad Members</h4>
-          <p className="text-xs text-[#0B3022]/70 mt-0.5">
-            Share the link so friends can pay their ₦{fund.perMemberTotal.toLocaleString()} share directly.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <button
-            onClick={shareOnWhatsApp}
-            className="flex-1 sm:flex-initial py-2.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>Share on WhatsApp</span>
-          </button>
-
-          <button
-            onClick={copyLink}
-            className="py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-[#0B3022] rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? "Copied!" : "Copy"}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 8 Squad Member Slots */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-[#0B3022]">Squad Member Slots (8 Total)</h3>
-          <span className="text-xs font-mono text-[#0B3022]/60">
-            ₦{fund.perMemberShare.toLocaleString()} share + ₦{fund.perMemberFee.toLocaleString()} service fee
+      {/* 8 Squad Slots Grid */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#0B3022]/15 shadow-md text-left">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h3 className="text-xl font-bold font-serif text-[#0B3022]">Squad Member Slots (8 Total)</h3>
+            <p className="text-xs text-[#0B3022]/60 mt-0.5">
+              Click &quot;Pay Share&quot; next to any empty slot to pay your ₦{fund.perMemberTotal.toLocaleString()} portion.
+            </p>
+          </div>
+          <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#0B3022]/[0.06] text-[#0B3022]">
+            {paidCount}/8 Confirmed
           </span>
         </div>
 
@@ -269,39 +304,48 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
           {fund.contributions.map((member) => (
             <div
               key={member.slot}
-              className={`p-4 rounded-2xl border transition-all text-left flex items-center justify-between gap-3 ${
+              className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${
                 member.paid
-                  ? "bg-emerald-50/60 border-emerald-200"
-                  : "bg-white border-[#0B3022]/10 hover:border-[#D4A843]/50"
+                  ? "bg-emerald-500/[0.04] border-emerald-500/30"
+                  : "bg-white border-gray-200 hover:border-[#D4A843]/60"
               }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold font-mono ${
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono text-xs font-bold shrink-0 ${
                     member.paid
                       ? "bg-emerald-600 text-white"
-                      : "bg-[#0B3022]/10 text-[#0B3022]"
+                      : "bg-gray-100 text-gray-500 border border-gray-200"
                   }`}
                 >
-                  #{member.slot}
+                  {member.slot}
                 </div>
-                <div>
-                  <h4 className="font-bold text-sm text-[#0B3022]">{member.name}</h4>
-                  <p className="text-[11px] font-mono text-[#0B3022]/60">
-                    ₦{member.amount.toLocaleString()} {member.paid ? "• Paid" : "• Pending"}
-                  </p>
+                <div className="min-w-0">
+                  <div className="font-bold text-xs sm:text-sm text-[#0B3022] truncate">
+                    {member.name}
+                  </div>
+                  <div className="text-[11px] font-mono text-[#0B3022]/60">
+                    ₦{member.amount.toLocaleString()} &bull; {member.paid ? `Paid: ${member.paidAt || "Confirmed"}` : "Unpaid"}
+                  </div>
+                  {member.email && (
+                    <div className="text-[10px] text-gray-400 truncate">
+                      {member.email}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div>
+              <div className="shrink-0 ml-3">
                 {member.paid ? (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Confirmed
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Paid</span>
                   </span>
                 ) : (
                   <button
                     onClick={() => setPayingSlot(member.slot)}
-                    className="py-1.5 px-3 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs"
+                    disabled={expired || deadlinePassed}
+                    className="py-1.5 px-3 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     Pay Share
                   </button>
@@ -335,7 +379,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
               You are paying for <strong>{fund.squadName}</strong>. Total due: <strong>₦{fund.perMemberTotal.toLocaleString()}</strong>.
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               <div>
                 <label className="block text-xs font-bold text-[#0B3022] mb-1 uppercase font-mono">
                   Your Full Name *
@@ -346,6 +390,36 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                   placeholder="e.g. Femi Balogun"
                   value={payingName}
                   onChange={(e) => setPayingName(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3022]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#0B3022] mb-1 uppercase font-mono">
+                  Your Email Address *
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. femi@gmail.com"
+                  value={payingEmail}
+                  onChange={(e) => setPayingEmail(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3022]"
+                />
+                <span className="text-[10px] text-gray-500 mt-0.5 block">
+                  Your Paylode payment receipt and event entry ticket will be delivered here.
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#0B3022] mb-1 uppercase font-mono">
+                  WhatsApp Phone Number (Optional)
+                </label>
+                <input
+                  type="tel"
+                  placeholder="08022334455"
+                  value={payingPhone}
+                  onChange={(e) => setPayingPhone(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3022]"
                 />
               </div>
@@ -372,7 +446,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
               <button
                 onClick={() => handlePayShare(payingSlot)}
-                disabled={isProcessing || !payingName.trim()}
+                disabled={isProcessing || !payingName.trim() || !payingEmail.trim()}
                 className="w-full py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2"
               >
                 {isProcessing ? "Connecting Bank Payment..." : `Authorize ₦${fund.perMemberTotal.toLocaleString()}`}
