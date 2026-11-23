@@ -27,10 +27,10 @@ export default function OwambeTableFundPage() {
         <div className="w-full flex justify-start mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022]/70 hover:text-[#0B3022] bg-white border border-[#0B3022]/15 px-4 py-2 rounded-full shadow-xs hover:shadow-sm transition-all"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all uppercase tracking-wider"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
-            <span>Back to Home</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Return to Home</span>
           </Link>
         </div>
 

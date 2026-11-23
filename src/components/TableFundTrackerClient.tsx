@@ -189,7 +189,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       <div className="flex items-center justify-between">
         <Link
           href="/owambe"
-          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022]/70 hover:text-[#0B3022] bg-white border border-[#0B3022]/15 px-4 py-2 rounded-full shadow-xs hover:shadow-sm transition-all"
+          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022]/80 hover:text-[#0B3022] bg-white border border-[#0B3022]/15 px-4 py-2 rounded-full shadow-xs hover:shadow-sm transition-all"
         >
           <ArrowLeft className="w-3.5 h-3.5 text-[#D4A843]" />
           <span>Back to Table Funds</span>
@@ -197,9 +197,10 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
         <Link
           href="/"
-          className="text-xs font-mono text-[#0B3022]/60 hover:text-[#0B3022] transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow-md cursor-pointer"
         >
-          Return to Home
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Return to Home</span>
         </Link>
       </div>
 
@@ -506,7 +507,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       </div>
 
       {/* Bottom Back Navigation Button */}
-      <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-[#0B3022]/10">
+      <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-[#0B3022]/10">
         <Link
           href="/owambe"
           className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#0B3022] hover:text-[#D4A843] bg-white border border-[#0B3022]/15 px-5 py-2.5 rounded-full shadow-xs hover:shadow-sm transition-all self-start"
@@ -516,9 +517,10 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         </Link>
         <Link
           href="/"
-          className="text-xs font-mono text-[#0B3022]/65 hover:text-[#0B3022] transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#D4A843] hover:bg-[#dfba5b] text-[#0B3022] font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow-md cursor-pointer self-start sm:self-auto"
         >
-          Return to Home
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Return to Home</span>
         </Link>
       </div>
     </div>
