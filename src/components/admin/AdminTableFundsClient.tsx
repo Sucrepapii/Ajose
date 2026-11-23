@@ -19,7 +19,8 @@ import {
   Phone,
   ArrowRight,
   ArrowLeft,
-  Trash2
+  Trash2,
+  AlertTriangle
 } from "lucide-react";
 
 interface MemberSlot {
@@ -144,6 +145,16 @@ export function AdminTableFundsClient() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedFund, setSelectedFund] = useState<TableFundItem | null>(null);
+
+  // In-App Double Opt-In confirmation state
+  const [confirmModal, setConfirmModal] = useState<{
+    type: "delete_table" | "remove_member";
+    fundId: string;
+    slotNumber?: number;
+    title: string;
+    message: string;
+    isPaid?: boolean;
+  } | null>(null);
 
   // Load any created funds from localStorage
   useEffect(() => {
@@ -375,28 +386,17 @@ export function AdminTableFundsClient() {
     if (!target) return;
 
     const paidCount = target.contributions.filter((c) => c.paid).length;
-    let confirmed = false;
 
-    if (paidCount > 0) {
-      confirmed = window.confirm(
-        `Warning: "${target.squadName}" has ${paidCount} paid contribution(s) amounting to ₦${(paidCount * target.perMemberTotal).toLocaleString()} held in Paylode escrow.\n\nAre you sure you want to permanently delete/archive this squad table?`
-      );
-    } else {
-      confirmed = window.confirm(
-        `Are you sure you want to permanently delete squad table "${target.squadName}"? This action cannot be undone.`
-      );
-    }
-
-    if (!confirmed) return;
-
-    setFunds((prev) => prev.filter((f) => f.id !== id));
-    if (selectedFund && selectedFund.id === id) {
-      setSelectedFund(null);
-    }
-
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(`table_fund_${id}`);
-    }
+    setConfirmModal({
+      type: "delete_table",
+      fundId: id,
+      title: "Delete Squad Table?",
+      message:
+        paidCount > 0
+          ? `Warning: "${target.squadName}" has ${paidCount} paid contribution(s) amounting to ₦${(paidCount * target.perMemberTotal).toLocaleString()} held in Paylode escrow.\n\nAre you sure you want to permanently delete/archive this squad table?`
+          : `Are you sure you want to permanently delete squad table "${target.squadName}"? This action cannot be undone.`,
+      isPaid: paidCount > 0,
+    });
   };
 
   const handleRemoveMember = (fundId: string, slotNumber: number) => {
@@ -405,46 +405,65 @@ export function AdminTableFundsClient() {
     const slot = fund.contributions.find((c) => c.slot === slotNumber);
     if (!slot) return;
 
-    let confirmed = false;
-    if (slot.paid) {
-      confirmed = window.confirm(
-        `Slot #${slotNumber} (${slot.name}) has already paid ₦${slot.amount.toLocaleString()} into Paylode escrow.\n\nDo you want to process a refund and reset this slot back to an open/unpaid seat for another guest?`
-      );
-    } else {
-      confirmed = window.confirm(
-        `Remove "${slot.name}" from Slot #${slotNumber} and reset it to an open seat?`
-      );
-    }
-
-    if (!confirmed) return;
-
-    const updatedContributions = fund.contributions.map((c) => {
-      if (c.slot === slotNumber) {
-        return {
-          slot: slotNumber,
-          name: `Squad Member #${slotNumber}`,
-          paid: false,
-          amount: fund.perMemberTotal,
-        };
-      }
-      return c;
+    setConfirmModal({
+      type: "remove_member",
+      fundId,
+      slotNumber,
+      title: slot.paid ? "Refund & Release Seat?" : "Reset Seat to Open?",
+      message: slot.paid
+        ? `Slot #${slotNumber} (${slot.name}) has paid ₦${slot.amount.toLocaleString()} into Paylode escrow. Do you want to process an escrow refund and reset this slot back to an open seat for another guest?`
+        : `Reset Slot #${slotNumber} ("${slot.name}") back to an open, unoccupied seat?`,
+      isPaid: slot.paid,
     });
+  };
 
-    const paidCount = updatedContributions.filter((c) => c.paid).length;
-    const updatedFund: TableFundItem = {
-      ...fund,
-      status: paidCount === 8 ? "fully_funded" : "collecting",
-      contributions: updatedContributions,
-    };
+  const executeConfirmedAction = () => {
+    if (!confirmModal) return;
 
-    setFunds((prev) => prev.map((f) => (f.id === fundId ? updatedFund : f)));
-    if (selectedFund && selectedFund.id === fundId) {
-      setSelectedFund(updatedFund);
+    if (confirmModal.type === "delete_table") {
+      const id = confirmModal.fundId;
+      setFunds((prev) => prev.filter((f) => f.id !== id));
+      if (selectedFund && selectedFund.id === id) {
+        setSelectedFund(null);
+      }
+      if (typeof window !== "undefined") {
+        localStorage.removeItem(`table_fund_${id}`);
+      }
+    } else if (confirmModal.type === "remove_member" && confirmModal.slotNumber) {
+      const { fundId, slotNumber } = confirmModal;
+      const fund = funds.find((f) => f.id === fundId);
+      if (fund) {
+        const updatedContributions = fund.contributions.map((c) => {
+          if (c.slot === slotNumber) {
+            return {
+              slot: slotNumber,
+              name: `Squad Member #${slotNumber}`,
+              paid: false,
+              amount: fund.perMemberTotal,
+            };
+          }
+          return c;
+        });
+
+        const paidCount = updatedContributions.filter((c) => c.paid).length;
+        const updatedFund: TableFundItem = {
+          ...fund,
+          status: paidCount === 8 ? "fully_funded" : "collecting",
+          contributions: updatedContributions,
+        };
+
+        setFunds((prev) => prev.map((f) => (f.id === fundId ? updatedFund : f)));
+        if (selectedFund && selectedFund.id === fundId) {
+          setSelectedFund(updatedFund);
+        }
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem(`table_fund_${fundId}`, JSON.stringify(updatedFund));
+        }
+      }
     }
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem(`table_fund_${fundId}`, JSON.stringify(updatedFund));
-    }
+    setConfirmModal(null);
   };
 
   return (
@@ -795,6 +814,46 @@ export function AdminTableFundsClient() {
           )}
         </div>
       </div>
+
+      {/* In-App Double Opt-In Confirmation Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-left shadow-2xl border border-gray-100">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
+              confirmModal.isPaid
+                ? "bg-rose-50 border border-rose-200 text-rose-600"
+                : "bg-amber-50 border border-amber-200 text-amber-600"
+            }`}>
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-xl font-bold font-serif text-[#0B3022] mb-2">
+              {confirmModal.title}
+            </h3>
+
+            <p className="text-xs text-[#0B3022]/80 leading-relaxed whitespace-pre-line mb-6">
+              {confirmModal.message}
+            </p>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                className="py-2.5 px-4 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={executeConfirmedAction}
+                className="py-2.5 px-5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                Confirm Action
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

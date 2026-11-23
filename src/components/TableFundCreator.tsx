@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink, Trash2, Lock } from "lucide-react";
+import { ShieldCheck, Sparkles, Users, ArrowRight, CheckCircle2, Clock, Search, PartyPopper, Mail, Phone, ExternalLink, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { isOwambeExpired, OWAMBE_CONFIG } from "@/utils/owambeConfig";
 
@@ -58,13 +58,13 @@ export function TableFundCreator() {
   const [leaderName, setLeaderName] = useState("");
   const [leaderEmail, setLeaderEmail] = useState("");
   const [leaderPhone, setLeaderPhone] = useState("");
-  const [doubleOptInAgreed, setDoubleOptInAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Quick Finder state
   const [myTables, setMyTables] = useState<SavedTableSummary[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchError, setSearchError] = useState("");
+  const [discardingTable, setDiscardingTable] = useState<SavedTableSummary | null>(null);
 
   const expired = isOwambeExpired();
 
@@ -98,15 +98,19 @@ export function TableFundCreator() {
     } catch (_) {}
   }, []);
 
-  const handleDiscardSavedTable = (id: string, e: React.MouseEvent) => {
+  const handleDiscardSavedTable = (table: SavedTableSummary, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const confirmed = window.confirm("Are you sure you want to remove this squad table from your device?");
-    if (!confirmed) return;
+    setDiscardingTable(table);
+  };
+
+  const confirmDiscardSavedTable = () => {
+    if (!discardingTable) return;
     if (typeof window !== "undefined") {
-      localStorage.removeItem(`table_fund_${id}`);
+      localStorage.removeItem(`table_fund_${discardingTable.id}`);
     }
-    setMyTables((prev) => prev.filter((t) => t.id !== id));
+    setMyTables((prev) => prev.filter((t) => t.id !== discardingTable.id));
+    setDiscardingTable(null);
   };
 
   const handleLookupTable = (e: React.FormEvent) => {
@@ -160,7 +164,7 @@ export function TableFundCreator() {
 
   const handleCreateFund = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!squadName.trim() || !leaderName.trim() || !leaderEmail.trim() || !doubleOptInAgreed) return;
+    if (!squadName.trim() || !leaderName.trim() || !leaderEmail.trim()) return;
 
     setIsSubmitting(true);
 
@@ -266,11 +270,46 @@ export function TableFundCreator() {
               </Link>
               <button
                 type="button"
-                onClick={(e) => handleDiscardSavedTable(myTables[0].id, e)}
+                onClick={(e) => handleDiscardSavedTable(myTables[0], e)}
                 className="p-3 text-[#F3EEE3]/60 hover:text-rose-300 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
                 title="Discard this table"
               >
                 <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* In-App Double Opt-In Modal: Discard Saved Table */}
+      {discardingTable && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-left shadow-2xl border border-gray-100">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center mb-4 text-rose-600">
+              <Trash2 className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-xl font-bold font-serif text-[#0B3022] mb-2">
+              Remove Saved Table?
+            </h3>
+            <p className="text-xs text-[#0B3022]/80 leading-relaxed mb-6">
+              Are you sure you want to remove <strong>&quot;{discardingTable.squadName}&quot;</strong> from this device? You can always find it again using your phone number or table link.
+            </p>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setDiscardingTable(null)}
+                className="py-2.5 px-4 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDiscardSavedTable}
+                className="py-2.5 px-5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                Remove from Device
               </button>
             </div>
           </div>
@@ -349,7 +388,7 @@ export function TableFundCreator() {
       {/* 3. Squad Creation Form Card */}
       <div className="bg-white rounded-3xl p-8 sm:p-10 border border-[#0B3022]/15 shadow-xl text-left">
         <div className="max-w-xl mx-auto">
-          <div className="text-center mb-6">
+          <div className="text-center mb-8">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4A843] bg-[#0B3022] px-3 py-1 rounded-full inline-block mb-2">
               Instant Squad Setup
             </span>
@@ -357,22 +396,8 @@ export function TableFundCreator() {
               Start Your {activeTier.name} Fund
             </h2>
             <p className="text-xs text-[#0B3022]/70 mt-1">
-              Complete your squad details below or manage seamlessly inside your authenticated Àjọṣe account.
+              No account creation or password required. Enter your squad details to get your instant tracking and payment link.
             </p>
-          </div>
-
-          {/* In-App Direct Access Banner */}
-          <div className="p-3 rounded-2xl bg-[#0B3022]/[0.04] border border-[#0B3022]/15 flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-[#D4A843]" />
-              <span className="text-xs font-semibold text-[#0B3022]">Existing Àjọṣe Account?</span>
-            </div>
-            <Link
-              href="/login?next=/dashboard/table-funds"
-              className="text-xs font-bold text-[#D4A843] hover:underline"
-            >
-              Open inside App &rarr;
-            </Link>
           </div>
 
           <form onSubmit={handleCreateFund} className="space-y-4">
@@ -451,28 +476,10 @@ export function TableFundCreator() {
               </div>
             </div>
 
-            {/* Double Opt-In Mandate Checkbox */}
-            <div className="pt-2">
-              <label className="flex items-start gap-2.5 cursor-pointer select-none group bg-[#0B3022]/[0.03] hover:bg-[#0B3022]/[0.06] p-3 rounded-xl border border-[#0B3022]/15 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={doubleOptInAgreed}
-                  onChange={(e) => setDoubleOptInAgreed(e.target.checked)}
-                  className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#0B3022] focus:ring-[#D4A843] cursor-pointer shrink-0"
-                />
-                <div className="text-[11px] text-[#1F2937] leading-relaxed">
-                  <span className="font-bold block text-[#0B3022] mb-0.5">
-                    Double Opt-In Authorization
-                  </span>
-                  I confirm that I am initiating this {activeTier.name} Fund on behalf of my squad and authorize Paylode Escrow to manage collections until 100% table funding.
-                </div>
-              </label>
-            </div>
-
             <button
               type="submit"
-              disabled={isSubmitting || !doubleOptInAgreed}
-              className="w-full py-4 px-6 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] font-bold text-sm sm:text-base rounded-full transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+              disabled={isSubmitting}
+              className="w-full py-4 px-6 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] font-bold text-sm sm:text-base rounded-full transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer mt-6"
             >
               <span>{isSubmitting ? "Creating Squad Link..." : `Open ${activeTier.name} Fund & Get Invite Link`}</span>
               <ArrowRight className="w-4 h-4 text-[#D4A843]" />
