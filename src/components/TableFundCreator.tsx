@@ -10,6 +10,7 @@ interface TableTier {
   id: "silver" | "gold";
   name: string;
   tablePrice: number;
+  displayPrice: string;
   members: number;
   sharePerMember: number;
   serviceFeePerMember: number;
@@ -22,6 +23,7 @@ const TIERS: TableTier[] = [
     id: "silver",
     name: "Silver Table",
     tablePrice: 500000,
+    displayPrice: "₦500k",
     members: 8,
     sharePerMember: 62500,
     serviceFeePerMember: 1875,
@@ -32,6 +34,7 @@ const TIERS: TableTier[] = [
     id: "gold",
     name: "Gold Table",
     tablePrice: 1000000,
+    displayPrice: "₦1 Million",
     members: 8,
     sharePerMember: 125000,
     serviceFeePerMember: 3750,
@@ -289,7 +292,7 @@ export function TableFundCreator() {
 
                 <div className="my-5 pb-5 border-b border-white/10">
                   <div className="text-3xl font-extrabold tracking-tight">
-                    ₦{(tier.tablePrice / 1000).toLocaleString()}k
+                    {tier.displayPrice}
                   </div>
                   <span className={`text-xs font-mono ${isSelected ? "text-[#D4A843]" : "text-[#0B3022]"}`}>
                     Total Table Price (Event Rate)
