@@ -235,7 +235,7 @@ export function TableFundCreator() {
                 Saved On This Browser
               </div>
               <h3 className="text-lg font-bold text-white font-serif">
-                👋 Resume Your Squad Table: {myTables[0].squadName}
+                Active Table Campaign: {myTables[0].squadName}
               </h3>
               <p className="text-xs text-[#F3EEE3]/80 mt-1">
                 {myTables[0].tableName} &bull; <strong>{myTables[0].paidCount} of {myTables[0].totalSlots} slots paid</strong>. No login needed — your progress is ready.

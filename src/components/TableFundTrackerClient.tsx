@@ -15,7 +15,8 @@ import {
   Mail,
   Phone,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
+  X
 } from "lucide-react";
 import Link from "next/link";
 import { isOwambeExpired, isOwambeDeadlinePassed } from "@/utils/owambeConfig";
@@ -395,9 +396,10 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
               </span>
               <button
                 onClick={() => setPayingSlot(null)}
-                className="text-gray-400 hover:text-gray-600 text-sm font-bold cursor-pointer"
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
+                aria-label="Close dialog"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

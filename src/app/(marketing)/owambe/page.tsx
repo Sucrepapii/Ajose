@@ -17,6 +17,17 @@ export default function OwambeTableFundPage() {
 
   return (
     <main className="flex-1 flex flex-col items-center relative overflow-hidden bg-[#FAF7F0] py-16 md:py-24">
+      {/* Official Event Poster Watermark Backdrop */}
+      <div 
+        aria-hidden="true" 
+        className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
+      >
+        <div 
+          className="w-full h-full max-w-5xl bg-no-repeat bg-contain bg-center opacity-[0.06] select-none filter contrast-125"
+          style={{ backgroundImage: "url('/owambe-poster.jpg')" }}
+        />
+      </div>
+
       {/* Background Decorative Accents */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4A843]/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 left-0 w-80 h-80 bg-[#0B3022]/10 rounded-full blur-3xl pointer-events-none" />
@@ -37,7 +48,7 @@ export default function OwambeTableFundPage() {
         {/* Co-Branded Header Pill */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0B3022]/[0.06] border border-[#0B3022]/15 text-[#0B3022] text-xs font-mono font-bold uppercase tracking-wider mb-6">
           <span>Àjọṣe</span>
-          <span className="text-[#D4A843]">✕</span>
+          <span className="text-[#D4A843]">&times;</span>
           <span>The Owambe Party</span>
         </div>
 

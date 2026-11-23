@@ -13,8 +13,19 @@ interface TableFundPageProps {
 export default async function TableFundPage({ params }: TableFundPageProps) {
   const { id } = await params;
   return (
-    <main className="flex-1 flex flex-col items-center relative overflow-hidden bg-[#FAF7F0] py-12 md:py-20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+    <main className="flex-1 flex flex-col items-center relative overflow-hidden bg-[#FAF7F0] py-12 md:py-20 min-h-screen">
+      {/* Official Event Poster Watermark Backdrop */}
+      <div 
+        aria-hidden="true" 
+        className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center overflow-hidden"
+      >
+        <div 
+          className="w-full h-full max-w-5xl bg-no-repeat bg-contain bg-center opacity-[0.05] select-none filter contrast-125"
+          style={{ backgroundImage: "url('/owambe-poster.jpg')" }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl relative z-10">
         <TableFundTrackerClient fundId={id} />
       </div>
     </main>
