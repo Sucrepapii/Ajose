@@ -26,8 +26,8 @@ const TIERS: TableTier[] = [
     displayPrice: "₦500k",
     members: 10,
     sharePerMember: 50000,
-    serviceFeePerMember: 0,
-    totalPerMember: 50000,
+    serviceFeePerMember: 500,
+    totalPerMember: 50500,
     popular: true,
   },
   {
@@ -37,8 +37,8 @@ const TIERS: TableTier[] = [
     displayPrice: "₦1 Million",
     members: 10,
     sharePerMember: 100000,
-    serviceFeePerMember: 0,
-    totalPerMember: 100000,
+    serviceFeePerMember: 1000,
+    totalPerMember: 101000,
   },
 ];
 
@@ -345,8 +345,8 @@ export function TableFundCreator() {
                     <span className="font-mono font-bold">₦{tier.sharePerMember.toLocaleString()} each</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-gray-500"}>Escrow & Payment Fee:</span>
-                    <span className="font-mono font-bold text-emerald-500">₦0 (100% Free Promo)</span>
+                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-gray-500"}>Escrow & Payment Fee (1%):</span>
+                    <span className="font-mono font-bold text-emerald-500">+₦{tier.serviceFeePerMember.toLocaleString()}</span>
                   </div>
                   <div className={`flex justify-between pt-2 border-t font-bold text-sm ${isSelected ? "border-white/15 text-[#D4A843]" : "border-gray-200 text-[#0B3022]"}`}>
                     <span>Exact share per friend:</span>

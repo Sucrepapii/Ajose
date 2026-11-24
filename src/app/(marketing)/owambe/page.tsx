@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "The Owambe Party Table Fund | Split VIP Tables of 10 — Àjọṣe",
-    description: "Your Table. Your Squad. Your Owambe! Split a Silver (₦500k) or Gold (₦1M) table of 10 with ₦0 extra fees.",
+    description: "Your Table. Your Squad. Your Owambe! Split a Silver (₦500k) or Gold (₦1M) table of 10 with a low 1% fee.",
     images: ["/owambe-poster.jpg"],
   },
 };

@@ -579,12 +579,12 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                 </div>
                 {fund.perMemberFee > 0 ? (
                   <div className="flex justify-between text-gray-600">
-                    <span>Platform & Processing Fee:</span>
+                    <span>Platform & Escrow Fee (1%):</span>
                     <span className="font-mono font-bold text-gray-900">+₦{fund.perMemberFee.toLocaleString()}</span>
                   </div>
                 ) : (
                   <div className="flex justify-between text-emerald-700">
-                    <span>Platform & Processing Fee:</span>
+                    <span>Platform & Escrow Fee:</span>
                     <span className="font-mono font-bold">₦0 (100% Free Promo)</span>
                   </div>
                 )}
