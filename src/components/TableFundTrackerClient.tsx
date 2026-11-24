@@ -338,8 +338,8 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
             <div className="flex items-center gap-3 bg-white/5 border border-[#D4A843]/30 rounded-2xl p-2.5 sm:p-3 shrink-0">
               <div className="relative w-16 sm:w-20 aspect-[4/5] rounded-xl overflow-hidden shadow-md border border-[#D4A843]/40 bg-[#0B3022]">
                 <Image
-                  src="/owambe-squad-campaign.jpg"
-                  alt="The Owambe Party × Àjọṣe VIP Table Fund"
+                  src="/owambe-poster.jpg"
+                  alt="The Owambe Party Official Poster"
                   fill
                   className="object-cover"
                   priority

@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     siteName: "Àjọṣe",
     images: [
       {
-        url: "/owambe-squad-campaign.jpg",
+        url: "/owambe-poster.jpg",
         width: 1080,
         height: 1350,
-        alt: "The Owambe Party × Àjọṣe VIP Table Fund Official Campaign",
+        alt: "The Owambe Party (Wazobia Extravaganza) Official Poster",
       },
     ],
     locale: "en_NG",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Owambe Party Table Fund | Split VIP Tables of 10 — Àjọṣe",
     description: "Your Table. Your Squad. Your Owambe! Split a Silver (₦500k) or Gold (₦1M) table of 10 with ₦0 extra fees.",
-    images: ["/owambe-squad-campaign.jpg"],
+    images: ["/owambe-poster.jpg"],
   },
 };
 
@@ -47,7 +47,7 @@ export default function OwambeTableFundPage() {
       >
         <div 
           className="w-full h-full max-w-5xl bg-no-repeat bg-contain bg-center opacity-[0.05] select-none filter contrast-125"
-          style={{ backgroundImage: "url('/owambe-squad-campaign.jpg')" }}
+          style={{ backgroundImage: "url('/owambe-poster.jpg')" }}
         />
       </div>
 
@@ -95,8 +95,8 @@ export default function OwambeTableFundPage() {
         <div className="max-w-3xl mx-auto mb-10 bg-white border border-[#D4A843]/30 rounded-3xl p-5 sm:p-6 shadow-md text-left flex flex-col sm:flex-row items-center gap-6">
           <div className="relative w-44 sm:w-52 aspect-[4/5] shrink-0 rounded-2xl overflow-hidden shadow-lg border-2 border-[#D4A843]/40 bg-[#0B3022]">
             <Image
-              src="/owambe-squad-campaign.jpg"
-              alt="The Owambe Party × Àjọṣe VIP Table Fund Official Campaign"
+              src="/owambe-poster.jpg"
+              alt="The Owambe Party (Wazobia Extravaganza) Official Poster"
               fill
               className="object-cover"
               priority

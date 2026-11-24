@@ -10,10 +10,10 @@ export const metadata: Metadata = {
     siteName: "Àjọṣe",
     images: [
       {
-        url: "/owambe-squad-campaign.jpg",
+        url: "/owambe-poster.jpg",
         width: 1080,
         height: 1350,
-        alt: "The Owambe Party (Wazobia Extravaganza) Squad Campaign Poster",
+        alt: "The Owambe Party (Wazobia Extravaganza) Official Poster",
       },
     ],
     locale: "en_NG",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Squad Table Fund Tracker | The Owambe Party",
     description: "Track your squad table fund contributions for The Owambe Party Wazobia Extravaganza.",
-    images: ["/owambe-squad-campaign.jpg"],
+    images: ["/owambe-poster.jpg"],
   },
 };
 
@@ -42,7 +42,7 @@ export default async function TableFundPage({ params }: TableFundPageProps) {
       >
         <div 
           className="w-full h-full max-w-5xl bg-no-repeat bg-contain bg-center opacity-[0.05] select-none filter contrast-125"
-          style={{ backgroundImage: "url('/owambe-squad-campaign.jpg')" }}
+          style={{ backgroundImage: "url('/owambe-poster.jpg')" }}
         />
       </div>
 
