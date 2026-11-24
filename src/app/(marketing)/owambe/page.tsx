@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { Sparkles, ShieldCheck, Users, Calendar, MapPin, ArrowRight, ArrowLeft } from "lucide-react";
+import { Sparkles, ShieldCheck, Users, Calendar, ArrowLeft } from "lucide-react";
 import { TableFundCreator } from "@/components/TableFundCreator";
 import { isOwambeExpired } from "@/utils/owambeConfig";
 

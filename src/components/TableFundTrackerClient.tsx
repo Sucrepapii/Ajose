@@ -300,7 +300,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
       const data = await res.json();
       if (res.ok && data.mono_url) {
-        window.location.href = data.mono_url;
+        window.location.assign(data.mono_url);
       } else {
         toast.error(data.error || "Failed to initialize Mono payment. Please try again.");
         setIsProcessing(false);

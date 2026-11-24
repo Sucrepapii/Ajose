@@ -119,11 +119,11 @@ export function MonoConnectWidget({
       // Redirect directly to the Mono hosted authorization screen or open fallback.
       const isMobile = typeof window !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       if (isMobile) {
-        window.location.href = data.monoUrl;
+        window.location.assign(data.monoUrl);
       } else {
         const popup = window.open(data.monoUrl, "_blank", "width=600,height=750,location=no,toolbar=no");
         if (!popup || popup.closed || typeof popup.closed === "undefined") {
-          window.location.href = data.monoUrl;
+          window.location.assign(data.monoUrl);
         }
       }
 

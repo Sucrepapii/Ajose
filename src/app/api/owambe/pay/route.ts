@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       amount: Math.round(Number(amount) * 100), // in kobo
       type: "onetime-debit",
       method: "account",
-      description: `Àjọṣe Owambe: ${squadName || "Squad"} Table (Seat #${slot})`,
+      description: `Àjọṣe Owambe: ${squadName || tableName || "Squad"} Table (Seat #${slot})`,
       reference: safeRef,
       redirect_url: redirectUrl,
       customer: {
