@@ -24,7 +24,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import { isOwambeExpired, isOwambeDeadlinePassed, STANDARD_DEMO_TABLES } from "@/utils/owambeConfig";
+
+declare global {
+  interface Window {
+    FlutterwaveCheckout?: (options: Record<string, unknown>) => void;
+  }
+}
 
 interface MemberSlot {
   slot: number;
@@ -74,6 +81,71 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
   const expired = isOwambeExpired();
   const deadlinePassed = isOwambeDeadlinePassed();
+
+  const applyContributionSuccess = (
+    slotNum: number,
+    paidName: string,
+    paidEmail: string,
+    paidPhone: string,
+    bankName?: string
+  ) => {
+    let currentFund = fund;
+    if (!currentFund) {
+      const stored = typeof window !== "undefined" ? localStorage.getItem(`table_fund_${fundId}`) : null;
+      if (stored) {
+        try {
+          currentFund = JSON.parse(stored);
+        } catch (_) {}
+      }
+      if (!currentFund) {
+        currentFund = (STANDARD_DEMO_TABLES.find(
+          (t) => t.id.toLowerCase() === fundId.toLowerCase()
+        ) as TableFundState) || null;
+      }
+    }
+
+    if (currentFund) {
+      const formattedTimestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
+      const updatedContributions = currentFund.contributions.map((c) => {
+        if (c.slot === slotNum) {
+          return {
+            ...c,
+            name: paidName ? decodeURIComponent(paidName) : c.name,
+            email: paidEmail ? decodeURIComponent(paidEmail) : c.email,
+            phone: paidPhone ? decodeURIComponent(paidPhone) : c.phone,
+            paid: true,
+            paidAt: formattedTimestamp,
+          };
+        }
+        return c;
+      });
+
+      const updatedFund = {
+        ...currentFund,
+        contributions: updatedContributions,
+      };
+
+      setFund(updatedFund);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(`table_fund_${currentFund.id}`, JSON.stringify(updatedFund));
+      }
+      // Sync to cloud database for all squad members
+      fetch("/api/owambe/table", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedFund),
+      }).catch(() => {});
+
+      setPayingSlot(null);
+      setPayingName("");
+      setPayingEmail("");
+      setPayingPhone("");
+      toast.success(
+        `Payment verified via ${bankName || "Flutterwave"}! Your seat #${slotNum} is secured 🎉`,
+        { duration: 6000 }
+      );
+    }
+  };
 
   useEffect(() => {
     // 1. Check localStorage for user-created or user-modified tables
@@ -175,57 +247,15 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
             return;
           }
 
-          // Verified successful on Mono!
-          let currentFund = fund;
-          if (!currentFund) {
-            const stored = localStorage.getItem(`table_fund_${fundId}`);
-            if (stored) {
-              try {
-                currentFund = JSON.parse(stored);
-              } catch (_) {}
-            }
-            if (!currentFund) {
-              currentFund = (STANDARD_DEMO_TABLES.find(
-                (t) => t.id.toLowerCase() === fundId.toLowerCase()
-              ) as TableFundState) || null;
-            }
-          }
-
-          if (currentFund) {
-            const formattedTimestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
-            const updatedContributions = currentFund.contributions.map((c) => {
-              if (c.slot === slotNum) {
-                return {
-                  ...c,
-                  name: paidName ? decodeURIComponent(paidName) : c.name,
-                  email: paidEmail ? decodeURIComponent(paidEmail) : c.email,
-                  phone: paidPhone ? decodeURIComponent(paidPhone) : c.phone,
-                  paid: true,
-                  paidAt: formattedTimestamp,
-                };
-              }
-              return c;
-            });
-
-            const updatedFund = {
-              ...currentFund,
-              contributions: updatedContributions,
-            };
-
-            setFund(updatedFund);
-            localStorage.setItem(`table_fund_${currentFund.id}`, JSON.stringify(updatedFund));
-            // Sync to cloud database for all squad members
-            fetch("/api/owambe/table", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(updatedFund),
-            }).catch(() => {});
-            toast.success(`Payment verified via ${verification.bankName || "Bank"}! Your seat is secured.`, {
-              id: toastId,
-              duration: 6000,
-            });
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
+          // Verified successful on Flutterwave!
+          applyContributionSuccess(
+            slotNum,
+            paidName ? decodeURIComponent(paidName) : "",
+            paidEmail ? decodeURIComponent(paidEmail) : "",
+            paidPhone ? decodeURIComponent(paidPhone) : "",
+            verification.bankName
+          );
+          window.history.replaceState({}, document.title, window.location.pathname);
         })
         .catch((err) => {
           console.error("Verification network error:", err);
@@ -341,14 +371,82 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
       const data = await res.json();
       const checkoutUrl = data.payment_url || data.mono_url || data.link;
-      if (res.ok && checkoutUrl) {
-        window.location.assign(checkoutUrl);
-      } else {
+
+      if (!res.ok) {
         toast.error(data.error || "Failed to initialize payment. Please try again.");
         setIsProcessing(false);
+        return;
       }
-    } catch (err: any) {
-      toast.error(err.message || "Network error. Please try again.");
+
+      // 1. Try Flutterwave in-app modal popup (Inline Checkout)
+      if (typeof window !== "undefined" && typeof window.FlutterwaveCheckout === "function") {
+        const flwPublicKey =
+          process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY ||
+          "FLWPUBK-5e64a473198d451dbd9bbdb1add8be7c-X";
+
+        window.FlutterwaveCheckout({
+          public_key: flwPublicKey,
+          tx_ref: data.reference,
+          amount: fund.perMemberTotal,
+          currency: "NGN",
+          payment_options: "card,banktransfer,ussd,opay",
+          customer: {
+            email: payingEmail.trim(),
+            phonenumber: payingPhone.trim() || "08012345678",
+            name: payingName.trim(),
+          },
+          customizations: {
+            title: `The Owambe Party - ${fund.squadName || fund.tableName} Table`,
+            description: `Squad Seat #${slotNumber} (₦${Number(fund.perMemberTotal).toLocaleString()})`,
+            logo: `${window.location.origin}/owambe-poster.jpg`,
+          },
+          callback: async function (flwResponse: Record<string, unknown>) {
+            const verifyToast = toast.loading("Verifying your payment with Flutterwave...");
+            try {
+              const txId = encodeURIComponent(String(flwResponse.transaction_id || ""));
+              const txRef = encodeURIComponent(String(flwResponse.tx_ref || data.reference || ""));
+              const verifyRes = await fetch(
+                `/api/owambe/verify?transaction_id=${txId}&reference=${txRef}`
+              );
+              const verification = await verifyRes.json();
+              if (verification.verified) {
+                applyContributionSuccess(
+                  slotNumber,
+                  payingName.trim(),
+                  payingEmail.trim(),
+                  payingPhone.trim(),
+                  verification.bankName
+                );
+                toast.success(`Payment verified! Seat #${slotNumber} secured 🎉`, {
+                  id: verifyToast,
+                  duration: 6000,
+                });
+              } else {
+                toast.error(
+                  verification.message || "Payment verification failed. Your seat remains open.",
+                  { id: verifyToast, duration: 7000 }
+                );
+              }
+            } catch (_) {
+              toast.error("Network error during payment verification.", { id: verifyToast });
+            } finally {
+              setIsProcessing(false);
+            }
+          },
+          onclose: function () {
+            setIsProcessing(false);
+          },
+        });
+      } else if (checkoutUrl) {
+        // Fallback to hosted redirect if inline script was blocked
+        window.location.assign(checkoutUrl);
+      } else {
+        toast.error("Unable to open checkout modal. Please try again.");
+        setIsProcessing(false);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Network error. Please try again.";
+      toast.error(msg);
       setIsProcessing(false);
     }
   };
@@ -408,6 +506,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
+      <Script src="https://checkout.flutterwave.com/v3.js" strategy="afterInteractive" />
       {/* Top Back Navigation Bar */}
       <div className="flex items-center justify-between">
         <Link
