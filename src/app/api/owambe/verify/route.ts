@@ -63,30 +63,6 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 2. Fallback to Mono verification if reference exists
-    if (reference) {
-      const monoKey =
-        process.env.MONO_PAYMENT_SECRET_KEY || "live_sk_inn9juso4icjf6wsot5y";
-      const monoRes = await fetch(
-        `https://api.withmono.com/v2/payments/verify/${encodeURIComponent(reference)}`,
-        {
-          headers: { "mono-sec-key": monoKey, Accept: "application/json" },
-        }
-      ).catch(() => null);
-      if (monoRes && monoRes.ok) {
-        const monoData = await monoRes.json().catch(() => null);
-        if (monoData?.data?.status === "successful") {
-          return NextResponse.json({
-            verified: true,
-            status: "successful",
-            reference,
-            amount: monoData.data.amount ? monoData.data.amount / 100 : undefined,
-            paidAt: monoData.data.updated_at || new Date().toISOString(),
-          });
-        }
-      }
-    }
-
     return NextResponse.json({
       verified: false,
       status: flwData?.data?.status || "failed",

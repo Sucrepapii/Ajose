@@ -2,15 +2,15 @@ import type { NextConfig } from "next";
 
 const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co https://api.withmono.com https://connect.withmono.com https://connect.mono.co;
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co https://checkout.flutterwave.com https://*.flutterwave.com https://api.ravepay.co https://connect.facebook.net https://api.withmono.com https://connect.withmono.com https://connect.mono.co;
     style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: https://ajose.ng;
-    font-src 'self';
-    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.withmono.com https://api.mono.co https://connect.mono.co https://connect.withmono.com;
-    frame-src 'self' https://connect.withmono.com https://connect.mono.co;
+    img-src 'self' blob: data: https://ajose.ng https://*.flutterwave.com https://www.facebook.com;
+    font-src 'self' data:;
+    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.flutterwave.com https://*.flutterwave.com https://api.ravepay.co https://connect.facebook.net https://www.facebook.com https://api.withmono.com https://api.mono.co https://connect.mono.co https://connect.withmono.com;
+    frame-src 'self' https://checkout.flutterwave.com https://*.flutterwave.com https://connect.withmono.com https://connect.mono.co;
     object-src 'none';
     base-uri 'self';
-    form-action 'self';
+    form-action 'self' https://checkout.flutterwave.com https://*.flutterwave.com;
     frame-ancestors 'none';
     upgrade-insecure-requests;
 `;

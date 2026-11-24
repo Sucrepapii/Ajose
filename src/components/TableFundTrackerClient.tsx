@@ -351,6 +351,13 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
   const handlePayShare = async (slotNumber: number) => {
     if (!payingName.trim() || !payingEmail.trim() || !fund) return;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(payingEmail.trim())) {
+      toast.error("Please enter a valid email address (e.g. name@gmail.com) for your ticket & receipt.");
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -370,7 +377,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       });
 
       const data = await res.json();
-      const checkoutUrl = data.payment_url || data.mono_url || data.link;
+      const checkoutUrl = data.payment_url || data.link;
 
       if (!res.ok) {
         toast.error(data.error || "Failed to initialize payment. Please try again.");

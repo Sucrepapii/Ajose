@@ -14,6 +14,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const safeName = String(name || "").trim();
+    const safeEmail = String(email || "").trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(safeEmail)) {
+      return NextResponse.json(
+        { error: "Please enter a valid email address (e.g. name@gmail.com) to receive your entry ticket." },
+        { status: 400 }
+      );
+    }
+
+    const numericAmount = Math.round(Number(String(amount).replace(/[^0-9.]/g, "")));
+    if (!numericAmount || numericAmount <= 0) {
+      return NextResponse.json(
+        { error: "Invalid payment amount." },
+        { status: 400 }
+      );
+    }
+
     const flwSecretKey =
       process.env.FLW_SECRET_KEY ||
       "FLWSECK-af6b744904af126995af79c0a8570385-1a20fb8e4f4vt-X";
@@ -35,31 +53,31 @@ export async function POST(req: NextRequest) {
     const safeRef = `owm_${cleanFundId.slice(0, 8)}_${slot}_${Date.now().toString().slice(-6)}`;
 
     const redirectUrl = `${origin}/table/${cleanFundId}?payment=success&slot=${slot}&name=${encodeURIComponent(
-      name
-    )}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(
+      safeName
+    )}&email=${encodeURIComponent(safeEmail)}&phone=${encodeURIComponent(
       formattedPhone
     )}&ref=${safeRef}`;
 
     const payload = {
       tx_ref: safeRef,
-      amount: String(amount),
+      amount: String(numericAmount),
       currency: "NGN",
       redirect_url: redirectUrl,
       payment_options: "card,banktransfer,ussd,opay",
       customer: {
-        email: String(email).trim(),
+        email: safeEmail,
         phonenumber: formattedPhone,
-        name: String(name).trim(),
+        name: safeName,
       },
       customizations: {
         title: `The Owambe Party - ${squadName || tableName || "Squad"} Table`,
-        description: `Squad Seat #${slot} Reservation (₦${Number(amount).toLocaleString()})`,
+        description: `Squad Seat #${slot} Reservation (₦${numericAmount.toLocaleString()})`,
         logo: `${origin}/owambe-poster.jpg`,
       },
       meta: {
         fundId: cleanFundId,
         slot: slot,
-        name: String(name).trim(),
+        name: safeName,
       },
     };
 
@@ -84,7 +102,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       payment_url: data.data.link,
-      mono_url: data.data.link, // backwards compatibility
       reference: safeRef,
     });
   } catch (err: any) {
