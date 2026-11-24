@@ -123,7 +123,7 @@ export function TableFundCreator() {
     setDiscardingTable(null);
   };
 
-  const handleLookupTable = (e: React.FormEvent) => {
+  const handleLookupTable = async (e: React.FormEvent) => {
     e.preventDefault();
     setSearchError("");
 
@@ -133,18 +133,29 @@ export function TableFundCreator() {
       return;
     }
 
-    const found = searchTableFunds(q);
-    if (found) {
-      router.push(`/table/${found.id}`);
+    // 1. Check local demo / cache tables first
+    const localFound = searchTableFunds(q);
+    if (localFound) {
+      router.push(`/table/${localFound.id}`);
       return;
     }
+
+    // 2. Query cloud database via API across all devices
+    try {
+      const res = await fetch(`/api/owambe/table?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      if (res.ok && data.table?.id) {
+        router.push(`/table/${data.table.id}`);
+        return;
+      }
+    } catch (_) {}
 
     setSearchError(`No squad table found registered with "${q}". Please verify the phone number, squad name, or ask your squad leader for your squad link.`);
   };
 
   const activeTier = TIERS.find((t) => t.id === selectedTier)!;
 
-  const handleCreateFund = (e: React.FormEvent) => {
+  const handleCreateFund = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!squadName.trim() || !leaderName.trim() || !leaderEmail.trim()) return;
 
@@ -191,11 +202,23 @@ export function TableFundCreator() {
       ],
     };
 
+    // 1. Store in localStorage for immediate local access
     try {
       if (typeof window !== "undefined") {
         localStorage.setItem(`table_fund_${fundId}`, JSON.stringify(fundData));
       }
     } catch (_) {}
+
+    // 2. Persist to cloud database so all devices and WhatsApp links can open it
+    try {
+      await fetch("/api/owambe/table", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fundData),
+      });
+    } catch (err) {
+      console.warn("Cloud persistence error:", err);
+    }
 
     router.push(`/table/${fundId}`);
   };

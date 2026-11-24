@@ -84,6 +84,16 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
           const parsed = JSON.parse(stored);
           if (parsed && parsed.id) {
             setFund(parsed);
+            // Sync from cloud database in background for multi-device squad updates
+            fetch(`/api/owambe/table?id=${encodeURIComponent(fundId)}`)
+              .then((r) => r.json())
+              .then((d) => {
+                if (d.table) {
+                  setFund(d.table);
+                  localStorage.setItem(`table_fund_${fundId}`, JSON.stringify(d.table));
+                }
+              })
+              .catch(() => {});
             return;
           }
         } catch (_) {}
@@ -104,8 +114,22 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       return;
     }
 
-    // 3. Table is not found. Do NOT fall back to dummy mock table.
-    setNotFound(true);
+    // 3. Query Cloud Database via API for tables created on other devices / shared via WhatsApp
+    fetch(`/api/owambe/table?id=${encodeURIComponent(fundId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.table) {
+          setFund(data.table);
+          if (typeof window !== "undefined") {
+            localStorage.setItem(`table_fund_${fundId}`, JSON.stringify(data.table));
+          }
+        } else {
+          setNotFound(true);
+        }
+      })
+      .catch(() => {
+        setNotFound(true);
+      });
   }, [fundId]);
 
   // Handle returning from Mono payment redirect with real server-side verification
@@ -184,6 +208,12 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
             setFund(updatedFund);
             localStorage.setItem(`table_fund_${currentFund.id}`, JSON.stringify(updatedFund));
+            // Sync to cloud database for all squad members
+            fetch("/api/owambe/table", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(updatedFund),
+            }).catch(() => {});
             toast.success(`Payment verified via ${verification.bankName || "Bank"}! Your seat is secured.`, {
               id: toastId,
               duration: 6000,
@@ -360,6 +390,12 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
     if (typeof window !== "undefined") {
       localStorage.setItem(`table_fund_${fund.id}`, JSON.stringify(updatedFund));
     }
+    // Sync to cloud database
+    fetch("/api/owambe/table", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedFund),
+    }).catch(() => {});
     setRemoveMemberSlot(null);
   };
 
