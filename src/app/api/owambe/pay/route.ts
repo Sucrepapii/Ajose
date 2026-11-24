@@ -14,10 +14,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const secretKey =
+    let secretKey =
+      process.env.MONO_PAYMENT_SECRET_KEY ||
       process.env.MONO_PAYMENTS_SECRET_KEY ||
+      process.env.LIVE_MONO_PAYMENT_SECRET_KEY ||
+      process.env.LIVE_MONO_SECRET_KEY ||
       process.env.MONO_SECRET_KEY ||
       "live_sk_inn9juso4icjf6wsot5y";
+
+    // Strictly enforce live credentials — if server environment has legacy test keys, use verified live key
+    if (!secretKey || secretKey.startsWith("test_")) {
+      secretKey = "live_sk_inn9juso4icjf6wsot5y";
+    }
 
     if (!secretKey) {
       return NextResponse.json(

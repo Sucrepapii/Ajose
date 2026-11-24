@@ -19,10 +19,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const secretKey =
+    let secretKey =
+      process.env.MONO_PAYMENT_SECRET_KEY ||
       process.env.MONO_PAYMENTS_SECRET_KEY ||
+      process.env.LIVE_MONO_PAYMENT_SECRET_KEY ||
+      process.env.LIVE_MONO_SECRET_KEY ||
       process.env.MONO_SECRET_KEY ||
       "live_sk_inn9juso4icjf6wsot5y";
+
+    if (!secretKey || secretKey.startsWith("test_")) {
+      secretKey = "live_sk_inn9juso4icjf6wsot5y";
+    }
 
     const verifyRes = await fetch(
       `https://api.withmono.com/v2/payments/verify/${encodeURIComponent(reference)}`,
