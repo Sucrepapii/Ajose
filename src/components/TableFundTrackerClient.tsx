@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { 
   Users, 
   CheckCircle2, 
@@ -102,6 +103,63 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
     setNotFound(true);
   }, [fundId]);
 
+  // Handle returning from successful Mono payment redirect
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get("payment");
+    const paidSlotStr = urlParams.get("slot");
+    const paidName = urlParams.get("name");
+    const paidEmail = urlParams.get("email");
+    const paidPhone = urlParams.get("phone");
+
+    if (paymentStatus === "success" && paidSlotStr) {
+      const slotNum = parseInt(paidSlotStr, 10);
+      let currentFund = fund;
+
+      if (!currentFund) {
+        const stored = localStorage.getItem(`table_fund_${fundId}`);
+        if (stored) {
+          try {
+            currentFund = JSON.parse(stored);
+          } catch (_) {}
+        }
+        if (!currentFund) {
+          currentFund = (STANDARD_DEMO_TABLES.find(
+            (t) => t.id.toLowerCase() === fundId.toLowerCase()
+          ) as TableFundState) || null;
+        }
+      }
+
+      if (currentFund) {
+        const formattedTimestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
+        const updatedContributions = currentFund.contributions.map((c) => {
+          if (c.slot === slotNum) {
+            return {
+              ...c,
+              name: paidName ? decodeURIComponent(paidName) : c.name,
+              email: paidEmail ? decodeURIComponent(paidEmail) : c.email,
+              phone: paidPhone ? decodeURIComponent(paidPhone) : c.phone,
+              paid: true,
+              paidAt: formattedTimestamp,
+            };
+          }
+          return c;
+        });
+
+        const updatedFund = {
+          ...currentFund,
+          contributions: updatedContributions,
+        };
+
+        setFund(updatedFund);
+        localStorage.setItem(`table_fund_${currentFund.id}`, JSON.stringify(updatedFund));
+        toast.success("Payment confirmed! Your seat is locked.", { duration: 6000 });
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  }, [fundId, fund]);
+
   if (notFound) {
     return (
       <div className="w-full max-w-xl mx-auto py-12 px-4 text-center">
@@ -183,43 +241,37 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
     window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
   };
 
-  const handlePayShare = (slotNumber: number) => {
-    if (!payingName.trim() || !payingEmail.trim()) return;
+  const handlePayShare = async (slotNumber: number) => {
+    if (!payingName.trim() || !payingEmail.trim() || !fund) return;
     setIsProcessing(true);
 
-    setTimeout(() => {
-      if (!fund) return;
-      const formattedTimestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
-
-      const updatedContributions = fund.contributions.map((c) => {
-        if (c.slot === slotNumber) {
-          return {
-            ...c,
-            name: payingName.trim(),
-            email: payingEmail.trim(),
-            phone: payingPhone.trim() || "N/A",
-            paid: true,
-            paidAt: formattedTimestamp,
-          };
-        }
-        return c;
+    try {
+      const res = await fetch("/api/owambe/pay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fundId: fund.id,
+          slot: slotNumber,
+          name: payingName.trim(),
+          email: payingEmail.trim(),
+          phone: payingPhone.trim(),
+          amount: fund.perMemberTotal,
+          squadName: fund.squadName,
+          tableName: fund.tableName,
+        }),
       });
 
-      const updatedFund = {
-        ...fund,
-        contributions: updatedContributions,
-      };
-
-      setFund(updatedFund);
-      if (typeof window !== "undefined") {
-        localStorage.setItem(`table_fund_${fund.id}`, JSON.stringify(updatedFund));
+      const data = await res.json();
+      if (res.ok && data.mono_url) {
+        window.location.href = data.mono_url;
+      } else {
+        toast.error(data.error || "Failed to initialize Mono payment. Please try again.");
+        setIsProcessing(false);
       }
+    } catch (err: any) {
+      toast.error(err.message || "Network error. Please try again.");
       setIsProcessing(false);
-      setPayingSlot(null);
-      setPayingName("");
-      setPayingEmail("");
-      setPayingPhone("");
-    }, 1200);
+    }
   };
 
   const handleDeleteTable = () => {
@@ -305,7 +357,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         <div className="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
           <span>
-            <strong>Funding Deadline Passed (10 Dec 2026):</strong> This table fund did not reach 100% funding by the deadline. As guaranteed by Paylode Escrow, automatic refunds will be processed for any paid members.
+            <strong>Funding Deadline Passed (10 Dec 2026):</strong> This table fund did not reach 100% funding by the deadline. As guaranteed by Escrow Protection, automatic refunds will be processed for any paid members.
           </span>
         </div>
       )}
@@ -555,7 +607,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3022]"
                 />
                 <span className="text-[10px] text-gray-500 mt-0.5 block">
-                  Your Paylode payment receipt and event entry ticket will be delivered here.
+                  Your official payment receipt and event entry ticket will be delivered here.
                 </span>
               </div>
 
@@ -596,7 +648,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
               <div className="flex items-center gap-2 text-[11px] text-[#0B3022]/70">
                 <ShieldCheck className="w-4 h-4 text-[#D4A843] shrink-0" />
-                <span>Escrow secured by Paylode (CBN-Licensed). 100% refund if incomplete.</span>
+                <span>Escrow secured by Mono DirectPay (CBN-Licensed Partners). 100% refund if incomplete.</span>
               </div>
 
               <div className="flex items-center gap-3 mt-4">
@@ -613,7 +665,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                   disabled={isProcessing || !payingName.trim() || !payingEmail.trim()}
                   className="flex-1 py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  {isProcessing ? "Connecting Bank Payment..." : `Authorize ₦${fund.perMemberTotal.toLocaleString()}`}
+                  {isProcessing ? "Connecting Mono Bank Transfer..." : `Pay ₦${fund.perMemberTotal.toLocaleString()} with Mono`}
                 </button>
               </div>
             </div>
@@ -636,7 +688,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
             {fund.contributions.filter((c) => c.paid).length > 1 ? (
               <div className="space-y-4">
                 <p className="text-xs text-[#0B3022]/80 leading-relaxed">
-                  Squad members have already contributed into <strong>{fund.squadName}</strong>. To cancel this reservation and process automatic Paylode escrow refunds, please reach out to platform operations.
+                  Squad members have already contributed into <strong>{fund.squadName}</strong>. To cancel this reservation and process automatic escrow refunds, please reach out to platform operations.
                 </p>
                 <div className="pt-2 flex justify-end">
                   <button
@@ -690,7 +742,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
             <p className="text-xs text-[#0B3022]/80 leading-relaxed mb-5">
               {removeMemberSlot.paid ? (
                 <>
-                  <strong>{removeMemberSlot.name}</strong> has already paid <strong>₦{removeMemberSlot.amount.toLocaleString()}</strong> into Paylode escrow for Slot #{removeMemberSlot.slot}. Removing them will release the seat for another friend and initiate an escrow refund.
+                  <strong>{removeMemberSlot.name}</strong> has already paid <strong>₦{removeMemberSlot.amount.toLocaleString()}</strong> into escrow for Slot #{removeMemberSlot.slot}. Removing them will release the seat for another friend and initiate an escrow refund.
                 </>
               ) : (
                 <>
@@ -725,7 +777,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         <div className="space-y-1">
           <h4 className="font-bold text-sm text-[#0B3022]">How Your Money is Protected</h4>
           <p className="leading-relaxed">
-            Funds are held by <strong>Paylode</strong>, a CBN-licensed payment solution service provider, until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all {fund.memberCount} shares by <strong>10 December 2026</strong>, every contributor receives an automatic full refund.
+            Contributions are securely collected via <strong>Mono DirectPay</strong> (CBN-licensed open-banking infrastructure) and safely held in escrow until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all {fund.memberCount} shares by <strong>10 December 2026</strong>, every contributor receives an automatic full refund.
           </p>
         </div>
       </div>

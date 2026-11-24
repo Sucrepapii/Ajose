@@ -440,7 +440,7 @@ export function TableFundCreator() {
                 <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
               </div>
               <p className="text-[11px] text-[#0B3022]/60 mt-1">
-                Your permanent squad link, official Paylode receipt, and table booking confirmation will be emailed here.
+                Your permanent squad link, official payment receipt, and table booking confirmation will be emailed here.
               </p>
             </div>
 
@@ -448,9 +448,9 @@ export function TableFundCreator() {
             <div className="p-4 rounded-2xl bg-[#0B3022]/[0.04] border border-[#0B3022]/10 text-xs text-[#0B3022]/80 flex items-start gap-3 mt-4">
               <ShieldCheck className="w-5 h-5 text-[#D4A843] shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <strong className="block text-[#0B3022]">CBN-Licensed Escrow Protection:</strong>
+                <strong className="block text-[#0B3022]">CBN-Licensed Open Banking Escrow:</strong>
                 <span>
-                  All member payments are held safely by <strong>Paylode</strong> (CBN-licensed payment solution service provider). The lump sum is released to The Owambe Party only when all 10 members pay. If the table is not 100% funded by 10 December, every member is refunded automatically.
+                  All member payments are securely collected via <strong>Mono DirectPay</strong> (CBN-licensed open-banking infrastructure). The lump sum is released to The Owambe Party only when all 10 members pay. If the table is not 100% funded by 10 December, every member is refunded automatically.
                 </span>
               </div>
             </div>
