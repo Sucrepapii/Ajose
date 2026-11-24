@@ -136,18 +136,24 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get("payment");
+    const paymentStatus = urlParams.get("payment") || urlParams.get("status");
     const paidSlotStr = urlParams.get("slot");
     const paidName = urlParams.get("name");
     const paidEmail = urlParams.get("email");
     const paidPhone = urlParams.get("phone");
-    const ref = urlParams.get("ref");
+    const ref = urlParams.get("ref") || urlParams.get("tx_ref");
+    const transactionId = urlParams.get("transaction_id");
 
-    if (paymentStatus === "success" && paidSlotStr && ref) {
-      const slotNum = parseInt(paidSlotStr, 10);
-      const toastId = toast.loading("Verifying transaction with your bank...", { id: `verify-${ref}` });
+    if ((paymentStatus === "success" || paymentStatus === "successful") && (ref || transactionId)) {
+      const slotNum = paidSlotStr ? parseInt(paidSlotStr, 10) : 1;
+      const verifyId = ref || transactionId || "tx";
+      const toastId = toast.loading("Verifying transaction with your bank...", { id: `verify-${verifyId}` });
 
-      fetch(`/api/owambe/verify?reference=${encodeURIComponent(ref)}`)
+      const query = new URLSearchParams();
+      if (ref) query.set("reference", ref);
+      if (transactionId) query.set("transaction_id", transactionId);
+
+      fetch(`/api/owambe/verify?${query.toString()}`)
         .then((res) => res.json())
         .then((verification) => {
           // If transaction is still pending, DO NOT mark as paid!
@@ -334,10 +340,11 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
       });
 
       const data = await res.json();
-      if (res.ok && data.mono_url) {
-        window.location.assign(data.mono_url);
+      const checkoutUrl = data.payment_url || data.mono_url || data.link;
+      if (res.ok && checkoutUrl) {
+        window.location.assign(checkoutUrl);
       } else {
-        toast.error(data.error || "Failed to initialize Mono payment. Please try again.");
+        toast.error(data.error || "Failed to initialize payment. Please try again.");
         setIsProcessing(false);
       }
     } catch (err: any) {
@@ -727,10 +734,10 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
               <div className="space-y-1 text-[11px] text-[#0B3022]/70">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-[#D4A843] shrink-0" />
-                  <span>Escrow secured by Mono DirectPay. 100% refund if squad is incomplete.</span>
+                  <span>Escrow secured by Flutterwave (CBN-Licensed Partners). 100% refund if incomplete.</span>
                 </div>
                 <p className="text-[10px] text-gray-500 pl-6">
-                  Supports instant transfer from any Nigerian bank app.
+                  Supports Bank Transfer (Virtual Account), OPay, PalmPay, Debit Cards & USSD.
                 </p>
               </div>
 
@@ -748,7 +755,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                   disabled={isProcessing || !payingName.trim() || !payingEmail.trim()}
                   className="flex-1 py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  {isProcessing ? "Generating Transfer Account..." : `Pay ₦${fund.perMemberTotal.toLocaleString()} (Bank Transfer)`}
+                  {isProcessing ? "Connecting Checkout..." : `Pay ₦${fund.perMemberTotal.toLocaleString()} (Transfer, OPay, Card)`}
                 </button>
               </div>
             </div>
@@ -860,7 +867,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         <div className="space-y-1">
           <h4 className="font-bold text-sm text-[#0B3022]">How Your Money is Protected</h4>
           <p className="leading-relaxed">
-            Contributions are securely collected via <strong>Mono DirectPay</strong> (CBN-licensed open-banking infrastructure) and safely held in escrow until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all {fund.memberCount} shares by <strong>10 December 2026</strong>, every contributor receives an automatic full refund.
+            Contributions are securely collected via <strong>Flutterwave</strong> (CBN-licensed payment infrastructure) and safely held in escrow until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all {fund.memberCount} shares by <strong>10 December 2026</strong>, every contributor receives an automatic full refund.
           </p>
         </div>
       </div>

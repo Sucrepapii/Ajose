@@ -3,87 +3,97 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 /**
- * Server-side verification for Mono DirectPay transactions.
- * Endpoint: GET /api/owambe/verify?reference=REF_STRING
- * Strictly verifies that data.status === "successful" on Mono before confirming.
+ * Server-side verification for Flutterwave & Mono transactions.
+ * Endpoint: GET /api/owambe/verify?reference=REF_STRING&transaction_id=ID
+ * Strictly verifies that data.status === "successful" on Flutterwave before confirming.
  */
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const reference = searchParams.get("reference");
+    const reference = searchParams.get("reference") || searchParams.get("tx_ref");
+    const transactionId = searchParams.get("transaction_id");
 
-    if (!reference) {
+    if (!reference && !transactionId) {
       return NextResponse.json(
-        { error: "Reference parameter is required." },
+        { error: "Reference or transaction_id parameter is required." },
         { status: 400 }
       );
     }
 
-    let secretKey =
-      process.env.MONO_PAYMENT_SECRET_KEY ||
-      process.env.MONO_PAYMENTS_SECRET_KEY ||
-      process.env.LIVE_MONO_PAYMENT_SECRET_KEY ||
-      process.env.LIVE_MONO_SECRET_KEY ||
-      process.env.MONO_SECRET_KEY ||
-      "live_sk_inn9juso4icjf6wsot5y";
+    const flwSecretKey =
+      process.env.FLW_SECRET_KEY ||
+      "FLWSECK-af6b744904af126995af79c0a8570385-1a20fb8e4f4vt-X";
 
-    if (!secretKey || secretKey.startsWith("test_")) {
-      secretKey = "live_sk_inn9juso4icjf6wsot5y";
-    }
+    // 1. Try Flutterwave verification
+    let flwVerifyUrl = transactionId
+      ? `https://api.flutterwave.com/v3/transactions/${encodeURIComponent(transactionId)}/verify`
+      : `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${encodeURIComponent(reference!)}`;
 
-    const verifyRes = await fetch(
-      `https://api.withmono.com/v2/payments/verify/${encodeURIComponent(reference)}`,
-      {
-        method: "GET",
-        headers: {
-          "mono-sec-key": secretKey,
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+    const flwRes = await fetch(flwVerifyUrl, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${flwSecretKey}`,
+        "Content-Type": "application/json",
+      },
+      next: { revalidate: 0 },
+    });
+
+    const flwData = await flwRes.json().catch(() => null);
+
+    if (flwRes.ok && flwData?.status === "success" && flwData?.data) {
+      const paymentStatus = flwData.data.status; // "successful" | "pending" | "failed"
+      if (paymentStatus === "successful") {
+        return NextResponse.json({
+          verified: true,
+          status: "successful",
+          reference: flwData.data.tx_ref || reference,
+          amount: flwData.data.amount,
+          paidAt: flwData.data.created_at || new Date().toISOString(),
+          paymentType: flwData.data.payment_type || "bank_transfer",
+          flwRef: flwData.data.flw_ref,
+        });
       }
-    );
 
-    const data = await verifyRes.json().catch(() => null);
-
-    if (!verifyRes.ok || !data) {
-      return NextResponse.json({
-        verified: false,
-        status: "failed",
-        error: data?.message || "Failed to verify transaction with Mono.",
-      });
+      if (paymentStatus === "pending") {
+        return NextResponse.json({
+          verified: false,
+          status: "pending",
+          message: "Transaction is still being processed by the bank. Awaiting settlement confirmation.",
+        });
+      }
     }
 
-    const paymentStatus = data?.data?.status; // "successful" | "pending" | "failed"
-    const amountInKobo = data?.data?.amount;
-    const customerAccount = data?.data?.account;
-
-    if (paymentStatus === "successful") {
-      return NextResponse.json({
-        verified: true,
-        status: "successful",
-        reference,
-        amount: amountInKobo ? amountInKobo / 100 : undefined,
-        paidAt: data?.data?.updated_at || new Date().toISOString(),
-        bankName: customerAccount?.institution?.name || "Bank",
-        accountNumber: customerAccount?.accountNumber,
-      });
-    }
-
-    if (paymentStatus === "pending") {
-      return NextResponse.json({
-        verified: false,
-        status: "pending",
-        message: "Transaction is still being processed by the bank. Awaiting settlement confirmation.",
-      });
+    // 2. Fallback to Mono verification if reference exists
+    if (reference) {
+      const monoKey =
+        process.env.MONO_PAYMENT_SECRET_KEY || "live_sk_inn9juso4icjf6wsot5y";
+      const monoRes = await fetch(
+        `https://api.withmono.com/v2/payments/verify/${encodeURIComponent(reference)}`,
+        {
+          headers: { "mono-sec-key": monoKey, Accept: "application/json" },
+        }
+      ).catch(() => null);
+      if (monoRes && monoRes.ok) {
+        const monoData = await monoRes.json().catch(() => null);
+        if (monoData?.data?.status === "successful") {
+          return NextResponse.json({
+            verified: true,
+            status: "successful",
+            reference,
+            amount: monoData.data.amount ? monoData.data.amount / 100 : undefined,
+            paidAt: monoData.data.updated_at || new Date().toISOString(),
+          });
+        }
+      }
     }
 
     return NextResponse.json({
       verified: false,
-      status: paymentStatus || "failed",
-      message: data?.data?.message || "Payment was not successful or was canceled by user.",
+      status: flwData?.data?.status || "failed",
+      message: flwData?.message || "Payment was not successful or was canceled by user.",
     });
   } catch (err: any) {
-    console.error("[Mono Owambe Verify Error]:", err);
+    console.error("[Owambe Verify Error]:", err);
     return NextResponse.json(
       { error: err.message || "Internal verification error." },
       { status: 500 }

@@ -14,25 +14,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let secretKey =
-      process.env.MONO_PAYMENT_SECRET_KEY ||
-      process.env.MONO_PAYMENTS_SECRET_KEY ||
-      process.env.LIVE_MONO_PAYMENT_SECRET_KEY ||
-      process.env.LIVE_MONO_SECRET_KEY ||
-      process.env.MONO_SECRET_KEY ||
-      "live_sk_inn9juso4icjf6wsot5y";
-
-    // Strictly enforce live credentials — if server environment has legacy test keys, use verified live key
-    if (!secretKey || secretKey.startsWith("test_")) {
-      secretKey = "live_sk_inn9juso4icjf6wsot5y";
-    }
-
-    if (!secretKey) {
-      return NextResponse.json(
-        { error: "Mono payment configuration is missing." },
-        { status: 500 }
-      );
-    }
+    const flwSecretKey =
+      process.env.FLW_SECRET_KEY ||
+      "FLWSECK-af6b744904af126995af79c0a8570385-1a20fb8e4f4vt-X";
 
     // Format phone number for Nigerian telcos (e.g. 08012345678)
     let formattedPhone = (phone || "08012345678").trim();
@@ -56,50 +40,55 @@ export async function POST(req: NextRequest) {
       formattedPhone
     )}&ref=${safeRef}`;
 
-    // Use 'transfer' so users can seamlessly pay from OPay, PalmPay, Kuda, or any bank app via a dynamic transfer account
-    const paymentMethod = body.method === "account" ? "account" : "transfer";
-
     const payload = {
-      amount: Math.round(Number(amount) * 100), // in kobo
-      type: "onetime-debit",
-      method: paymentMethod,
-      description: `Àjọṣe Owambe: ${squadName || tableName || "Squad"} Table (Seat #${slot})`,
-      reference: safeRef,
+      tx_ref: safeRef,
+      amount: String(amount),
+      currency: "NGN",
       redirect_url: redirectUrl,
+      payment_options: "card,banktransfer,ussd,opay",
       customer: {
-        name: String(name).trim(),
         email: String(email).trim(),
-        phone: formattedPhone,
+        phonenumber: formattedPhone,
+        name: String(name).trim(),
+      },
+      customizations: {
+        title: `The Owambe Party - ${squadName || tableName || "Squad"} Table`,
+        description: `Squad Seat #${slot} Reservation (₦${Number(amount).toLocaleString()})`,
+        logo: `${origin}/owambe-poster.jpg`,
+      },
+      meta: {
+        fundId: cleanFundId,
+        slot: slot,
+        name: String(name).trim(),
       },
     };
 
-    const monoRes = await fetch("https://api.withmono.com/v2/payments/initiate", {
+    const flwRes = await fetch("https://api.flutterwave.com/v3/payments", {
       method: "POST",
       headers: {
-        "mono-sec-key": secretKey,
+        Authorization: `Bearer ${flwSecretKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
 
-    const data = await monoRes.json().catch(() => null);
+    const data = await flwRes.json().catch(() => null);
 
-    if (!monoRes.ok || data?.status !== "successful" || !data?.data?.mono_url) {
+    if (!flwRes.ok || data?.status !== "success" || !data?.data?.link) {
       const errMsg =
-        data?.message ||
-        data?.data?.[0]?.message ||
-        `Mono initialization failed (HTTP ${monoRes.status})`;
-      console.error("[Mono Owambe Pay Error]:", errMsg, data);
+        data?.message || `Payment initialization failed (HTTP ${flwRes.status})`;
+      console.error("[Flutterwave Owambe Pay Error]:", errMsg, data);
       return NextResponse.json({ error: errMsg }, { status: 400 });
     }
 
     return NextResponse.json({
       success: true,
-      mono_url: data.data.mono_url,
+      payment_url: data.data.link,
+      mono_url: data.data.link, // backwards compatibility
       reference: safeRef,
     });
   } catch (err: any) {
-    console.error("[Mono Owambe Pay Exception]:", err);
+    console.error("[Flutterwave Owambe Pay Exception]:", err);
     return NextResponse.json(
       { error: err.message || "Failed to initiate payment." },
       { status: 500 }
