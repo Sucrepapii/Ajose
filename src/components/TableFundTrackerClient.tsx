@@ -92,7 +92,12 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
     // 2. Check standard registered tables
     const demoFound = STANDARD_DEMO_TABLES.find(
-      (t) => t.id.toLowerCase() === fundId.toLowerCase()
+      (t) =>
+        t.id.toLowerCase() === fundId.toLowerCase() ||
+        (t.id === "test-500" &&
+          (fundId.toLowerCase() === "test-table" ||
+            fundId.toLowerCase() === "test" ||
+            fundId.toLowerCase() === "500"))
     );
     if (demoFound) {
       setFund(demoFound as TableFundState);

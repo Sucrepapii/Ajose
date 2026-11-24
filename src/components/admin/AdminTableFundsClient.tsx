@@ -40,7 +40,7 @@ interface TableFundItem {
   venue?: string;
   eventDate?: string;
   deadline?: string;
-  tier: "silver" | "gold";
+  tier: "silver" | "gold" | "test";
   tableName: string;
   tablePrice: number;
   totalTargetWithFees: number;
