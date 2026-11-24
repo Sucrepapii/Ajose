@@ -730,7 +730,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                   <span>Escrow secured by Mono DirectPay. 100% refund if squad is incomplete.</span>
                 </div>
                 <p className="text-[10px] text-gray-500 pl-6">
-                  Supports instant transfer from <strong>OPay</strong>, <strong>PalmPay</strong>, <strong>Kuda</strong>, or any Nigerian bank app.
+                  Supports instant transfer from any Nigerian bank app.
                 </p>
               </div>
 
@@ -748,7 +748,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                   disabled={isProcessing || !payingName.trim() || !payingEmail.trim()}
                   className="flex-1 py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  {isProcessing ? "Generating Transfer Account..." : `Pay ₦${fund.perMemberTotal.toLocaleString()} (Bank Transfer / OPay)`}
+                  {isProcessing ? "Generating Transfer Account..." : `Pay ₦${fund.perMemberTotal.toLocaleString()} (Bank Transfer)`}
                 </button>
               </div>
             </div>
