@@ -724,9 +724,14 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-[11px] text-[#0B3022]/70">
-                <ShieldCheck className="w-4 h-4 text-[#D4A843] shrink-0" />
-                <span>Escrow secured by Mono DirectPay (CBN-Licensed Partners). 100% refund if incomplete.</span>
+              <div className="space-y-1 text-[11px] text-[#0B3022]/70">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#D4A843] shrink-0" />
+                  <span>Escrow secured by Mono DirectPay. 100% refund if squad is incomplete.</span>
+                </div>
+                <p className="text-[10px] text-gray-500 pl-6">
+                  Supports instant transfer from <strong>OPay</strong>, <strong>PalmPay</strong>, <strong>Kuda</strong>, or any Nigerian bank app.
+                </p>
               </div>
 
               <div className="flex items-center gap-3 mt-4">
@@ -743,7 +748,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
                   disabled={isProcessing || !payingName.trim() || !payingEmail.trim()}
                   className="flex-1 py-3.5 px-4 bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  {isProcessing ? "Connecting Mono Bank Transfer..." : `Pay ₦${fund.perMemberTotal.toLocaleString()} with Mono`}
+                  {isProcessing ? "Generating Transfer Account..." : `Pay ₦${fund.perMemberTotal.toLocaleString()} (Bank Transfer / OPay)`}
                 </button>
               </div>
             </div>

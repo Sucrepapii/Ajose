@@ -56,10 +56,13 @@ export async function POST(req: NextRequest) {
       formattedPhone
     )}&ref=${safeRef}`;
 
+    // Use 'transfer' so users can seamlessly pay from OPay, PalmPay, Kuda, or any bank app via a dynamic transfer account
+    const paymentMethod = body.method === "account" ? "account" : "transfer";
+
     const payload = {
       amount: Math.round(Number(amount) * 100), // in kobo
       type: "onetime-debit",
-      method: "account",
+      method: paymentMethod,
       description: `Àjọṣe Owambe: ${squadName || tableName || "Squad"} Table (Seat #${slot})`,
       reference: safeRef,
       redirect_url: redirectUrl,
