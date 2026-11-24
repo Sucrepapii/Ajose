@@ -103,7 +103,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
     setNotFound(true);
   }, [fundId]);
 
-  // Handle returning from successful Mono payment redirect
+  // Handle returning from Mono payment redirect with real server-side verification
   useEffect(() => {
     if (typeof window === "undefined") return;
     const urlParams = new URLSearchParams(window.location.search);
@@ -112,51 +112,88 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
     const paidName = urlParams.get("name");
     const paidEmail = urlParams.get("email");
     const paidPhone = urlParams.get("phone");
+    const ref = urlParams.get("ref");
 
-    if (paymentStatus === "success" && paidSlotStr) {
+    if (paymentStatus === "success" && paidSlotStr && ref) {
       const slotNum = parseInt(paidSlotStr, 10);
-      let currentFund = fund;
+      const toastId = toast.loading("Verifying transaction with your bank...", { id: `verify-${ref}` });
 
-      if (!currentFund) {
-        const stored = localStorage.getItem(`table_fund_${fundId}`);
-        if (stored) {
-          try {
-            currentFund = JSON.parse(stored);
-          } catch (_) {}
-        }
-        if (!currentFund) {
-          currentFund = (STANDARD_DEMO_TABLES.find(
-            (t) => t.id.toLowerCase() === fundId.toLowerCase()
-          ) as TableFundState) || null;
-        }
-      }
-
-      if (currentFund) {
-        const formattedTimestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
-        const updatedContributions = currentFund.contributions.map((c) => {
-          if (c.slot === slotNum) {
-            return {
-              ...c,
-              name: paidName ? decodeURIComponent(paidName) : c.name,
-              email: paidEmail ? decodeURIComponent(paidEmail) : c.email,
-              phone: paidPhone ? decodeURIComponent(paidPhone) : c.phone,
-              paid: true,
-              paidAt: formattedTimestamp,
-            };
+      fetch(`/api/owambe/verify?reference=${encodeURIComponent(ref)}`)
+        .then((res) => res.json())
+        .then((verification) => {
+          // If transaction is still pending, DO NOT mark as paid!
+          if (verification.status === "pending") {
+            toast.info(
+              "Your transaction is still pending bank clearance. Your seat will be confirmed once cleared.",
+              { id: toastId, duration: 8000 }
+            );
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
           }
-          return c;
+
+          if (!verification.verified || verification.status !== "successful") {
+            toast.error(
+              verification.message || "Payment could not be verified by your bank. Your seat remains open.",
+              { id: toastId, duration: 7000 }
+            );
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+          }
+
+          // Verified successful on Mono!
+          let currentFund = fund;
+          if (!currentFund) {
+            const stored = localStorage.getItem(`table_fund_${fundId}`);
+            if (stored) {
+              try {
+                currentFund = JSON.parse(stored);
+              } catch (_) {}
+            }
+            if (!currentFund) {
+              currentFund = (STANDARD_DEMO_TABLES.find(
+                (t) => t.id.toLowerCase() === fundId.toLowerCase()
+              ) as TableFundState) || null;
+            }
+          }
+
+          if (currentFund) {
+            const formattedTimestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
+            const updatedContributions = currentFund.contributions.map((c) => {
+              if (c.slot === slotNum) {
+                return {
+                  ...c,
+                  name: paidName ? decodeURIComponent(paidName) : c.name,
+                  email: paidEmail ? decodeURIComponent(paidEmail) : c.email,
+                  phone: paidPhone ? decodeURIComponent(paidPhone) : c.phone,
+                  paid: true,
+                  paidAt: formattedTimestamp,
+                };
+              }
+              return c;
+            });
+
+            const updatedFund = {
+              ...currentFund,
+              contributions: updatedContributions,
+            };
+
+            setFund(updatedFund);
+            localStorage.setItem(`table_fund_${currentFund.id}`, JSON.stringify(updatedFund));
+            toast.success(`Payment verified via ${verification.bankName || "Bank"}! Your seat is secured.`, {
+              id: toastId,
+              duration: 6000,
+            });
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        })
+        .catch((err) => {
+          console.error("Verification network error:", err);
+          toast.error("Failed to verify transaction. Please refresh or check your bank app.", {
+            id: toastId,
+            duration: 6000,
+          });
+          window.history.replaceState({}, document.title, window.location.pathname);
         });
-
-        const updatedFund = {
-          ...currentFund,
-          contributions: updatedContributions,
-        };
-
-        setFund(updatedFund);
-        localStorage.setItem(`table_fund_${currentFund.id}`, JSON.stringify(updatedFund));
-        toast.success("Payment confirmed! Your seat is locked.", { duration: 6000 });
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
     }
   }, [fundId, fund]);
 
