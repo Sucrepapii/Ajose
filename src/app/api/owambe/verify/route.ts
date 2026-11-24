@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       "FLWSECK-af6b744904af126995af79c0a8570385-1a20fb8e4f4vt-X";
 
     // 1. Try Flutterwave verification
-    let flwVerifyUrl = transactionId
+    const flwVerifyUrl = transactionId
       ? `https://api.flutterwave.com/v3/transactions/${encodeURIComponent(transactionId)}/verify`
       : `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${encodeURIComponent(reference!)}`;
 
