@@ -49,6 +49,7 @@ export interface TableFundRecord {
 }
 
 export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
+  /*
   {
     id: "test-500",
     squadName: "Live Test Squad (₦500 Test)",
@@ -82,6 +83,7 @@ export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
       { slot: 10, name: "Squad Member #10 (Test Seat)", paid: false, amount: 500 },
     ],
   },
+  */
   {
     id: "owambe-lekki-babes",
     squadName: "Lekki Babes VIP Table",

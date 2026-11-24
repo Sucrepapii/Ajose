@@ -40,6 +40,7 @@ const TIERS: TableTier[] = [
     serviceFeePerMember: 1000,
     totalPerMember: 101000,
   },
+  /*
   {
     id: "test",
     name: "Test Table",
@@ -50,6 +51,7 @@ const TIERS: TableTier[] = [
     serviceFeePerMember: 0,
     totalPerMember: 500,
   },
+  */
 ];
 
 interface SavedTableSummary {
