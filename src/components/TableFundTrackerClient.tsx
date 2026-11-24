@@ -336,10 +336,10 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
             {/* Official Event Poster Badge */}
             <div className="flex items-center gap-3 bg-white/5 border border-[#D4A843]/30 rounded-2xl p-2.5 sm:p-3 shrink-0">
-              <div className="relative w-16 sm:w-20 aspect-[3/4] rounded-xl overflow-hidden shadow-md border border-[#D4A843]/40 bg-[#0B3022]">
+              <div className="relative w-16 sm:w-20 aspect-[4/5] rounded-xl overflow-hidden shadow-md border border-[#D4A843]/40 bg-[#0B3022]">
                 <Image
-                  src="/owambe-poster.jpg"
-                  alt="The Owambe Party Event Poster"
+                  src="/owambe-squad-campaign.jpg"
+                  alt="The Owambe Party × Àjọṣe VIP Table Fund"
                   fill
                   className="object-cover"
                   priority
@@ -369,7 +369,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
               </div>
               <div className="text-right">
                 <span className="text-2xl font-bold font-mono text-[#D4A843]">{progressPct}%</span>
-                <span className="text-xs font-mono text-[#0B3022]/60 block">{paidCount} of 8 Paid</span>
+                <span className="text-xs font-mono text-[#0B3022]/60 block">{paidCount} of {fund.memberCount} Paid</span>
               </div>
             </div>
 
@@ -389,7 +389,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
             ) : (
               <div className="flex flex-wrap items-center justify-between gap-3 mt-4 text-xs text-[#0B3022]/70 font-mono">
                 <span>₦{fund.perMemberTotal.toLocaleString()} per member share</span>
-                <span>{8 - paidCount} slots remaining</span>
+                <span>{fund.memberCount - paidCount} slots remaining</span>
               </div>
             )}
           </div>
@@ -414,11 +414,11 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         </div>
       </div>
 
-      {/* 8 Squad Slots Grid */}
+      {/* Squad Slots Grid */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#0B3022]/15 shadow-md text-left">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100">
           <div>
-            <h3 className="text-xl font-bold font-serif text-[#0B3022]">Squad Member Slots (8 Total)</h3>
+            <h3 className="text-xl font-bold font-serif text-[#0B3022]">Squad Member Slots ({fund.memberCount} Total)</h3>
             <p className="text-xs text-[#0B3022]/60 mt-0.5">
               Click &quot;Pay Share&quot; next to any empty slot to pay your ₦{fund.perMemberTotal.toLocaleString()} portion.
             </p>
@@ -432,7 +432,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
               <span>Back</span>
             </Link>
             <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-[#0B3022]/[0.06] text-[#0B3022]">
-              {paidCount}/8 Confirmed
+              {paidCount}/{fund.memberCount} Confirmed
             </span>
           </div>
         </div>
@@ -574,13 +574,20 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
               <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200 text-xs space-y-1.5">
                 <div className="flex justify-between text-gray-600">
-                  <span>Table Share:</span>
+                  <span>Table Share (1 of {fund.memberCount}):</span>
                   <span className="font-mono font-bold text-gray-900">₦{fund.perMemberShare.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Platform & Processing Fee (3%):</span>
-                  <span className="font-mono font-bold text-gray-900">+₦{fund.perMemberFee.toLocaleString()}</span>
-                </div>
+                {fund.perMemberFee > 0 ? (
+                  <div className="flex justify-between text-gray-600">
+                    <span>Platform & Processing Fee:</span>
+                    <span className="font-mono font-bold text-gray-900">+₦{fund.perMemberFee.toLocaleString()}</span>
+                  </div>
+                ) : (
+                  <div className="flex justify-between text-emerald-700">
+                    <span>Platform & Processing Fee:</span>
+                    <span className="font-mono font-bold">₦0 (100% Free Promo)</span>
+                  </div>
+                )}
                 <div className="flex justify-between border-t pt-1.5 font-bold text-[#0B3022]">
                   <span>Total Debit / Transfer:</span>
                   <span className="font-mono text-sm text-[#0B3022]">₦{fund.perMemberTotal.toLocaleString()}</span>
@@ -718,7 +725,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         <div className="space-y-1">
           <h4 className="font-bold text-sm text-[#0B3022]">How Your Money is Protected</h4>
           <p className="leading-relaxed">
-            Funds are held by <strong>Paylode</strong>, a CBN-licensed payment solution service provider, until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all 8 shares by <strong>10 December 2026</strong>, every contributor receives an automatic full refund.
+            Funds are held by <strong>Paylode</strong>, a CBN-licensed payment solution service provider, until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all {fund.memberCount} shares by <strong>10 December 2026</strong>, every contributor receives an automatic full refund.
           </p>
         </div>
       </div>

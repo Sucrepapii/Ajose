@@ -45,6 +45,7 @@ interface TableFundItem {
   tablePrice: number;
   totalTargetWithFees: number;
   perMemberTotal: number;
+  memberCount?: number;
   leaderName: string;
   leaderEmail?: string;
   leaderPhone: string;
@@ -64,22 +65,25 @@ const DEFAULT_MOCK_FUNDS: TableFundItem[] = [
     tier: "gold",
     tableName: "Gold Table (₦1,000,000)",
     tablePrice: 1000000,
-    totalTargetWithFees: 1030000,
-    perMemberTotal: 128750,
+    totalTargetWithFees: 1000000,
+    perMemberTotal: 100000,
+    memberCount: 10,
     leaderName: "Kemi Adeleke",
     leaderEmail: "kemi.adeleke@gmail.com",
     leaderPhone: "08031234567",
     createdAt: "2026-11-20T10:30:00Z",
     status: "fully_funded",
     contributions: [
-      { slot: 1, name: "Kemi Adeleke (Squad Leader)", email: "kemi.adeleke@gmail.com", phone: "08031234567", paid: true, amount: 128750, paidAt: "2026-11-20 10:32" },
-      { slot: 2, name: "Folake Williams", email: "folake.w@yahoo.com", phone: "08021112233", paid: true, amount: 128750, paidAt: "2026-11-21 11:15" },
-      { slot: 3, name: "Zainab Ahmed", email: "zainab.ahmed@outlook.com", phone: "08093334455", paid: true, amount: 128750, paidAt: "2026-11-21 14:02" },
-      { slot: 4, name: "Chidinma Okafor", email: "chidinma.o@gmail.com", phone: "07035556677", paid: true, amount: 128750, paidAt: "2026-11-21 18:40" },
-      { slot: 5, name: "Blessing Bassey", email: "b.bassey@gmail.com", phone: "08147778899", paid: true, amount: 128750, paidAt: "2026-11-22 09:12" },
-      { slot: 6, name: "Amaka Eze", email: "amaka.eze@gmail.com", phone: "08089990011", paid: true, amount: 128750, paidAt: "2026-11-22 13:45" },
-      { slot: 7, name: "Ronke Alabi", email: "ronke.alabi@gmail.com", phone: "09022223344", paid: true, amount: 128750, paidAt: "2026-11-22 17:30" },
-      { slot: 8, name: "Simi Oladipo", email: "simi.oladipo@gmail.com", phone: "08064445566", paid: true, amount: 128750, paidAt: "2026-11-23 08:20" },
+      { slot: 1, name: "Kemi Adeleke (Squad Leader)", email: "kemi.adeleke@gmail.com", phone: "08031234567", paid: true, amount: 100000, paidAt: "2026-11-20 10:32" },
+      { slot: 2, name: "Folake Williams", email: "folake.w@yahoo.com", phone: "08021112233", paid: true, amount: 100000, paidAt: "2026-11-21 11:15" },
+      { slot: 3, name: "Zainab Ahmed", email: "zainab.ahmed@outlook.com", phone: "08093334455", paid: true, amount: 100000, paidAt: "2026-11-21 14:02" },
+      { slot: 4, name: "Chidinma Okafor", email: "chidinma.o@gmail.com", phone: "07035556677", paid: true, amount: 100000, paidAt: "2026-11-21 18:40" },
+      { slot: 5, name: "Blessing Bassey", email: "b.bassey@gmail.com", phone: "08147778899", paid: true, amount: 100000, paidAt: "2026-11-22 09:12" },
+      { slot: 6, name: "Amaka Eze", email: "amaka.eze@gmail.com", phone: "08089990011", paid: true, amount: 100000, paidAt: "2026-11-22 13:45" },
+      { slot: 7, name: "Ronke Alabi", email: "ronke.alabi@gmail.com", phone: "09022223344", paid: true, amount: 100000, paidAt: "2026-11-22 17:30" },
+      { slot: 8, name: "Simi Oladipo", email: "simi.oladipo@gmail.com", phone: "08064445566", paid: true, amount: 100000, paidAt: "2026-11-23 08:20" },
+      { slot: 9, name: "Nkechi Amadi", email: "nkechi.amadi@gmail.com", phone: "08071112233", paid: true, amount: 100000, paidAt: "2026-11-23 14:10" },
+      { slot: 10, name: "Tolani Benson", email: "tolani.b@gmail.com", phone: "08185556677", paid: true, amount: 100000, paidAt: "2026-11-23 16:45" },
     ],
   },
   {
@@ -92,22 +96,25 @@ const DEFAULT_MOCK_FUNDS: TableFundItem[] = [
     tier: "silver",
     tableName: "Silver Table (₦500,000)",
     tablePrice: 500000,
-    totalTargetWithFees: 515000,
-    perMemberTotal: 64375,
+    totalTargetWithFees: 500000,
+    perMemberTotal: 50000,
+    memberCount: 10,
     leaderName: "Tunde Adeyemi",
     leaderEmail: "tunde.adeyemi@founder.ng",
     leaderPhone: "08029876543",
     createdAt: "2026-11-21T14:15:00Z",
     status: "collecting",
     contributions: [
-      { slot: 1, name: "Tunde Adeyemi (Squad Leader)", email: "tunde.adeyemi@founder.ng", phone: "08029876543", paid: true, amount: 64375, paidAt: "2026-11-21 14:18" },
-      { slot: 2, name: "Damilola Coker", email: "dami.coker@paystack.com", phone: "08034441122", paid: true, amount: 64375, paidAt: "2026-11-22 10:04" },
-      { slot: 3, name: "Ifeanyi Nnamdi", email: "ifeanyi@flutterwave.com", phone: "08126663344", paid: true, amount: 64375, paidAt: "2026-11-22 16:22" },
-      { slot: 4, name: "Femi Balogun", email: "femi.b@techcabal.com", phone: "07068885566", paid: true, amount: 64375, paidAt: "2026-11-23 11:30" },
-      { slot: 5, name: "Squad Member #5", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
-      { slot: 6, name: "Squad Member #6", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
-      { slot: 7, name: "Squad Member #7", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
-      { slot: 8, name: "Squad Member #8", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
+      { slot: 1, name: "Tunde Adeyemi (Squad Leader)", email: "tunde.adeyemi@founder.ng", phone: "08029876543", paid: true, amount: 50000, paidAt: "2026-11-21 14:18" },
+      { slot: 2, name: "Damilola Coker", email: "dami.coker@paystack.com", phone: "08034441122", paid: true, amount: 50000, paidAt: "2026-11-22 10:04" },
+      { slot: 3, name: "Ifeanyi Nnamdi", email: "ifeanyi@flutterwave.com", phone: "08126663344", paid: true, amount: 50000, paidAt: "2026-11-22 16:22" },
+      { slot: 4, name: "Femi Balogun", email: "femi.b@techcabal.com", phone: "07068885566", paid: true, amount: 50000, paidAt: "2026-11-23 11:30" },
+      { slot: 5, name: "Squad Member #5", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 6, name: "Squad Member #6", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 7, name: "Squad Member #7", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 8, name: "Squad Member #8", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 9, name: "Squad Member #9", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 10, name: "Squad Member #10", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
     ],
   },
   {
@@ -120,22 +127,25 @@ const DEFAULT_MOCK_FUNDS: TableFundItem[] = [
     tier: "silver",
     tableName: "Silver Table (₦500,000)",
     tablePrice: 500000,
-    totalTargetWithFees: 515000,
-    perMemberTotal: 64375,
+    totalTargetWithFees: 500000,
+    perMemberTotal: 50000,
+    memberCount: 10,
     leaderName: "Gbenga Salami",
     leaderEmail: "gbenga.salami@yahoo.co.uk",
     leaderPhone: "08055554321",
     createdAt: "2026-11-22T09:00:00Z",
     status: "collecting",
     contributions: [
-      { slot: 1, name: "Gbenga Salami (Squad Leader)", email: "gbenga.salami@yahoo.co.uk", phone: "08055554321", paid: true, amount: 64375, paidAt: "2026-11-22 09:05" },
-      { slot: 2, name: "Bukky Shonubi", email: "bukky.shonubi@gmail.com", phone: "08039998877", paid: true, amount: 64375, paidAt: "2026-11-22 15:40" },
-      { slot: 3, name: "Squad Member #3", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
-      { slot: 4, name: "Squad Member #4", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
-      { slot: 5, name: "Squad Member #5", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
-      { slot: 6, name: "Squad Member #6", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
-      { slot: 7, name: "Squad Member #7", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
-      { slot: 8, name: "Squad Member #8", email: "pending@member.ng", phone: "N/A", paid: false, amount: 64375 },
+      { slot: 1, name: "Gbenga Salami (Squad Leader)", email: "gbenga.salami@yahoo.co.uk", phone: "08055554321", paid: true, amount: 50000, paidAt: "2026-11-22 09:05" },
+      { slot: 2, name: "Bukky Shonubi", email: "bukky.shonubi@gmail.com", phone: "08039998877", paid: true, amount: 50000, paidAt: "2026-11-22 15:40" },
+      { slot: 3, name: "Squad Member #3", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 4, name: "Squad Member #4", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 5, name: "Squad Member #5", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 6, name: "Squad Member #6", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 7, name: "Squad Member #7", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 8, name: "Squad Member #8", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 9, name: "Squad Member #9", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
+      { slot: 10, name: "Squad Member #10", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50000 },
     ],
   },
 ];
@@ -341,7 +351,7 @@ export function AdminTableFundsClient() {
         totalCollected.toString(),
         payoutDue.toString(),
         `"${f.status.toUpperCase()}"`,
-        `"${paidCount} of 8"`,
+        `"${paidCount} of ${f.memberCount || 10}"`,
         `"${f.leaderName.replace(/"/g, '""')}"`,
         `"${f.leaderEmail || "N/A"}"`,
         `"${f.leaderPhone}"`,
@@ -640,7 +650,7 @@ export function AdminTableFundsClient() {
                       ₦{(paidCount * fund.perMemberTotal).toLocaleString()} / ₦{fund.totalTargetWithFees.toLocaleString()}
                     </span>
                     <span className={`text-[11px] font-mono ${isSelected ? "text-[#F3EEE3]/70" : "text-gray-500"}`}>
-                      {paidCount} of 8 Shares Paid ({progress}%)
+                      {paidCount} of {fund.memberCount || 10} Shares Paid ({progress}%)
                     </span>
                   </div>
                 </div>

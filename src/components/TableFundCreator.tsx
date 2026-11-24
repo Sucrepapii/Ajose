@@ -24,10 +24,10 @@ const TIERS: TableTier[] = [
     name: "Silver Table",
     tablePrice: 500000,
     displayPrice: "₦500k",
-    members: 8,
-    sharePerMember: 62500,
-    serviceFeePerMember: 1875,
-    totalPerMember: 64375,
+    members: 10,
+    sharePerMember: 50000,
+    serviceFeePerMember: 0,
+    totalPerMember: 50000,
     popular: true,
   },
   {
@@ -35,10 +35,10 @@ const TIERS: TableTier[] = [
     name: "Gold Table",
     tablePrice: 1000000,
     displayPrice: "₦1 Million",
-    members: 8,
-    sharePerMember: 125000,
-    serviceFeePerMember: 3750,
-    totalPerMember: 128750,
+    members: 10,
+    sharePerMember: 100000,
+    serviceFeePerMember: 0,
+    totalPerMember: 100000,
   },
 ];
 
@@ -172,7 +172,7 @@ export function TableFundCreator() {
           amount: activeTier.totalPerMember,
           slot: 1,
         },
-        ...Array.from({ length: 7 }, (_, i) => ({
+        ...Array.from({ length: 9 }, (_, i) => ({
           name: `Squad Member #${i + 2}`,
           paid: false,
           amount: activeTier.totalPerMember,
@@ -288,7 +288,14 @@ export function TableFundCreator() {
         </div>
       )}
 
-      {/* 2. Tier Selection Cards */}
+      {/* 2. Tier Selection Cards Header */}
+      <div className="text-center">
+        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4A843] bg-[#0B3022] px-3.5 py-1.5 rounded-full inline-block shadow-xs">
+          PICK YOUR TABLE. BRING YOUR SQUAD.
+        </span>
+      </div>
+
+      {/* Tier Selection Cards */}
       <div className="grid md:grid-cols-2 gap-6">
         {TIERS.map((tier) => {
           const isSelected = selectedTier === tier.id;
@@ -313,7 +320,7 @@ export function TableFundCreator() {
                   <div>
                     <h3 className="text-2xl font-bold font-serif">{tier.name}</h3>
                     <p className={`text-xs mt-0.5 ${isSelected ? "text-[#F3EEE3]/70" : "text-[#111613]/60"}`}>
-                      8 Friends split 1 Table
+                      10 Friends split 1 Table
                     </p>
                   </div>
                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
@@ -334,15 +341,15 @@ export function TableFundCreator() {
 
                 <div className="space-y-2.5 text-xs">
                   <div className="flex justify-between">
-                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-gray-500"}>Base Share (÷8 friends):</span>
+                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-gray-500"}>Base Share (÷10 friends):</span>
                     <span className="font-mono font-bold">₦{tier.sharePerMember.toLocaleString()} each</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-gray-500"}>3% Escrow & Payment Fee:</span>
-                    <span className="font-mono font-bold">₦{tier.serviceFeePerMember.toLocaleString()} each</span>
+                    <span className={isSelected ? "text-[#F3EEE3]/75" : "text-gray-500"}>Escrow & Payment Fee:</span>
+                    <span className="font-mono font-bold text-emerald-500">₦0 (100% Free Promo)</span>
                   </div>
                   <div className={`flex justify-between pt-2 border-t font-bold text-sm ${isSelected ? "border-white/15 text-[#D4A843]" : "border-gray-200 text-[#0B3022]"}`}>
-                    <span>Total per friend:</span>
+                    <span>Exact share per friend:</span>
                     <span className="font-mono">₦{tier.totalPerMember.toLocaleString()}</span>
                   </div>
                 </div>
@@ -350,7 +357,7 @@ export function TableFundCreator() {
 
               <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-2 text-xs">
                 <Users className={`w-4 h-4 ${isSelected ? "text-[#D4A843]" : "text-[#0B3022]"}`} />
-                <span>Exact 8-person split &bull; Zero WhatsApp chasing</span>
+                <span>Exact 10-person split &bull; Zero WhatsApp chasing</span>
               </div>
             </div>
           );
@@ -443,7 +450,7 @@ export function TableFundCreator() {
               <div className="space-y-1">
                 <strong className="block text-[#0B3022]">CBN-Licensed Escrow Protection:</strong>
                 <span>
-                  All member payments are held safely by <strong>Paylode</strong> (CBN-licensed payment solution service provider). The lump sum is released to The Owambe Party only when all 8 members pay. If the table is not 100% funded by 10 December, every member is refunded automatically.
+                  All member payments are held safely by <strong>Paylode</strong> (CBN-licensed payment solution service provider). The lump sum is released to The Owambe Party only when all 10 members pay. If the table is not 100% funded by 10 December, every member is refunded automatically.
                 </span>
               </div>
             </div>
