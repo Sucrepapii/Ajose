@@ -7,10 +7,10 @@ const cspHeader = `
     img-src 'self' blob: data: https://ajose.ng https://*.flutterwave.com https://www.facebook.com https://*.paylodeservices.com;
     font-src 'self' data:;
     connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.flutterwave.com https://*.flutterwave.com https://api.ravepay.co https://connect.facebook.net https://www.facebook.com https://api.withmono.com https://api.mono.co https://connect.mono.co https://connect.withmono.com https://api.paylodeservices.com https://*.paylodeservices.com;
-    frame-src 'self' https://checkout.flutterwave.com https://*.flutterwave.com https://connect.withmono.com https://connect.mono.co https://api.paylodeservices.com https://*.paylodeservices.com;
+    frame-src 'self' https://checkout.flutterwave.com https://*.flutterwave.com https://connect.withmono.com https://connect.mono.co https://api.paylodeservices.com https://*.paylodeservices.com https://www.facebook.com;
     object-src 'none';
     base-uri 'self';
-    form-action 'self' https://checkout.flutterwave.com https://*.flutterwave.com https://api.paylodeservices.com https://*.paylodeservices.com;
+    form-action 'self' https://checkout.flutterwave.com https://*.flutterwave.com https://api.paylodeservices.com https://*.paylodeservices.com https://www.facebook.com;
     frame-ancestors 'none';
     upgrade-insecure-requests;
 `;
