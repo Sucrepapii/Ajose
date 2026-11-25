@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { Sparkles, ShieldCheck, Users, Calendar, ArrowLeft } from "lucide-react";
+import { Sparkles, ShieldCheck, Users, Calendar, ArrowLeft, ExternalLink } from "lucide-react";
 import { TableFundCreator } from "@/components/TableFundCreator";
 import { isOwambeExpired } from "@/utils/owambeConfig";
 
@@ -129,9 +129,21 @@ export default function OwambeTableFundPage() {
                 </span>
               </div>
             </div>
-            <div className="pt-2 text-[11px] font-mono text-[#0B3022]/70 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#D4A843]" />
-              <span>100% Escrow Protection &bull; Payment Deadline: <strong>10 Dec 2026</strong></span>
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-[#0B3022]/75">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#D4A843]" />
+                <span>100% Escrow Protection &bull; Deadline: <strong>10 Dec 2026</strong></span>
+              </span>
+              <a
+                href="https://www.nairabox.com/events/theowambeparty"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 font-bold text-emerald-800 hover:text-emerald-950 underline underline-offset-2 transition-colors cursor-pointer"
+                title="View official event on Nairabox"
+              >
+                <span>Nairabox Official Listing</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
             </div>
           </div>
         </div>
