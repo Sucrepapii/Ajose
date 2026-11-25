@@ -91,7 +91,46 @@ export async function POST(req: NextRequest) {
       console.warn("public.users deletion notice:", profileDeleteErr.message);
     }
 
-    // 5. Delete authentication record from auth.users
+    // 5. Revoke Apple Sign In token if the user signed in with Apple
+    // Required by Apple App Store Review Guidelines for Sign in with Apple users
+    if (user.app_metadata?.provider === "apple") {
+      try {
+        const refreshToken = (await supabaseUser.auth.getSession()).data.session?.provider_refresh_token;
+        if (refreshToken && process.env.APPLE_CLIENT_ID && process.env.APPLE_PRIVATE_KEY_ID &&
+            process.env.APPLE_PRIVATE_KEY && process.env.APPLE_TEAM_ID) {
+          const { SignJWT, importPKCS8 } = await import("jose");
+          const privateKey = await importPKCS8(
+            process.env.APPLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+            "ES256"
+          );
+          const clientSecret = await new SignJWT({})
+            .setProtectedHeader({ alg: "ES256", kid: process.env.APPLE_PRIVATE_KEY_ID })
+            .setIssuer(process.env.APPLE_TEAM_ID)
+            .setIssuedAt()
+            .setExpirationTime("5m")
+            .setAudience("https://appleid.apple.com")
+            .setSubject(process.env.APPLE_CLIENT_ID)
+            .sign(privateKey);
+
+          const params = new URLSearchParams({
+            client_id: process.env.APPLE_CLIENT_ID,
+            client_secret: clientSecret,
+            token: refreshToken,
+            token_type_hint: "refresh_token",
+          });
+          await fetch("https://appleid.apple.com/auth/revoke", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString(),
+          });
+        }
+      } catch (appleErr) {
+        console.warn("Apple token revocation notice:", appleErr);
+        // Non-fatal — proceed with account deletion regardless
+      }
+    }
+
+    // 6. Delete authentication record from auth.users
     const { error: authDeleteErr } = await adminSupabase.auth.admin.deleteUser(userId);
     if (authDeleteErr) {
       console.error("Supabase Auth admin.deleteUser error:", authDeleteErr);
@@ -101,7 +140,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 6. Sign out user session
+    // 7. Sign out user session
     await supabaseUser.auth.signOut();
 
     return NextResponse.json({

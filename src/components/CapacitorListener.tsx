@@ -48,14 +48,49 @@ export function CapacitorListener() {
 
     // 2. Handle deep links (OAuth callback, payment redirects, etc.)
     const sub = App.addListener("appUrlOpen", async (event) => {
-      if (event.url.includes("ajose://login-callback")) {
-        await Browser.close().catch(() => {});
-        try {
-          const url = new URL(event.url);
-          window.location.replace(`/auth/callback${url.search}${url.hash}`);
-        } catch (e) {
-          console.error("Deep link parsing error", e);
+      if (!event.url.includes("ajose://login-callback")) return;
+
+      await Browser.close().catch(() => {});
+
+      try {
+        const url = new URL(event.url);
+        const code = url.searchParams.get("code");
+
+        if (code) {
+          // Exchange the code client-side so the PKCE verifier in WebView
+          // localStorage is used. Routing to the server-side /auth/callback
+          // route loses Set-Cookie headers on redirect, leaving the WebView
+          // unauthenticated and sending Apple's reviewer back to login.
+          const supabase = createClient();
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+          if (!error && data.session) {
+            const { data: profile } = await supabase
+              .from("users")
+              .select("bvn_verified, phone, status")
+              .eq("id", data.session.user.id)
+              .maybeSingle();
+
+            if (profile?.status === "suspended" || profile?.status === "banned") {
+              await supabase.auth.signOut();
+              window.location.replace("/login?error=account_suspended");
+              return;
+            }
+
+            if (!profile?.bvn_verified || !profile?.phone) {
+              window.location.replace("/dashboard/verify");
+            } else {
+              window.location.replace("/dashboard");
+            }
+            return;
+          }
         }
+
+        // Fallback for hash-based implicit flow tokens
+        window.location.replace(`/auth/callback${url.search}${url.hash}`);
+      } catch (e) {
+        console.error("Deep link parsing error", e);
+        window.location.replace("/login?error=auth_failed");
       }
     });
 
