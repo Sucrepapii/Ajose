@@ -760,9 +760,9 @@ export default function CreateGroupPage() {
                   <span className="text-[#0B3022] font-mono font-bold">{commPctNumber}% (+₦{adminFee.toLocaleString()})</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#0B3022]/60">Pricing Plan</span>
+                  <span className="text-[#0B3022]/60">Contribution Schedule</span>
                   <span className="text-[#0B3022] font-bold capitalize">
-                    {formData.frequency} ({isDaily ? "₦100/tx • 0% payout" : isWeekly ? "₦300/tx • 0% payout" : "2%/tx • 0% payout"})
+                    {formData.frequency} ({isDaily ? "Daily Thrift (0% Payout Fee)" : isWeekly ? "Weekly Rotational (0% Payout Fee)" : "Monthly Rotational (0% Payout Fee)"})
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-[#0B3022]/10 pt-2">

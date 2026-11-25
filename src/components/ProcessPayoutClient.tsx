@@ -347,9 +347,9 @@ export function ProcessPayoutClient({
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">
                     {isWeekly 
-                      ? "Platform Payout Fee (Weekly 0% Plan)" 
+                      ? "Platform Payout Fee (Weekly 0% Schedule)" 
                       : isDaily 
-                      ? "Platform Payout Fee (Daily 0% Plan)" 
+                      ? "Platform Payout Fee (Daily 0% Schedule)" 
                       : `Platform Fee (${effectiveFeePct}% capped at ₦10,000)`}
                   </span>
                   <span className={platformFee > 0 ? "font-bold text-red-600" : "font-bold text-emerald-700"}>

@@ -46,15 +46,58 @@ export function CapacitorListener() {
 
     handleNativeLaunchRouting();
 
-    // 2. Handle deep links (OAuth callback, payment redirects, etc.)
+    // 2. Handle deep links (OAuth callback, Apple Sign In, payment redirects, etc.)
     const sub = App.addListener("appUrlOpen", async (event) => {
-      if (event.url.includes("ajose://login-callback")) {
+      if (event.url.includes("ajose://login-callback") || event.url.includes("login-callback")) {
         await Browser.close().catch(() => {});
         try {
-          const url = new URL(event.url);
-          window.location.replace(`/auth/callback${url.search}${url.hash}`);
+          const rawUrl = event.url;
+          const supabase = createClient();
+
+          let hashParams: URLSearchParams | null = null;
+          let queryParams: URLSearchParams | null = null;
+
+          if (rawUrl.includes("#")) {
+            hashParams = new URLSearchParams(rawUrl.substring(rawUrl.indexOf("#") + 1));
+          }
+          if (rawUrl.includes("?")) {
+            const queryEnd = rawUrl.includes("#") ? rawUrl.indexOf("#") : rawUrl.length;
+            queryParams = new URLSearchParams(rawUrl.substring(rawUrl.indexOf("?") + 1, queryEnd));
+          }
+
+          const accessToken = hashParams?.get("access_token") || queryParams?.get("access_token");
+          const refreshToken = hashParams?.get("refresh_token") || queryParams?.get("refresh_token");
+          const code = queryParams?.get("code") || hashParams?.get("code");
+
+          if (accessToken && refreshToken) {
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            if (!error && data.session) {
+              router.replace("/dashboard");
+              return;
+            }
+          }
+
+          if (code) {
+            const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+            if (!error && data.session) {
+              router.replace("/dashboard");
+              return;
+            }
+          }
+
+          // Fallback to route handler if needed
+          try {
+            const url = new URL(rawUrl);
+            window.location.replace(`/auth/callback${url.search}${url.hash}`);
+          } catch (_) {
+            router.replace("/dashboard");
+          }
         } catch (e) {
           console.error("Deep link parsing error", e);
+          router.replace("/dashboard");
         }
       }
     });

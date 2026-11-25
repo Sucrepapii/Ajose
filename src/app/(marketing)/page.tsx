@@ -1051,7 +1051,7 @@ export default function Home() {
                   <div className="flex items-center justify-between pb-5 mb-6 border-b border-[#111613]/10">
                     <div>
                       <h3 className="text-xl font-bold text-[#111613]">
-                        Flexible Circle Plans
+                        Flexible Circle Schedules
                       </h3>
                       <p className="text-xs text-[#111613]/60 mt-0.5">
                         0% deducted on payout &bull; Automated NIBSS settlement

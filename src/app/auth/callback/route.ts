@@ -45,8 +45,55 @@ export async function GET(request: Request) {
       }
     }
 
-    // return the user to an error page with instructions
-    return NextResponse.redirect(new URL("/login?error=auth_failed", request.url));
+    // If no code was provided via searchParams, check if tokens exist in client-side URL hash
+    // (Common with Apple OAuth fragment response mode and native WebView callbacks)
+    const fallbackHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Authenticating...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body style="background:#0B3022;color:#F3EEE3;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
+  <div style="text-align:center;">
+    <div style="width:36px;height:36px;border:3px solid #D4A843;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;"></div>
+    <p style="font-size:14px;letter-spacing:0.05em;">Completing secure sign in...</p>
+  </div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+  <script>
+    try {
+      const hash = window.location.hash ? window.location.hash.substring(1) : "";
+      const search = window.location.search ? window.location.search.substring(1) : "";
+      const params = new URLSearchParams(hash || search);
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+
+      if (accessToken) {
+        const projectRef = "npvwtzmlhpagsdohkuvm";
+        const storageKey = "sb-" + projectRef + "-auth-token";
+        const sessionData = {
+          access_token: accessToken,
+          refresh_token: refreshToken || "",
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+          token_type: "bearer"
+        };
+        try { localStorage.setItem(storageKey, JSON.stringify(sessionData)); } catch(e){}
+        document.cookie = storageKey + "=" + encodeURIComponent(JSON.stringify(sessionData)) + "; path=/; max-age=604800; SameSite=Lax";
+        window.location.replace("${next}");
+      } else {
+        window.location.replace("/login?error=auth_failed");
+      }
+    } catch(err) {
+      window.location.replace("/login?error=auth_failed");
+    }
+  </script>
+</body>
+</html>`;
+
+    return new NextResponse(fallbackHtml, {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
   } catch (err: any) {
     console.error("Auth Callback Error:", err);
     // Fix M2: Return generic error message instead of stack trace

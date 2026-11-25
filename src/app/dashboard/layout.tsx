@@ -11,6 +11,7 @@ import { AutoLogout } from "@/components/AutoLogout";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { PushNotificationManager } from "@/components/PushNotificationManager";
 import Image from "next/image";
+import { Trash2 } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -81,7 +82,15 @@ export default async function DashboardLayout({
         
         <SidebarNav />
 
-        <div className="p-4 border-t border-[#F3EEE3]/10">
+        <div className="p-4 border-t border-[#F3EEE3]/10 space-y-1.5">
+          <Link
+            href="/dashboard/settings#danger-zone"
+            className="flex items-center gap-2.5 px-4 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors w-full"
+            title="Account deletion and data privacy (Apple Guideline 5.1.1)"
+          >
+            <Trash2 className="h-3.5 w-3.5 text-rose-400 shrink-0" />
+            <span>Delete Account</span>
+          </Link>
           <LogoutButton />
         </div>
       </aside>

@@ -13,7 +13,8 @@ import {
   ShieldCheck, 
   Settings, 
   Home,
-  Gift
+  Gift,
+  Trash2
 } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { LogoutButton } from "@/components/LogoutButton";
@@ -188,8 +189,17 @@ export function MobileDashboardHeader({
               </div>
             </nav>
 
-            {/* Footer with Logout */}
-            <div className="p-4 border-t border-[#F3EEE3]/10 bg-[#0B3022]">
+            {/* Footer with Delete Account & Logout */}
+            <div className="p-4 border-t border-[#F3EEE3]/10 bg-[#0B3022] space-y-1.5">
+              <Link
+                href="/dashboard/settings#danger-zone"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors w-full"
+                title="Account deletion and data privacy (Apple Guideline 5.1.1)"
+              >
+                <Trash2 className="h-4 w-4 text-rose-400 shrink-0" />
+                <span>Delete Account</span>
+              </Link>
               <LogoutButton />
             </div>
           </div>

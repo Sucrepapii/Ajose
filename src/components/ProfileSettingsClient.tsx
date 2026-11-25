@@ -294,8 +294,39 @@ export function ProfileSettingsClient({
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (window.location.hash === "#danger-zone" || window.location.hash === "#delete-account") {
+        setDeleteConfirmText("");
+        setIsDeleteModalOpen(true);
+      }
+    }
+  }, []);
+
   return (
     <div className="space-y-8">
+      {/* Account Deletion & Data Privacy Quick Access (Apple Guideline 5.1.1) */}
+      <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center shrink-0">
+            <Trash2 className="h-4 w-4" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-white">Account Deletion &amp; Data Rights</p>
+            <p className="text-xs text-zinc-400">Permanently delete your profile and records at any time (Apple Guideline 5.1.1 compliant).</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setDeleteConfirmText("");
+            setIsDeleteModalOpen(true);
+          }}
+          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition-colors shrink-0 cursor-pointer self-start sm:self-auto shadow-sm"
+        >
+          Delete Account
+        </button>
+      </div>
       {/* 1. Personal Identity Details */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-6 border-b border-zinc-800 flex items-center gap-4">
@@ -710,7 +741,7 @@ export function ProfileSettingsClient({
       </div>
 
       {/* Danger Zone: Account Deletion (Apple Guideline 5.1.1 & NDPA Compliance) */}
-      <div className="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8 space-y-4 mt-8">
+      <div id="danger-zone" className="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8 space-y-4 mt-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-red-600 font-bold text-base">
