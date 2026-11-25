@@ -30,6 +30,21 @@ import { isOwambeExpired, isOwambeDeadlinePassed, STANDARD_DEMO_TABLES } from "@
 declare global {
   interface Window {
     FlutterwaveCheckout?: (options: Record<string, unknown>) => void;
+    PaylodeCheckout?: {
+      pay: (options: {
+        key: string;
+        email: string;
+        amount: number; // in kobo
+        reference?: string;
+        currency?: string;
+        metadata?: Record<string, unknown>;
+        callbackUrl?: string;
+        onSuccess?: (res: { reference: string; status: string }) => void;
+        onFailed?: (res: { reference: string; status: string }) => void;
+        onClose?: (res: { reference?: string; reason?: string }) => void;
+        onError?: (err: { code: string; message: string }) => void;
+      }) => { close: () => void } | null;
+    };
   }
 }
 
@@ -49,7 +64,7 @@ interface TableFundState {
   venue: string;
   eventDate: string;
   deadline: string;
-  tier: "silver" | "gold";
+  tier: "silver" | "gold" | "test";
   tableName: string;
   tablePrice: number;
   totalTargetWithFees: number;
@@ -360,6 +375,73 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
     setIsProcessing(true);
 
+    // If this is the 500 Naira test table (or any table configured for Paylode testing)
+    const isPaylodeTest =
+      fund.id === "test-500" ||
+      fund.tier === "test" ||
+      fund.id.includes("paylode") ||
+      fund.perMemberTotal <= 500;
+
+    if (isPaylodeTest && typeof window !== "undefined" && window.PaylodeCheckout) {
+      const paylodePublicKey =
+        process.env.NEXT_PUBLIC_PAYLODE_PUBLIC_KEY ||
+        "pk_live_cbbb9e1706ce39beccfe1c2d536ab3fca92fd264184885d6";
+      const amountKobo = Math.round(fund.perMemberTotal * 100);
+      const paylodeRef = `pld_${fund.id.slice(0, 8)}_${slotNumber}_${Date.now().toString().slice(-6)}`;
+
+      try {
+        window.PaylodeCheckout.pay({
+          key: paylodePublicKey,
+          email: payingEmail.trim(),
+          amount: amountKobo,
+          reference: paylodeRef,
+          currency: "NGN",
+          metadata: {
+            fundId: fund.id,
+            slot: slotNumber,
+            name: payingName.trim(),
+          },
+          onSuccess: async (res) => {
+            setIsProcessing(false);
+            const verifyToast = toast.loading("Verifying your payment with Paylode...");
+            try {
+              const verifyRes = await fetch(
+                `/api/paylode/verify?reference=${encodeURIComponent(res.reference)}`
+              );
+              await verifyRes.json();
+            } catch (_) {}
+
+            applyContributionSuccess(
+              slotNumber,
+              payingName.trim(),
+              payingEmail.trim(),
+              payingPhone.trim(),
+              "Paylode Escrow"
+            );
+            toast.success(`Payment verified via Paylode! Your seat #${slotNumber} is secured 🎉`, {
+              id: verifyToast,
+              duration: 6000,
+            });
+          },
+          onFailed: (res) => {
+            setIsProcessing(false);
+            toast.error(`Paylode payment failed: ${res.status}`);
+          },
+          onClose: () => {
+            setIsProcessing(false);
+          },
+          onError: (err) => {
+            setIsProcessing(false);
+            toast.error(`Paylode error: ${err.message}`);
+          },
+        });
+        return;
+      } catch (err: unknown) {
+        console.error("PaylodeCheckout launch error:", err);
+        // Fallback to standard flow if widget fails to launch
+      }
+    }
+
     try {
       const res = await fetch("/api/owambe/pay", {
         method: "POST",
@@ -514,6 +596,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <Script src="https://checkout.flutterwave.com/v3.js" strategy="afterInteractive" />
+      <Script src="https://api.paylodeservices.com/api/v1/widget.js" strategy="afterInteractive" />
       {/* Top Back Navigation Bar */}
       <div className="flex items-center justify-between">
         <Link

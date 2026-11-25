@@ -551,7 +551,7 @@ export function PaylodeDemoTableClient() {
                   </p>
                 </div>
 
-                {lastLog.data && (
+                {Boolean(lastLog.data) && (
                   <div>
                     <span className="text-white/40 block mb-0.5">Payload Data:</span>
                     <pre className="p-2.5 rounded-lg bg-black/40 text-[10px] text-[#D4A843] overflow-x-auto max-h-40 whitespace-pre-wrap break-all">

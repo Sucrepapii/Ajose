@@ -49,10 +49,9 @@ export interface TableFundRecord {
 }
 
 export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
-  /*
   {
     id: "test-500",
-    squadName: "Live Test Squad (₦500 Test)",
+    squadName: "Paylode Live Test Squad (₦500 Test)",
     event: "The Owambe Party (Wazobia Extravaganza)",
     venue: "Amore Gardens, Lekki",
     eventDate: "20 December 2026",
@@ -65,13 +64,13 @@ export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
     perMemberShare: 500,
     perMemberFee: 0,
     memberCount: 10,
-    leaderName: "Ajose Test Admin",
-    leaderEmail: "admin@ajose.ng",
+    leaderName: "Paylode Test Admin",
+    leaderEmail: "admin@paylodeservices.com",
     leaderPhone: "08012345678",
     createdAt: "2026-11-24T20:00:00Z",
     status: "collecting",
     contributions: [
-      { slot: 1, name: "Test Squad Leader", email: "leader@ajose.ng", phone: "08012345678", paid: true, amount: 500, paidAt: "2026-11-24 20:00" },
+      { slot: 1, name: "Paylode Squad Leader", email: "admin@paylodeservices.com", phone: "08012345678", paid: true, amount: 500, paidAt: "2026-11-24 20:00" },
       { slot: 2, name: "Squad Member #2 (Test Seat)", paid: false, amount: 500 },
       { slot: 3, name: "Squad Member #3 (Test Seat)", paid: false, amount: 500 },
       { slot: 4, name: "Squad Member #4 (Test Seat)", paid: false, amount: 500 },
@@ -83,7 +82,6 @@ export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
       { slot: 10, name: "Squad Member #10 (Test Seat)", paid: false, amount: 500 },
     ],
   },
-  */
   {
     id: "owambe-lekki-babes",
     squadName: "Lekki Babes VIP Table",
