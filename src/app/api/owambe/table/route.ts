@@ -16,12 +16,38 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id")?.trim();
     const query = searchParams.get("q")?.trim();
+    const all = searchParams.get("all");
+
+    // Fetch all tables for admin desk
+    if (all === "true" || (!id && !query)) {
+      const supabase = createAdminClient();
+      const { data: records, error } = await supabase
+        .from("feedback")
+        .select("*")
+        .eq("category", "owambe_table")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("[Owambe Table GET All Error]:", error);
+      }
+
+      const tables: TableFundRecord[] = [];
+      if (records) {
+        for (const row of records) {
+          try {
+            const parsed = JSON.parse(row.message);
+            tables.push(parsed);
+          } catch (_) {}
+        }
+      }
+
+      return NextResponse.json({ success: true, tables });
+    }
 
     const lookupTarget = id || query;
     if (!lookupTarget) {
       return NextResponse.json({ error: "Missing id or query parameter." }, { status: 400 });
     }
-
     const cleanTarget = lookupTarget.toLowerCase();
 
     // 1. Check standard demo tables (e.g. test-500, test-table, owambe-lekki-babes)
@@ -180,5 +206,33 @@ export async function PUT(req: NextRequest) {
   } catch (err: any) {
     console.error("[Owambe Table PUT Exception]:", err);
     return NextResponse.json({ error: err.message || "Failed to update table." }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing table id." }, { status: 400 });
+    }
+
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("feedback")
+      .delete()
+      .eq("category", "owambe_table")
+      .eq("location", id);
+
+    if (error) {
+      console.error("[Owambe Table DELETE Error]:", error);
+      return NextResponse.json({ error: "Failed to delete table from database." }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Failed to delete table.";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

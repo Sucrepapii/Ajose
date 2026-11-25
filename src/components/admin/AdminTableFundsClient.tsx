@@ -2,25 +2,26 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { 
   PartyPopper, 
   Download, 
   Search, 
   Users, 
   CheckCircle2, 
-  Clock, 
-  ShieldCheck, 
-  Eye, 
   FileSpreadsheet, 
   ExternalLink,
   ChevronRight,
   Filter,
   Mail,
   Phone,
-  ArrowRight,
   ArrowLeft,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Plus,
+  Copy,
+  Check,
+  X
 } from "lucide-react";
 
 interface MemberSlot {
@@ -54,107 +55,26 @@ interface TableFundItem {
   contributions: MemberSlot[];
 }
 
-const DEFAULT_MOCK_FUNDS: TableFundItem[] = [
-  {
-    id: "owambe-lekki-babes",
-    squadName: "Lekki Babes VIP Table",
-    event: "The Owambe Party (Wazobia Extravaganza)",
-    venue: "Amore Gardens, Lekki",
-    eventDate: "20 December 2026",
-    deadline: "10 December 2026",
-    tier: "gold",
-    tableName: "Gold Table (₦1,000,000)",
-    tablePrice: 1000000,
-    totalTargetWithFees: 1010000,
-    perMemberTotal: 101000,
-    memberCount: 10,
-    leaderName: "Kemi Adeleke",
-    leaderEmail: "kemi.adeleke@gmail.com",
-    leaderPhone: "08031234567",
-    createdAt: "2026-11-20T10:30:00Z",
-    status: "fully_funded",
-    contributions: [
-      { slot: 1, name: "Kemi Adeleke (Squad Leader)", email: "kemi.adeleke@gmail.com", phone: "08031234567", paid: true, amount: 101000, paidAt: "2026-11-20 10:32" },
-      { slot: 2, name: "Folake Williams", email: "folake.w@yahoo.com", phone: "08021112233", paid: true, amount: 101000, paidAt: "2026-11-21 11:15" },
-      { slot: 3, name: "Zainab Ahmed", email: "zainab.ahmed@outlook.com", phone: "08093334455", paid: true, amount: 101000, paidAt: "2026-11-21 14:02" },
-      { slot: 4, name: "Chidinma Okafor", email: "chidinma.o@gmail.com", phone: "07035556677", paid: true, amount: 101000, paidAt: "2026-11-21 18:40" },
-      { slot: 5, name: "Blessing Bassey", email: "b.bassey@gmail.com", phone: "08147778899", paid: true, amount: 101000, paidAt: "2026-11-22 09:12" },
-      { slot: 6, name: "Amaka Eze", email: "amaka.eze@gmail.com", phone: "08089990011", paid: true, amount: 101000, paidAt: "2026-11-22 13:45" },
-      { slot: 7, name: "Ronke Alabi", email: "ronke.alabi@gmail.com", phone: "09022223344", paid: true, amount: 101000, paidAt: "2026-11-22 17:30" },
-      { slot: 8, name: "Simi Oladipo", email: "simi.oladipo@gmail.com", phone: "08064445566", paid: true, amount: 101000, paidAt: "2026-11-23 08:20" },
-      { slot: 9, name: "Nkechi Amadi", email: "nkechi.amadi@gmail.com", phone: "08071112233", paid: true, amount: 101000, paidAt: "2026-11-23 14:10" },
-      { slot: 10, name: "Tolani Benson", email: "tolani.b@gmail.com", phone: "08185556677", paid: true, amount: 101000, paidAt: "2026-11-23 16:45" },
-    ],
-  },
-  {
-    id: "owambe-tech-squad",
-    squadName: "Yaba Tech Founders VIP",
-    event: "The Owambe Party (Wazobia Extravaganza)",
-    venue: "Amore Gardens, Lekki",
-    eventDate: "20 December 2026",
-    deadline: "10 December 2026",
-    tier: "silver",
-    tableName: "Silver Table (₦500,000)",
-    tablePrice: 500000,
-    totalTargetWithFees: 505000,
-    perMemberTotal: 50500,
-    memberCount: 10,
-    leaderName: "Tunde Adeyemi",
-    leaderEmail: "tunde.adeyemi@founder.ng",
-    leaderPhone: "08029876543",
-    createdAt: "2026-11-21T14:15:00Z",
-    status: "collecting",
-    contributions: [
-      { slot: 1, name: "Tunde Adeyemi (Squad Leader)", email: "tunde.adeyemi@founder.ng", phone: "08029876543", paid: true, amount: 50500, paidAt: "2026-11-21 14:18" },
-      { slot: 2, name: "Damilola Coker", email: "dami.coker@paystack.com", phone: "08034441122", paid: true, amount: 50500, paidAt: "2026-11-22 10:04" },
-      { slot: 3, name: "Ifeanyi Nnamdi", email: "ifeanyi@flutterwave.com", phone: "08126663344", paid: true, amount: 50500, paidAt: "2026-11-22 16:22" },
-      { slot: 4, name: "Femi Balogun", email: "femi.b@techcabal.com", phone: "07068885566", paid: true, amount: 50500, paidAt: "2026-11-23 11:30" },
-      { slot: 5, name: "Squad Member #5", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 6, name: "Squad Member #6", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 7, name: "Squad Member #7", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 8, name: "Squad Member #8", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 9, name: "Squad Member #9", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 10, name: "Squad Member #10", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-    ],
-  },
-  {
-    id: "owambe-alumni-squad",
-    squadName: "Unilag 2018 Alumni",
-    event: "The Owambe Party (Wazobia Extravaganza)",
-    venue: "Amore Gardens, Lekki",
-    eventDate: "20 December 2026",
-    deadline: "10 December 2026",
-    tier: "silver",
-    tableName: "Silver Table (₦500,000)",
-    tablePrice: 500000,
-    totalTargetWithFees: 505000,
-    perMemberTotal: 50500,
-    memberCount: 10,
-    leaderName: "Gbenga Salami",
-    leaderEmail: "gbenga.salami@yahoo.co.uk",
-    leaderPhone: "08055554321",
-    createdAt: "2026-11-22T09:00:00Z",
-    status: "collecting",
-    contributions: [
-      { slot: 1, name: "Gbenga Salami (Squad Leader)", email: "gbenga.salami@yahoo.co.uk", phone: "08055554321", paid: true, amount: 50500, paidAt: "2026-11-22 09:05" },
-      { slot: 2, name: "Bukky Shonubi", email: "bukky.shonubi@gmail.com", phone: "08039998877", paid: true, amount: 50500, paidAt: "2026-11-22 15:40" },
-      { slot: 3, name: "Squad Member #3", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 4, name: "Squad Member #4", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 5, name: "Squad Member #5", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 6, name: "Squad Member #6", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 7, name: "Squad Member #7", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 8, name: "Squad Member #8", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 9, name: "Squad Member #9", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-      { slot: 10, name: "Squad Member #10", email: "pending@member.ng", phone: "N/A", paid: false, amount: 50500 },
-    ],
-  },
-];
+const DEFAULT_MOCK_FUNDS: TableFundItem[] = [];
 
 export function AdminTableFundsClient() {
   const [funds, setFunds] = useState<TableFundItem[]>(DEFAULT_MOCK_FUNDS);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedFund, setSelectedFund] = useState<TableFundItem | null>(null);
+  const [copiedLink, setCopiedLink] = useState<string | null>(null);
+
+  // Add Table Modal State
+  const [isAddTableModalOpen, setIsAddTableModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newTable, setNewTable] = useState({
+    squadName: "",
+    leaderName: "",
+    leaderEmail: "",
+    leaderPhone: "",
+    tier: "silver" as "silver" | "gold",
+  });
 
   // In-App Double Opt-In confirmation state
   const [confirmModal, setConfirmModal] = useState<{
@@ -166,31 +86,160 @@ export function AdminTableFundsClient() {
     isPaid?: boolean;
   } | null>(null);
 
-  // Load any created funds from localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const customFunds: TableFundItem[] = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith("table_fund_")) {
-          try {
-            const parsed = JSON.parse(localStorage.getItem(key) || "");
-            if (parsed && parsed.id) {
-              const paidCount = parsed.contributions.filter((c: any) => c.paid).length;
-              parsed.status = paidCount === 8 ? "fully_funded" : "collecting";
-              customFunds.push(parsed);
-            }
-          } catch (_) {}
+  // Load funds from DB + localStorage
+  const loadAllTables = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/owambe/table?all=true");
+      const data = await res.json();
+      const serverTables: TableFundItem[] = (data.success && Array.isArray(data.tables)) ? data.tables : [];
+
+      // Also gather from localStorage if any exist
+      const localTables: TableFundItem[] = [];
+      if (typeof window !== "undefined") {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith("table_fund_")) {
+            try {
+              const parsed = JSON.parse(localStorage.getItem(key) || "");
+              if (parsed && parsed.id) {
+                localTables.push(parsed);
+              }
+            } catch (_) {}
+          }
         }
       }
-      if (customFunds.length > 0) {
-        // Merge with mock, avoiding duplicate IDs
-        const existingIds = new Set(customFunds.map((f) => f.id));
-        const merged = [...customFunds, ...DEFAULT_MOCK_FUNDS.filter((f) => !existingIds.has(f.id))];
-        setFunds(merged);
+
+      // Merge avoiding duplicate IDs (server tables take precedence)
+      const serverIds = new Set(serverTables.map((t) => t.id));
+      const combined = [...serverTables, ...localTables.filter((t) => !serverIds.has(t.id))];
+
+      setFunds(combined);
+      if (combined.length > 0 && !selectedFund) {
+        setSelectedFund(combined[0]);
       }
+    } catch (err) {
+      console.error("[Load Squad Tables Error]:", err);
+      toast.error("Failed to fetch squad tables from database.");
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    loadAllTables();
   }, []);
+
+  const handleCreateSquadTable = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTable.squadName.trim() || !newTable.leaderName.trim() || !newTable.leaderEmail.trim() || !newTable.leaderPhone.trim()) {
+      toast.error("Please fill in all squad leader details.");
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const isGold = newTable.tier === "gold";
+      const tablePrice = isGold ? 1000000 : 500000;
+      const totalTargetWithFees = isGold ? 1010000 : 505000;
+      const perMemberTotal = isGold ? 101000 : 50500;
+      const tableName = isGold ? "Gold Table (₦1,000,000)" : "Silver Table (₦500,000)";
+
+      // Generate clean unique ID
+      const baseSlug = newTable.squadName
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 18);
+      const randomSuffix = Math.random().toString(36).substring(2, 7);
+      const tableId = `owambe-${baseSlug || "squad"}-${randomSuffix}`;
+
+      // Generate 10 Member slots
+      const contributions: MemberSlot[] = [
+        {
+          slot: 1,
+          name: `${newTable.leaderName.trim()} (Squad Leader)`,
+          email: newTable.leaderEmail.trim(),
+          phone: newTable.leaderPhone.trim(),
+          paid: false,
+          amount: perMemberTotal,
+        },
+        ...Array.from({ length: 9 }, (_, idx) => ({
+          slot: idx + 2,
+          name: `Squad Member #${idx + 2}`,
+          email: "pending@member.ng",
+          phone: "N/A",
+          paid: false,
+          amount: perMemberTotal,
+        })),
+      ];
+
+      const record: TableFundItem = {
+        id: tableId,
+        squadName: newTable.squadName.trim(),
+        event: "The Owambe Party (Wazobia Extravaganza)",
+        venue: "Amore Gardens, Lekki",
+        eventDate: "20 December 2026",
+        deadline: "10 December 2026",
+        tier: newTable.tier,
+        tableName,
+        tablePrice,
+        totalTargetWithFees,
+        perMemberTotal,
+        memberCount: 10,
+        leaderName: newTable.leaderName.trim(),
+        leaderEmail: newTable.leaderEmail.trim(),
+        leaderPhone: newTable.leaderPhone.trim(),
+        createdAt: new Date().toISOString(),
+        status: "collecting",
+        contributions,
+      };
+
+      // 1. Save to cloud database
+      const res = await fetch("/api/owambe/table", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(record),
+      });
+
+      if (!res.ok) {
+        throw new Error("Server failed to save table.");
+      }
+
+      // 2. Also save to localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem(`table_fund_${tableId}`, JSON.stringify(record));
+      }
+
+      setFunds((prev) => [record, ...prev]);
+      setSelectedFund(record);
+      setIsAddTableModalOpen(false);
+      setNewTable({
+        squadName: "",
+        leaderName: "",
+        leaderEmail: "",
+        leaderPhone: "",
+        tier: "silver",
+      });
+
+      toast.success(`Squad Table "${record.squadName}" created! Shareable link generated.`);
+    } catch (err: any) {
+      console.error("[Create Squad Table Error]:", err);
+      toast.error(err.message || "Failed to create squad table.");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const copyTableLink = (id: string) => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://ajose.ng";
+    const url = `${origin}/table/${id}`;
+    navigator.clipboard.writeText(url);
+    setCopiedLink(id);
+    toast.success("Squad table link copied to clipboard!");
+    setTimeout(() => setCopiedLink(null), 2500);
+  };
 
   // Compute Metrics
   const totalFundsCount = funds.length;
@@ -439,6 +488,9 @@ export function AdminTableFundsClient() {
       if (typeof window !== "undefined") {
         localStorage.removeItem(`table_fund_${id}`);
       }
+      fetch(`/api/owambe/table?id=${encodeURIComponent(id)}`, { method: "DELETE" })
+        .then(() => toast.success("Squad table removed from database."))
+        .catch(() => toast.error("Failed to delete table from database."));
     } else if (confirmModal.type === "remove_member" && confirmModal.slotNumber) {
       const { fundId, slotNumber } = confirmModal;
       const fund = funds.find((f) => f.id === fundId);
@@ -458,7 +510,7 @@ export function AdminTableFundsClient() {
         const paidCount = updatedContributions.filter((c) => c.paid).length;
         const updatedFund: TableFundItem = {
           ...fund,
-          status: paidCount === 8 ? "fully_funded" : "collecting",
+          status: paidCount === 10 ? "fully_funded" : "collecting",
           contributions: updatedContributions,
         };
 
@@ -470,6 +522,12 @@ export function AdminTableFundsClient() {
         if (typeof window !== "undefined") {
           localStorage.setItem(`table_fund_${fundId}`, JSON.stringify(updatedFund));
         }
+
+        fetch("/api/owambe/table", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedFund),
+        }).catch((err) => console.error("Failed to sync slot reset to server:", err));
       }
     }
 
@@ -503,8 +561,17 @@ export function AdminTableFundsClient() {
           </p>
         </div>
 
-        {/* 2 CSV Export Action Buttons */}
+        {/* Action Buttons: Add Table + CSV Exports */}
         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto shrink-0">
+          <button
+            onClick={() => setIsAddTableModalOpen(true)}
+            className="py-2.5 px-4 bg-[#D4A843] hover:bg-[#c49835] text-[#0B3022] rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+            title="Create a new official squad table"
+          >
+            <Plus className="w-4 h-4 text-[#0B3022]" />
+            <span>Add Squad Table</span>
+          </button>
+
           <button
             onClick={exportTablesSummaryCSV}
             className="py-2.5 px-4 bg-white hover:bg-gray-50 text-[#0B3022] border border-[#0B3022]/20 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
@@ -608,86 +675,115 @@ export function AdminTableFundsClient() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Table List Column (2 cols) */}
         <div className="lg:col-span-2 space-y-3">
-          {filteredFunds.map((fund) => {
-            const paidMembers = fund.contributions.filter((c) => c.paid);
-            const paidCount = paidMembers.length;
-            const progress = Math.round((paidCount / 8) * 100);
-            const isSelected = selectedFund?.id === fund.id;
-
-            return (
-              <div
-                key={fund.id}
-                onClick={() => setSelectedFund(fund)}
-                className={`p-5 rounded-2xl border transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-[#0B3022] text-[#F3EEE3] border-[#D4A843] shadow-lg"
-                    : "bg-white text-[#0B3022] border-gray-200 hover:border-[#D4A843]/60 shadow-xs"
-                }`}
+          {isLoading ? (
+            <div className="bg-white rounded-2xl p-12 text-center border border-gray-200">
+              <div className="inline-block w-8 h-8 border-3 border-[#0B3022] border-t-[#D4A843] rounded-full animate-spin mb-3"></div>
+              <p className="text-xs font-mono text-[#0B3022]/70">Loading verified squad tables from database...</p>
+            </div>
+          ) : filteredFunds.length === 0 ? (
+            <div className="bg-white rounded-2xl p-12 text-center border border-dashed border-[#0B3022]/20 space-y-4">
+              <div className="w-14 h-14 mx-auto rounded-full bg-[#D4A843]/15 flex items-center justify-center text-[#D4A843]">
+                <PartyPopper className="w-7 h-7" />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-[#0B3022] font-serif">No Squad Tables Found</h3>
+                <p className="text-xs text-[#0B3022]/65 max-w-sm mx-auto mt-1">
+                  {search || statusFilter !== "all"
+                    ? "No tables match your current filter or search criteria."
+                    : "No test or live tables currently configured. Click below to add an official squad table."}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddTableModalOpen(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] text-xs font-bold transition-all shadow-md cursor-pointer"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                        fund.tier === "gold"
-                          ? isSelected ? "bg-[#D4A843]/20 text-[#D4A843]" : "bg-amber-100 text-amber-800"
-                          : isSelected ? "bg-white/10 text-white" : "bg-gray-100 text-gray-700"
+                <Plus className="w-4 h-4 text-[#D4A843]" />
+                <span>Add Squad Table</span>
+              </button>
+            </div>
+          ) : (
+            filteredFunds.map((fund) => {
+              const paidMembers = fund.contributions.filter((c) => c.paid);
+              const paidCount = paidMembers.length;
+              const progress = Math.round((paidCount / (fund.memberCount || 10)) * 100);
+              const isSelected = selectedFund?.id === fund.id;
+
+              return (
+                <div
+                  key={fund.id}
+                  onClick={() => setSelectedFund(fund)}
+                  className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-[#0B3022] text-[#F3EEE3] border-[#D4A843] shadow-lg"
+                      : "bg-white text-[#0B3022] border-gray-200 hover:border-[#D4A843]/60 shadow-xs"
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          fund.tier === "gold"
+                            ? isSelected ? "bg-[#D4A843]/20 text-[#D4A843]" : "bg-amber-100 text-amber-800"
+                            : isSelected ? "bg-white/10 text-white" : "bg-gray-100 text-gray-700"
+                        }`}>
+                          {fund.tableName}
+                        </span>
+                        <span className={`text-xs font-mono ${isSelected ? "text-[#F3EEE3]/60" : "text-gray-400"}`}>
+                          #{fund.id}
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-base mt-1 font-serif">
+                        {fund.squadName}
+                      </h3>
+                    </div>
+
+                    <div className="text-right">
+                      <span className={`text-xs font-mono font-bold block ${
+                        isSelected ? "text-[#D4A843]" : "text-[#0B3022]"
                       }`}>
-                        {fund.tableName}
+                        ₦{(paidCount * fund.perMemberTotal).toLocaleString()} / ₦{fund.totalTargetWithFees.toLocaleString()}
                       </span>
-                      <span className={`text-xs font-mono ${isSelected ? "text-[#F3EEE3]/60" : "text-gray-400"}`}>
-                        #{fund.id}
+                      <span className={`text-[11px] font-mono ${isSelected ? "text-[#F3EEE3]/70" : "text-gray-500"}`}>
+                        {paidCount} of {fund.memberCount || 10} Shares Paid ({progress}%)
                       </span>
                     </div>
-                    <h3 className="font-bold text-base mt-1 font-serif">
-                      {fund.squadName}
-                    </h3>
                   </div>
 
-                  <div className="text-right">
-                    <span className={`text-xs font-mono font-bold block ${
-                      isSelected ? "text-[#D4A843]" : "text-[#0B3022]"
-                    }`}>
-                      ₦{(paidCount * fund.perMemberTotal).toLocaleString()} / ₦{fund.totalTargetWithFees.toLocaleString()}
-                    </span>
-                    <span className={`text-[11px] font-mono ${isSelected ? "text-[#F3EEE3]/70" : "text-gray-500"}`}>
-                      {paidCount} of {fund.memberCount || 10} Shares Paid ({progress}%)
-                    </span>
-                  </div>
-                </div>
-
-                {/* Mini Progress Bar */}
-                <div className="w-full h-1.5 bg-gray-200/40 rounded-full overflow-hidden mb-3">
-                  <div
-                    className={`h-full rounded-full transition-all duration-300 ${
-                      progress === 100 ? "bg-emerald-500" : isSelected ? "bg-[#D4A843]" : "bg-[#0B3022]"
-                    }`}
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between text-xs pt-2 border-t border-current/10">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5 opacity-70" />
-                      <span>{fund.leaderName}</span>
-                    </span>
-                    <span className="opacity-60">{fund.leaderPhone}</span>
+                  {/* Mini Progress Bar */}
+                  <div className="w-full h-1.5 bg-gray-200/40 rounded-full overflow-hidden mb-3">
+                    <div
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        progress === 100 ? "bg-emerald-500" : isSelected ? "bg-[#D4A843]" : "bg-[#0B3022]"
+                      }`}
+                      style={{ width: `${progress}%` }}
+                    />
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      fund.status === "fully_funded" || fund.status === "released"
-                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                        : "bg-amber-500/20 text-amber-400"
-                    }`}>
-                      {fund.status.replace("_", " ")}
-                    </span>
-                    <ChevronRight className="w-4 h-4 opacity-60" />
+                  <div className="flex items-center justify-between text-xs pt-2 border-t border-current/10">
+                    <div className="flex items-center gap-3">
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5 opacity-70" />
+                        <span>{fund.leaderName}</span>
+                      </span>
+                      <span className="opacity-60">{fund.leaderPhone}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        fund.status === "fully_funded" || fund.status === "released"
+                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                          : "bg-amber-500/20 text-amber-400"
+                      }`}>
+                        {fund.status.replace("_", " ")}
+                      </span>
+                      <ChevronRight className="w-4 h-4 opacity-60" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
 
         {/* Selected Table Inspector Details Column (1 col) */}
@@ -735,10 +831,29 @@ export function AdminTableFundsClient() {
                 </div>
               </div>
 
-              {/* 8 Member Slots List */}
+              {/* Copy Shareable Squad Link Button */}
+              <button
+                type="button"
+                onClick={() => copyTableLink(selectedFund.id)}
+                className="w-full py-2.5 px-4 rounded-xl border border-[#D4A843]/40 bg-[#D4A843]/10 hover:bg-[#D4A843]/20 text-[#0B3022] font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                {copiedLink === selectedFund.id ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-600" />
+                    <span className="text-emerald-700">Link Copied to Clipboard!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 text-[#D4A843]" />
+                    <span>Copy Squad Table Link</span>
+                  </>
+                )}
+              </button>
+
+              {/* 10 Member Slots List */}
               <div>
                 <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#0B3022] mb-3">
-                  Attendee Roster (8 Slots)
+                  Attendee Roster ({selectedFund.memberCount || 10} Slots)
                 </h4>
                 <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
                   {selectedFund.contributions.map((slot) => (
@@ -824,6 +939,162 @@ export function AdminTableFundsClient() {
           )}
         </div>
       </div>
+
+      {/* Add Squad Table Modal */}
+      {isAddTableModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 text-left shadow-2xl border border-gray-100">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#D4A843]/20 flex items-center justify-center text-[#D4A843]">
+                  <PartyPopper className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold font-serif text-[#0B3022]">Add Official Squad Table</h3>
+                  <p className="text-xs text-[#0B3022]/65">The Owambe Party &bull; 10-Guest Escrow Table</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddTableModalOpen(false)}
+                className="p-1.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateSquadTable} className="space-y-4 pt-4">
+              <div>
+                <label className="block text-xs font-bold text-[#0B3022] mb-1">
+                  Squad / Table Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Lekki Babes VIP, Tech Founders Squad"
+                  value={newTable.squadName}
+                  onChange={(e) => setNewTable({ ...newTable, squadName: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#0B3022]"
+                />
+              </div>
+
+              {/* Table Tier Picker */}
+              <div>
+                <label className="block text-xs font-bold text-[#0B3022] mb-1.5">
+                  Table Tier & Target <span className="text-rose-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setNewTable({ ...newTable, tier: "silver" })}
+                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                      newTable.tier === "silver"
+                        ? "border-[#0B3022] bg-[#0B3022]/5 ring-2 ring-[#0B3022]"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="font-bold text-xs text-[#0B3022]">Silver Table</div>
+                    <div className="text-sm font-black font-mono text-[#0B3022] mt-0.5">₦500,000</div>
+                    <div className="text-[10px] text-gray-500 mt-1">₦50,500 / seat &bull; 10 Guests</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setNewTable({ ...newTable, tier: "gold" })}
+                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                      newTable.tier === "gold"
+                        ? "border-[#D4A843] bg-[#D4A843]/10 ring-2 ring-[#D4A843]"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="font-bold text-xs text-[#D4A843]">Gold Table (VIP)</div>
+                    <div className="text-sm font-black font-mono text-[#0B3022] mt-0.5">₦1,000,000</div>
+                    <div className="text-[10px] text-gray-500 mt-1">₦101,000 / seat &bull; 10 Guests</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Leader Details */}
+              <div className="pt-2 border-t border-gray-100 space-y-3">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0B3022]/70 block">
+                  Squad Leader Details
+                </span>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#0B3022] mb-1">
+                    Leader Full Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Kemi Adeleke"
+                    value={newTable.leaderName}
+                    onChange={(e) => setNewTable({ ...newTable, leaderName: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#0B3022]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B3022] mb-1">
+                      Leader Email <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="kemi@gmail.com"
+                      value={newTable.leaderEmail}
+                      onChange={(e) => setNewTable({ ...newTable, leaderEmail: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#0B3022]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B3022] mb-1">
+                      WhatsApp / Phone <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="08031234567"
+                      value={newTable.leaderPhone}
+                      onChange={(e) => setNewTable({ ...newTable, leaderPhone: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#0B3022]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAddTableModalOpen(false)}
+                  className="py-2.5 px-4 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreating}
+                  className="py-2.5 px-6 rounded-xl bg-[#0B3022] hover:bg-[#124230] text-[#F3EEE3] text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isCreating ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Creating Squad Table...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 text-[#D4A843]" />
+                      <span>Create Squad Table</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* In-App Double Opt-In Confirmation Modal */}
       {confirmModal && (
