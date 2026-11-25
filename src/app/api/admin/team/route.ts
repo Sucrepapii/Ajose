@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: "A valid email address is required." }, { status: 400 });
     }
 
-    const validRoles: AdminRole[] = ["Super Admin", "Operations Lead", "Risk & Compliance", "Support Auditor"];
+    const validRoles: AdminRole[] = ["Super Admin", "Operations Lead", "Risk & Compliance", "Support Auditor", "Event Partner"];
     if (!role || !validRoles.includes(role)) {
       return NextResponse.json({ success: false, message: "Invalid role selected." }, { status: 400 });
     }

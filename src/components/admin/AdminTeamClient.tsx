@@ -231,6 +231,7 @@ export function AdminTeamClient({
             <option value="Operations Lead">Operations Lead</option>
             <option value="Risk & Compliance">Risk & Compliance</option>
             <option value="Support Auditor">Support Auditor</option>
+            <option value="Event Partner">Event Partner (Owambe Desk)</option>
           </select>
         </div>
       </div>
@@ -296,6 +297,8 @@ export function AdminTeamClient({
                             ? "bg-blue-500/10 text-blue-800 border border-blue-500/20"
                             : admin.role === "Risk & Compliance"
                             ? "bg-amber-500/10 text-amber-800 border border-amber-500/20"
+                            : admin.role === "Event Partner"
+                            ? "bg-emerald-500/10 text-emerald-800 border border-emerald-500/20"
                             : "bg-purple-500/10 text-purple-800 border border-purple-500/20"
                         }`}>
                           <span className="w-1.5 h-1.5 rounded-full bg-current" />
@@ -579,6 +582,7 @@ export function AdminTeamClient({
                     <option value="Operations Lead">Operations Lead (Manage circles, payouts & sweeps)</option>
                     <option value="Risk & Compliance">Risk & Compliance (15% fines, defaults & CRC)</option>
                     <option value="Support Auditor">Support Auditor (Read-only ledger & KYC)</option>
+                    <option value="Event Partner">Event Partner (Restricted to Owambe Table Funds desk only)</option>
                     <option value="Super Admin">Super Admin (Full platform governance)</option>
                   </select>
                 </div>
