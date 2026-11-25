@@ -86,13 +86,52 @@ export function AdminTableFundsClient() {
     isPaid?: boolean;
   } | null>(null);
 
+  // Normalize and sanitize table item to prevent undefined property crashes
+  const normalizeTable = (t: any): TableFundItem => {
+    const contributions: MemberSlot[] = Array.isArray(t.contributions) ? t.contributions : [];
+    const memberCount = Number(t.memberCount) || 10;
+    const paidCount = contributions.filter((c) => c && c.paid).length;
+    const isGold = t.tier === "gold" || (Number(t.tablePrice) && Number(t.tablePrice) >= 1000000);
+    const rawStatus = t.status || (paidCount >= memberCount ? "fully_funded" : "collecting");
+
+    return {
+      id: String(t.id || `table-${Math.random().toString(36).substring(2, 7)}`),
+      squadName: String(t.squadName || "Squad Table"),
+      event: String(t.event || "The Owambe Party (Wazobia Extravaganza)"),
+      venue: String(t.venue || "Amore Gardens, Lekki"),
+      eventDate: String(t.eventDate || "20 December 2026"),
+      deadline: String(t.deadline || "10 December 2026"),
+      tier: isGold ? "gold" : "silver",
+      tableName: String(t.tableName || (isGold ? "Gold Table (₦1,000,000)" : "Silver Table (₦500,000)")),
+      tablePrice: Number(t.tablePrice) || (isGold ? 1000000 : 500000),
+      totalTargetWithFees: Number(t.totalTargetWithFees) || (isGold ? 1010000 : 505000),
+      perMemberTotal: Number(t.perMemberTotal) || (isGold ? 101000 : 50500),
+      memberCount,
+      leaderName: String(t.leaderName || "Squad Leader"),
+      leaderEmail: String(t.leaderEmail || ""),
+      leaderPhone: String(t.leaderPhone || ""),
+      createdAt: String(t.createdAt || new Date().toISOString()),
+      status: (rawStatus === "released" || rawStatus === "fully_funded" || rawStatus === "refunded") ? rawStatus : "collecting",
+      contributions: contributions.map((c: any, idx: number) => ({
+        slot: Number(c.slot) || idx + 1,
+        name: String(c.name || `Squad Member #${idx + 1}`),
+        email: c.email ? String(c.email) : undefined,
+        phone: String(c.phone || "N/A"),
+        paid: Boolean(c.paid),
+        amount: Number(c.amount) || (isGold ? 101000 : 50500),
+        paidAt: c.paidAt ? String(c.paidAt) : undefined,
+      })),
+    };
+  };
+
   // Load funds from DB + localStorage
   const loadAllTables = async () => {
     setIsLoading(true);
     try {
       const res = await fetch("/api/owambe/table?all=true");
       const data = await res.json();
-      const serverTables: TableFundItem[] = (data.success && Array.isArray(data.tables)) ? data.tables : [];
+      const rawServerTables = (data.success && Array.isArray(data.tables)) ? data.tables : [];
+      const serverTables: TableFundItem[] = rawServerTables.map(normalizeTable);
 
       // Also gather from localStorage if any exist
       const localTables: TableFundItem[] = [];
@@ -103,7 +142,7 @@ export function AdminTableFundsClient() {
             try {
               const parsed = JSON.parse(localStorage.getItem(key) || "");
               if (parsed && parsed.id) {
-                localTables.push(parsed);
+                localTables.push(normalizeTable(parsed));
               }
             } catch (_) {}
           }
@@ -322,7 +361,7 @@ export function AdminTableFundsClient() {
           f.tablePrice.toString(),
           f.totalTargetWithFees.toString(),
           tableCollected.toString(),
-          `"${f.status.toUpperCase()}"`,
+          `"${(f.status || "collecting").toUpperCase()}"`,
           `"${f.leaderName.replace(/"/g, '""')}"`,
           `"${f.leaderEmail || "N/A"}"`,
           `"${f.leaderPhone}"`,
@@ -399,7 +438,7 @@ export function AdminTableFundsClient() {
         f.totalTargetWithFees.toString(),
         totalCollected.toString(),
         payoutDue.toString(),
-        `"${f.status.toUpperCase()}"`,
+        `"${(f.status || "collecting").toUpperCase()}"`,
         `"${paidCount} of ${f.memberCount || 10}"`,
         `"${f.leaderName.replace(/"/g, '""')}"`,
         `"${f.leaderEmail || "N/A"}"`,
@@ -771,11 +810,11 @@ export function AdminTableFundsClient() {
 
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        fund.status === "fully_funded" || fund.status === "released"
+                        (fund.status || "collecting") === "fully_funded" || (fund.status || "collecting") === "released"
                           ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                           : "bg-amber-500/20 text-amber-400"
                       }`}>
-                        {fund.status.replace("_", " ")}
+                        {(fund.status || "collecting").replace("_", " ")}
                       </span>
                       <ChevronRight className="w-4 h-4 opacity-60" />
                     </div>
