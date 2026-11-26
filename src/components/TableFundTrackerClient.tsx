@@ -189,12 +189,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
     // 2. Check standard registered tables
     const demoFound = STANDARD_DEMO_TABLES.find(
-      (t) =>
-        t.id.toLowerCase() === fundId.toLowerCase() ||
-        (t.id === "test-500" &&
-          (fundId.toLowerCase() === "test-table" ||
-            fundId.toLowerCase() === "test" ||
-            fundId.toLowerCase() === "500"))
+      (t) => t.id.toLowerCase() === fundId.toLowerCase()
     );
     if (demoFound) {
       setFund(demoFound as TableFundState);
@@ -375,12 +370,10 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
     setIsProcessing(true);
 
-    // If this is the 500 Naira test table (or any table configured for Paylode testing)
+    // If this table is specifically configured for Paylode testing
     const isPaylodeTest =
-      fund.id === "test-500" ||
       fund.tier === "test" ||
-      fund.id.includes("paylode") ||
-      fund.perMemberTotal <= 500;
+      fund.id.includes("paylode");
 
     if (isPaylodeTest && typeof window !== "undefined" && window.PaylodeCheckout) {
       const paylodePublicKey =

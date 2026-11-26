@@ -50,12 +50,9 @@ export async function GET(req: NextRequest) {
     }
     const cleanTarget = lookupTarget.toLowerCase();
 
-    // 1. Check standard demo tables (e.g. test-500, test-table, owambe-lekki-babes)
+    // 1. Check standard demo tables (e.g. owambe-lekki-babes)
     const demoFound = STANDARD_DEMO_TABLES.find(
-      (t) =>
-        t.id.toLowerCase() === cleanTarget ||
-        (t.id === "test-500" &&
-          (cleanTarget === "test-table" || cleanTarget === "test" || cleanTarget === "500"))
+      (t) => t.id.toLowerCase() === cleanTarget
     );
 
     if (demoFound && id) {
