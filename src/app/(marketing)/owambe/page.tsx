@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { Sparkles, ShieldCheck, Users, Calendar, ArrowLeft } from "lucide-react";
+import { Sparkles, Users, Calendar, ArrowLeft } from "lucide-react";
 import { TableFundCreator } from "@/components/TableFundCreator";
 import { isOwambeExpired } from "@/utils/owambeConfig";
 
@@ -128,10 +128,6 @@ export default function OwambeTableFundPage() {
                   <span>10 People per Table</span>
                 </span>
               </div>
-            </div>
-            <div className="pt-2 text-[11px] font-mono text-[#0B3022]/70 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#D4A843]" />
-              <span>100% Escrow Protection &bull; Payment Deadline: <strong>20 Dec 2026 (Event Day)</strong></span>
             </div>
           </div>
         </div>
