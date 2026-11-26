@@ -17,6 +17,9 @@ const cspHeader = `
 
 const nextConfig: NextConfig = {
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
+  experimental: {
+    agentUpgrade: "security",
+  },
   async headers() {
     return [
       {
