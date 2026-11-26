@@ -170,7 +170,7 @@ export function TableFundCreator() {
       event: "The Owambe Party (Wazobia Extravaganza)",
       venue: "Amore Gardens, Lekki",
       eventDate: "20 December 2026",
-      deadline: "10 December 2026",
+      deadline: "20 December 2026",
       tier: activeTier.id,
       tableName: activeTier.name,
       tablePrice: activeTier.tablePrice,
@@ -483,7 +483,7 @@ export function TableFundCreator() {
               <div className="space-y-1">
                 <strong className="block text-[#0B3022]">CBN-Licensed Open Banking Escrow:</strong>
                 <span>
-                  All member payments are securely collected via <strong>Mono DirectPay</strong> (CBN-licensed open-banking infrastructure). The lump sum is released to The Owambe Party only when all 10 members pay. If the table is not 100% funded by 10 December, every member is refunded automatically.
+                  All member payments are securely collected via <strong>Mono DirectPay</strong> (CBN-licensed open-banking infrastructure). The lump sum is released to The Owambe Party only when all 10 members pay. If the table is not 100% funded by 20 December (the day of the event), every member is refunded automatically.
                 </span>
               </div>
             </div>

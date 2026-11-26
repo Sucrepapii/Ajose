@@ -131,7 +131,7 @@ export default function OwambeTableFundPage() {
             </div>
             <div className="pt-2 text-[11px] font-mono text-[#0B3022]/70 flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-[#D4A843]" />
-              <span>100% Escrow Protection &bull; Payment Deadline: <strong>10 Dec 2026</strong></span>
+              <span>100% Escrow Protection &bull; Payment Deadline: <strong>20 Dec 2026 (Event Day)</strong></span>
             </div>
           </div>
         </div>
@@ -196,7 +196,7 @@ export default function OwambeTableFundPage() {
                   </div>
                   <h3 className="font-bold text-sm text-[#0B3022] mb-1.5">Everyone Contributes</h3>
                   <p className="text-xs text-[#0B3022]/70 leading-relaxed">
-                    Each member clicks the WhatsApp link and pays their exact share directly before 10 December.
+                    Each member clicks the WhatsApp link and pays their exact share directly on or before 20 December (the day of the event).
                   </p>
                 </div>
               </div>

@@ -2,7 +2,7 @@
  * Configuration, demonstration tables, and search engine for The Owambe Party (Wazobia Extravaganza) Table Funds.
  * 
  * Event Date: 20 December 2026 at Amore Gardens, Lekki.
- * Payment Deadline: 10 December 2026.
+ * Payment Deadline: 20 December 2026 (Open till the day of the event).
  * Expiration Cutoff: 21 December 2026 at 23:59:59 (After this date, the event has taken place and portal is removed from live).
  */
 
@@ -10,8 +10,8 @@ export const OWAMBE_CONFIG = {
   eventName: "The Owambe Party (Wazobia Extravaganza)",
   venue: "Amore Gardens, Lekki, Lagos",
   eventDateFormatted: "20 December 2026",
-  deadlineFormatted: "10 December 2026",
-  deadlineISO: "2026-12-10T23:59:59+01:00",
+  deadlineFormatted: "20 December 2026",
+  deadlineISO: "2026-12-20T23:59:59+01:00",
   expirationISO: "2026-12-21T23:59:59+01:00",
 };
 
@@ -55,7 +55,7 @@ export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
     event: "The Owambe Party (Wazobia Extravaganza)",
     venue: "Amore Gardens, Lekki",
     eventDate: "20 December 2026",
-    deadline: "10 December 2026",
+    deadline: "20 December 2026",
     tier: "test",
     tableName: "Test Table (₦500)",
     tablePrice: 5000,
@@ -88,7 +88,7 @@ export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
     event: "The Owambe Party (Wazobia Extravaganza)",
     venue: "Amore Gardens, Lekki",
     eventDate: "20 December 2026",
-    deadline: "10 December 2026",
+    deadline: "20 December 2026",
     tier: "gold",
     tableName: "Gold Table",
     tablePrice: 1000000,
@@ -121,7 +121,7 @@ export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
     event: "The Owambe Party (Wazobia Extravaganza)",
     venue: "Amore Gardens, Lekki",
     eventDate: "20 December 2026",
-    deadline: "10 December 2026",
+    deadline: "20 December 2026",
     tier: "silver",
     tableName: "Silver Table",
     tablePrice: 500000,
@@ -154,7 +154,7 @@ export const STANDARD_DEMO_TABLES: TableFundRecord[] = [
     event: "The Owambe Party (Wazobia Extravaganza)",
     venue: "Amore Gardens, Lekki",
     eventDate: "20 December 2026",
-    deadline: "10 December 2026",
+    deadline: "20 December 2026",
     tier: "silver",
     tableName: "Silver Table",
     tablePrice: 500000,
@@ -283,7 +283,7 @@ export function isOwambeExpired(): boolean {
 }
 
 /**
- * Returns true if the payment deadline (10 December 2026) has passed.
+ * Returns true if the payment deadline (20 December 2026 - Event Day) has passed.
  */
 export function isOwambeDeadlinePassed(): boolean {
   try {

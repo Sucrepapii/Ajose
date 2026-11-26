@@ -17,7 +17,7 @@ async function populateFullTable() {
     event: "The Owambe Party (Wazobia Extravaganza)",
     venue: "Amore Gardens, Lekki",
     eventDate: "20 December 2026",
-    deadline: "10 December 2026",
+    deadline: "20 December 2026",
     tier: "silver",
     tableName: "Silver Table",
     tablePrice: 500000,

@@ -350,7 +350,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
 
   const currentUrl = typeof window !== "undefined" ? window.location.href : `https://ajose.ng/table/${fundId}`;
 
-  const shareText = `Hey! We're splitting a ${fund.tableName} for The Owambe Party (Wazobia Extravaganza on Dec 20). Our share is ₦${fund.perMemberTotal.toLocaleString()} each before Dec 10. Pay your share here so our table is locked: ${currentUrl}`;
+  const shareText = `Hey! We're splitting a ${fund.tableName} for The Owambe Party (Wazobia Extravaganza on Dec 20). Our share is ₦${fund.perMemberTotal.toLocaleString()} each on or before Dec 20 (Event Day). Pay your share here so our table is locked: ${currentUrl}`;
 
   const copyLink = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -626,12 +626,12 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         </div>
       )}
 
-      {/* Deadline Notice if past 10 Dec 2026 */}
+      {/* Deadline Notice if past 20 Dec 2026 */}
       {!expired && deadlinePassed && !isComplete && (
         <div className="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
           <span>
-            <strong>Funding Deadline Passed (10 Dec 2026):</strong> This table fund did not reach 100% funding by the deadline. As guaranteed by Escrow Protection, automatic refunds will be processed for any paid members.
+            <strong>Funding Deadline Passed (20 Dec 2026):</strong> This table fund did not reach 100% funding by the deadline. As guaranteed by Escrow Protection, automatic refunds will be processed for any paid members.
           </span>
         </div>
       )}
@@ -1056,7 +1056,7 @@ export function TableFundTrackerClient({ fundId }: { fundId: string }) {
         <div className="space-y-1">
           <h4 className="font-bold text-sm text-[#0B3022]">How Your Money is Protected</h4>
           <p className="leading-relaxed">
-            Contributions are securely collected via <strong>Flutterwave</strong> (CBN-licensed payment infrastructure) and safely held in escrow until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all {fund.memberCount} shares by <strong>10 December 2026</strong>, every contributor receives an automatic full refund.
+            Contributions are securely collected via <strong>Flutterwave</strong> (CBN-licensed payment infrastructure) and safely held in escrow until the table is 100% funded, then released to <strong>The Owambe Party (Spotlight by Mmakamba)</strong> in one single disbursement. If your squad fails to complete all {fund.memberCount} shares by <strong>20 December 2026 (the day of the event)</strong>, every contributor receives an automatic full refund.
           </p>
         </div>
       </div>
