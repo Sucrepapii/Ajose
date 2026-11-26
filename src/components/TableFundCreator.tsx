@@ -7,7 +7,7 @@ import Link from "next/link";
 import { isOwambeExpired, OWAMBE_CONFIG, searchTableFunds } from "@/utils/owambeConfig";
 
 interface TableTier {
-  id: "silver" | "gold" | "test";
+  id: "silver" | "gold";
   name: string;
   tablePrice: number;
   displayPrice: string;
@@ -40,16 +40,6 @@ const TIERS: TableTier[] = [
     serviceFeePerMember: 1000,
     totalPerMember: 101000,
   },
-  {
-    id: "test",
-    name: "Test Table",
-    tablePrice: 5000,
-    displayPrice: "₦500 Test",
-    members: 10,
-    sharePerMember: 500,
-    serviceFeePerMember: 0,
-    totalPerMember: 500,
-  },
 ];
 
 interface SavedTableSummary {
@@ -63,7 +53,7 @@ interface SavedTableSummary {
 
 export function TableFundCreator() {
   const router = useRouter();
-  const [selectedTier, setSelectedTier] = useState<"silver" | "gold" | "test">("silver");
+  const [selectedTier, setSelectedTier] = useState<"silver" | "gold">("silver");
   const [squadName, setSquadName] = useState("");
   const [leaderName, setLeaderName] = useState("");
   const [leaderEmail, setLeaderEmail] = useState("");
@@ -329,7 +319,7 @@ export function TableFundCreator() {
       </div>
 
       {/* Tier Selection Cards */}
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
         {TIERS.map((tier) => {
           const isSelected = selectedTier === tier.id;
           return (
